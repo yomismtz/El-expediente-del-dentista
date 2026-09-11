@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.ClinicalContent
@@ -36,16 +37,21 @@ fun OlearyScreen(
     val shown = if (primary) ClinicalContent.primaryTeeth else ClinicalContent.permanentTeeth
     var selectedTooth by remember { mutableStateOf(shown.first()) }
     if (selectedTooth !in shown) selectedTooth = shown.first()
-    val selectedSurfaces = session.oleary[selectedTooth] ?: emptySet()
-    val percentage = ClinicalEngines.round1(ClinicalEngines.olearyPercentage(session))
+    val olearySurfaces = listOf(Surface.VESTIBULAR, Surface.LINGUAL_PALATAL, Surface.MESIAL, Surface.DISTAL)
+    val present = if (session.presentTeeth.intersect(shown.toSet()).isEmpty()) shown.toSet() else session.presentTeeth.intersect(shown.toSet())
+    val selectedSurfaces = (session.oleary[selectedTooth] ?: emptySet()).intersect(olearySurfaces.toSet())
+    val plaqueFaces = present.sumOf { tooth -> (session.oleary[tooth] ?: emptySet()).count { it in olearySurfaces } }
+    val totalFaces = present.size * 4
+    val percentage = if (totalFaces == 0) 0.0 else ClinicalEngines.round1(plaqueFaces * 100.0 / totalFaces)
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             ScreenHeader(
                 "O’Leary",
                 onBack,
-                tr(lang, "Marca primero qué dientes están presentes. Después selecciona las superficies con placa; el porcentaje se calcula automáticamente.",
-                    "First mark which teeth are present. Then select plaque-positive surfaces; the percentage is calculated automatically.")
+                tr(lang,
+                    "Cada diente se divide en cuatro caras: vestibular, lingual/palatina, mesial y distal. Toca directamente la cara donde hay placa; la superficie oclusal NO forma parte de este índice.",
+                    "Each tooth is divided into four surfaces: buccal, lingual/palatal, mesial and distal. Tap the plaque-positive surface directly; the occlusal surface is NOT part of this index.")
             )
         }
         item {
@@ -55,74 +61,68 @@ fun OlearyScreen(
             }
         }
         item {
-            SectionCard(tr(lang, "Dientes presentes", "Present teeth")) {
-                Text(tr(lang, "Toca un número para incluirlo o excluirlo del conteo de superficies evaluables.",
-                    "Tap a tooth number to include or exclude it from the evaluable-surface count."))
-                shown.chunked(8).forEach { rowTeeth ->
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                        rowTeeth.forEach { tooth ->
-                            FilterChip(
-                                selected = tooth in session.presentTeeth,
-                                onClick = {
-                                    val present = session.presentTeeth.toMutableSet()
-                                    if (!present.add(tooth)) present.remove(tooth)
-                                    onSessionChanged(session.copy(presentTeeth = present))
-                                },
-                                label = { Text(tooth.toString()) },
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                        repeat(8 - rowTeeth.size) { Text("", modifier = Modifier.weight(1f)) }
-                    }
+            SectionCard(tr(lang, "Arcada y dientes evaluables", "Arch and evaluable teeth")) {
+                Text(tr(lang,
+                    "Por defecto se muestran como presentes. Selecciona un diente y usa “Excluir” si falta; sus cuatro caras salen del denominador.",
+                    "Teeth are shown as present by default. Select a tooth and use “Exclude” if it is missing; its four surfaces leave the denominator."))
+                DentalArchSelector(shown, selectedTooth, { selectedTooth = it }) { tooth ->
+                    session.oleary[tooth]?.any { it in olearySurfaces } == true
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = { onSessionChanged(session.copy(presentTeeth = shown.toSet())) }) {
-                        Text(tr(lang, "Todos mostrados", "All shown"))
-                    }
-                    OutlinedButton(onClick = { onSessionChanged(session.copy(presentTeeth = session.presentTeeth - shown.toSet())) }) {
-                        Text(tr(lang, "Ninguno", "None"))
-                    }
+                    FilterChip(
+                        selected = selectedTooth in present,
+                        onClick = {
+                            val updated = present.toMutableSet().apply { add(selectedTooth) }
+                            onSessionChanged(session.copy(presentTeeth = updated))
+                        },
+                        label = { Text(tr(lang, "Presente", "Present")) }
+                    )
+                    FilterChip(
+                        selected = selectedTooth !in present,
+                        onClick = {
+                            val updated = present.toMutableSet().apply { remove(selectedTooth) }
+                            val marks = session.oleary.toMutableMap().apply { remove(selectedTooth) }
+                            onSessionChanged(session.copy(presentTeeth = updated, oleary = marks))
+                        },
+                        label = { Text(tr(lang, "Excluir por ausencia", "Exclude as missing")) }
+                    )
                 }
             }
         }
         item {
-            SectionCard(tr(lang, "Superficies con placa", "Plaque-positive surfaces")) {
-                ToothSelector(shown.filter { it in session.presentTeeth }.ifEmpty { shown }, selectedTooth, { selectedTooth = it }) { tooth ->
-                    (session.oleary[tooth]?.isNotEmpty() == true)
-                }
-                if (selectedTooth !in session.presentTeeth) {
-                    Text(tr(lang, "Este diente no está marcado como presente; inclúyelo arriba antes de registrar placa.",
-                        "This tooth is not marked as present; include it above before recording plaque."))
+            SectionCard("OD $selectedTooth · ${tr(lang, "control de placa", "plaque control")}") {
+                if (selectedTooth !in present) {
+                    Text(tr(lang, "Este diente está excluido. Márcalo como presente para registrar sus superficies.",
+                        "This tooth is excluded. Mark it present to record its surfaces."))
                 } else {
-                    Surface.entries.forEach { surface ->
-                        val label = when (surface) {
-                            Surface.VESTIBULAR -> tr(lang, "Vestibular", "Buccal")
-                            Surface.LINGUAL_PALATAL -> tr(lang, "Lingual / palatina", "Lingual / palatal")
-                            Surface.MESIAL -> tr(lang, "Mesial", "Mesial")
-                            Surface.DISTAL -> tr(lang, "Distal", "Distal")
-                        }
-                        FilterChip(
-                            selected = surface in selectedSurfaces,
-                            onClick = {
+                    DentalSurfaceDiagram(
+                        centerEnabled = false,
+                        surfaceColor = { surface ->
+                            if (surface in selectedSurfaces) Color(0xFFD64545) else MaterialTheme.colorScheme.surfaceVariant
+                        },
+                        onSurfaceTap = { surface ->
+                            if (surface in olearySurfaces) {
                                 val map = session.oleary.toMutableMap()
-                                val set = (map[selectedTooth] ?: emptySet()).toMutableSet()
+                                val set = (map[selectedTooth] ?: emptySet()).filter { it in olearySurfaces }.toMutableSet()
                                 if (!set.add(surface)) set.remove(surface)
                                 map[selectedTooth] = set
-                                onSessionChanged(session.copy(oleary = map))
-                            },
-                            label = { Text(label) },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                                onSessionChanged(session.copy(oleary = map, presentTeeth = present))
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(tr(lang, "Rojo = superficie con placa dentobacteriana.", "Red = plaque-positive surface."),
+                        color = Color(0xFFD64545), fontWeight = FontWeight.Bold)
                 }
             }
         }
         item {
-            SectionCard(tr(lang, "Resultado", "Result")) {
-                val plaqueFaces = session.presentTeeth.sumOf { session.oleary[it]?.size ?: 0 }
-                val totalFaces = session.presentTeeth.size * 4
+            SectionCard(tr(lang, "Cálculo", "Calculation")) {
                 Text("$plaqueFaces / $totalFaces × 100", style = MaterialTheme.typography.titleMedium)
                 Text("$percentage %", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                Text(tr(lang,
+                    "Caras evaluables = dientes presentes × 4. Se cuentan únicamente las caras marcadas con placa.",
+                    "Evaluable surfaces = present teeth × 4. Only plaque-positive surfaces are counted."))
             }
         }
     }
