@@ -2,9 +2,9 @@ package com.yomismtz.expedientedeldentista.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.Surface
@@ -45,7 +44,7 @@ fun DentalArchSelector(
     ) {
         teeth.forEach { tooth ->
             Card(
-                modifier = Modifier.width(58.dp).clickable { onSelected(tooth) },
+                modifier = Modifier.width(62.dp).clickable { onSelected(tooth) },
                 colors = CardDefaults.cardColors(
                     containerColor = if (tooth == selected) MaterialTheme.colorScheme.primaryContainer
                     else MaterialTheme.colorScheme.surface
@@ -55,7 +54,7 @@ fun DentalArchSelector(
                     modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp).fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(if (isMarked(tooth)) "🦷•" else "🦷", style = MaterialTheme.typography.titleMedium)
+                    Text(if (isMarked(tooth)) "🦷•" else "🦷", style = MaterialTheme.typography.titleLarge)
                     Text(tooth.toString(), fontWeight = if (tooth == selected) FontWeight.Bold else FontWeight.Normal)
                 }
             }
@@ -63,6 +62,11 @@ fun DentalArchSelector(
     }
 }
 
+/**
+ * Esquema didáctico de un órgano dentario visto desde la corona.
+ * Las superficies se representan en la corona y se dibujan raíces por debajo para que
+ * visualmente no parezca una tabla de cuadrados sino un diente dentro del odontograma.
+ */
 @Composable
 fun DentalSurfaceDiagram(
     centerEnabled: Boolean,
@@ -71,7 +75,8 @@ fun DentalSurfaceDiagram(
     modifier: Modifier = Modifier
 ) {
     val border = MaterialTheme.colorScheme.outline
-    val background = MaterialTheme.colorScheme.surfaceVariant
+    val crownBackground = MaterialTheme.colorScheme.surfaceVariant
+    val rootColor = MaterialTheme.colorScheme.surface
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text("V", fontWeight = FontWeight.Bold)
@@ -80,13 +85,15 @@ fun DentalSurfaceDiagram(
             Spacer(Modifier.width(8.dp))
             Canvas(
                 modifier = Modifier
-                    .size(190.dp)
+                    .width(200.dp)
+                    .height(250.dp)
                     .pointerInput(centerEnabled) {
                         detectTapGestures { offset ->
                             val w = size.width.toFloat()
-                            val h = size.height.toFloat()
+                            val crownH = w
+                            if (offset.y > crownH) return@detectTapGestures
                             val x = offset.x / w
-                            val y = offset.y / h
+                            val y = offset.y / crownH
                             val surface = if (centerEnabled && x in 0.34f..0.66f && y in 0.34f..0.66f) {
                                 Surface.OCCLUSAL
                             } else {
@@ -103,27 +110,35 @@ fun DentalSurfaceDiagram(
                     }
             ) {
                 val w = size.width
-                val h = size.height
-                val c = Offset(w / 2f, h / 2f)
+                val crownH = w
                 val inset = if (centerEnabled) w * 0.34f else w * 0.5f
                 val end = if (centerEnabled) w * 0.66f else w * 0.5f
 
-                drawRect(background)
+                // Silueta externa de corona: bordes redondeados y zona cervical ligeramente angosta.
+                val crown = Path().apply {
+                    moveTo(w * 0.18f, crownH * 0.05f)
+                    cubicTo(w * 0.06f, crownH * 0.18f, w * 0.07f, crownH * 0.72f, w * 0.22f, crownH * 0.92f)
+                    quadraticBezierTo(w * 0.5f, crownH, w * 0.78f, crownH * 0.92f)
+                    cubicTo(w * 0.93f, crownH * 0.72f, w * 0.94f, crownH * 0.18f, w * 0.82f, crownH * 0.05f)
+                    quadraticBezierTo(w * 0.5f, -crownH * 0.02f, w * 0.18f, crownH * 0.05f)
+                    close()
+                }
+                drawPath(crown, crownBackground)
 
                 val top = Path().apply {
-                    moveTo(0f, 0f); lineTo(w, 0f)
+                    moveTo(w * 0.16f, crownH * 0.06f); lineTo(w * 0.84f, crownH * 0.06f)
                     lineTo(end, inset); lineTo(inset, inset); close()
                 }
                 val bottom = Path().apply {
-                    moveTo(0f, h); lineTo(w, h)
+                    moveTo(w * 0.22f, crownH * 0.91f); lineTo(w * 0.78f, crownH * 0.91f)
                     lineTo(end, end); lineTo(inset, end); close()
                 }
                 val left = Path().apply {
-                    moveTo(0f, 0f); lineTo(inset, inset)
-                    lineTo(inset, end); lineTo(0f, h); close()
+                    moveTo(w * 0.16f, crownH * 0.06f); lineTo(inset, inset)
+                    lineTo(inset, end); lineTo(w * 0.22f, crownH * 0.91f); close()
                 }
                 val right = Path().apply {
-                    moveTo(w, 0f); lineTo(w, h)
+                    moveTo(w * 0.84f, crownH * 0.06f); lineTo(w * 0.78f, crownH * 0.91f)
                     lineTo(end, end); lineTo(end, inset); close()
                 }
 
@@ -140,18 +155,34 @@ fun DentalSurfaceDiagram(
                     )
                 }
 
+                drawPath(crown, border, style = Stroke(3f))
                 drawPath(top, border, style = Stroke(2f))
                 drawPath(bottom, border, style = Stroke(2f))
                 drawPath(left, border, style = Stroke(2f))
                 drawPath(right, border, style = Stroke(2f))
                 if (centerEnabled) {
                     drawRect(border, topLeft = Offset(inset, inset), size = Size(end - inset, end - inset), style = Stroke(2f))
-                } else {
-                    drawLine(border, Offset(0f, 0f), c, strokeWidth = 2f)
-                    drawLine(border, Offset(w, 0f), c, strokeWidth = 2f)
-                    drawLine(border, Offset(0f, h), c, strokeWidth = 2f)
-                    drawLine(border, Offset(w, h), c, strokeWidth = 2f)
                 }
+
+                // Raíces esquemáticas para reforzar visualmente la forma de diente.
+                val rootTop = crownH * 0.92f
+                val rootBottom = size.height * 0.98f
+                val rootLeft = Path().apply {
+                    moveTo(w * 0.34f, rootTop)
+                    cubicTo(w * 0.32f, size.height * 0.72f, w * 0.25f, size.height * 0.90f, w * 0.34f, rootBottom)
+                    quadraticBezierTo(w * 0.43f, size.height * 0.92f, w * 0.48f, rootTop)
+                    close()
+                }
+                val rootRight = Path().apply {
+                    moveTo(w * 0.52f, rootTop)
+                    quadraticBezierTo(w * 0.57f, size.height * 0.92f, w * 0.66f, rootBottom)
+                    cubicTo(w * 0.75f, size.height * 0.90f, w * 0.68f, size.height * 0.72f, w * 0.66f, rootTop)
+                    close()
+                }
+                drawPath(rootLeft, rootColor)
+                drawPath(rootRight, rootColor)
+                drawPath(rootLeft, border, style = Stroke(3f))
+                drawPath(rootRight, border, style = Stroke(3f))
             }
             Spacer(Modifier.width(8.dp))
             Text("D", fontWeight = FontWeight.Bold)
