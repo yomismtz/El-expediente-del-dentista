@@ -1,11 +1,13 @@
 package com.yomismtz.expedientedeldentista.clinical
 
 enum class AppScreen {
-    HOME, SETTINGS, IDENTIFICATION, HISTORY, INTAKE, ODONTOGRAM, ICDAS, CPOD,
-    OLEARY, IPC, IHOS, PERIODONTOGRAM, PULPAL, TREATMENT, EVOLUTION
+    HOME, FOLDER, SETTINGS, IDENTIFICATION, HISTORY, INTAKE, ODONTOGRAM, ICDAS, CPOD,
+    OLEARY, IPC, IHOS, PERIODONTOGRAM, POSTURE, PULPAL, APICAL, TREATMENT, EVOLUTION
 }
 
-enum class Surface { VESTIBULAR, LINGUAL_PALATAL, MESIAL, DISTAL }
+enum class Surface { VESTIBULAR, LINGUAL_PALATAL, MESIAL, DISTAL, OCCLUSAL }
+
+enum class SurfaceMark { HEALTHY, CARIES, RESTORATION, SEALANT }
 
 enum class ToothStatus {
     HEALTHY, CARIES, RESTORED, MISSING_CARIES, MISSING_OTHER, EXTRACTION_INDICATED, SEALANT
@@ -86,6 +88,8 @@ data class EducationalSession(
     val profile: PatientProfile = PatientProfile(),
     val history: HistoryState = HistoryState(),
     val teeth: Map<Int, ToothRecord> = emptyMap(),
+    val odontogramSurfaces: Map<Int, Map<Surface, SurfaceMark>> = emptyMap(),
+    val icdasSurfaces: Map<Int, Map<Surface, Int>> = emptyMap(),
     val oleary: Map<Int, Set<Surface>> = emptyMap(),
     val presentTeeth: Set<Int> = emptySet(),
     val ipcCodes: List<String> = List(6) { "0" },
