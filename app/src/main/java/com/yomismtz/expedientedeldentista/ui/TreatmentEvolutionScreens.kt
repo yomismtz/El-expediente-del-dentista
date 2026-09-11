@@ -50,8 +50,9 @@ fun TreatmentScreen(
             ScreenHeader(
                 tr(lang, "Diagnóstico y tratamiento por diente", "Diagnosis and treatment by tooth"),
                 onBack,
-                tr(lang, "Asigna un diagnóstico, revisa tres alternativas y elige la que consideres mejor. Después la app explica cuál es la opción preferible en el escenario educativo.",
-                    "Assign a diagnosis, review three alternatives and choose the one you consider best. The app then explains the preferred option for the educational scenario.")
+                tr(lang,
+                    "Selecciona un diente, asigna un diagnóstico educativo y compara tres alternativas terapéuticas. No estás elaborando un plan para un paciente real.",
+                    "Select a tooth, assign an educational diagnosis and compare three treatment alternatives. You are not creating a real patient's treatment plan.")
             )
         }
         item {
@@ -60,9 +61,13 @@ fun TreatmentScreen(
                 FilterChip(primary, { primary = true }, { Text(tr(lang, "Temporales", "Primary")) })
             }
         }
-        item { SectionCard(tr(lang, "Diente", "Tooth")) { ToothSelector(shown, selectedTooth, { selectedTooth = it }) { session.teeth[it]?.diagnosisId != null } } }
         item {
-            SectionCard(tr(lang, "1. Selecciona diagnóstico", "1. Select diagnosis")) {
+            SectionCard(tr(lang, "1 · Elige el diente", "1 · Choose the tooth")) {
+                DentalArchSelector(shown, selectedTooth, { selectedTooth = it }) { session.teeth[it]?.diagnosisId != null }
+            }
+        }
+        item {
+            SectionCard(tr(lang, "2 · ¿Qué diagnóstico corresponde?", "2 · Which diagnosis applies?")) {
                 ClinicalContent.treatmentPlans.forEach { plan ->
                     FilterChip(
                         selected = record.diagnosisId == plan.id,
@@ -75,7 +80,7 @@ fun TreatmentScreen(
         }
         if (selectedPlan != null) {
             item {
-                SectionCard(tr(lang, "2. Elige una de las tres opciones", "2. Choose one of the three options")) {
+                SectionCard(tr(lang, "3 · Compara las tres alternativas", "3 · Compare the three alternatives")) {
                     selectedPlan.options.forEachIndexed { index, option ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
@@ -84,10 +89,16 @@ fun TreatmentScreen(
                             ),
                             onClick = { updateRecord(record.copy(treatmentId = option.id)) }
                         ) {
-                            Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                            Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                 Text("${index + 1}. ${if (lang == "en") option.labelEn else option.labelEs}", fontWeight = FontWeight.Bold)
+                                Text("• ${if (lang == "en") option.explanationEn else option.explanationEs}")
                                 if (record.treatmentId == option.id) {
-                                    Text(if (lang == "en") option.explanationEn else option.explanationEs)
+                                    Text(
+                                        if (option.preferred) tr(lang, "✓ Opción preferible en este escenario didáctico", "✓ Preferred in this teaching scenario")
+                                        else tr(lang, "△ Puede ser válida en situaciones específicas; compara indicaciones", "△ May be valid in specific situations; compare indications"),
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
                                 }
                             }
                         }
@@ -97,20 +108,17 @@ fun TreatmentScreen(
         }
         if (selectedOption != null) {
             item {
-                val preferred = selectedOption.preferred
-                NoticeCard(
-                    if (preferred) tr(lang,
-                        "✓ Elegiste la opción preferible para este escenario educativo. Revisa siempre edad, restaurabilidad, diagnóstico completo y condiciones del paciente.",
-                        "✓ You selected the preferred option for this educational scenario. Always review age, restorability, complete diagnosis and patient conditions.")
-                    else tr(lang,
-                        "Esta alternativa puede ser válida en situaciones específicas, pero no es la opción marcada como preferible para este escenario. Compara la explicación de las tres opciones.",
-                        "This alternative may be valid in specific situations, but it is not marked as preferred for this scenario. Compare the explanations of all three options.")
-                )
+                NoticeCard(tr(lang,
+                    "La selección final en clínica real requiere diagnóstico completo, edad/dentición, restaurabilidad, pronóstico, condiciones sistémicas y consentimiento. Aquí solo se enseña a razonar las alternativas.",
+                    "Real clinical selection requires complete diagnosis, age/dentition, restorability, prognosis, systemic conditions and consent. Here the goal is only to learn therapeutic reasoning."))
             }
         }
         item {
             SectionCard(tr(lang, "Ortodoncia preventiva / mantenimiento de espacio", "Preventive orthodontics / space maintenance")) {
-                Text(ClinicalEngines.orthodonticSuggestion(session, lang))
+                Text("🧭 ${ClinicalEngines.orthodonticSuggestion(session, lang)}")
+                Text(tr(lang,
+                    "Si se marca pérdida prematura o extracción de un temporal, la app recuerda valorar espacio y muestra el aparato que podría considerarse según el patrón educativo.",
+                    "When premature primary-tooth loss/extraction is marked, the app reminds the student to assess space and shows an appliance that could be considered in the teaching pattern."))
             }
         }
     }
@@ -118,44 +126,56 @@ fun TreatmentScreen(
 
 @Composable
 fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Unit) {
-    val notes = ClinicalEngines.generateEvolutionNotes(session, lang)
+    val plansById = ClinicalContent.treatmentPlans.associateBy { it.id }
+    val optionsById = ClinicalContent.treatmentPlans.flatMap { it.options }.associateBy { it.id }
+    val notes = session.teeth.toSortedMap().mapNotNull { (tooth, record) ->
+        val diagnosis = record.diagnosisId?.let { plansById[it] } ?: return@mapNotNull null
+        val option = record.treatmentId?.let { optionsById[it] } ?: return@mapNotNull null
+        if (lang == "en") {
+            "Tooth $tooth. Educational writing model. Diagnosis: ${diagnosis.diagnosisEn}. Procedure/plan: ${option.labelEn}. Record the procedure actually performed, anesthesia when applicable, relevant materials, tolerance/incidents, postoperative instructions, warning signs and follow-up."
+        } else {
+            "OD $tooth. Modelo de redacción educativa. Diagnóstico: ${diagnosis.diagnosisEs}. Procedimiento/plan: ${option.labelEs}. Se debe registrar el procedimiento realmente realizado, anestesia cuando corresponda, materiales relevantes, tolerancia/incidencias, indicaciones posoperatorias, signos de alarma y seguimiento."
+        }
+    }
+
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             ScreenHeader(
-                tr(lang, "Notas de evolución automáticas", "Automatic progress notes"),
+                tr(lang, "Notas de evolución: modelos de redacción", "Progress notes: writing models"),
                 onBack,
-                tr(lang, "Se generan a partir del diagnóstico y tratamiento que elegiste para cada diente. Sirven como modelo de redacción.",
-                    "They are generated from the diagnosis and treatment selected for each tooth. They serve as writing models.")
+                tr(lang,
+                    "La app no crea una nota clínica real. Muestra cómo debería estructurarse una nota según el tratamiento elegido en la pestaña de diagnóstico y tratamiento.",
+                    "The app does not create a real clinical note. It shows how a note should be structured according to the treatment chosen in the diagnosis/treatment tab.")
             )
         }
         item {
             NoticeCard(tr(lang,
-                "Una nota de evolución debe documentar cronológicamente el procedimiento realizado, cambios relevantes, signos vitales cuando correspondan, indicaciones y seguimiento. Los textos de esta app son ejemplos educativos.",
-                "A progress note should chronologically document the procedure, relevant changes, vital signs when applicable, instructions and follow-up. Texts in this app are educational examples."))
+                "Una nota de evolución documenta cronológicamente lo realizado, cambios relevantes, signos vitales cuando correspondan, indicaciones y seguimiento.",
+                "A progress note chronologically documents what was done, relevant changes, vital signs when applicable, instructions and follow-up."))
         }
         if (notes.isEmpty()) {
             item {
-                SectionCard(tr(lang, "Aún no hay notas", "No notes yet")) {
+                SectionCard(tr(lang, "¿Cómo ver ejemplos?", "How to see examples")) {
                     Text(tr(lang,
-                        "Ve a “Diagnóstico y tratamiento por diente”, asigna diagnósticos y selecciona tratamientos. Aquí aparecerán las notas correspondientes.",
-                        "Go to “Diagnosis and treatment by tooth”, assign diagnoses and select treatments. Their notes will appear here."))
+                        "Entra a “Diagnóstico y tratamiento”, elige un diagnóstico y una alternativa terapéutica para cualquier diente. Al volver aquí aparecerá un modelo de nota para ese procedimiento.",
+                        "Open “Diagnosis and treatment”, choose a diagnosis and treatment alternative for any tooth. When you return here, a progress-note model for that procedure will appear."))
                 }
             }
         } else {
             items(notes.size) { index ->
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text("${tr(lang, "Nota", "Note")} ${index + 1}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+                        Text("📋 ${tr(lang, "Ejemplo", "Example")} ${index + 1}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                         Text(notes[index])
                     }
                 }
             }
         }
         item {
-            SectionCard(tr(lang, "Estructura sugerida", "Suggested structure")) {
+            SectionCard(tr(lang, "Plantilla mental", "Mental template")) {
                 Text(tr(lang,
-                    "1) Fecha y órgano dentario.\n2) Estado general y signos vitales cuando correspondan.\n3) Diagnóstico.\n4) Procedimiento y materiales relevantes.\n5) Respuesta/tolerancia e incidencias.\n6) Indicaciones, signos de alarma y próxima cita.",
-                    "1) Date and tooth.\n2) General status and vital signs when applicable.\n3) Diagnosis.\n4) Procedure and relevant materials.\n5) Response/tolerance and incidents.\n6) Instructions, warning signs and next appointment."))
+                    "• Fecha y órgano dentario\n• Estado general / signos vitales cuando correspondan\n• Diagnóstico\n• Procedimiento realmente realizado\n• Anestesia y materiales relevantes\n• Incidencias y tolerancia\n• Indicaciones y próxima cita",
+                    "• Date and tooth\n• General status / vital signs when applicable\n• Diagnosis\n• Procedure actually performed\n• Anesthesia and relevant materials\n• Incidents and tolerance\n• Instructions and next visit"))
             }
         }
     }
