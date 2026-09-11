@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -210,7 +209,7 @@ private fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("El expediente del dentista", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                    Text(tr(lang, "El expediente del dentista", "The Dentist's Clinical Record"), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                     Text(greeting)
                 }
                 OutlinedButton(onClick = onSettings) { Text("⚙") }
