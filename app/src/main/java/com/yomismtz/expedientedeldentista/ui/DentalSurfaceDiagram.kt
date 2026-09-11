@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Card
@@ -62,21 +61,17 @@ fun DentalArchSelector(
     }
 }
 
-/**
- * Esquema didáctico de un órgano dentario visto desde la corona.
- * Las superficies se representan en la corona y se dibujan raíces por debajo para que
- * visualmente no parezca una tabla de cuadrados sino un diente dentro del odontograma.
- */
 @Composable
 fun DentalSurfaceDiagram(
     centerEnabled: Boolean,
-    surfaceColor: (Surface) -> Color,
+    surfaceColor: @Composable (Surface) -> Color,
     onSurfaceTap: (Surface) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val border = MaterialTheme.colorScheme.outline
     val crownBackground = MaterialTheme.colorScheme.surfaceVariant
     val rootColor = MaterialTheme.colorScheme.surface
+    val colors = Surface.entries.associateWith { surfaceColor(it) }
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text("V", fontWeight = FontWeight.Bold)
@@ -114,7 +109,6 @@ fun DentalSurfaceDiagram(
                 val inset = if (centerEnabled) w * 0.34f else w * 0.5f
                 val end = if (centerEnabled) w * 0.66f else w * 0.5f
 
-                // Silueta externa de corona: bordes redondeados y zona cervical ligeramente angosta.
                 val crown = Path().apply {
                     moveTo(w * 0.18f, crownH * 0.05f)
                     cubicTo(w * 0.06f, crownH * 0.18f, w * 0.07f, crownH * 0.72f, w * 0.22f, crownH * 0.92f)
@@ -142,14 +136,14 @@ fun DentalSurfaceDiagram(
                     lineTo(end, end); lineTo(end, inset); close()
                 }
 
-                drawPath(top, surfaceColor(Surface.VESTIBULAR))
-                drawPath(bottom, surfaceColor(Surface.LINGUAL_PALATAL))
-                drawPath(left, surfaceColor(Surface.MESIAL))
-                drawPath(right, surfaceColor(Surface.DISTAL))
+                drawPath(top, colors.getValue(Surface.VESTIBULAR))
+                drawPath(bottom, colors.getValue(Surface.LINGUAL_PALATAL))
+                drawPath(left, colors.getValue(Surface.MESIAL))
+                drawPath(right, colors.getValue(Surface.DISTAL))
 
                 if (centerEnabled) {
                     drawRect(
-                        color = surfaceColor(Surface.OCCLUSAL),
+                        color = colors.getValue(Surface.OCCLUSAL),
                         topLeft = Offset(inset, inset),
                         size = Size(end - inset, end - inset)
                     )
@@ -164,7 +158,6 @@ fun DentalSurfaceDiagram(
                     drawRect(border, topLeft = Offset(inset, inset), size = Size(end - inset, end - inset), style = Stroke(2f))
                 }
 
-                // Raíces esquemáticas para reforzar visualmente la forma de diente.
                 val rootTop = crownH * 0.92f
                 val rootBottom = size.height * 0.98f
                 val rootLeft = Path().apply {
