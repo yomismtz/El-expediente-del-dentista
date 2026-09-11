@@ -29,7 +29,7 @@ fun ScreenHeader(title: String, onBack: () -> Unit, subtitle: String? = null) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedButton(onClick = onBack) { Text("←") }
+            OutlinedButton(onClick = onBack) { Text("📁") }
             Text(
                 text = title,
                 style = MaterialTheme.typography.headlineMedium,
