@@ -1,17 +1,35 @@
 package com.yomismtz.expedientedeldentista.ui
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -25,15 +43,8 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
         tr(lang, "Supervisión", "Supervision") to tr(lang, "Validación final del docente después del procedimiento.", "Final instructor validation after the procedure.")
     )
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item {
-            ScreenHeader(
-                tr(lang, "Autorización y registro de actividades", "Activity authorization and record"),
-                onBack,
-                tr(lang,
-                    "La presentación usa esta hoja como bitácora operativa. En la app no se firma ni se almacena una actividad real: se enseña para qué sirve cada columna.",
-                    "The presentation uses this sheet as an operational log. The app does not sign or store real activity; it teaches what each column is for.")
-            )
-        }
+        item { ScreenHeader(tr(lang, "Autorización y registro de actividades", "Activity authorization and record"), onBack,
+            tr(lang, "Esta hoja enseña la diferencia entre lo planeado, autorizado, realmente realizado y supervisado.", "This sheet teaches the difference between planned, authorized, actually performed and supervised work.")) }
         item {
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -43,104 +54,209 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
                 }
             }
         }
-        items(rows.size) { index ->
-            SectionCard(rows[index].first) { Text(rows[index].second) }
-        }
+        items(rows.size) { index -> SectionCard(rows[index].first) { Text(rows[index].second) } }
     }
 }
+
+private data class AtmFinding(val key: String, val es: String, val en: String)
 
 @Composable
 fun AtmScreen(lang: String, onBack: () -> Unit) {
+    val findings = listOf(
+        AtmFinding("painJoint", "Dolor localizado en ATM que aumenta con función", "Localized TMJ pain increased by function"),
+        AtmFinding("muscle", "Dolor/sensibilidad en maseteros o temporales", "Masseter/temporalis pain or tenderness"),
+        AtmFinding("click", "Chasquido reproducible", "Reproducible click"),
+        AtmFinding("crepitus", "Crepitación", "Crepitus"),
+        AtmFinding("limited", "Apertura limitada (<35 mm)", "Limited opening (<35 mm)"),
+        AtmFinding("excess", "Apertura excesiva (>50 mm)", "Excessive opening (>50 mm)"),
+        AtmFinding("lockOpen", "Boca abierta que no puede cerrar", "Open mouth that cannot close"),
+        AtmFinding("deviation", "Desviación mandibular al abrir", "Mandibular deviation on opening"),
+        AtmFinding("headache", "Cefalea relacionada con masticación", "Chewing-related headache"),
+        AtmFinding("tinnitus", "Tinnitus acompañado de dolor mandibular", "Tinnitus with jaw pain")
+    )
+    val checked = remember { mutableStateMapOf<String, Boolean>() }
+    fun on(key: String) = checked[key] == true
+    val presumptive = when {
+        on("lockOpen") -> tr(lang, "Luxación mandibular", "Mandibular dislocation")
+        on("limited") && on("click") -> tr(lang, "Trastorno discal / bloqueo: requiere exploración diferencial", "Disc disorder/locking: differential examination required")
+        on("crepitus") && on("painJoint") -> tr(lang, "Hallazgos compatibles con cambio degenerativo / osteoartritis de ATM", "Findings compatible with degenerative change / TMJ osteoarthritis")
+        on("excess") -> tr(lang, "Hipermovilidad / hiperlaxitud articular", "Hypermobility / joint hyperlaxity")
+        on("muscle") && (on("headache") || !on("painJoint")) -> tr(lang, "Mialgia masticatoria / dolor miofascial", "Masticatory myalgia / myofascial pain")
+        on("painJoint") -> tr(lang, "Artralgia de ATM", "TMJ arthralgia")
+        on("click") -> tr(lang, "Chasquido articular; valorar desplazamiento discal con reducción", "Joint click; assess disc displacement with reduction")
+        else -> tr(lang, "Sin patrón suficiente: completa exploración de apertura, músculos, ruidos y dolor", "Insufficient pattern: complete opening, muscle, noise and pain examination")
+    }
+
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { ScreenHeader(tr(lang, "ATM y músculos", "TMJ and muscles"), onBack) }
-        item { SectionCard(tr(lang, "Imagen de referencia", "Reference image")) { AtmReferenceIllustration(lang) } }
-        item {
-            SectionCard(tr(lang, "¿Qué debe aprender a revisar el alumno?", "What should the student learn to examine?")) {
-                Text("• ${tr(lang, "Apertura bucal y simetría del movimiento", "Mouth opening and movement symmetry")}")
-                Text("• ${tr(lang, "Dolor articular o muscular", "Joint or muscle pain")}")
-                Text("• ${tr(lang, "Chasquido, crepitación o bloqueo", "Clicking, crepitus or locking")}")
-                Text("• ${tr(lang, "Fatiga o sensibilidad al masticar", "Fatigue or tenderness on chewing")}")
-                Text("• ${tr(lang, "Relación con bruxismo y contactos oclusales", "Relation with bruxism and occlusal contacts")}")
+        item { ScreenHeader(tr(lang, "ATM y músculos · razonamiento", "TMJ and muscles · reasoning"), onBack,
+            tr(lang, "Marca signos y síntomas para obtener la orientación presuntiva más cercana. No es un diagnóstico definitivo.", "Check signs and symptoms to obtain the nearest presumptive orientation. This is not a definitive diagnosis.")) }
+        item { SectionCard(tr(lang, "Referencia anatómica", "Anatomic reference")) { AtmReferenceIllustration(lang) } }
+        items(findings) { finding ->
+            Row(Modifier.fillMaxWidth().clickable { checked[finding.key] = !on(finding.key) }, verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                Checkbox(on(finding.key), { checked[finding.key] = it })
+                Text(if (lang == "en") finding.en else finding.es, modifier = Modifier.weight(1f))
             }
         }
         item {
-            NoticeCard(tr(lang,
-                "La presentación usa como referencia una apertura aproximada de 35–50 mm para ATM normal y explica que desviación, click y crepitación deben describirse clínicamente antes de asignar un diagnóstico.",
-                "The presentation uses an approximate 35–50 mm opening as a normal TMJ reference and explains that deviation, clicking and crepitus should be clinically described before assigning a diagnosis."))
+            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+                    Text("🧠 ${tr(lang,"Orientación presuntiva","Presumptive orientation")}", fontWeight = FontWeight.Bold)
+                    Text(presumptive, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text(tr(lang,"Correlaciona con palpación muscular/articular, amplitud y trayectoria de apertura, ruidos, oclusión, historia de trauma y diagnóstico diferencial de dolor orofacial.","Correlate with muscle/joint palpation, opening range/path, sounds, occlusion, trauma history and orofacial-pain differential diagnosis."))
+                }
+            }
         }
     }
 }
+
+private data class OcclusionTopic(val es: String, val en: String, val bodyEs: String, val bodyEn: String)
 
 @Composable
 fun OcclusionScreen(lang: String, onBack: () -> Unit) {
+    var selected by remember { mutableStateOf(0) }
+    val topics = listOf(
+        OcclusionTopic("Planos terminales", "Terminal planes", "En dentición temporal compara las caras distales de los segundos molares: plano recto, escalón mesial o escalón distal. Ayudan a anticipar, sin determinar por sí solos, la relación molar permanente.", "In primary dentition compare distal surfaces of second molars: flush terminal plane, mesial step or distal step. They help anticipate, but do not alone determine, the permanent molar relation."),
+        OcclusionTopic("Clasificación de Angle", "Angle classification", "Describe la relación anteroposterior de los primeros molares permanentes: Clase I, Clase II (con sus divisiones) y Clase III. Debe correlacionarse con relación canina y patrón esquelético.", "Describes anteroposterior relation of permanent first molars: Class I, Class II (divisions) and Class III. Correlate with canine relation and skeletal pattern."),
+        OcclusionTopic("Relación canina", "Canine relation", "Complementa la relación molar y es especialmente útil cuando la relación de molares no puede valorarse con claridad.", "Complements molar relation and is useful when molar relation cannot be assessed clearly."),
+        OcclusionTopic("Overjet", "Overjet", "Superposición horizontal entre incisivos. El material docente utiliza 2–3 mm como referencia educativa y pide describir aumento, disminución o relación invertida.", "Horizontal overlap of incisors. The teaching material uses 2–3 mm as an educational reference and asks to describe increased, reduced or reversed relation."),
+        OcclusionTopic("Overbite", "Overbite", "Superposición vertical anterior. Registra si es normal, profunda, reducida, borde a borde o existe mordida abierta.", "Anterior vertical overlap. Record normal, deep, reduced, edge-to-edge or open bite."),
+        OcclusionTopic("Transversal y líneas medias", "Transverse relation and midlines", "Valora mordidas cruzadas, simetría y coincidencia/desviación de líneas medias, diferenciando lo dental de posibles componentes funcionales/esqueléticos.", "Assess crossbites, symmetry and midline coincidence/deviation, distinguishing dental from possible functional/skeletal components.")
+    )
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { ScreenHeader(tr(lang, "Examen de oclusión", "Occlusal examination"), onBack) }
-        item { SectionCard(tr(lang, "Imagen de referencia", "Reference image")) { OcclusionReferenceIllustration(lang) } }
+        item { ScreenHeader(tr(lang, "Examen de oclusión", "Occlusal examination"), onBack,
+            tr(lang,"Selecciona cada concepto para ver la imagen guía y su significado.","Select each concept to see the guide image and meaning.")) }
+        item { SectionCard(tr(lang,"Vista de referencia","Reference view")) { OcclusionReferenceIllustration(lang) } }
         item {
-            SectionCard(tr(lang, "Rubros del formato", "Form fields")) {
-                Text("• ${tr(lang, "Tipo de dentición: temporal, mixta o permanente", "Dentition: primary, mixed or permanent")}")
-                Text("• ${tr(lang, "Erupción: adecuada, tardía, temprana o ectópica", "Eruption: adequate, delayed, early or ectopic")}")
-                Text("• ${tr(lang, "Plano terminal derecho e izquierdo", "Right and left terminal plane")}")
-                Text("• ${tr(lang, "Clasificación de Angle y relación canina", "Angle classification and canine relation")}")
-                Text("• ${tr(lang, "Líneas medias en oclusión y apertura", "Midlines in occlusion and opening")}")
-                Text("• Overjet / Overbite")
-                Text("• ${tr(lang, "Mordida borde a borde, abierta y cruzada", "Edge-to-edge, open bite and crossbite")}")
-                Text("• ${tr(lang, "Apiñamiento, giros y diastemas", "Crowding, rotations and diastemas")}")
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp), modifier = Modifier.fillMaxWidth()) {
+                topics.take(3).forEachIndexed { i,t -> FilterChip(selected == i,{selected=i},{Text(if(lang=="en") t.en else t.es)},modifier=Modifier.weight(1f)) }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp), modifier = Modifier.fillMaxWidth()) {
+                topics.drop(3).forEachIndexed { i,t -> val idx=i+3; FilterChip(selected == idx,{selected=idx},{Text(if(lang=="en") t.en else t.es)},modifier=Modifier.weight(1f)) }
             }
         }
         item {
-            NoticeCard(tr(lang,
-                "En el material, el overjet se mide horizontalmente en máxima intercuspidación y se usa 2–3 mm como referencia de normalidad.",
-                "In the source material, overjet is measured horizontally in maximum intercuspation and 2–3 mm is used as the normal reference."))
+            val t = topics[selected]
+            Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) {
+                Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                    Text(if(lang=="en") t.en else t.es,fontWeight=FontWeight.Bold,style=MaterialTheme.typography.titleLarge)
+                    Text(if(lang=="en") t.bodyEn else t.bodyEs)
+                }
+            }
         }
+        item { NoticeCard(tr(lang,"La oclusión se describe integrando dentición, erupción, plano terminal/Angle, relación canina, líneas medias, overjet/overbite, mordidas cruzadas/abiertas, apiñamiento, giros y espacios.","Occlusion is described by integrating dentition, eruption, terminal plane/Angle, canine relation, midlines, overjet/overbite, cross/open bite, crowding, rotations and spacing.")) }
     }
 }
+
+private data class MucosaRegion(val id: String,val es:String,val en:String,val normalEs:String,val normalEn:String,val changesEs:String,val changesEn:String)
 
 @Composable
 fun MucosaScreen(lang: String, onBack: () -> Unit) {
+    val regions = listOf(
+        MucosaRegion("labios","Labios y bermellón","Lips and vermilion","Rosados, íntegros, hidratados, contorno regular y sellado/movilidad conservados.","Pink, intact, hydrated, regular contour with preserved seal/mobility.","Palidez/eritema/pigmentación, fisuras, costras, úlceras, vesículas, edema, resequedad o frenillo anormal.","Pallor/erythema/pigmentation, fissures, crusts, ulcers, vesicles, edema, dryness or abnormal frenum."),
+        MucosaRegion("carrillo","Carrillos / mucosa yugal","Cheeks / buccal mucosa","Rosada, húmeda y lisa; conducto de Stensen permeable sin aumento de volumen.","Pink, moist and smooth; patent Stensen duct without swelling.","Línea alba, lesión elevada, mordisqueo, úlcera, placa blanca, pigmentación o alteración de salida salival.","Linea alba, raised lesion, cheek biting, ulcer, white plaque, pigmentation or salivary-flow alteration."),
+        MucosaRegion("paladar","Paladar duro y blando","Hard and soft palate","Rosado, íntegro; paladar blando móvil con elevación simétrica y úvula centrada.","Pink and intact; mobile soft palate with symmetric elevation and centered uvula.","Torus, eritema, placas, petequias, úlceras, edema, asimetría o úvula desviada.","Torus, erythema, plaques, petechiae, ulcers, edema, asymmetry or deviated uvula."),
+        MucosaRegion("lengua","Lengua","Tongue","Rosada, papilada, movilidad conservada y sin induración.","Pink, papillae present, preserved mobility and no induration.","Lengua fisurada/geográfica, saburra, depapilación, placas, macroglosia, úlcera, pigmentación o induración.","Fissured/geographic tongue, coating, depapillation, plaques, macroglossia, ulcer, pigmentation or induration."),
+        MucosaRegion("piso","Piso de boca","Floor of mouth","Rosado, blando, sin aumento de volumen; conductos salivales permeables y movilidad lingual conservada.","Pink, soft, no swelling; patent salivary ducts and preserved tongue mobility.","Ránula, edema, coloración azulada/roja, masa, úlcera, dolor, frenillo lingual alterado o disminución de saliva.","Ranula, edema, bluish/red change, mass, ulcer, pain, altered lingual frenum or reduced saliva."),
+        MucosaRegion("orofaringe","Orofaringe","Oropharynx","Úvula centrada, pilares sin inflamación y amígdalas sin exudado.","Centered uvula, non-inflamed pillars and tonsils without exudate.","Eritema, hipertrofia amigdalina, exudado, placas, secreción, dolor o asimetría.","Erythema, tonsillar hypertrophy, exudate, plaques, secretion, pain or asymmetry.")
+    )
+    var selectedId by remember { mutableStateOf("labios") }
+    val selected = regions.first { it.id == selectedId }
+
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { ScreenHeader(tr(lang, "Examen de mucosas orales", "Oral mucosa examination"), onBack) }
-        item { SectionCard(tr(lang, "Mapa visual de exploración", "Visual examination map")) { OralMucosaReferenceIllustration(lang) } }
+        item { ScreenHeader(tr(lang,"Examen de mucosas orales","Oral mucosa examination"), onBack,
+            tr(lang,"Toca una zona de la boca o su botón para consultar apariencia normal, cambios posibles y cómo describirla.","Tap a mouth region or its button to view normal appearance, possible changes and documentation guidance.")) }
         item {
-            SectionCard(tr(lang, "Orden de observación", "Observation sequence")) {
-                Text("1. ${tr(lang, "Labios y bermellón", "Lips and vermilion")}")
-                Text("2. ${tr(lang, "Carrillos y mucosa yugal", "Cheeks and buccal mucosa")}")
-                Text("3. ${tr(lang, "Encía y mucosa alveolar", "Gingiva and alveolar mucosa")}")
-                Text("4. ${tr(lang, "Paladar duro y blando", "Hard and soft palate")}")
-                Text("5. ${tr(lang, "Orofaringe, úvula, pilares y amígdalas", "Oropharynx, uvula, pillars and tonsils")}")
-                Text("6. ${tr(lang, "Lengua", "Tongue")}")
-                Text("7. ${tr(lang, "Piso de boca y conductos salivales", "Floor of mouth and salivary ducts")}")
+            SectionCard(tr(lang,"Boca interactiva","Interactive mouth")) {
+                InteractiveMouthMap(selectedId) { selectedId = it }
+                Row(horizontalArrangement=Arrangement.spacedBy(4.dp),modifier=Modifier.fillMaxWidth()) {
+                    regions.take(3).forEach { r -> FilterChip(selectedId==r.id,{selectedId=r.id},{Text(if(lang=="en")r.en else r.es)},modifier=Modifier.weight(1f)) }
+                }
+                Row(horizontalArrangement=Arrangement.spacedBy(4.dp),modifier=Modifier.fillMaxWidth()) {
+                    regions.drop(3).forEach { r -> FilterChip(selectedId==r.id,{selectedId=r.id},{Text(if(lang=="en")r.en else r.es)},modifier=Modifier.weight(1f)) }
+                }
             }
         }
         item {
-            SectionCard(tr(lang, "Cómo describir un hallazgo", "How to describe a finding")) {
-                Text(tr(lang,
-                    "Color · forma · volumen · consistencia · integridad · superficie · función. Evita escribir solamente “normal”; describe lo observado.",
-                    "Color · shape · volume · consistency · integrity · surface · function. Avoid writing only “normal”; describe what is observed."))
+            Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) {
+                Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                    Text(if(lang=="en") selected.en else selected.es,fontWeight=FontWeight.Bold,style=MaterialTheme.typography.titleLarge)
+                    Text("✓ ${tr(lang,"Datos normales","Normal findings")}: ${if(lang=="en")selected.normalEn else selected.normalEs}")
+                    Text("⚠ ${tr(lang,"Cambios a describir","Changes to describe")}: ${if(lang=="en")selected.changesEn else selected.changesEs}")
+                    Text("✍️ ${tr(lang,"Describe siempre color, forma, tamaño, consistencia, integridad, superficie y función cuando correspondan.","When applicable describe color, shape, size, consistency, integrity, surface and function.")}")
+                }
             }
         }
     }
 }
 
 @Composable
-fun AuxiliariesScreen(lang: String, onBack: () -> Unit) {
-    LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { ScreenHeader(tr(lang, "Auxiliares de diagnóstico", "Diagnostic aids"), onBack) }
-        item { SectionCard(tr(lang, "Imagen de referencia", "Reference image")) { DiagnosticAidsIllustration(lang) } }
-        item {
-            SectionCard(tr(lang, "Opciones que aparecen en el expediente", "Options appearing in the record")) {
-                Text("• ${tr(lang, "Histopatológico", "Histopathology")}")
-                Text("• ${tr(lang, "Microbiológico", "Microbiology")}")
-                Text("• ${tr(lang, "Análisis clínicos", "Laboratory tests")}")
-                Text("• ${tr(lang, "Modelos de estudio", "Study models")}")
-                Text("• ${tr(lang, "Análisis cefalométrico", "Cephalometric analysis")}")
-                Text("• ${tr(lang, "Análisis radiográfico", "Radiographic analysis")}")
-                Text("• ICDAS / CAMBRA / ${tr(lang, "flujo salival / TAC / RM / otras radiografías", "salivary flow / CT / MRI / other radiographs")}")
+private fun InteractiveMouthMap(selected: String, onSelected: (String) -> Unit) {
+    val primary = MaterialTheme.colorScheme.primary
+    val outline = MaterialTheme.colorScheme.outline
+    val surface = MaterialTheme.colorScheme.surfaceVariant
+    Canvas(
+        modifier=Modifier.fillMaxWidth().height(250.dp).pointerInput(Unit) {
+            detectTapGestures { o ->
+                val x=o.x/size.width; val y=o.y/size.height
+                val id = when {
+                    y < .22f || y > .82f -> "labios"
+                    x < .25f || x > .75f -> "carrillo"
+                    y < .48f -> "paladar"
+                    y > .68f -> "piso"
+                    x in .38f..62f && y in .45f..68f -> "lengua"
+                    else -> "orofaringe"
+                }
+                onSelected(id)
             }
         }
-        item { NoticeCard(tr(lang,
-            "La lógica didáctica es: seleccionar el auxiliar porque responde una pregunta diagnóstica concreta, no marcar estudios de manera automática.",
-            "Teaching logic: select an aid because it answers a concrete diagnostic question, not by routinely checking studies.")) }
+    ) {
+        val w=size.width; val h=size.height
+        drawOval(if(selected=="labios") primary.copy(alpha=.35f) else surface, topLeft=Offset(w*.08f,h*.05f), size=Size(w*.84f,h*.9f))
+        drawOval(Color(0xFF4E2028), topLeft=Offset(w*.15f,h*.16f), size=Size(w*.70f,h*.67f))
+        drawOval(if(selected=="paladar") primary.copy(alpha=.55f) else Color(0xFFE7A7A1),topLeft=Offset(w*.29f,h*.22f),size=Size(w*.42f,h*.25f))
+        drawOval(if(selected=="lengua") primary.copy(alpha=.55f) else Color(0xFFE78383),topLeft=Offset(w*.31f,h*.48f),size=Size(w*.38f,h*.26f))
+        drawOval(if(selected=="piso") primary.copy(alpha=.45f) else Color(0xFFD99999),topLeft=Offset(w*.34f,h*.70f),size=Size(w*.32f,h*.09f))
+        drawCircle(if(selected=="orofaringe") primary else Color(0xFFC85C68),radius=w*.035f,center=Offset(w*.5f,h*.43f))
+        drawRect(if(selected=="carrillo") primary.copy(alpha=.35f) else Color.Transparent,topLeft=Offset(w*.15f,h*.30f),size=Size(w*.13f,h*.38f))
+        drawRect(if(selected=="carrillo") primary.copy(alpha=.35f) else Color.Transparent,topLeft=Offset(w*.72f,h*.30f),size=Size(w*.13f,h*.38f))
+        drawOval(outline, topLeft=Offset(w*.08f,h*.05f),size=Size(w*.84f,h*.9f),style=androidx.compose.ui.graphics.drawscope.Stroke(3f))
+    }
+}
+
+private data class Aid(val titleEs:String,val titleEn:String,val whyEs:String,val whyEn:String,val exampleEs:String,val exampleEn:String)
+
+@Composable
+fun AuxiliariesScreen(lang: String, onBack: () -> Unit) {
+    var selected by remember { mutableStateOf(0) }
+    val aids = listOf(
+        Aid("Histopatológico","Histopathology","Analiza microscópicamente tejido obtenido por biopsia y ayuda a confirmar el diagnóstico de lesiones sospechosas.","Microscopic analysis of biopsy tissue that helps confirm suspicious lesions.","Lesión persistente o tejido periapical retirado quirúrgicamente que necesita diagnóstico definitivo.","Persistent lesion or surgically removed periapical tissue needing definitive diagnosis."),
+        Aid("Análisis clínicos de laboratorio","Clinical laboratory tests","Biometría, glucosa, función renal/hepática y pruebas seleccionadas ayudan a valorar riesgo sistémico cuando la historia o el procedimiento lo requieren.","CBC, glucose, kidney/liver tests and selected studies help assess systemic risk when history/procedure requires them.","Antes de cirugía invasiva en un paciente con sospecha de anemia, trastorno hemorrágico o enfermedad sistémica descontrolada.","Before invasive surgery in a patient with suspected anemia, bleeding disorder or uncontrolled systemic disease."),
+        Aid("Coagulación","Coagulation testing","TP/INR, TTPa y otras pruebas se interpretan según indicación clínica, medicamentos y rango del laboratorio.","PT/INR, aPTT and other tests are interpreted according to clinical indication, medications and the reporting laboratory.","Paciente anticoagulado o con historia de sangrado anormal que requiere valoración antes de un procedimiento invasivo.","Anticoagulated patient or history of abnormal bleeding requiring assessment before an invasive procedure."),
+        Aid("Microbiológico","Microbiology","Cultivos, estudios micológicos, antibiogramas o pruebas moleculares pueden identificar microorganismos en infecciones seleccionadas.","Cultures, mycology, susceptibility testing or molecular methods can identify organisms in selected infections.","Infección persistente/atípica donde conocer el agente puede modificar el tratamiento.","Persistent/atypical infection where identifying the organism may change management."),
+        Aid("Modelos de estudio","Study models","Permiten analizar oclusión, forma de arcada, tamaño dental y discrepancia de espacio fuera de la boca.","Allow analysis of occlusion, arch form, tooth size and space discrepancy outside the mouth.","Paciente con apiñamiento, pérdida de espacio o planificación protésica/ortodóncica.","Patient with crowding, space loss or prosthetic/orthodontic planning."),
+        Aid("Radiografías","Radiographs","Periapical, aleta de mordida, oclusal, panorámica y lateral de cráneo responden preguntas distintas; el estudio se elige por la información requerida.","Periapical, bitewing, occlusal, panoramic and lateral cephalometric images answer different questions; choose the study for the information needed.","Aleta mordible para caries interproximal; periapical para raíz/ápice; panorámica para panorama general de arcadas.","Bitewing for interproximal caries; periapical for root/apex; panoramic for overall arch survey."),
+        Aid("Cefalometría","Cephalometry","Traza puntos y mediciones sobre radiografía lateral de cráneo para valorar relaciones dentoesqueléticas y crecimiento.","Uses landmarks and measurements on lateral cephalogram to assess dentoskeletal relations and growth.","Maloclusión con sospecha de componente esquelético o evaluación de crecimiento.","Malocclusion with suspected skeletal component or growth assessment.")
+    )
+
+    LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        item { ScreenHeader(tr(lang,"Auxiliares de diagnóstico","Diagnostic aids"), onBack,
+            tr(lang,"Selecciona un estudio para saber para qué sirve, por qué puede ser importante y un ejemplo de indicación odontológica.","Select a test to see its purpose, why it matters and an example dental indication.")) }
+        item { SectionCard(tr(lang,"Referencia visual","Visual reference")) { DiagnosticAidsIllustration(lang) } }
+        items(aids.size) { i ->
+            val a=aids[i]
+            Card(modifier=Modifier.fillMaxWidth().clickable{selected=i},colors=CardDefaults.cardColors(containerColor=if(selected==i)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface)) {
+                Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
+                    Text(if(lang=="en")a.titleEn else a.titleEs,fontWeight=FontWeight.Bold)
+                    if(selected==i){
+                        Text("💡 ${if(lang=="en")a.whyEn else a.whyEs}")
+                        Text("🦷 ${tr(lang,"Ejemplo: ","Example: ")}${if(lang=="en")a.exampleEn else a.exampleEs}")
+                    }
+                }
+            }
+        }
+        item {
+            NoticeCard(tr(lang,"Los intervalos de laboratorio dependen del método, edad, sexo, estado fisiológico y laboratorio. Para práctica clínica se debe leer el intervalo de referencia impreso en el reporte y aplicar guías vigentes; la app no sustituye la interpretación médica.","Laboratory intervals depend on method, age, sex, physiologic state and laboratory. For clinical practice use the reference interval printed on the report and current guidance; the app does not replace medical interpretation."))
+        }
     }
 }
 
@@ -163,8 +279,6 @@ fun SimpleEducationalSheet(
                 bullets.forEach { Text("• $it") }
             }
         }
-        item { NoticeCard(tr(lang,
-            "Esta hoja es explicativa. No almacena firmas, presupuestos, consentimientos ni procedimientos reales.",
-            "This is an explanatory sheet. It does not store signatures, budgets, consents or real procedures.")) }
+        item { NoticeCard(tr(lang,"Esta hoja es explicativa y no almacena información clínica real.","This is an explanatory sheet and does not store real clinical information.")) }
     }
 }
