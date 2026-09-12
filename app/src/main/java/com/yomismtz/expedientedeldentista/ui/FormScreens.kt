@@ -151,43 +151,160 @@ fun HistoryScreen(
 
 @Composable
 fun IntakeNoteScreen(lang: String, session: EducationalSession, onBack: () -> Unit) {
-    val rows = listOf(
-        tr(lang, "Identificación del paciente", "Patient identification"),
-        tr(lang, "Diagnóstico sistémico y clasificación ASA", "Systemic diagnosis and ASA classification"),
-        tr(lang, "Medicamentos", "Medications"),
-        tr(lang, "ATM y músculos", "TMJ and muscles"),
-        tr(lang, "Diagnóstico de caries y anomalías", "Caries and anomaly diagnosis"),
-        tr(lang, "Diagnóstico de oclusión", "Occlusal diagnosis"),
-        tr(lang, "Diagnóstico de tejidos blandos / mucosas", "Soft-tissue / mucosal diagnosis"),
-        "CPOD / ceod",
-        tr(lang, "Diagnóstico periodontal", "Periodontal diagnosis"),
-        tr(lang, "Diagnóstico pulpar", "Pulpal diagnosis"),
-        tr(lang, "Diagnóstico protésico cuando corresponda", "Prosthetic diagnosis when applicable")
+    var opened by remember { mutableStateOf<Int?>(0) }
+    val fields = listOf(
+        TeachingField(
+            "Identificación del paciente", "Patient identification",
+            "Resume los datos de identificación que solicita el expediente físico: nombre, número de expediente, fecha, edad/fecha de nacimiento, sexo y datos generales pertinentes. La app no captura datos personales reales.",
+            "Summarize the identification data requested by the physical record. The app does not collect real personal data.",
+            "Ejemplo didáctico: Paciente ficticio de 21 años, sexo registrado femenino, expediente de práctica 0001, valoración inicial.",
+            "Teaching example: Fictional 21-year-old patient, recorded sex female, practice record 0001, initial assessment."
+        ),
+        TeachingField(
+            "Signos vitales", "Vital signs",
+            "Antes de integrar la nota revisa TA, frecuencia cardiaca, frecuencia respiratoria, temperatura, peso y talla; agrega IMC o glucosa capilar cuando corresponda al ejercicio. Usa la pestaña Vitales para aprender la técnica e interpretación por edad.",
+            "Review BP, heart rate, respiratory rate, temperature, weight and height; add BMI or capillary glucose when appropriate to the exercise.",
+            "Ejemplo de estructura: TA ___/___ mmHg · FC ___ lpm · FR ___ rpm · T ___ °C · peso ___ kg · talla ___ m.",
+            "Example structure: BP ___/___ mmHg · HR ___ bpm · RR ___ rpm · T ___ °C · weight ___ kg · height ___ m."
+        ),
+        TeachingField(
+            "Diagnóstico sistémico y clasificación ASA", "Systemic diagnosis and ASA classification",
+            "Integra los antecedentes médicos relevantes y la clasificación ASA que el alumno sustentaría con la historia clínica. Si faltan datos, la redacción debe decir que la clasificación requiere completar la valoración.",
+            "Integrate relevant medical history and the ASA class supported by the history. If data are missing, state that assessment must be completed.",
+            "Ejemplo: Antecedente de hipertensión referida en tratamiento; clasificación ASA por confirmar con control actual, signos vitales y supervisión docente.",
+            "Example: History of treated hypertension; ASA classification to be confirmed with current control, vital signs and faculty supervision."
+        ),
+        TeachingField(
+            "Medicamentos que está tomando", "Current medications",
+            "Documenta lo que el paciente refiere: nombre genérico, presentación/dosis si la conoce, vía, frecuencia y motivo. Puedes reconocer medicamentos frecuentes como metformina, insulina, losartán, enalapril, AAS, clopidogrel, anticoagulantes, salbutamol o levotiroxina. La app enseña a registrar el esquema referido, no a prescribirlo.",
+            "Document the medication as reported: generic name, known strength, route, frequency and reason. This teaches documentation, not prescribing.",
+            "Ejemplo: Refiere metformina por vía oral; registrar presentación y frecuencia exactamente como las refiere o como aparecen en su receta/envase.",
+            "Example: Reports oral metformin; document strength and frequency exactly as reported or shown on the prescription/container."
+        ),
+        TeachingField(
+            "ATM y músculos", "TMJ and muscles",
+            "Resume interrogatorio y exploración: dolor, ruidos, limitación, apertura, trayectoria mandibular, palpación de ATM y músculos de la masticación. El módulo ATM orienta hacia el hallazgo más compatible sin sustituir el diagnóstico docente.",
+            "Summarize history and examination: pain, sounds, limitation, opening, mandibular path, TMJ and masticatory muscle palpation.",
+            "Ejemplo: Apertura conservada, sin dolor a la palpación, sin ruidos articulares; sin hallazgos positivos en el ejercicio.",
+            "Example: Preserved opening, no tenderness on palpation, no joint sounds; no positive findings in the exercise."
+        ),
+        TeachingField(
+            "Diagnóstico de caries y anomalías", "Caries and anomaly diagnosis",
+            "Se resume a partir del odontograma y, cuando se use, del ICDAS por superficie. Señala dientes con lesiones, restauraciones, ausencias y anomalías relevantes; evita inventar diagnósticos que no fueron explorados.",
+            "Summarize from the odontogram and, when used, surface-based ICDAS. Record lesions, restorations, missing teeth and relevant anomalies.",
+            "Ejemplo: Hallazgos de caries registrados en OD __ y __; consultar odontograma/ICDAS para superficies y códigos.",
+            "Example: Caries findings recorded on teeth __ and __; see odontogram/ICDAS for surfaces and codes."
+        ),
+        TeachingField(
+            "Diagnóstico de oclusión", "Occlusal diagnosis",
+            "Describe lo que corresponda a la edad y dentición: Angle, relación canina, plano terminal en temporal, overjet, overbite, líneas medias y presencia de mordida abierta, profunda o cruzada.",
+            "Describe findings appropriate to age and dentition: Angle, canine relation, primary terminal plane, overjet, overbite, midlines and open/deep/crossbite.",
+            "Ejemplo: Dentición permanente; relación molar Clase I bilateral, línea media coincidente, overjet y overbite dentro de la referencia del ejercicio.",
+            "Example: Permanent dentition; bilateral Class I molar relation, coincident midline, overjet and overbite within the exercise reference."
+        ),
+        TeachingField(
+            "Diagnóstico de mucosas orales", "Oral mucosal diagnosis",
+            "Resume la exploración sistemática de labios, carrillos, encía, lengua, piso de boca, paladar y orofaringe. Si existe una lesión, describe localización, tamaño, color, superficie, base/consistencia y síntomas.",
+            "Summarize systematic examination of lips, cheeks, gingiva, tongue, floor, palate and oropharynx. Describe any lesion by site, size, color, surface, base/consistency and symptoms.",
+            "Ejemplo: Mucosas húmedas e íntegras en el ejercicio; sin cambios visibles. Si hay lesión: describirla, no nombrarla solo por apariencia.",
+            "Example: Moist intact mucosa in the exercise; no visible changes. If a lesion exists, describe it rather than naming it from appearance alone."
+        ),
+        TeachingField(
+            "Índice CPOD / ceod", "DMFT / dmft index",
+            "Registra el índice que corresponda a la dentición y conserva el detalle de cómo se obtuvo a partir de dientes cariados, perdidos/extraídos u obturados según el método enseñado.",
+            "Record the index appropriate to dentition and retain how it was obtained from decayed, missing/extracted and filled teeth according to the taught method.",
+            "Ejemplo: CPOD = C__ + P__ + O__ = __; ceod = c__ + e__ + o__ = __ cuando corresponda.",
+            "Example: DMFT = D__ + M__ + F__ = __; dmft when applicable."
+        ),
+        TeachingField(
+            "Diagnóstico periodontal", "Periodontal diagnosis",
+            "Integra IPC por sextantes, IHOS y periodontograma cuando se hayan realizado. Distingue el resultado de un índice de un diagnóstico periodontal completo y menciona los hallazgos que lo apoyan.",
+            "Integrate CPI by sextants, OHI-S and the periodontal chart when performed. Distinguish an index result from a complete periodontal diagnosis.",
+            "Ejemplo: IPC S1=__ · S2=__ · S3=__ · S4=__ · S5=__ · S6=__; IHOS __. Complementar con sondaje y valoración periodontal.",
+            "Example: CPI S1=__ · S2=__ · S3=__ · S4=__ · S5=__ · S6=__; OHI-S __. Complete with probing and periodontal assessment."
+        ),
+        TeachingField(
+            "Diagnóstico pulpar y periapical", "Pulpal and apical diagnosis",
+            "Los diagnósticos pulpar y periapical se escriben por separado. Deben estar sustentados por síntomas, pruebas térmicas cuando correspondan, percusión, palpación, sondaje, movilidad y hallazgos radiográficos disponibles.",
+            "Write pulpal and apical diagnoses separately and support them with symptoms, tests and available radiographic findings.",
+            "Ejemplo: OD 36 · Pulpar: hallazgos más compatibles con ____ · Periapical: hallazgos más compatibles con ____ · faltan/soportan estas pruebas: ____.",
+            "Example: Tooth 36 · Pulpal: findings most compatible with ____ · Apical: findings most compatible with ____ · supporting/missing tests: ____."
+        ),
+        TeachingField(
+            "Diagnóstico protésico / Kennedy", "Prosthetic diagnosis / Kennedy",
+            "Cuando exista edentulismo parcial, identifica dientes presentes y ausentes en cada arcada y practica la clasificación de Kennedy con las reglas enseñadas. Señala si la información es insuficiente antes de proponer una clase.",
+            "For partial edentulism, identify present/missing teeth in each arch and practice Kennedy classification using the taught rules.",
+            "Ejemplo: Arcada maxilar: patrón de ausencias compatible con Kennedy clase __; confirmar modificaciones y reglas aplicables.",
+            "Example: Maxillary arch: missing-tooth pattern compatible with Kennedy class __; confirm modifications and applicable rules."
+        ),
+        TeachingField(
+            "Auxiliares de diagnóstico", "Diagnostic aids",
+            "Resume únicamente los estudios disponibles y relevantes: imagenología, biometría hemática, química sanguínea, coagulación, histopatología/biopsia o microbiología según el caso. Los rangos de laboratorio deben tomarse del reporte correspondiente.",
+            "Summarize only available relevant tests: imaging, CBC, chemistry, coagulation, histopathology/biopsy or microbiology as applicable. Use the laboratory report's reference intervals.",
+            "Ejemplo: Panorámica disponible: ____; biometría hemática: revisar valores y rango del laboratorio antes de interpretarlos.",
+            "Example: Panoramic image available: ____; CBC: review values and that laboratory's reference interval before interpreting."
+        ),
+        TeachingField(
+            "Pronóstico y plan inicial", "Prognosis and initial plan",
+            "Al final integra problemas prioritarios, estudios o interconsultas pendientes, tratamiento inicial y seguimiento. En la app se formula como orientación educativa y requiere supervisión clínica antes de aplicarse a una persona real.",
+            "Finish with priority problems, pending studies/referrals, initial treatment and follow-up. This is educational guidance requiring clinical supervision.",
+            "Ejemplo: Pronóstico reservado a completar estudios de ____. Plan inicial: control de ____, completar diagnóstico y revisar alternativas terapéuticas con el docente.",
+            "Example: Prognosis pending completion of __ studies. Initial plan: control __, complete diagnosis and review treatment alternatives with faculty."
+        )
     )
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             ScreenHeader(
-                tr(lang, "Nota de ingreso: cómo se integra", "Intake note: how it is assembled"),
+                tr(lang, "Nota de ingreso", "Intake note"),
                 onBack,
                 tr(lang,
-                    "La nota de ingreso reúne de forma resumida lo obtenido en las distintas hojas del expediente. Aquí se aprende el orden y de dónde sale cada dato; no se genera un expediente real.",
-                    "The intake note summarizes information from the different record sheets. Here you learn the order and source of each item; no real record is generated.")
+                    "Toca cada apartado de la hoja para aprender qué va ahí, cómo se obtiene el dato y un ejemplo de redacción. Es una guía para llenar el expediente físico, no un expediente electrónico.",
+                    "Tap each section to learn what belongs there, how the information is obtained and a writing example. It is a guide for the physical record, not an electronic patient record.")
             )
         }
         item {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text(tr(lang, "NOTA DE INGRESO", "INTAKE NOTE"), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    rows.forEach { row -> Text("▸ $row: ______________________________") }
+            NoticeCard(tr(lang,
+                "La estructura sigue la hoja de Nota de ingreso del material docente y la amplía con signos vitales, auxiliares, tratamiento/pronóstico como guía de aprendizaje. No introduzcas datos reales del paciente en la app.",
+                "The structure follows the teaching intake-note sheet and expands it with vital signs, diagnostic aids and treatment/prognosis as a learning guide. Do not enter real patient data in the app."))
+        }
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+            ) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                    Text(tr(lang, "NOTA DE INGRESO · 14 apartados", "INTAKE NOTE · 14 sections"), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
+                    Text(tr(lang, "Selecciona un apartado. La explicación se abre dentro de la hoja y permanece lejos de la barra de navegación del teléfono.", "Select a section. Help opens inside the page and stays clear of the phone navigation area."))
+                }
+            }
+        }
+        items(fields.size) { index ->
+            val field = fields[index]
+            val open = opened == index
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = if (open) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface),
+                onClick = { opened = if (open) null else index }
+            ) {
+                Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+                    Text("${index + 1}. ${if (lang == "en") field.titleEn else field.titleEs}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                    if (open) {
+                        Text("🔎 ${tr(lang, "Qué va aquí / cómo se obtiene", "What belongs here / how to obtain it")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                        Text(if (lang == "en") field.helpEn else field.helpEs)
+                        Text("✍️ ${tr(lang, "Cómo puede redactarse", "How it may be written")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                        Text(if (lang == "en") field.exampleEn else field.exampleEs)
+                    } else {
+                        Text(tr(lang, "Toca para abrir la guía", "Tap to open the guide"))
+                    }
                 }
             }
         }
         item {
-            SectionCard(tr(lang, "Cómo aprenderla", "How to learn it")) {
+            SectionCard(tr(lang, "Regla de uso", "Use rule")) {
                 Text(tr(lang,
-                    "No memorices un texto fijo. Entra a cada pestaña del folder, aprende cómo se obtiene el dato y después vuelve a esta hoja para reconocer dónde se resume.",
-                    "Do not memorize a fixed paragraph. Open each folder tab, learn how the information is obtained, then return here to recognize where it is summarized."))
+                    "No memorices una frase fija. Obtén primero los hallazgos en los módulos interactivos (Vitales, ATM, Odontograma/ICDAS, Mucosas, IPC, IHOS, Periodonto, Pulpar/Periapical y Prótesis) y después practica cómo resumirlos aquí.",
+                    "Do not memorize a fixed sentence. Obtain findings first in the interactive modules, then practice summarizing them here."))
             }
         }
     }

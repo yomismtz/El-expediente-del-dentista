@@ -20,14 +20,23 @@ private data class Palette(
     val onSurface: Color
 )
 
-private fun paletteFor(style: PaletteStyle): Palette = when (style) {
-    PaletteStyle.WOOD -> Palette(Color(0xFF7A5230), Color.White, Color(0xFFB78B5B), Color(0xFFF6F0E7), Color(0xFFFFFBF5), Color(0xFF2C2118))
-    PaletteStyle.CLINICAL_GREEN -> Palette(Color(0xFF2F6F61), Color.White, Color(0xFF80A89E), Color(0xFFF1F7F5), Color(0xFFFBFEFD), Color(0xFF1E2B27))
-    PaletteStyle.DENTAL_BLUE -> Palette(Color(0xFF315F8C), Color.White, Color(0xFF83A7C8), Color(0xFFF1F5FA), Color(0xFFFCFDFF), Color(0xFF1D2731))
-    PaletteStyle.WINE -> Palette(Color(0xFF7B3349), Color.White, Color(0xFFB77B8B), Color(0xFFFAF2F4), Color(0xFFFFFBFC), Color(0xFF2E1E23))
-    PaletteStyle.SAGE -> Palette(Color(0xFF65745D), Color.White, Color(0xFFAAB49F), Color(0xFFF5F7F2), Color(0xFFFEFFFC), Color(0xFF242A21))
-    PaletteStyle.MONO -> Palette(Color(0xFF202020), Color.White, Color(0xFF6B6B6B), Color(0xFFF5F5F5), Color.White, Color.Black)
-}
+/*
+ * Identidad visual YSM.
+ * Las opciones históricas de paleta se conservan por compatibilidad con las
+ * preferencias locales, pero toda la aplicación utiliza ahora la misma familia
+ * lavanda · lila · púrpura · metal para mantener una experiencia coherente.
+ */
+private val YsmPalette = Palette(
+    primary = Color(0xFF5D347F),
+    onPrimary = Color.White,
+    secondary = Color(0xFFA57AC7),
+    background = Color(0xFFF5EFFA),
+    surface = Color(0xFFFFFCFF),
+    onSurface = Color(0xFF321943)
+)
+
+@Suppress("UNUSED_PARAMETER")
+private fun paletteFor(style: PaletteStyle): Palette = YsmPalette
 
 private fun familyFor(style: FontStyle): FontFamily = when (style) {
     FontStyle.MODERN -> FontFamily.SansSerif
@@ -51,8 +60,13 @@ fun ExpedienteTheme(
         background = p.background,
         surface = p.surface,
         onSurface = p.onSurface,
-        primaryContainer = p.secondary.copy(alpha = 0.22f),
-        secondaryContainer = p.secondary.copy(alpha = 0.16f)
+        primaryContainer = Color(0xFFE7D7F6),
+        onPrimaryContainer = Color(0xFF321943),
+        secondaryContainer = Color(0xFFD0B6E8),
+        onSecondaryContainer = Color(0xFF321943),
+        outline = Color(0xFFB7B0BD),
+        surfaceVariant = Color(0xFFF0E7F6),
+        onSurfaceVariant = Color(0xFF4D365B)
     )
     val typography = Typography(
         displaySmall = TextStyle(fontFamily = family, fontSize = 32.sp),
