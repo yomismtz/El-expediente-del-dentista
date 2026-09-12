@@ -101,6 +101,7 @@ fun HistoryScreen(
         }
         item {
             SectionCard("ASA") {
+                AsaReferenceIllustration(lang)
                 Text(tr(lang,
                     "Toca una clasificación para ver su significado. Es una guía educativa; no estás clasificando a un paciente real.",
                     "Tap a class to see its meaning. This is an educational guide; you are not classifying a real patient."))
@@ -178,9 +179,7 @@ fun IntakeNoteScreen(lang: String, session: EducationalSession, onBack: () -> Un
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(tr(lang, "NOTA DE INGRESO", "INTAKE NOTE"), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    rows.forEach { row ->
-                        Text("▸ $row: ______________________________")
-                    }
+                    rows.forEach { row -> Text("▸ $row: ______________________________") }
                 }
             }
         }
