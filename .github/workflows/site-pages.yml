@@ -2,7 +2,9 @@ name: Publicar web y APK
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - feature/app-completa-v0.2
   workflow_dispatch:
 
 permissions:
