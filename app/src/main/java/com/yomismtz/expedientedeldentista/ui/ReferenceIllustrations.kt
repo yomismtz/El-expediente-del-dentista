@@ -4,7 +4,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,7 +13,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -57,17 +55,14 @@ fun AtmReferenceIllustration(lang: String, modifier: Modifier = Modifier) {
         Canvas(Modifier.fillMaxWidth().height(220.dp)) {
             val cx = size.width * 0.5f
             val cy = size.height * 0.42f
-            // Cráneo lateral esquemático
             drawCircle(Color(0xFFF3E6D3), radius = size.height * 0.26f, center = Offset(cx, cy))
             drawCircle(outline, radius = size.height * 0.26f, center = Offset(cx, cy), style = Stroke(3f))
-            // Mandíbula
             val mandible = Path().apply {
                 moveTo(cx - size.width * 0.16f, cy + size.height * 0.06f)
                 quadraticBezierTo(cx - size.width * 0.14f, cy + size.height * 0.32f, cx, cy + size.height * 0.34f)
                 quadraticBezierTo(cx + size.width * 0.18f, cy + size.height * 0.30f, cx + size.width * 0.20f, cy + size.height * 0.08f)
             }
             drawPath(mandible, outline, style = Stroke(10f))
-            // ATM y músculos
             drawCircle(accent, radius = 12f, center = Offset(cx + size.width * 0.18f, cy + size.height * 0.02f))
             drawOval(muscle.copy(alpha = 0.55f), topLeft = Offset(cx + size.width * 0.06f, cy - size.height * 0.18f), size = Size(size.width * 0.12f, size.height * 0.20f))
             drawOval(muscle.copy(alpha = 0.55f), topLeft = Offset(cx + size.width * 0.10f, cy + size.height * 0.08f), size = Size(size.width * 0.10f, size.height * 0.19f))
@@ -86,12 +81,13 @@ fun OcclusionReferenceIllustration(lang: String, modifier: Modifier = Modifier) 
     val outline = MaterialTheme.colorScheme.outline
     val upper = MaterialTheme.colorScheme.primaryContainer
     val lower = MaterialTheme.colorScheme.secondaryContainer
+    val primaryLine = MaterialTheme.colorScheme.primary
+    val tertiaryLine = MaterialTheme.colorScheme.tertiary
     Column(modifier = modifier) {
         Canvas(Modifier.fillMaxWidth().height(210.dp)) {
             val mid = size.width / 2f
             val topY = size.height * 0.34f
             val bottomY = size.height * 0.58f
-            // incisivos simplificados
             repeat(4) { i ->
                 val x = mid - 92f + i * 60f
                 drawRoundRect(upper, Offset(x, topY), Size(48f, 62f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(10f, 10f))
@@ -99,9 +95,8 @@ fun OcclusionReferenceIllustration(lang: String, modifier: Modifier = Modifier) 
                 drawRoundRect(lower, Offset(x + 6f, bottomY), Size(42f, 58f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(10f, 10f))
                 drawRoundRect(outline, Offset(x + 6f, bottomY), Size(42f, 58f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(10f, 10f), style = Stroke(2f))
             }
-            // líneas de referencia de overjet/overbite
-            drawLine(MaterialTheme.colorScheme.primary, Offset(mid - 25f, topY + 62f), Offset(mid - 25f, bottomY), strokeWidth = 4f)
-            drawLine(MaterialTheme.colorScheme.tertiary, Offset(mid + 65f, bottomY + 10f), Offset(mid + 105f, bottomY + 10f), strokeWidth = 4f)
+            drawLine(primaryLine, Offset(mid - 25f, topY + 62f), Offset(mid - 25f, bottomY), strokeWidth = 4f)
+            drawLine(tertiaryLine, Offset(mid + 65f, bottomY + 10f), Offset(mid + 105f, bottomY + 10f), strokeWidth = 4f)
         }
         Text(
             tr(lang,
@@ -115,6 +110,7 @@ fun OcclusionReferenceIllustration(lang: String, modifier: Modifier = Modifier) 
 @Composable
 fun OralMucosaReferenceIllustration(lang: String, modifier: Modifier = Modifier) {
     val outline = MaterialTheme.colorScheme.outline
+    val pointColor = MaterialTheme.colorScheme.primary
     val mucosa = Color(0xFFF3A6A6)
     val tongue = Color(0xFFE77B7B)
     Column(modifier = modifier) {
@@ -128,13 +124,12 @@ fun OralMucosaReferenceIllustration(lang: String, modifier: Modifier = Modifier)
             drawOval(Color.White, Offset(left + w * 0.14f, top + h * 0.18f), Size(w * 0.72f, h * 0.50f))
             drawOval(tongue, Offset(left + w * 0.25f, top + h * 0.40f), Size(w * 0.50f, h * 0.34f))
             drawLine(outline, Offset(left + w * 0.5f, top + h * 0.40f), Offset(left + w * 0.5f, top + h * 0.67f), strokeWidth = 2f)
-            // puntos de referencia
             listOf(
                 Offset(left + w * 0.50f, top + h * 0.08f),
                 Offset(left + w * 0.12f, top + h * 0.42f),
                 Offset(left + w * 0.88f, top + h * 0.42f),
                 Offset(left + w * 0.50f, top + h * 0.74f)
-            ).forEach { drawCircle(MaterialTheme.colorScheme.primary, 8f, it) }
+            ).forEach { drawCircle(pointColor, 8f, it) }
         }
         Text(
             tr(lang,
@@ -147,18 +142,15 @@ fun OralMucosaReferenceIllustration(lang: String, modifier: Modifier = Modifier)
 
 @Composable
 fun DiagnosticAidsIllustration(lang: String, modifier: Modifier = Modifier) {
+    val primary = MaterialTheme.colorScheme.primary
+    val secondary = MaterialTheme.colorScheme.secondary
+    val outline = MaterialTheme.colorScheme.outline
     Column(modifier = modifier) {
         Canvas(Modifier.fillMaxWidth().height(190.dp)) {
-            val primary = MaterialTheme.colorScheme.primary
-            val secondary = MaterialTheme.colorScheme.secondary
-            val outline = MaterialTheme.colorScheme.outline
-            // radiografía
             drawRoundRect(Color(0xFF4A4A4A), Offset(size.width * 0.08f, size.height * 0.18f), Size(size.width * 0.24f, size.height * 0.48f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(14f,14f))
             drawCircle(Color(0xFFDDDDDD), 24f, Offset(size.width * 0.20f, size.height * 0.39f))
-            // modelos
             drawRoundRect(primary.copy(alpha=.25f), Offset(size.width * 0.39f, size.height * 0.20f), Size(size.width * 0.22f, size.height * 0.45f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(18f,18f))
             drawArc(primary, 200f, 140f, false, Offset(size.width * 0.415f, size.height * 0.29f), Size(size.width * 0.17f, size.height * 0.20f), style = Stroke(8f))
-            // cefalometría / laboratorio
             drawRoundRect(secondary.copy(alpha=.25f), Offset(size.width * 0.68f, size.height * 0.18f), Size(size.width * 0.24f, size.height * 0.48f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(14f,14f))
             drawLine(outline, Offset(size.width * 0.72f, size.height * 0.55f), Offset(size.width * 0.86f, size.height * 0.30f), strokeWidth = 4f)
             drawCircle(secondary, 7f, Offset(size.width * 0.72f, size.height * 0.55f))
@@ -175,6 +167,7 @@ fun DiagnosticAidsIllustration(lang: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun IcdasReferenceIllustration(code: Int, lang: String, modifier: Modifier = Modifier) {
+    val outline = MaterialTheme.colorScheme.outline
     val lesion = when (code) {
         0 -> Color.Transparent
         1 -> Color(0xFFF2D36B)
@@ -202,7 +195,7 @@ fun IcdasReferenceIllustration(code: Int, lang: String, modifier: Modifier = Mod
                 close()
             }
             drawPath(crown, Color(0xFFF3EEE5))
-            drawPath(crown, MaterialTheme.colorScheme.outline, style = Stroke(3f))
+            drawPath(crown, outline, style = Stroke(3f))
             if (code > 0) {
                 val depth = when (code) { 1 -> .10f; 2 -> .16f; 3 -> .24f; 4 -> .34f; 5 -> .48f; else -> .62f }
                 drawOval(lesion, Offset(x + w * .34f, y + h * .03f), Size(w * .32f, h * depth))
