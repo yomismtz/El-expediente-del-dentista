@@ -90,6 +90,11 @@ fun AppRoot(
             AppScreen.IDENTIFICATION -> IdentificationScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.HISTORY -> HistoryScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.INTAKE -> IntakeNoteScreen(preferences.languageTag, session, folderBack)
+            AppScreen.ACTIVITIES -> ActivitiesScreen(preferences.languageTag, folderBack)
+            AppScreen.ATM -> AtmScreen(preferences.languageTag, folderBack)
+            AppScreen.OCCLUSION -> OcclusionScreen(preferences.languageTag, folderBack)
+            AppScreen.MUCOSA -> MucosaScreen(preferences.languageTag, folderBack)
+            AppScreen.AUXILIARIES -> AuxiliariesScreen(preferences.languageTag, folderBack)
             AppScreen.ODONTOGRAM -> OdontogramScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.ICDAS -> IcdasScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.CPOD -> CpodScreen(preferences.languageTag, session, folderBack)
@@ -102,6 +107,55 @@ fun AppRoot(
             AppScreen.APICAL -> ApicalScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.TREATMENT -> TreatmentScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.EVOLUTION -> EvolutionScreen(preferences.languageTag, session, folderBack)
+            AppScreen.SESSIONS -> SimpleEducationalSheet(
+                preferences.languageTag, "Tratamiento por sesiones", "Treatment by sessions",
+                "Aprende cómo organizar el tratamiento cronológicamente por citas.",
+                "Learn how to organize treatment chronologically by visits.",
+                listOf("Fecha de la sesión", "Procedimiento planeado", "Procedimiento realizado", "Indicaciones", "Seguimiento / siguiente cita"),
+                listOf("Session date", "Planned procedure", "Procedure performed", "Instructions", "Follow-up / next visit"), folderBack
+            )
+            AppScreen.ENDO -> SimpleEducationalSheet(
+                preferences.languageTag, "Ficha endodóntica", "Endodontic sheet",
+                "Reconoce los apartados destinados a pruebas pulpares, diagnóstico, conductometría y tratamiento endodóntico.",
+                "Recognize the fields for pulp testing, diagnosis, working length and endodontic treatment.",
+                listOf("Pruebas de sensibilidad", "Percusión y palpación", "Diagnóstico pulpar y periapical", "Longitud de trabajo", "Irrigación, medicación y obturación"),
+                listOf("Sensitivity tests", "Percussion and palpation", "Pulpal and periapical diagnosis", "Working length", "Irrigation, medication and obturation"), folderBack
+            )
+            AppScreen.PROSTHETIC -> SimpleEducationalSheet(
+                preferences.languageTag, "Ficha protésica", "Prosthetic sheet",
+                "Aprende qué información se registra cuando el diagnóstico y tratamiento incluyen rehabilitación protésica.",
+                "Learn what is recorded when diagnosis and treatment include prosthetic rehabilitation.",
+                listOf("Dientes ausentes", "Clasificación de Kennedy", "Soporte y pronóstico", "Diseño protésico", "Plan de tratamiento"),
+                listOf("Missing teeth", "Kennedy classification", "Support and prognosis", "Prosthetic design", "Treatment plan"), folderBack
+            )
+            AppScreen.SURGICAL -> SimpleEducationalSheet(
+                preferences.languageTag, "Ficha quirúrgica", "Surgical sheet",
+                "Identifica los datos que deben documentarse cuando existe un procedimiento quirúrgico.",
+                "Identify what should be documented when a surgical procedure is performed.",
+                listOf("Indicación", "Zona / órgano dentario", "Anestesia", "Procedimiento", "Indicaciones posoperatorias y seguimiento"),
+                listOf("Indication", "Site / tooth", "Anesthesia", "Procedure", "Postoperative instructions and follow-up"), folderBack
+            )
+            AppScreen.CONSENT -> SimpleEducationalSheet(
+                preferences.languageTag, "Consentimiento informado", "Informed consent",
+                "El alumno debe reconocer que el consentimiento explica el procedimiento, riesgos, beneficios, alternativas y dudas antes de aceptar.",
+                "The student should recognize that consent explains the procedure, risks, benefits, alternatives and questions before agreement.",
+                listOf("Procedimiento propuesto", "Beneficios", "Riesgos y complicaciones", "Alternativas", "Oportunidad de hacer preguntas"),
+                listOf("Proposed procedure", "Benefits", "Risks and complications", "Alternatives", "Opportunity to ask questions"), folderBack
+            )
+            AppScreen.REQUEST -> SimpleEducationalSheet(
+                preferences.languageTag, "Solicitud de tratamiento", "Treatment request",
+                "Explica para qué sirve la solicitud y qué información debe identificar claramente.",
+                "Explains the purpose of the request and what information it should clearly identify.",
+                listOf("Servicio solicitado", "Motivo", "Área o diente", "Prioridad / referencia", "Responsable"),
+                listOf("Requested service", "Reason", "Area or tooth", "Priority / referral", "Responsible clinician"), folderBack
+            )
+            AppScreen.BUDGET -> SimpleEducationalSheet(
+                preferences.languageTag, "Presupuesto", "Budget",
+                "Muestra la estructura del presupuesto como parte administrativa del expediente, sin capturar pagos reales.",
+                "Shows the structure of a budget as an administrative record component, without recording real payments.",
+                listOf("Procedimiento", "Cantidad", "Costo unitario", "Subtotal", "Total y condiciones"),
+                listOf("Procedure", "Quantity", "Unit cost", "Subtotal", "Total and conditions"), folderBack
+            )
         }
     }
 }
@@ -190,16 +244,16 @@ private fun FolderCoverScreen(lang: String, title: ClinicianTitle, onOpen: () ->
                     Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(tr(lang, "PORTADA", "COVER"), fontWeight = FontWeight.Bold)
                         Text("▸ ${tr(lang, "Ficha de identificación", "Identification sheet")}")
-                        Text("▸ ASA")
-                        Text("▸ ${tr(lang, "Historia clínica", "Medical history")}")
+                        Text("▸ ASA · ATM · ${tr(lang, "Oclusión", "Occlusion")}")
+                        Text("▸ ${tr(lang, "Historia clínica y mucosas", "Medical history and mucosa")}")
                         Text("▸ ${tr(lang, "Odontograma", "Odontogram")}")
-                        Text("▸ ICDAS · CPOD/ceod · O’Leary")
-                        Text("▸ ${tr(lang, "Periodoncia · Diagnóstico · Evolución", "Periodontics · Diagnosis · Progress")}")
+                        Text("▸ ICDAS · CPOD/ceod · O’Leary · IPC · IHOS")
+                        Text("▸ ${tr(lang, "Periodoncia · Diagnóstico · Tratamiento · Evolución", "Periodontics · Diagnosis · Treatment · Progress")}")
                     }
                 }
                 Text(tr(lang,
-                    "La portada solo identifica las secciones. Ábrela para entrar al expediente como si fuera una carpeta física.",
-                    "The cover only identifies the sections. Open it to enter the record like a physical folder."),
+                    "La portada identifica las secciones. Al abrirla aparecen dos hojas y separadores inferiores como en un expediente físico.",
+                    "The cover identifies the sections. Opening it shows two pages and bottom tabs like a physical clinical folder."),
                     style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
                 Button(onClick = onOpen, modifier = Modifier.fillMaxWidth()) {
                     Text("📂 ${tr(lang, "Abrir expediente", "Open folder")}")
@@ -211,22 +265,36 @@ private fun FolderCoverScreen(lang: String, title: ClinicianTitle, onOpen: () ->
 
 private data class FolderTab(val screen: AppScreen, val icon: String, val es: String, val en: String)
 
-private fun tabs(): List<FolderTab> = listOf(
-    FolderTab(AppScreen.IDENTIFICATION, "👤", "Ficha", "ID"),
-    FolderTab(AppScreen.HISTORY, "🩺", "Anamnesis", "History"),
-    FolderTab(AppScreen.INTAKE, "📄", "Ingreso", "Intake"),
-    FolderTab(AppScreen.ODONTOGRAM, "🦷", "Odontograma", "Odontogram"),
-    FolderTab(AppScreen.ICDAS, "🔎", "ICDAS", "ICDAS"),
-    FolderTab(AppScreen.CPOD, "➕", "CPOD/ceod", "DMFT/dmft"),
-    FolderTab(AppScreen.OLEARY, "🔴", "O’Leary", "O’Leary"),
+private fun treatmentTabs(): List<FolderTab> = listOf(
+    FolderTab(AppScreen.ACTIVITIES, "✓", "Autorización", "Authorization"),
+    FolderTab(AppScreen.TREATMENT, "📝", "Diagnóstico y tratamiento", "Diagnosis & treatment"),
+    FolderTab(AppScreen.SESSIONS, "🗓", "Tratamiento por sesiones", "Treatment by sessions"),
+    FolderTab(AppScreen.ENDO, "⚡", "Ficha endodóntica", "Endodontic sheet"),
+    FolderTab(AppScreen.PROSTHETIC, "🦷", "Ficha protésica", "Prosthetic sheet"),
+    FolderTab(AppScreen.PERIODONTOGRAM, "📈", "Periodontograma", "Periodontal chart"),
+    FolderTab(AppScreen.SURGICAL, "✚", "Ficha quirúrgica", "Surgical sheet"),
+    FolderTab(AppScreen.OLEARY, "🔴", "O’Leary", "O’Leary")
+)
+
+private fun recordTabs(): List<FolderTab> = listOf(
+    FolderTab(AppScreen.IDENTIFICATION, "👤", "Ficha de identificación", "Identification"),
+    FolderTab(AppScreen.HISTORY, "🩺", "Historia clínica", "History"),
+    FolderTab(AppScreen.MUCOSA, "👄", "Mucosas", "Mucosa"),
     FolderTab(AppScreen.IPC, "6️⃣", "IPC", "CPI"),
     FolderTab(AppScreen.IHOS, "🪥", "IHOS", "OHI-S"),
-    FolderTab(AppScreen.PERIODONTOGRAM, "📈", "Periodonto", "Perio chart"),
+    FolderTab(AppScreen.AUXILIARIES, "🩻", "Auxiliares", "Diagnostic aids"),
+    FolderTab(AppScreen.ICDAS, "🔎", "ICDAS", "ICDAS"),
+    FolderTab(AppScreen.CPOD, "➕", "CPOD/ceod", "DMFT/dmft"),
+    FolderTab(AppScreen.CONSENT, "✍", "Consentimiento", "Consent"),
+    FolderTab(AppScreen.REQUEST, "📨", "Solicitud", "Request"),
+    FolderTab(AppScreen.BUDGET, "💲", "Presupuesto", "Budget"),
+    FolderTab(AppScreen.EVOLUTION, "📋", "Notas de evolución", "Progress notes"),
+    FolderTab(AppScreen.ATM, "🦴", "ATM", "TMJ"),
+    FolderTab(AppScreen.OCCLUSION, "↔", "Oclusión", "Occlusion"),
     FolderTab(AppScreen.POSTURE, "🧍", "Postura", "Posture"),
     FolderTab(AppScreen.PULPAL, "⚡", "Pulpar", "Pulpal"),
-    FolderTab(AppScreen.APICAL, "🩻", "Periapical", "Periapical"),
-    FolderTab(AppScreen.TREATMENT, "📝", "Dx/Tx", "Dx/Tx"),
-    FolderTab(AppScreen.EVOLUTION, "📋", "Evolución", "Progress")
+    FolderTab(AppScreen.APICAL, "◉", "Periapical", "Periapical"),
+    FolderTab(AppScreen.ODONTOGRAM, "🦷", "Odontograma", "Odontogram")
 )
 
 @Composable
@@ -244,7 +312,7 @@ private fun FolderSpreadScreen(lang: String, onNavigate: (AppScreen) -> Unit, on
         BoxWithConstraints(modifier = Modifier.weight(1f).fillMaxWidth().padding(12.dp)) {
             if (maxWidth >= 700.dp) {
                 Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    ActivityPage(lang, Modifier.weight(1f))
+                    ActivityPage(lang, { onNavigate(AppScreen.ACTIVITIES) }, Modifier.weight(1f))
                     IntakePage(lang, { onNavigate(AppScreen.INTAKE) }, Modifier.weight(1f))
                 }
             } else {
@@ -252,30 +320,30 @@ private fun FolderSpreadScreen(lang: String, onNavigate: (AppScreen) -> Unit, on
                     modifier = Modifier.fillMaxSize().horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    ActivityPage(lang, Modifier.width(310.dp))
+                    ActivityPage(lang, { onNavigate(AppScreen.ACTIVITIES) }, Modifier.width(310.dp))
                     IntakePage(lang, { onNavigate(AppScreen.INTAKE) }, Modifier.width(310.dp))
                 }
             }
         }
-        Text(
-            tr(lang, "Pestañas del expediente · desliza para ver todas", "Folder tabs · swipe to see all"),
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.bodyMedium
-        )
-        LazyRow(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            contentPadding = PaddingValues(horizontal = 10.dp)
-        ) {
-            items(tabs()) { tab ->
-                Card(
-                    onClick = { onNavigate(tab.screen) },
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-                ) {
-                    Column(Modifier.padding(horizontal = 12.dp, vertical = 9.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(tab.icon)
-                        Text(if (lang == "en") tab.en else tab.es, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                    }
+        Text(tr(lang, "Separadores de tratamiento", "Treatment tabs"), modifier = Modifier.padding(horizontal = 14.dp, vertical = 2.dp), fontWeight = FontWeight.SemiBold)
+        FolderTabRow(lang, treatmentTabs(), MaterialTheme.colorScheme.primaryContainer, onNavigate)
+        Text(tr(lang, "Separadores del expediente · desliza para ver todos", "Clinical-record tabs · swipe to see all"), modifier = Modifier.padding(horizontal = 14.dp, vertical = 2.dp), fontWeight = FontWeight.SemiBold)
+        FolderTabRow(lang, recordTabs(), MaterialTheme.colorScheme.secondaryContainer, onNavigate)
+    }
+}
+
+@Composable
+private fun FolderTabRow(lang: String, tabs: List<FolderTab>, color: androidx.compose.ui.graphics.Color, onNavigate: (AppScreen) -> Unit) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+        contentPadding = PaddingValues(horizontal = 10.dp)
+    ) {
+        items(tabs) { tab ->
+            Card(onClick = { onNavigate(tab.screen) }, colors = CardDefaults.cardColors(containerColor = color)) {
+                Column(Modifier.padding(horizontal = 10.dp, vertical = 7.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(tab.icon)
+                    Text(if (lang == "en") tab.en else tab.es, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold)
                 }
             }
         }
@@ -283,13 +351,13 @@ private fun FolderSpreadScreen(lang: String, onNavigate: (AppScreen) -> Unit, on
 }
 
 @Composable
-private fun ActivityPage(lang: String, modifier: Modifier = Modifier) {
+private fun ActivityPage(lang: String, onOpen: () -> Unit, modifier: Modifier = Modifier) {
     Card(modifier = modifier.fillMaxSize(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
         Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text("📋 ${tr(lang, "REGISTRO DE ACTIVIDADES", "ACTIVITY RECORD")}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             Text(tr(lang,
-                "Esta hoja funciona como bitácora de lo planeado, autorizado, realizado y supervisado en cada sesión clínica.",
-                "This sheet is a log of what was planned, authorized, performed and supervised during each clinical session."))
+                "Hoja izquierda, como en la presentación: alumno, actividad, autorización, actividad realizada y supervisión.",
+                "Left page, as in the presentation: student, activity, authorization, activity performed and supervision."))
             listOf(
                 tr(lang, "Alumno / operador", "Student / operator"),
                 tr(lang, "Actividad planeada", "Planned activity"),
@@ -297,9 +365,7 @@ private fun ActivityPage(lang: String, modifier: Modifier = Modifier) {
                 tr(lang, "Actividad realmente realizada", "Activity actually performed"),
                 tr(lang, "Supervisión al finalizar", "Supervision at completion")
             ).forEach { Text("□ $it __________________") }
-            NoticeCard(tr(lang,
-                "Aprendizaje clave: lo planeado y lo realizado pueden ser distintos; la hoja debe reflejar lo que realmente ocurrió.",
-                "Key learning point: planned and performed activity may differ; the sheet should reflect what actually happened."))
+            Button(onClick = onOpen, modifier = Modifier.fillMaxWidth()) { Text(tr(lang, "¿Para qué sirve esta hoja?", "What is this sheet for?")) }
         }
     }
 }
@@ -323,9 +389,7 @@ private fun IntakePage(lang: String, onOpen: () -> Unit, modifier: Modifier = Mo
                 tr(lang, "Protésico cuando corresponda", "Prosthetic when applicable")
             ).forEach { Text("▸ $it: ____________", style = MaterialTheme.typography.bodyMedium) }
             Spacer(Modifier.height(4.dp))
-            Button(onClick = onOpen, modifier = Modifier.fillMaxWidth()) {
-                Text(tr(lang, "Ver cómo se integra", "See how it is assembled"))
-            }
+            Button(onClick = onOpen, modifier = Modifier.fillMaxWidth()) { Text(tr(lang, "Ver cómo se integra", "See how it is assembled")) }
         }
     }
 }
