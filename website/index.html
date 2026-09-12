@@ -8,17 +8,18 @@
 <title>El expediente del dentista</title>
 <link rel="icon" href="assets/ysm-logo.png" type="image/png">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="v07.css">
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="#inicio"><img src="assets/ysm-logo.png" alt="YSM" width="48" height="48"><span>El expediente del dentista</span></a>
-  <nav><a href="#expediente">Expediente</a><a href="#odontograma">Odontograma</a><a href="#manual">Manual</a><a href="#descargar">Descargar</a><a href="privacy.html">Privacidad</a></nav>
+  <nav><a href="#expediente">Expediente</a><a href="#odontograma">Odontograma</a><a href="#guias">IPC / IHOS</a><a href="#manual">Manual</a><a href="#descargar">Descargar</a><a href="privacy.html">Privacidad</a></nav>
 </header>
 <main>
 <section id="inicio" class="hero">
   <div class="hero-grid">
     <div class="cover-visual" role="img" aria-label="Portada púrpura de El expediente del dentista">
-      <img src="assets/folder-cover.jpg" alt="Portada del folder El expediente del dentista">
+      <img src="assets/folder-cover-ysm.webp" alt="Portada El expediente del dentista con logo YSM, Carpeta de aprendizaje y botón Abrir expediente">
       <button id="open-folder" class="cover-hit" type="button" aria-label="Abrir expediente"></button>
     </div>
     <div class="hero-copy-block">
@@ -33,7 +34,7 @@
 </section>
 
 <section id="expediente" class="section">
-  <div class="section-heading"><p class="eyebrow">Interfaz principal</p><h2>Folder abierto, dos hojas y separadores laterales</h2><p>Los controles ya no están en la parte inferior. Las hojas se mantienen separadas y las pestañas se agrupan por color: generales en lavanda/lila, análisis en púrpura medio y tratamiento en púrpura profundo con detalles metálicos.</p></div>
+  <div class="section-heading"><p class="eyebrow">Interfaz principal</p><h2>Folder abierto, dos hojas y separadores laterales</h2><p>Los controles no están en la parte inferior. Las hojas se mantienen separadas y las pestañas se agrupan por color: generales en lavanda/lila, análisis en púrpura medio y tratamiento en púrpura profundo con detalles metálicos.</p></div>
   <div class="folder-shell">
     <div class="folder-toolbar"><button class="toolbar-button" id="back-to-cover" type="button">‹ Portada</button><div class="folder-brand"><img src="assets/ysm-logo.png" alt="" width="54" height="54"><strong>Expediente abierto</strong></div><span>Educación odontológica interactiva</span></div>
     <div class="folder-stage">
@@ -92,13 +93,22 @@
   </div>
 </section>
 
-<section class="section design-strip"><div class="section-heading"><p class="eyebrow">Referencia visual integrada</p><h2>Diseño que estamos llevando a la app y a la web</h2></div><div class="design-grid"><img src="assets/folder-open.jpg" alt="Concepto de folder abierto"><img src="assets/odontogram-quadrants.jpg" alt="Concepto de odontograma por cuadrantes"></div></section>
+<section id="guias" class="section">
+  <div class="section-heading"><p class="eyebrow">Análisis interactivos</p><h2>Guías visuales IPC e IHOS</h2><p>Las láminas forman parte de los módulos: sirven como referencia y la práctica interactiva sigue disponible desde las pestañas IPC e IHOS del expediente.</p></div>
+  <div class="visual-learning-grid">
+    <article class="visual-learning-card"><h3>IPC por sextantes</h3><p>Mapa de sextantes, códigos 0–4/X, sonda OMS/CPI y secuencia de registro.</p><img src="assets/clinical/ipc_visual_guide.webp" alt="Guía visual completa del IPC"></article>
+    <article class="visual-learning-card"><h3>IHOS</h3><p>Dientes índice, superficies, escala de detritos, escala de cálculo y fórmula final.</p><img src="assets/clinical/ihos_visual_guide.webp" alt="Guía visual completa del IHOS"></article>
+  </div>
+</section>
 
-<section id="manual" class="section"><div class="section-heading"><p class="eyebrow">Manual de uso</p><h2>Uso rápido durante clínica</h2><p>Abre la app offline junto al expediente físico. La animación de cambio de hoja indica visualmente que pasaste a otro apartado.</p></div><div class="module-grid"><article class="module-card"><span>1️⃣</span><h3>Abre el folder</h3><p>La portada YSM funciona como cubierta. Toca “Abrir expediente”.</p></article><article class="module-card"><span>2️⃣</span><h3>Dos hojas</h3><p>Registro de actividades a la izquierda y nota de ingreso a la derecha.</p></article><article class="module-card"><span>3️⃣</span><h3>Pestañas laterales</h3><p>Lavanda/lila = generales; púrpura = análisis; púrpura profundo + metal = tratamiento.</p></article><article class="module-card"><span>4️⃣</span><h3>Cambio de hoja</h3><p>Al seleccionar una sección, la hoja gira como una página física antes de mostrar el siguiente contenido.</p></article><article class="module-card"><span>🦷</span><h3>Cuadrantes</h3><p>El odontograma muestra los dientes agrupados por cuadrantes para reducir desplazamientos.</p></article><article class="module-card"><span>🔒</span><h3>Offline</h3><p>La APK no necesita Internet para consultar los módulos educativos.</p></article></div></section>
+<section class="section design-strip"><div class="section-heading"><p class="eyebrow">Referencia visual integrada</p><h2>Una sola identidad visual</h2><p>Lavanda y lila para apartados generales; púrpura medio para análisis; púrpura profundo y metal para tratamiento.</p></div><div class="design-grid"><img src="assets/folder-open.jpg" alt="Concepto de folder abierto"><img src="assets/odontogram-quadrants.jpg" alt="Concepto de odontograma por cuadrantes"></div></section>
+
+<section id="manual" class="section"><div class="section-heading"><p class="eyebrow">Manual de uso</p><h2>Uso rápido durante clínica</h2><p>Abre la app offline junto al expediente físico. La animación de cambio de hoja indica visualmente que pasaste a otro apartado.</p></div><div class="module-grid"><article class="module-card"><span>1️⃣</span><h3>Abre el folder</h3><p>La portada YSM muestra el título, “Carpeta de aprendizaje” y el botón “Abrir expediente”.</p></article><article class="module-card"><span>2️⃣</span><h3>Dos hojas</h3><p>Registro de actividades a la izquierda y Nota de ingreso a la derecha.</p></article><article class="module-card"><span>3️⃣</span><h3>Pestañas laterales</h3><p>Lavanda/lila = generales; púrpura = análisis; púrpura profundo + metal = tratamiento.</p></article><article class="module-card"><span>4️⃣</span><h3>Cambio de hoja</h3><p>Al seleccionar una sección, la hoja gira como una página física antes de mostrar el siguiente contenido.</p></article><article class="module-card"><span>Ⅵ</span><h3>IPC por sextantes</h3><p>Selecciona cada sextante, registra 0–4/X y obtén el resumen S1–S6.</p></article><article class="module-card"><span>▥</span><h3>IHOS interactivo</h3><p>Selecciona los seis dientes índice, asigna detritos/cálculo y obtén ID-S, IC-S e IHOS.</p></article><article class="module-card"><span>🔒</span><h3>Offline</h3><p>La APK no necesita Internet para consultar los módulos educativos.</p></article></div></section>
 
 <section id="descargar" class="section"><div class="download-card"><div><p class="eyebrow">Android</p><h2>Descargar la compilación más reciente</h2><p>Cuando se actualiza <code>main</code>, GitHub vuelve a compilar la APK y publica esta web automáticamente.</p><p class="small-note">Compilación debug para evaluación educativa.</p></div><div class="download-actions"><a class="primary-button" href="downloads/El-expediente-del-dentista.apk" download>⬇ Descargar APK</a><a class="secondary-button" href="https://github.com/yomismtz/El-expediente-del-dentista">Ver GitHub</a><span id="build-details" class="build-details">Preparando información…</span></div></div></section>
 </main>
 <footer><div><img src="assets/ysm-logo.png" alt="" width="48" height="48"><strong>El expediente del dentista</strong><span>Educación odontológica interactiva</span></div><div><a href="#manual">Manual</a> · <a href="privacy.html">Privacidad</a></div></footer>
 <script src="app.js"></script>
+<script src="v07.js"></script>
 </body>
 </html>
