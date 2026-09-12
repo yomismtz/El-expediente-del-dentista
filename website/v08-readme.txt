@@ -1,0 +1,1 @@
+v0.8 añade el módulo de mucosas orales interactivas a la app y a la web. Este archivo marca la integración de la versión para pruebas.
