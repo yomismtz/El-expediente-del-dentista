@@ -14,7 +14,16 @@ enum class PaletteStyle {
     NINFA,
     MARTIN_PESCADOR,
     GUACAMAYA,
-    QUETZAL
+    QUETZAL,
+
+    // Valores heredados para compatibilidad binaria con pantallas antiguas.
+    // No se muestran en el onboarding nuevo y se migran visualmente a paletas de aves.
+    WOOD,
+    CLINICAL_GREEN,
+    DENTAL_BLUE,
+    WINE,
+    SAGE,
+    MONO
 }
 
 enum class FontStyle { MODERN, ROUNDED, ACADEMIC, ACCESSIBLE }
@@ -30,13 +39,16 @@ data class AppPreferences(
 class SettingsStore(context: Context) {
     private val prefs = context.getSharedPreferences("expediente_settings", Context.MODE_PRIVATE)
 
-    fun load(): AppPreferences = AppPreferences(
-        onboardingComplete = prefs.getBoolean(KEY_ONBOARDING, false),
-        clinicianTitle = enumValueOrDefault(prefs.getString(KEY_TITLE, null), ClinicianTitle.DOCTORA),
-        paletteStyle = enumValueOrDefault(prefs.getString(KEY_PALETTE, null), PaletteStyle.AGAPORNI),
-        fontStyle = enumValueOrDefault(prefs.getString(KEY_FONT, null), FontStyle.MODERN),
-        languageTag = prefs.getString(KEY_LANGUAGE, "es") ?: "es"
-    )
+    fun load(): AppPreferences {
+        val storedPalette = enumValueOrDefault(prefs.getString(KEY_PALETTE, null), PaletteStyle.AGAPORNI)
+        return AppPreferences(
+            onboardingComplete = prefs.getBoolean(KEY_ONBOARDING, false),
+            clinicianTitle = enumValueOrDefault(prefs.getString(KEY_TITLE, null), ClinicianTitle.DOCTORA),
+            paletteStyle = migrateLegacyPalette(storedPalette),
+            fontStyle = enumValueOrDefault(prefs.getString(KEY_FONT, null), FontStyle.MODERN),
+            languageTag = prefs.getString(KEY_LANGUAGE, "es") ?: "es"
+        )
+    }
 
     fun save(value: AppPreferences) {
         prefs.edit()
@@ -46,6 +58,16 @@ class SettingsStore(context: Context) {
             .putString(KEY_FONT, value.fontStyle.name)
             .putString(KEY_LANGUAGE, value.languageTag)
             .apply()
+    }
+
+    private fun migrateLegacyPalette(style: PaletteStyle): PaletteStyle = when (style) {
+        PaletteStyle.WOOD -> PaletteStyle.AGAPORNI
+        PaletteStyle.CLINICAL_GREEN -> PaletteStyle.QUETZAL
+        PaletteStyle.DENTAL_BLUE -> PaletteStyle.MARTIN_PESCADOR
+        PaletteStyle.WINE -> PaletteStyle.FENIX
+        PaletteStyle.SAGE -> PaletteStyle.QUETZAL
+        PaletteStyle.MONO -> PaletteStyle.NINFA
+        else -> style
     }
 
     private inline fun <reified T : Enum<T>> enumValueOrDefault(raw: String?, fallback: T): T {
