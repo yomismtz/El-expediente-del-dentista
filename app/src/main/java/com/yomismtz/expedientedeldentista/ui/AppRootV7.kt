@@ -94,7 +94,7 @@ fun AppRootV7(
                         onOpenApical = { overlay = V7Overlay.PULPAL_APICAL },
                         onBack = backToIntake
                     )
-                    V7Overlay.PROSTHETIC -> ProstheticInteractiveV2Screen(lang, backToIntake)
+                    V7Overlay.PROSTHETIC -> ProstheticInteractiveV3Screen(lang, backToIntake)
                     V7Overlay.SURGICAL -> SurgicalSheetScreen(lang, backToIntake)
                     V7Overlay.CONSENT -> ConsentTeachingScreen(lang, backToIntake)
                     V7Overlay.EVOLUTION -> EvolutionScreen(lang, session, backToIntake)
