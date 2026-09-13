@@ -3,13 +3,26 @@ package com.yomismtz.expedientedeldentista.settings
 import android.content.Context
 
 enum class ClinicianTitle { DOCTOR, DOCTORA }
-enum class PaletteStyle { WOOD, CLINICAL_GREEN, DENTAL_BLUE, WINE, SAGE, MONO }
+
+enum class PaletteStyle {
+    AGAPORNI,
+    TUCAN,
+    PAVO_REAL,
+    FENIX,
+    COLIBRI,
+    PATO_MANDARIN,
+    NINFA,
+    MARTIN_PESCADOR,
+    GUACAMAYA,
+    QUETZAL
+}
+
 enum class FontStyle { MODERN, ROUNDED, ACADEMIC, ACCESSIBLE }
 
 data class AppPreferences(
     val onboardingComplete: Boolean = false,
     val clinicianTitle: ClinicianTitle = ClinicianTitle.DOCTORA,
-    val paletteStyle: PaletteStyle = PaletteStyle.WOOD,
+    val paletteStyle: PaletteStyle = PaletteStyle.AGAPORNI,
     val fontStyle: FontStyle = FontStyle.MODERN,
     val languageTag: String = "es"
 )
@@ -20,7 +33,7 @@ class SettingsStore(context: Context) {
     fun load(): AppPreferences = AppPreferences(
         onboardingComplete = prefs.getBoolean(KEY_ONBOARDING, false),
         clinicianTitle = enumValueOrDefault(prefs.getString(KEY_TITLE, null), ClinicianTitle.DOCTORA),
-        paletteStyle = enumValueOrDefault(prefs.getString(KEY_PALETTE, null), PaletteStyle.WOOD),
+        paletteStyle = enumValueOrDefault(prefs.getString(KEY_PALETTE, null), PaletteStyle.AGAPORNI),
         fontStyle = enumValueOrDefault(prefs.getString(KEY_FONT, null), FontStyle.MODERN),
         languageTag = prefs.getString(KEY_LANGUAGE, "es") ?: "es"
     )
