@@ -31,8 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
+import com.yomismtz.expedientedeldentista.settings.BirdPaletteStyle
 import com.yomismtz.expedientedeldentista.settings.ClinicianTitle
-import com.yomismtz.expedientedeldentista.settings.PaletteStyle
 import com.yomismtz.expedientedeldentista.ui.theme.BirdPaletteChoices
 import com.yomismtz.expedientedeldentista.ui.theme.paletteDisplayName
 import com.yomismtz.expedientedeldentista.ui.theme.paletteSwatches
@@ -130,8 +130,8 @@ fun OnboardingV15Screen(
                             BirdPaletteCard(
                                 style = style,
                                 lang = lang,
-                                selected = preferences.paletteStyle == style,
-                                onClick = { onPreferencesChanged(preferences.copy(paletteStyle = style)) },
+                                selected = preferences.birdPaletteStyle == style,
+                                onClick = { onPreferencesChanged(preferences.copy(birdPaletteStyle = style)) },
                                 modifier = Modifier.weight(1f)
                             )
                         }
@@ -142,8 +142,8 @@ fun OnboardingV15Screen(
         }
 
         Text(
-            if (lang == "en") "Selected: ${paletteDisplayName(preferences.paletteStyle, lang)}"
-            else "Seleccionada: ${paletteDisplayName(preferences.paletteStyle, lang)}",
+            if (lang == "en") "Selected: ${paletteDisplayName(preferences.birdPaletteStyle, lang)}"
+            else "Seleccionada: ${paletteDisplayName(preferences.birdPaletteStyle, lang)}",
             fontWeight = FontWeight.Bold,
             color = cs.onSurface,
             modifier = Modifier
@@ -171,7 +171,7 @@ fun OnboardingV15Screen(
 
 @Composable
 private fun BirdPaletteCard(
-    style: PaletteStyle,
+    style: BirdPaletteStyle,
     lang: String,
     selected: Boolean,
     onClick: () -> Unit,
@@ -203,7 +203,7 @@ private fun BirdPaletteCard(
                     Box(Modifier.size(18.dp).background(color, CircleShape))
                 }
             }
-            if (style == PaletteStyle.AGAPORNI) {
+            if (style == BirdPaletteStyle.AGAPORNI) {
                 Text(
                     if (lang == "en") "Default" else "Predeterminada",
                     style = MaterialTheme.typography.labelLarge,
