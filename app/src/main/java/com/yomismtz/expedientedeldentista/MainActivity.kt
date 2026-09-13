@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
+import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.SettingsStore
 import com.yomismtz.expedientedeldentista.ui.AppRootV7
 import com.yomismtz.expedientedeldentista.ui.OnboardingV15Screen
@@ -25,13 +26,13 @@ class MainActivity : AppCompatActivity() {
             var preferences by remember { mutableStateOf(store.load()) }
             var session by remember { mutableStateOf(EducationalSession()) }
 
-            val savePreferences: (com.yomismtz.expedientedeldentista.settings.AppPreferences) -> Unit = { updated ->
+            val savePreferences: (AppPreferences) -> Unit = { updated ->
                 preferences = updated
                 store.save(updated)
             }
 
             ExpedienteTheme(
-                paletteStyle = preferences.paletteStyle,
+                paletteStyle = preferences.birdPaletteStyle,
                 fontStyle = preferences.fontStyle
             ) {
                 Surface(modifier = Modifier.fillMaxSize()) {
