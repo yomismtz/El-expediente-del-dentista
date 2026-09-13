@@ -94,7 +94,7 @@ fun AppRootV7(
                         onOpenApical = { overlay = V7Overlay.PULPAL_APICAL },
                         onBack = backToIntake
                     )
-                    V7Overlay.PROSTHETIC -> ProstheticSheetScreen(lang, backToIntake)
+                    V7Overlay.PROSTHETIC -> ProstheticInteractiveV2Screen(lang, backToIntake)
                     V7Overlay.SURGICAL -> SurgicalSheetScreen(lang, backToIntake)
                     V7Overlay.CONSENT -> ConsentTeachingScreen(lang, backToIntake)
                     V7Overlay.EVOLUTION -> EvolutionScreen(lang, session, backToIntake)
@@ -156,6 +156,7 @@ private fun finalWritingV7(screen: V7Overlay, lang: String): String {
         V7Overlay.OLEARY -> "O'Leary = ___%. Registra el porcentaje final y las superficies relevantes con placa."
         V7Overlay.ICDAS -> "Registra ICDAS por superficie y, si tu formato pide un valor por diente, conserva el código de mayor severidad entre sus caras."
         V7Overlay.ENDO -> "OD ___; diagnóstico pulpar ___; periapical ___; procedimiento ___; referencia coronal ___; longitudes de trabajo por conducto ___; irrigación según protocolo institucional; sellado/restauración ___; indicaciones y seguimiento ___."
+        V7Overlay.PROSTHETIC -> "Diagnóstico protésico: arco ___; Kennedy ___ mod. ___ cuando aplique; áreas edéntulas ___; pilares candidatos ___; tipo de prótesis ___; material ___; diseño (descansos/conectores/retención o pilares/pónticos) ___; etapa realizada ___; indicaciones y seguimiento ___."
         V7Overlay.MUCOSA -> "Mucosas: describe cada zona explorada. Si hay lesión, registra localización, tamaño, color, superficie, bordes, consistencia y síntomas."
         V7Overlay.VITALS -> "TA ___/___ mmHg · FC ___ lpm · FR ___ rpm · T ___ °C · peso ___ kg · talla ___ m · IMC ___ cuando corresponda."
         else -> "Resume el resultado del módulo, su interpretación, los hallazgos que lo sustentan y lo que falta para completar la valoración."
@@ -166,6 +167,7 @@ private fun finalWritingV7(screen: V7Overlay, lang: String): String {
         V7Overlay.IPC -> "CPI: S1=__ · S2=__ · S3=__ · S4=__ · S5=__ · S6=__. Add relevant periodontal findings."
         V7Overlay.IHOS -> "OHI-S = ___ (DI-S ___ + CI-S ___). Add the resulting interpretation."
         V7Overlay.ENDO -> "Tooth ___; pulpal diagnosis ___; apical diagnosis ___; procedure ___; coronal reference ___; working lengths by canal ___; irrigation per institutional protocol; coronal seal/restoration ___; instructions and follow-up ___."
+        V7Overlay.PROSTHETIC -> "Prosthodontic diagnosis: arch ___; Kennedy ___ mod. ___ when applicable; edentulous areas ___; candidate abutments ___; prosthesis type ___; material ___; design (rests/connectors/retention or abutments/pontics) ___; stage completed ___; instructions and follow-up ___."
         else -> "Summarize the module result, interpretation, supporting findings and missing information needed to complete the assessment."
     }
 }
