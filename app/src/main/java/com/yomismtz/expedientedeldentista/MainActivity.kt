@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.settings.SettingsStore
 import com.yomismtz.expedientedeldentista.ui.AppRootV7
+import com.yomismtz.expedientedeldentista.ui.OnboardingV15Screen
 import com.yomismtz.expedientedeldentista.ui.theme.ExpedienteTheme
 
 class MainActivity : AppCompatActivity() {
@@ -24,25 +25,35 @@ class MainActivity : AppCompatActivity() {
             var preferences by remember { mutableStateOf(store.load()) }
             var session by remember { mutableStateOf(EducationalSession()) }
 
+            val savePreferences: (com.yomismtz.expedientedeldentista.settings.AppPreferences) -> Unit = { updated ->
+                preferences = updated
+                store.save(updated)
+            }
+
             ExpedienteTheme(
                 paletteStyle = preferences.paletteStyle,
                 fontStyle = preferences.fontStyle
             ) {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    AppRootV7(
-                        preferences = preferences,
-                        onPreferencesChanged = { updated ->
-                            preferences = updated
-                            store.save(updated)
-                        },
-                        onLanguageChanged = { tag ->
-                            val updated = preferences.copy(languageTag = tag)
-                            preferences = updated
-                            store.save(updated)
-                        },
-                        session = session,
-                        onSessionChanged = { session = it }
-                    )
+                    if (!preferences.onboardingComplete) {
+                        OnboardingV15Screen(
+                            preferences = preferences,
+                            onPreferencesChanged = savePreferences,
+                            onContinue = { completed ->
+                                savePreferences(completed.copy(onboardingComplete = true))
+                            }
+                        )
+                    } else {
+                        AppRootV7(
+                            preferences = preferences,
+                            onPreferencesChanged = savePreferences,
+                            onLanguageChanged = { tag ->
+                                savePreferences(preferences.copy(languageTag = tag))
+                            },
+                            session = session,
+                            onSessionChanged = { session = it }
+                        )
+                    }
                 }
             }
         }
