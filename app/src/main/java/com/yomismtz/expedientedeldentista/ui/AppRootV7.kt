@@ -3,13 +3,16 @@ package com.yomismtz.expedientedeldentista.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -20,7 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
@@ -40,7 +43,7 @@ fun AppRootV7(
     val backToIntake = { overlay = V7Overlay.INTAKE }
 
     Box(Modifier.fillMaxSize()) {
-        AppRootV5(preferences, onPreferencesChanged, onLanguageChanged, session, onSessionChanged)
+        AdaptiveBaseRootV17(preferences, onPreferencesChanged, onLanguageChanged, session, onSessionChanged)
 
         if (preferences.onboardingComplete && overlay == V7Overlay.NONE) {
             Button(
@@ -74,12 +77,12 @@ fun AppRootV7(
                     V7Overlay.OCCLUSION -> OcclusionScreen(lang, backToIntake)
                     V7Overlay.MUCOSA -> MucosaInteractiveV2Screen(lang, backToIntake)
                     V7Overlay.AUXILIARIES -> AuxiliariesInteractiveScreen(lang, backToIntake)
-                    V7Overlay.ODONTOGRAM -> OdontogramQuadrantsScreen(lang, session, onSessionChanged, backToIntake)
+                    V7Overlay.ODONTOGRAM -> OdontogramResponsiveV17Screen(lang, session, onSessionChanged, backToIntake)
                     V7Overlay.ICDAS -> IcdasScreen(lang, session, onSessionChanged, backToIntake)
                     V7Overlay.CPOD -> CpodScreen(lang, session, backToIntake)
                     V7Overlay.OLEARY -> OlearyScreen(lang, session, onSessionChanged, backToIntake)
-                    V7Overlay.IPC -> IpcInteractiveV2Screen(lang, session, onSessionChanged, backToIntake)
-                    V7Overlay.IHOS -> IhosInteractiveV2Screen(lang, session, onSessionChanged, backToIntake)
+                    V7Overlay.IPC -> IpcResponsiveV17Screen(lang, session, onSessionChanged, backToIntake)
+                    V7Overlay.IHOS -> IhosResponsiveV17Screen(lang, session, onSessionChanged, backToIntake)
                     V7Overlay.PERIODONTAL -> PeriodontogramScreen(lang, session, onSessionChanged, backToIntake)
                     V7Overlay.POSTURE -> PostureVisualScreen(lang, backToIntake)
                     V7Overlay.PULPAL_APICAL -> PulpalPeriapicalInteractiveV2Screen(
@@ -94,7 +97,7 @@ fun AppRootV7(
                         onOpenApical = { overlay = V7Overlay.PULPAL_APICAL },
                         onBack = backToIntake
                     )
-                    V7Overlay.PROSTHETIC -> ProstheticInteractiveV3Screen(lang, backToIntake)
+                    V7Overlay.PROSTHETIC -> ProstheticResponsiveV17Screen(lang, backToIntake)
                     V7Overlay.SURGICAL -> SurgicalSheetScreen(lang, backToIntake)
                     V7Overlay.CONSENT -> ConsentTeachingScreen(lang, backToIntake)
                     V7Overlay.EVOLUTION -> EvolutionScreen(lang, session, backToIntake)
@@ -110,25 +113,20 @@ fun AppRootV7(
             }
 
             if (overlay !in listOf(V7Overlay.NONE, V7Overlay.INTAKE, V7Overlay.HUB)) {
-                Column(
-                    Modifier.align(Alignment.BottomEnd).safeDrawingPadding().padding(12.dp),
-                    horizontalAlignment = Alignment.End
-                ) {
-                    OutlinedButton(onClick = { writingHelp = true }) {
-                        Text("✍️ ${tr(lang, "Qué escribir", "What to write")}")
-                    }
-                    OutlinedButton(onClick = backToIntake) {
-                        Text("↩ ${tr(lang, "Nota de ingreso", "Intake note")}")
-                    }
-                }
+                AdaptiveFloatingActionsV17(
+                    lang = lang,
+                    onWriting = { writingHelp = true },
+                    onIntake = backToIntake,
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                )
             }
 
             if (writingHelp) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
                     Card(
                         modifier = Modifier.safeDrawingPadding().padding(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFCFF)),
-                        border = BorderStroke(1.dp, Color(0xFF2EB9B1))
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
                     ) {
                         Column(Modifier.padding(16.dp)) {
                             Text(tr(lang, "¿Qué escribo al final en el expediente?", "What do I write in the record?"), fontWeight = FontWeight.Black)
@@ -145,6 +143,29 @@ fun AppRootV7(
         if (writingHelp) writingHelp = false
         else if (overlay == V7Overlay.INTAKE) overlay = V7Overlay.NONE
         else overlay = V7Overlay.INTAKE
+    }
+}
+
+@Composable
+private fun AdaptiveFloatingActionsV17(
+    lang: String,
+    onWriting: () -> Unit,
+    onIntake: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    BoxWithConstraints(modifier.safeDrawingPadding().padding(10.dp)) {
+        val compact = maxWidth < 330.dp || LocalDensity.current.fontScale >= 1.25f
+        if (compact) {
+            Column(horizontalAlignment = Alignment.End) {
+                OutlinedButton(onClick = onWriting) { Text("✍️") }
+                OutlinedButton(onClick = onIntake) { Text("↩ 📋") }
+            }
+        } else {
+            Row {
+                OutlinedButton(onClick = onWriting) { Text("✍️ ${tr(lang, "Qué escribir", "What to write")}") }
+                OutlinedButton(onClick = onIntake) { Text("↩ ${tr(lang, "Ingreso", "Intake")}") }
+            }
+        }
     }
 }
 
