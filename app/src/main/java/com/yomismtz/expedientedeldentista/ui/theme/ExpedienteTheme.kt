@@ -24,6 +24,19 @@ data class BirdPalette(
     val outline: Color
 )
 
+val BirdPaletteChoices = listOf(
+    PaletteStyle.AGAPORNI,
+    PaletteStyle.TUCAN,
+    PaletteStyle.PAVO_REAL,
+    PaletteStyle.FENIX,
+    PaletteStyle.COLIBRI,
+    PaletteStyle.PATO_MANDARIN,
+    PaletteStyle.NINFA,
+    PaletteStyle.MARTIN_PESCADOR,
+    PaletteStyle.GUACAMAYA,
+    PaletteStyle.QUETZAL
+)
+
 fun paletteDisplayName(style: PaletteStyle, lang: String = "es"): String = when (style) {
     PaletteStyle.AGAPORNI -> "Agaporni"
     PaletteStyle.TUCAN -> if (lang == "en") "Toucan" else "Tucán"
@@ -35,10 +48,16 @@ fun paletteDisplayName(style: PaletteStyle, lang: String = "es"): String = when 
     PaletteStyle.MARTIN_PESCADOR -> if (lang == "en") "Kingfisher" else "Martín pescador"
     PaletteStyle.GUACAMAYA -> if (lang == "en") "Macaw" else "Guacamaya"
     PaletteStyle.QUETZAL -> "Quetzal"
+    PaletteStyle.WOOD -> "Agaporni"
+    PaletteStyle.CLINICAL_GREEN -> "Quetzal"
+    PaletteStyle.DENTAL_BLUE -> if (lang == "en") "Kingfisher" else "Martín pescador"
+    PaletteStyle.WINE -> if (lang == "en") "Phoenix" else "Fénix"
+    PaletteStyle.SAGE -> "Quetzal"
+    PaletteStyle.MONO -> if (lang == "en") "Cockatiel" else "Ninfa"
 }
 
 fun birdPalette(style: PaletteStyle): BirdPalette = when (style) {
-    PaletteStyle.AGAPORNI -> BirdPalette(
+    PaletteStyle.AGAPORNI, PaletteStyle.WOOD -> BirdPalette(
         primary = Color(0xFF5D347F), onPrimary = Color.White,
         secondary = Color(0xFF66D6C7), tertiary = Color(0xFF2EB9B1),
         background = Color(0xFFF5EFFA), surface = Color(0xFFFFFCFF), onSurface = Color(0xFF321943),
@@ -56,7 +75,7 @@ fun birdPalette(style: PaletteStyle): BirdPalette = when (style) {
         background = Color(0xFFF0F8FB), surface = Color(0xFFFCFEFF), onSurface = Color(0xFF102A3A),
         primaryContainer = Color(0xFFD6E9FF), secondaryContainer = Color(0xFFD5F3EA), outline = Color(0xFF8AA0AC)
     )
-    PaletteStyle.FENIX -> BirdPalette(
+    PaletteStyle.FENIX, PaletteStyle.WINE -> BirdPalette(
         primary = Color(0xFFA92A34), onPrimary = Color.White,
         secondary = Color(0xFFE76122), tertiary = Color(0xFFF4B73D),
         background = Color(0xFFFFF4EC), surface = Color(0xFFFFFCF8), onSurface = Color(0xFF3D1F20),
@@ -74,13 +93,13 @@ fun birdPalette(style: PaletteStyle): BirdPalette = when (style) {
         background = Color(0xFFFFF7EF), surface = Color(0xFFFFFCF8), onSurface = Color(0xFF34241E),
         primaryContainer = Color(0xFFF2D9CC), secondaryContainer = Color(0xFFFFDFC4), outline = Color(0xFFA69185)
     )
-    PaletteStyle.NINFA -> BirdPalette(
+    PaletteStyle.NINFA, PaletteStyle.MONO -> BirdPalette(
         primary = Color(0xFF6E7179), onPrimary = Color.White,
         secondary = Color(0xFFF2C84B), tertiary = Color(0xFFF28B35),
         background = Color(0xFFFAF9F3), surface = Color(0xFFFFFFFF), onSurface = Color(0xFF2D2F33),
         primaryContainer = Color(0xFFE5E6E8), secondaryContainer = Color(0xFFFFF1B8), outline = Color(0xFFA7A8AC)
     )
-    PaletteStyle.MARTIN_PESCADOR -> BirdPalette(
+    PaletteStyle.MARTIN_PESCADOR, PaletteStyle.DENTAL_BLUE -> BirdPalette(
         primary = Color(0xFF1465A8), onPrimary = Color.White,
         secondary = Color(0xFF19A7B8), tertiary = Color(0xFFF28B39),
         background = Color(0xFFEFF8FC), surface = Color(0xFFFCFEFF), onSurface = Color(0xFF173047),
@@ -92,7 +111,7 @@ fun birdPalette(style: PaletteStyle): BirdPalette = when (style) {
         background = Color(0xFFFFF7F2), surface = Color(0xFFFFFCF9), onSurface = Color(0xFF382122),
         primaryContainer = Color(0xFFFFD9DC), secondaryContainer = Color(0xFFFFEDAF), outline = Color(0xFFAA8D85)
     )
-    PaletteStyle.QUETZAL -> BirdPalette(
+    PaletteStyle.QUETZAL, PaletteStyle.CLINICAL_GREEN, PaletteStyle.SAGE -> BirdPalette(
         primary = Color(0xFF087A62), onPrimary = Color.White,
         secondary = Color(0xFF13A6A0), tertiary = Color(0xFFC73C5A),
         background = Color(0xFFF0FAF6), surface = Color(0xFFFCFFFD), onSurface = Color(0xFF17362F),
