@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.weight
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,103 +38,106 @@ fun AppRootV7(
     onPreferencesChanged: (AppPreferences) -> Unit,
     onLanguageChanged: (String) -> Unit,
     session: EducationalSession,
-    onSessionChanged: (EducationalSession) -> Unit
+    onSessionChanged: (EducationalSession) -> Unit,
+    onOpenSettings: (() -> Unit)? = null
 ) {
     var overlay by remember { mutableStateOf(V7Overlay.NONE) }
     var writingHelp by remember { mutableStateOf(false) }
     val lang = preferences.languageTag
     val backToIntake = { overlay = V7Overlay.INTAKE }
 
-    Box(Modifier.fillMaxSize()) {
-        AdaptiveBaseRootV17(preferences, onPreferencesChanged, onLanguageChanged, session, onSessionChanged)
+    Column(Modifier.fillMaxSize()) {
+        // Barra global ocupa su propio espacio: ya no flota encima del título de cada examen.
+        GlobalClinicalBarV19(
+            lang = lang,
+            onIntake = { overlay = V7Overlay.INTAKE },
+            onSettings = onOpenSettings
+        )
 
-        if (preferences.onboardingComplete && overlay == V7Overlay.NONE) {
-            Button(
-                onClick = { overlay = V7Overlay.INTAKE },
-                modifier = Modifier.align(Alignment.TopStart).safeDrawingPadding().padding(10.dp)
-            ) { Text("📋 ${tr(lang, "Nota de ingreso", "Intake note")}") }
-        }
+        Box(Modifier.weight(1f).fillMaxWidth()) {
+            AdaptiveBaseRootV17(preferences, onPreferencesChanged, onLanguageChanged, session, onSessionChanged)
 
-        if (overlay != V7Overlay.NONE) {
-            Surface(Modifier.fillMaxSize(), tonalElevation = 8.dp) {
-                when (overlay) {
-                    V7Overlay.INTAKE -> IntakeInteractiveV3Screen(
-                        lang,
-                        onIdentification = { overlay = V7Overlay.IDENTIFICATION },
-                        onHistory = { overlay = V7Overlay.HISTORY },
-                        onVitals = { overlay = V7Overlay.VITALS },
-                        onAtm = { overlay = V7Overlay.ATM },
-                        onOcclusion = { overlay = V7Overlay.OCCLUSION },
-                        onMucosa = { overlay = V7Overlay.MUCOSA },
-                        onCpod = { overlay = V7Overlay.CPOD },
-                        onPeriodontal = { overlay = V7Overlay.PERIODONTAL },
-                        onPulpal = { overlay = V7Overlay.PULPAL_APICAL },
-                        onProsthetic = { overlay = V7Overlay.PROSTHETIC },
-                        onBack = { overlay = V7Overlay.NONE }
-                    )
-                    V7Overlay.HUB -> ExamHubV1Screen(lang, { overlay = it }, backToIntake)
-                    V7Overlay.IDENTIFICATION -> IdentificationScreen(lang, session, onSessionChanged, backToIntake)
-                    V7Overlay.HISTORY -> HistoryScreen(lang, session, onSessionChanged, backToIntake)
-                    V7Overlay.VITALS -> VitalsInteractiveScreen(lang, backToIntake)
-                    V7Overlay.ATM -> AtmScreen(lang, backToIntake)
-                    V7Overlay.OCCLUSION -> OcclusionScreen(lang, backToIntake)
-                    V7Overlay.MUCOSA -> MucosaInteractiveV2Screen(lang, backToIntake)
-                    V7Overlay.AUXILIARIES -> AuxiliariesInteractiveScreen(lang, backToIntake)
-                    V7Overlay.ODONTOGRAM -> OdontogramResponsiveV17Screen(lang, session, onSessionChanged, backToIntake)
-                    V7Overlay.ICDAS -> IcdasScreen(lang, session, onSessionChanged, backToIntake)
-                    V7Overlay.CPOD -> CpodScreen(lang, session, backToIntake)
-                    V7Overlay.OLEARY -> OlearyScreen(lang, session, onSessionChanged, backToIntake)
-                    V7Overlay.IPC -> IpcResponsiveV17Screen(lang, session, onSessionChanged, backToIntake)
-                    V7Overlay.IHOS -> IhosResponsiveV17Screen(lang, session, onSessionChanged, backToIntake)
-                    V7Overlay.PERIODONTAL -> PeriodontogramScreen(lang, session, onSessionChanged, backToIntake)
-                    V7Overlay.POSTURE -> PostureVisualScreen(lang, backToIntake)
-                    V7Overlay.PULPAL_APICAL -> PulpalPeriapicalInteractiveV2Screen(
-                        lang, session, onSessionChanged,
-                        onOpenEndo = { overlay = V7Overlay.ENDO },
-                        onBack = backToIntake
-                    )
-                    V7Overlay.ENDO -> EndodonticInteractiveV2Screen(
-                        lang = lang,
-                        session = session,
-                        onOpenPulpal = { overlay = V7Overlay.PULPAL_APICAL },
-                        onOpenApical = { overlay = V7Overlay.PULPAL_APICAL },
-                        onBack = backToIntake
-                    )
-                    V7Overlay.PROSTHETIC -> ProstheticResponsiveV17Screen(lang, backToIntake)
-                    V7Overlay.SURGICAL -> SurgicalSheetScreen(lang, backToIntake)
-                    V7Overlay.CONSENT -> ConsentTeachingScreen(lang, backToIntake)
-                    V7Overlay.EVOLUTION -> EvolutionScreen(lang, session, backToIntake)
-                    V7Overlay.NONE -> Unit
+            if (overlay != V7Overlay.NONE) {
+                Surface(Modifier.fillMaxSize(), tonalElevation = 8.dp) {
+                    when (overlay) {
+                        V7Overlay.INTAKE -> IntakeInteractiveV3Screen(
+                            lang,
+                            onIdentification = { overlay = V7Overlay.IDENTIFICATION },
+                            onHistory = { overlay = V7Overlay.HISTORY },
+                            onVitals = { overlay = V7Overlay.VITALS },
+                            onAtm = { overlay = V7Overlay.ATM },
+                            onOcclusion = { overlay = V7Overlay.OCCLUSION },
+                            onMucosa = { overlay = V7Overlay.MUCOSA },
+                            onCpod = { overlay = V7Overlay.CPOD },
+                            onPeriodontal = { overlay = V7Overlay.PERIODONTAL },
+                            onPulpal = { overlay = V7Overlay.PULPAL_APICAL },
+                            onProsthetic = { overlay = V7Overlay.PROSTHETIC },
+                            onBack = { overlay = V7Overlay.NONE }
+                        )
+                        V7Overlay.HUB -> ExamHubV1Screen(lang, { overlay = it }, backToIntake)
+                        V7Overlay.IDENTIFICATION -> IdentificationScreen(lang, session, onSessionChanged, backToIntake)
+                        V7Overlay.HISTORY -> HistoryScreen(lang, session, onSessionChanged, backToIntake)
+                        V7Overlay.VITALS -> VitalsInteractiveV19Screen(lang, backToIntake)
+                        V7Overlay.ATM -> AtmScreen(lang, backToIntake)
+                        V7Overlay.OCCLUSION -> OcclusionInteractiveV19Screen(lang, backToIntake)
+                        V7Overlay.MUCOSA -> MucosaInteractiveV19Screen(lang, backToIntake)
+                        V7Overlay.AUXILIARIES -> AuxiliariesInteractiveScreen(lang, backToIntake)
+                        V7Overlay.ODONTOGRAM -> OdontogramResponsiveV17Screen(lang, session, onSessionChanged, backToIntake)
+                        V7Overlay.ICDAS -> IcdasScreen(lang, session, onSessionChanged, backToIntake)
+                        V7Overlay.CPOD -> CpodInteractiveV19Screen(lang, session, onSessionChanged, backToIntake)
+                        V7Overlay.OLEARY -> OlearyScreen(lang, session, onSessionChanged, backToIntake)
+                        V7Overlay.IPC -> IpcResponsiveV17Screen(lang, session, onSessionChanged, backToIntake)
+                        V7Overlay.IHOS -> IhosResponsiveV17Screen(lang, session, onSessionChanged, backToIntake)
+                        V7Overlay.PERIODONTAL -> PeriodontogramScreen(lang, session, onSessionChanged, backToIntake)
+                        V7Overlay.POSTURE -> PostureVisualScreen(lang, backToIntake)
+                        V7Overlay.PULPAL_APICAL -> PulpalPeriapicalInteractiveV2Screen(
+                            lang, session, onSessionChanged,
+                            onOpenEndo = { overlay = V7Overlay.ENDO },
+                            onBack = backToIntake
+                        )
+                        V7Overlay.ENDO -> EndodonticInteractiveV2Screen(
+                            lang = lang,
+                            session = session,
+                            onOpenPulpal = { overlay = V7Overlay.PULPAL_APICAL },
+                            onOpenApical = { overlay = V7Overlay.PULPAL_APICAL },
+                            onBack = backToIntake
+                        )
+                        V7Overlay.PROSTHETIC -> ProstheticResponsiveV17Screen(lang, backToIntake)
+                        V7Overlay.SURGICAL -> SurgicalSheetScreen(lang, backToIntake)
+                        V7Overlay.CONSENT -> ConsentTeachingScreen(lang, backToIntake)
+                        V7Overlay.EVOLUTION -> EvolutionScreen(lang, session, backToIntake)
+                        V7Overlay.NONE -> Unit
+                    }
                 }
-            }
 
-            if (overlay == V7Overlay.INTAKE) {
-                OutlinedButton(
-                    onClick = { overlay = V7Overlay.HUB },
-                    modifier = Modifier.align(Alignment.BottomStart).safeDrawingPadding().padding(14.dp)
-                ) { Text("🧭 ${tr(lang, "Todos los exámenes", "All examinations")}") }
-            }
+                if (overlay == V7Overlay.INTAKE) {
+                    OutlinedButton(
+                        onClick = { overlay = V7Overlay.HUB },
+                        modifier = Modifier.align(Alignment.BottomStart).safeDrawingPadding().padding(14.dp)
+                    ) { Text("🧭 ${tr(lang, "Todos los exámenes", "All examinations")}") }
+                }
 
-            if (overlay !in listOf(V7Overlay.NONE, V7Overlay.INTAKE, V7Overlay.HUB)) {
-                AdaptiveFloatingActionsV17(
-                    lang = lang,
-                    onWriting = { writingHelp = true },
-                    onIntake = backToIntake,
-                    modifier = Modifier.align(Alignment.BottomEnd)
-                )
-            }
+                if (overlay !in listOf(V7Overlay.NONE, V7Overlay.INTAKE, V7Overlay.HUB)) {
+                    AdaptiveFloatingActionsV17(
+                        lang = lang,
+                        onWriting = { writingHelp = true },
+                        onIntake = backToIntake,
+                        modifier = Modifier.align(Alignment.BottomEnd)
+                    )
+                }
 
-            if (writingHelp) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-                    Card(
-                        modifier = Modifier.safeDrawingPadding().padding(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
-                    ) {
-                        Column(Modifier.padding(16.dp)) {
-                            Text(tr(lang, "¿Qué escribo al final en el expediente?", "What do I write in the record?"), fontWeight = FontWeight.Black)
-                            Text(finalWritingV7(overlay, lang), modifier = Modifier.padding(top = 8.dp, bottom = 10.dp))
-                            Button(onClick = { writingHelp = false }) { Text(tr(lang, "Cerrar", "Close")) }
+                if (writingHelp) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+                        Card(
+                            modifier = Modifier.safeDrawingPadding().padding(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
+                        ) {
+                            Column(Modifier.padding(16.dp)) {
+                                Text(tr(lang, "¿Qué escribo al final en el expediente?", "What do I write in the record?"), fontWeight = FontWeight.Black)
+                                Text(finalWritingV7(overlay, lang), modifier = Modifier.padding(top = 8.dp, bottom = 10.dp))
+                                Button(onClick = { writingHelp = false }) { Text(tr(lang, "Cerrar", "Close")) }
+                            }
                         }
                     }
                 }
@@ -143,6 +149,33 @@ fun AppRootV7(
         if (writingHelp) writingHelp = false
         else if (overlay == V7Overlay.INTAKE) overlay = V7Overlay.NONE
         else overlay = V7Overlay.INTAKE
+    }
+}
+
+@Composable
+private fun GlobalClinicalBarV19(
+    lang: String,
+    onIntake: () -> Unit,
+    onSettings: (() -> Unit)?
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 4.dp,
+        shadowElevation = 2.dp
+    ) {
+        BoxWithConstraints(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 10.dp, vertical = 7.dp)) {
+            val compact = maxWidth < 380.dp || LocalDensity.current.fontScale >= 1.20f
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)) {
+                Button(onClick = onIntake, modifier = Modifier.weight(1f)) {
+                    Text(if (compact) "📋 ${tr(lang,"Ingreso","Intake")}" else "📋 ${tr(lang,"Nota de ingreso","Intake note")}")
+                }
+                if (onSettings != null) {
+                    OutlinedButton(onClick = onSettings, modifier = Modifier.weight(1f)) {
+                        Text(if (compact) "⚙ ${tr(lang,"Ajustes","Settings")}" else "⚙ ${tr(lang,"Configuración","Settings")}")
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -176,10 +209,11 @@ private fun finalWritingV7(screen: V7Overlay, lang: String): String {
         V7Overlay.IHOS -> "IHOS = ___ (ID-S ___ + IC-S ___). Añade la interpretación obtenida."
         V7Overlay.OLEARY -> "O'Leary = ___%. Registra el porcentaje final y las superficies relevantes con placa."
         V7Overlay.ICDAS -> "Registra ICDAS por superficie y, si tu formato pide un valor por diente, conserva el código de mayor severidad entre sus caras."
+        V7Overlay.CPOD -> "CPOD/ceod: C/c=___, P/e=___, O/o=___; total=___. Registra también los órganos dentarios que sustentan cada componente cuando tu expediente lo solicite."
         V7Overlay.ENDO -> "OD ___; diagnóstico pulpar ___; periapical ___; procedimiento ___; referencia coronal ___; longitudes de trabajo por conducto ___; irrigación según protocolo institucional; sellado/restauración ___; indicaciones y seguimiento ___."
         V7Overlay.PROSTHETIC -> "Diagnóstico protésico: arco ___; Kennedy ___ mod. ___ cuando aplique; áreas edéntulas ___; pilares candidatos ___; tipo de prótesis ___; material ___; diseño (descansos/conectores/retención o pilares/pónticos) ___; etapa realizada ___; indicaciones y seguimiento ___."
         V7Overlay.MUCOSA -> "Mucosas: describe cada zona explorada. Si hay lesión, registra localización, tamaño, color, superficie, bordes, consistencia y síntomas."
-        V7Overlay.VITALS -> "TA ___/___ mmHg · FC ___ lpm · FR ___ rpm · T ___ °C · peso ___ kg · talla ___ m · IMC ___ cuando corresponda."
+        V7Overlay.VITALS -> "TA ___/___ mmHg · FC ___ lpm · FR ___ rpm · T ___ °C · glucosa capilar ___ mg/dL (contexto: ayuno/preprandial/posprandial/casual) · peso ___ kg · talla ___ m · IMC ___ cuando corresponda."
         else -> "Resume el resultado del módulo, su interpretación, los hallazgos que lo sustentan y lo que falta para completar la valoración."
     }
     if (lang != "en") return es
@@ -189,6 +223,7 @@ private fun finalWritingV7(screen: V7Overlay, lang: String): String {
         V7Overlay.IHOS -> "OHI-S = ___ (DI-S ___ + CI-S ___). Add the resulting interpretation."
         V7Overlay.ENDO -> "Tooth ___; pulpal diagnosis ___; apical diagnosis ___; procedure ___; coronal reference ___; working lengths by canal ___; irrigation per institutional protocol; coronal seal/restoration ___; instructions and follow-up ___."
         V7Overlay.PROSTHETIC -> "Prosthodontic diagnosis: arch ___; Kennedy ___ mod. ___ when applicable; edentulous areas ___; candidate abutments ___; prosthesis type ___; material ___; design (rests/connectors/retention or abutments/pontics) ___; stage completed ___; instructions and follow-up ___."
+        V7Overlay.VITALS -> "BP ___/___ mmHg · HR ___ bpm · RR ___ rpm · T ___ °C · capillary glucose ___ mg/dL (fasting/premeal/postmeal/random) · weight ___ kg · height ___ m · BMI ___ when applicable."
         else -> "Summarize the module result, interpretation, supporting findings and missing information needed to complete the assessment."
     }
 }
