@@ -12,7 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.settings.SettingsStore
-import com.yomismtz.expedientedeldentista.ui.AppRootV4
+import com.yomismtz.expedientedeldentista.ui.AppRootV5
 import com.yomismtz.expedientedeldentista.ui.theme.ExpedienteTheme
 
 class MainActivity : AppCompatActivity() {
@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
                 fontStyle = preferences.fontStyle
             ) {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    AppRootV4(
+                    AppRootV5(
                         preferences = preferences,
                         onPreferencesChanged = { updated ->
                             preferences = updated
