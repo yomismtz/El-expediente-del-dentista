@@ -10,6 +10,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 import com.yomismtz.expedientedeldentista.settings.BirdPaletteStyle
 import com.yomismtz.expedientedeldentista.settings.FontStyle
+import com.yomismtz.expedientedeldentista.settings.TextSizeStyle
 
 data class BirdPalette(
     val primary: Color,
@@ -107,6 +108,20 @@ fun paletteSwatches(style: BirdPaletteStyle): List<Color> {
     return listOf(p.primary, p.secondary, p.tertiary, p.primaryContainer)
 }
 
+fun fontDisplayName(style: FontStyle, lang: String = "es"): String = when (style) {
+    FontStyle.MODERN -> if (lang == "en") "Modern" else "Moderna"
+    FontStyle.ROUNDED -> if (lang == "en") "Rounded" else "Redondeada"
+    FontStyle.ACADEMIC -> if (lang == "en") "Academic" else "Académica"
+    FontStyle.ACCESSIBLE -> if (lang == "en") "Accessible" else "Accesible"
+}
+
+fun textSizeDisplayName(style: TextSizeStyle, lang: String = "es"): String = when (style) {
+    TextSizeStyle.SMALL -> if (lang == "en") "Small" else "Pequeña"
+    TextSizeStyle.NORMAL -> if (lang == "en") "Standard" else "Normal"
+    TextSizeStyle.LARGE -> if (lang == "en") "Large" else "Grande"
+    TextSizeStyle.EXTRA_LARGE -> if (lang == "en") "Extra large" else "Muy grande"
+}
+
 private fun familyFor(style: FontStyle): FontFamily = when (style) {
     FontStyle.MODERN -> FontFamily.SansSerif
     FontStyle.ROUNDED -> FontFamily.Cursive
@@ -114,10 +129,13 @@ private fun familyFor(style: FontStyle): FontFamily = when (style) {
     FontStyle.ACCESSIBLE -> FontFamily.Monospace
 }
 
+private fun scaledSp(base: Float, textSizeStyle: TextSizeStyle) = (base * textSizeStyle.multiplier).sp
+
 @Composable
 fun ExpedienteTheme(
     paletteStyle: BirdPaletteStyle,
     fontStyle: FontStyle,
+    textSizeStyle: TextSizeStyle = TextSizeStyle.NORMAL,
     content: @Composable () -> Unit
 ) {
     val p = birdPalette(paletteStyle)
@@ -140,14 +158,18 @@ fun ExpedienteTheme(
         surfaceVariant = p.primaryContainer.copy(alpha = 0.58f),
         onSurfaceVariant = p.onSurface.copy(alpha = 0.82f)
     )
+
+    // El tamaño elegido aquí se suma al escalado de fuente de Android porque
+    // todas las medidas siguen expresándose en sp. Así, si el teléfono usa letra
+    // grande, YSM Expediente también crece sin anular la preferencia del sistema.
     val typography = Typography(
-        displaySmall = TextStyle(fontFamily = family, fontSize = 32.sp),
-        headlineMedium = TextStyle(fontFamily = family, fontSize = 26.sp),
-        titleLarge = TextStyle(fontFamily = family, fontSize = 22.sp),
-        titleMedium = TextStyle(fontFamily = family, fontSize = 18.sp),
-        bodyLarge = TextStyle(fontFamily = family, fontSize = 17.sp),
-        bodyMedium = TextStyle(fontFamily = family, fontSize = 15.sp),
-        labelLarge = TextStyle(fontFamily = family, fontSize = 14.sp)
+        displaySmall = TextStyle(fontFamily = family, fontSize = scaledSp(32f, textSizeStyle)),
+        headlineMedium = TextStyle(fontFamily = family, fontSize = scaledSp(26f, textSizeStyle)),
+        titleLarge = TextStyle(fontFamily = family, fontSize = scaledSp(22f, textSizeStyle)),
+        titleMedium = TextStyle(fontFamily = family, fontSize = scaledSp(18f, textSizeStyle)),
+        bodyLarge = TextStyle(fontFamily = family, fontSize = scaledSp(17f, textSizeStyle)),
+        bodyMedium = TextStyle(fontFamily = family, fontSize = scaledSp(15f, textSizeStyle)),
+        labelLarge = TextStyle(fontFamily = family, fontSize = scaledSp(14f, textSizeStyle))
     )
 
     MaterialTheme(colorScheme = colors, typography = typography, content = content)
