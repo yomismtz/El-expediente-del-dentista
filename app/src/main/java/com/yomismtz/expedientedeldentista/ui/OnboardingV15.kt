@@ -27,13 +27,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.ClinicianTitle
 import com.yomismtz.expedientedeldentista.settings.PaletteStyle
+import com.yomismtz.expedientedeldentista.ui.theme.BirdPaletteChoices
 import com.yomismtz.expedientedeldentista.ui.theme.paletteDisplayName
 import com.yomismtz.expedientedeldentista.ui.theme.paletteSwatches
 
@@ -124,7 +124,7 @@ fun OnboardingV15Screen(
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                PaletteStyle.entries.chunked(2).forEach { pair ->
+                BirdPaletteChoices.chunked(2).forEach { pair ->
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         pair.forEach { style ->
                             BirdPaletteCard(
