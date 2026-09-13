@@ -1,6 +1,7 @@
 package com.yomismtz.expedientedeldentista.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,9 +28,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle as ComposeFontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.yomismtz.expedientedeldentista.R
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.BirdPaletteStyle
 import com.yomismtz.expedientedeldentista.settings.ClinicianTitle
@@ -56,6 +60,11 @@ fun OnboardingV15Screen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Image(
+            painter = painterResource(R.drawable.ysm_logo),
+            contentDescription = if (lang == "en") "YSM bird and dental record logo" else "Logo YSM con ave y expediente dental",
+            modifier = Modifier.size(190.dp)
+        )
         Text(
             "YSM Expediente",
             style = MaterialTheme.typography.headlineMedium,
@@ -64,7 +73,17 @@ fun OnboardingV15Screen(
             textAlign = TextAlign.Center
         )
         Text(
-            if (lang == "en") "Interactive dental education" else "Educación odontológica interactiva",
+            if (lang == "en") "The dentist's record" else "El expediente del dentista",
+            style = MaterialTheme.typography.titleMedium,
+            color = cs.onPrimary,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            if (lang == "en") "Let your imagination take flight and your knowledge be reborn"
+            else "Deja volar tu imaginación y tus conocimientos renacerán",
+            style = MaterialTheme.typography.bodyLarge,
+            fontStyle = ComposeFontStyle.Italic,
             color = cs.secondary,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
