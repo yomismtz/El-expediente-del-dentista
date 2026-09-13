@@ -23,12 +23,24 @@ enum class BirdPaletteStyle {
 
 enum class FontStyle { MODERN, ROUNDED, ACADEMIC, ACCESSIBLE }
 
+/**
+ * Escala adicional elegida dentro de YSM Expediente.
+ * Android seguirá aplicando además el tamaño de fuente configurado en el teléfono.
+ */
+enum class TextSizeStyle(val multiplier: Float) {
+    SMALL(0.90f),
+    NORMAL(1.00f),
+    LARGE(1.15f),
+    EXTRA_LARGE(1.30f)
+}
+
 data class AppPreferences(
     val onboardingComplete: Boolean = false,
     val clinicianTitle: ClinicianTitle = ClinicianTitle.DOCTORA,
     val paletteStyle: PaletteStyle = PaletteStyle.WOOD,
     val birdPaletteStyle: BirdPaletteStyle = BirdPaletteStyle.AGAPORNI,
     val fontStyle: FontStyle = FontStyle.MODERN,
+    val textSizeStyle: TextSizeStyle = TextSizeStyle.NORMAL,
     val languageTag: String = "es"
 )
 
@@ -41,6 +53,7 @@ class SettingsStore(context: Context) {
         paletteStyle = enumValueOrDefault(prefs.getString(KEY_PALETTE, null), PaletteStyle.WOOD),
         birdPaletteStyle = enumValueOrDefault(prefs.getString(KEY_BIRD_PALETTE, null), BirdPaletteStyle.AGAPORNI),
         fontStyle = enumValueOrDefault(prefs.getString(KEY_FONT, null), FontStyle.MODERN),
+        textSizeStyle = enumValueOrDefault(prefs.getString(KEY_TEXT_SIZE, null), TextSizeStyle.NORMAL),
         languageTag = prefs.getString(KEY_LANGUAGE, "es") ?: "es"
     )
 
@@ -51,6 +64,7 @@ class SettingsStore(context: Context) {
             .putString(KEY_PALETTE, value.paletteStyle.name)
             .putString(KEY_BIRD_PALETTE, value.birdPaletteStyle.name)
             .putString(KEY_FONT, value.fontStyle.name)
+            .putString(KEY_TEXT_SIZE, value.textSizeStyle.name)
             .putString(KEY_LANGUAGE, value.languageTag)
             .apply()
     }
@@ -65,6 +79,7 @@ class SettingsStore(context: Context) {
         const val KEY_PALETTE = "palette_style"
         const val KEY_BIRD_PALETTE = "bird_palette_style"
         const val KEY_FONT = "font_style"
+        const val KEY_TEXT_SIZE = "text_size_style"
         const val KEY_LANGUAGE = "language_tag"
     }
 }
