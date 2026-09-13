@@ -1,6 +1,6 @@
 # Estado del proyecto · YSM Expediente
 
-Última actualización planificada: **v0.16-debug**.
+Última actualización planificada: **v0.17-debug**.
 
 ## Propósito
 Aplicación educativa offline para estudiantes de odontología. Enseña cómo llenar un expediente clínico físico y ofrece exámenes interactivos. No es un expediente electrónico de pacientes y no debe sustituir supervisión docente ni diagnóstico clínico definitivo.
@@ -15,7 +15,15 @@ Aplicación educativa offline para estudiantes de odontología. Enseña cómo ll
 - Configuración persistente: idioma, Doctor/Doctora, paleta, tipo de letra y tamaño de letra se restauran al volver a abrir la app.
 - Tamaños internos: pequeña, normal, grande y muy grande.
 - La tipografía sigue usando `sp`, por lo que también respeta la escala de letra configurada en Android.
-- La pantalla de configuración cambia entre 1, 2 o 3 columnas según ancho disponible y usa desplazamiento vertical para teléfonos compactos o letra grande.
+
+## Sistema adaptable v0.17
+- La interfaz clasifica el ancho disponible como compacto, mediano o expandido.
+- Si Android usa letra grande, las cuadrículas reducen automáticamente el número de columnas y priorizan lectura sobre densidad.
+- Las pantallas principales son desplazables verticalmente y evitan depender de alturas fijas.
+- La carpeta clínica cambia de diseño: una sección por vez en teléfono pequeño, dos columnas en tamaño medio y tres hojas/grupos en pantalla amplia.
+- El centro de exámenes cambia de 1 a 3 columnas según el dispositivo.
+- La barra flotante de “Qué escribir” / “Nota de ingreso” se simplifica a iconos en pantallas estrechas o con letra grande.
+- Las paletas nuevas se toman desde `MaterialTheme` en las nuevas interfaces para que Agaporni, Tucán, Pavo real, Fénix, Colibrí, Pato mandarín, Ninfa, Martín pescador, Guacamaya y Quetzal cambien realmente el aspecto.
 
 ## Módulos principales ya incorporados
 - Nota de ingreso como centro de navegación.
@@ -26,6 +34,14 @@ Aplicación educativa offline para estudiantes de odontología. Enseña cómo ll
 - Endodoncia interactiva con conductometría y protocolos educativos.
 - Prótesis interactiva: dos arcadas, presente/ausente, espacios edéntulos, Kennedy y modificaciones, reglas de Applegate, Seibert, retenedores PPR, PPR, prótesis total y fija.
 - En cada examen debe existir una guía de **qué escribir al final en el expediente físico**.
+
+## Pantallas responsivas nuevas v0.17
+- **Odontograma:** dentición permanente/temporal, cuadrantes adaptables, dientes en rejilla dinámica, selector de caries/restauración/sellador, diagrama de superficies y presente/ausente.
+- **IPC:** sextantes adaptables, selección de diente, seis sitios, códigos 0–4/X y resumen automático sin comprimir texto.
+- **IHOS:** dientes índice, sustitutos, exclusión de sitio no evaluable, detritos/cálculo 0–3 y resultado automático.
+- **Kennedy:** dos arcadas, presente/ausente, detección de espacios, Kennedy I–IV, modificaciones, segundos molares que no se reemplazan y reglas de Applegate paso a paso.
+- **Prótesis:** desde Kennedy adaptable se conserva acceso al diseñador completo de PPR, total y fija.
+- **Centro de exámenes:** tarjetas de acceso que cambian automáticamente de 1, 2 o 3 columnas.
 
 ## Prótesis · estado actual
 - Tocar cada diente para marcarlo presente/ausente.
@@ -38,25 +54,11 @@ Aplicación educativa offline para estudiantes de odontología. Enseña cómo ll
 - Diseñador PPR con descansos, retención, planos guía y base/malla.
 - Prótesis total y fija; materiales y terminaciones.
 
-## Cambio v0.15
-- Sustituye el onboarding anterior por una pantalla inicial estable.
-- Corrige el flujo de **Continuar** para evitar el cierre reportado de la app.
-- Agrega las 10 paletas inspiradas en aves y Agaporni como predeterminada.
-
-## Cambio v0.16
-- Añade tamaño de letra persistente.
-- Añade botón de configuración visible dentro de la app.
-- Permite cambiar idioma, Doctor/Doctora, paleta, tipo de letra y tamaño sin reinstalar.
-- Guarda cada cambio inmediatamente en preferencias locales.
-- Respeta el tamaño de fuente de Android además del tamaño elegido en YSM Expediente.
-- Clasifica el ancho de pantalla como compacto, mediano o expandido para adaptar la pantalla de configuración.
-- Evita depender de alturas fijas en Configuración y usa contenido desplazable para mejorar el uso con letra grande.
-
 ## Próximos puntos sugeridos
-1. Propagar el comportamiento adaptable a las hojas dobles y componentes antiguos con medidas fijas, especialmente en teléfonos muy estrechos y con escalas de fuente extremas.
-2. Terminar de propagar las paletas de aves a componentes antiguos con colores codificados de forma fija.
-3. Continuar con Cirugía interactiva y protocolos.
-4. Seguir refinando Prótesis con diseño visual más anatómico y componentes removibles/fijos.
+1. Llevar el mismo patrón adaptable a ICDAS, O'Leary, periodontograma, ATM, oclusión, mucosas, endodoncia y formularios largos.
+2. Terminar de sustituir colores antiguos codificados directamente por colores de `MaterialTheme`.
+3. Continuar con Cirugía interactiva y protocolos una vez que la base visual adaptable esté estable en teléfonos reales.
+4. Seguir refinando Prótesis con diseño anatómico más visual para descansos, retenedores, conectores, bases y pónticos.
 
 ## Repositorio
 https://github.com/yomismtz/El-expediente-del-dentista
