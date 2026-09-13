@@ -87,8 +87,9 @@ fun AppRootV7(
                         onOpenEndo = { overlay = V7Overlay.ENDO },
                         onBack = backToIntake
                     )
-                    V7Overlay.ENDO -> EndodonticSheetScreen(
-                        lang, session,
+                    V7Overlay.ENDO -> EndodonticInteractiveV2Screen(
+                        lang = lang,
+                        session = session,
                         onOpenPulpal = { overlay = V7Overlay.PULPAL_APICAL },
                         onOpenApical = { overlay = V7Overlay.PULPAL_APICAL },
                         onBack = backToIntake
@@ -154,7 +155,7 @@ private fun finalWritingV7(screen: V7Overlay, lang: String): String {
         V7Overlay.IHOS -> "IHOS = ___ (ID-S ___ + IC-S ___). Añade la interpretación obtenida."
         V7Overlay.OLEARY -> "O'Leary = ___%. Registra el porcentaje final y las superficies relevantes con placa."
         V7Overlay.ICDAS -> "Registra ICDAS por superficie y, si tu formato pide un valor por diente, conserva el código de mayor severidad entre sus caras."
-        V7Overlay.ENDO -> "OD ___; diagnóstico pulpar ___; periapical ___; longitud de trabajo ___ mm; procedimiento ___; irrigación ___; obturación/restauración ___; indicaciones y seguimiento ___."
+        V7Overlay.ENDO -> "OD ___; diagnóstico pulpar ___; periapical ___; procedimiento ___; referencia coronal ___; longitudes de trabajo por conducto ___; irrigación según protocolo institucional; sellado/restauración ___; indicaciones y seguimiento ___."
         V7Overlay.MUCOSA -> "Mucosas: describe cada zona explorada. Si hay lesión, registra localización, tamaño, color, superficie, bordes, consistencia y síntomas."
         V7Overlay.VITALS -> "TA ___/___ mmHg · FC ___ lpm · FR ___ rpm · T ___ °C · peso ___ kg · talla ___ m · IMC ___ cuando corresponda."
         else -> "Resume el resultado del módulo, su interpretación, los hallazgos que lo sustentan y lo que falta para completar la valoración."
@@ -164,6 +165,7 @@ private fun finalWritingV7(screen: V7Overlay, lang: String): String {
         V7Overlay.PULPAL_APICAL -> "Tooth ___: pulpal diagnosis most compatible with ___; apical diagnosis most compatible with ___; supported by ___. State missing tests."
         V7Overlay.IPC -> "CPI: S1=__ · S2=__ · S3=__ · S4=__ · S5=__ · S6=__. Add relevant periodontal findings."
         V7Overlay.IHOS -> "OHI-S = ___ (DI-S ___ + CI-S ___). Add the resulting interpretation."
+        V7Overlay.ENDO -> "Tooth ___; pulpal diagnosis ___; apical diagnosis ___; procedure ___; coronal reference ___; working lengths by canal ___; irrigation per institutional protocol; coronal seal/restoration ___; instructions and follow-up ___."
         else -> "Summarize the module result, interpretation, supporting findings and missing information needed to complete the assessment."
     }
 }
