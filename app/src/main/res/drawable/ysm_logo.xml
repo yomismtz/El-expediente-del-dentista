@@ -1,8 +1,49 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="512dp" android:height="512dp" android:viewportWidth="512" android:viewportHeight="512">
-    <path android:fillColor="#00000000" android:strokeColor="#7B4DA8" android:strokeWidth="24" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M150,92 C105,92 84,132 94,182 C104,232 126,278 140,356 C147,394 171,404 190,370 L222,306 C232,286 252,286 262,306 L294,370 C313,404 337,394 344,356 C358,278 380,232 390,182 C400,132 379,92 334,92 C300,92 278,112 256,132 C234,112 212,92 178,92 Z"/>
-    <path android:fillColor="#00000000" android:strokeColor="#D0B6E8" android:strokeWidth="20" android:strokeLineCap="round" android:pathData="M132,250 C198,318 314,318 380,250"/>
-    <path android:fillColor="#43235F" android:pathData="M112,86 L148,86 L176,146 L204,86 L240,86 L194,178 L194,230 L158,230 L158,178 Z"/>
-    <path android:fillColor="#7B4DA8" android:pathData="M248,94 C270,78 314,82 336,102 L316,128 C298,114 270,114 270,132 C270,148 298,150 318,160 C346,174 354,202 336,226 C314,254 266,252 238,228 L258,198 C278,214 308,216 316,202 C322,190 302,184 280,174 C250,160 232,132 248,94 Z"/>
-    <path android:fillColor="#43235F" android:pathData="M344,86 L382,86 L414,150 L446,86 L484,86 L484,230 L448,230 L448,144 L422,198 L406,198 L380,144 L380,230 L344,230 Z"/>
-    <path android:fillColor="#D0B6E8" android:pathData="M418,54 L430,80 L458,86 L434,104 L438,132 L418,116 L398,132 L402,104 L378,86 L406,80 Z"/>
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp"
+    android:height="512dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+
+    <!-- Alas multicolor: identidad Agaporni -->
+    <path android:fillColor="#66D6C7" android:pathData="M116,212 C54,176 36,110 74,72 C88,126 126,146 184,154 C157,173 137,193 116,212 Z"/>
+    <path android:fillColor="#43C7D9" android:pathData="M128,230 C65,213 34,164 49,122 C82,157 121,169 181,168 C158,188 141,207 128,230 Z"/>
+    <path android:fillColor="#B08AE0" android:pathData="M145,249 C87,248 54,222 54,184 C88,205 124,205 183,185 C169,208 156,230 145,249 Z"/>
+
+    <!-- Cola -->
+    <path android:fillColor="#7B4DA8" android:pathData="M155,263 C107,302 84,346 106,374 C132,336 166,318 214,304 Z"/>
+    <path android:fillColor="#2EB9B1" android:pathData="M177,276 C131,324 119,368 147,390 C164,346 194,324 233,305 Z"/>
+
+    <!-- Ave -->
+    <path android:fillColor="#7B4DA8" android:pathData="M171,182 C165,119 207,77 264,81 C321,85 351,132 336,184 C326,216 298,239 265,245 C226,252 184,229 171,182 Z"/>
+    <path android:fillColor="#F9F5FF" android:pathData="M219,136 C225,108 251,96 275,103 C304,111 319,139 308,164 C295,195 265,211 236,194 C216,182 211,158 219,136 Z"/>
+    <path android:fillColor="#17102A" android:pathData="M279,133 a15,15 0,1 0,30 0 a15,15 0,1 0,-30 0"/>
+    <path android:fillColor="#8E6BD1" android:pathData="M285,130 a7,7 0,1 0,14 0 a7,7 0,1 0,-14 0"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M289,126 a3,3 0,1 0,6 0 a3,3 0,1 0,-6 0"/>
+    <path android:fillColor="#2D2140" android:pathData="M310,151 L350,161 L315,176 Z"/>
+
+    <!-- Birrete -->
+    <path android:fillColor="#43235F" android:pathData="M192,86 L263,50 L334,86 L263,119 Z"/>
+    <path android:fillColor="#5C2E86" android:pathData="M224,101 L302,101 L297,128 C277,140 248,140 229,128 Z"/>
+    <path android:fillColor="#D6A62A" android:pathData="M324,91 L324,135 L333,146 L315,146 L324,135"/>
+
+    <!-- Expediente -->
+    <path android:fillColor="#FDFBFF" android:strokeColor="#D6A62A" android:strokeWidth="7" android:pathData="M138,235 L211,235 L228,216 L393,216 Q410,216 410,233 L410,389 Q410,406 393,406 L138,406 Q121,406 121,389 L121,252 Q121,235 138,235 Z"/>
+    <path android:fillColor="#E9DDF5" android:pathData="M132,250 H399 V279 H132 Z"/>
+    <path android:fillColor="#D3BCE9" android:pathData="M364,244 H420 V279 H364 Z"/>
+    <path android:fillColor="#66D6C7" android:pathData="M370,282 H426 V317 H370 Z"/>
+    <path android:fillColor="#43C7D9" android:pathData="M370,320 H426 V355 H370 Z"/>
+    <path android:fillColor="#B08AE0" android:pathData="M370,358 H426 V393 H370 Z"/>
+
+    <!-- Diente sobre el expediente -->
+    <path android:fillColor="#FFFFFF" android:strokeColor="#7B4DA8" android:strokeWidth="6" android:pathData="M187,271 C166,271 155,287 158,309 C161,329 169,341 174,365 C177,382 190,385 198,370 L211,344 C216,334 225,334 230,344 L243,370 C251,385 264,382 267,365 C272,341 280,329 283,309 C286,287 275,271 254,271 C239,271 230,279 220,289 C210,279 202,271 187,271 Z"/>
+
+    <!-- Líneas clínicas -->
+    <path android:fillColor="#00000000" android:strokeColor="#8E6BD1" android:strokeWidth="6" android:strokeLineCap="round" android:pathData="M292,285 H349 M292,307 H349 M292,329 H339 M292,351 H349"/>
+
+    <!-- Estetoscopio/cola en forma de corazón -->
+    <path android:fillColor="#00000000" android:strokeColor="#2EB9B1" android:strokeWidth="8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M144,258 C121,276 105,300 107,326 C109,357 141,382 188,395 C248,412 337,415 410,398 C438,392 457,379 459,361 C461,347 451,337 439,337 C427,337 420,345 420,356 C420,345 413,337 401,337 C388,337 379,348 382,361 C386,378 403,391 425,396"/>
+
+    <!-- Destellos -->
+    <path android:fillColor="#D6A62A" android:pathData="M376,142 L385,161 L405,166 L387,176 L383,197 L372,179 L351,175 L369,164 Z"/>
 </vector>
