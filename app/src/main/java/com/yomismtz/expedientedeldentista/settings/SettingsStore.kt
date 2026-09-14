@@ -18,15 +18,14 @@ enum class BirdPaletteStyle {
     NINFA,
     MARTIN_PESCADOR,
     GUACAMAYA,
-    QUETZAL
+    QUETZAL,
+    TRICHOGLOSSUS_MOLUCCANUS,
+    CUERVO,
+    ABEJARUCO
 }
 
 enum class FontStyle { MODERN, ROUNDED, ACADEMIC, ACCESSIBLE }
 
-/**
- * Escala adicional elegida dentro de YSM Expediente.
- * Android seguirá aplicando además el tamaño de fuente configurado en el teléfono.
- */
 enum class TextSizeStyle(val multiplier: Float) {
     SMALL(0.90f),
     NORMAL(1.00f),
