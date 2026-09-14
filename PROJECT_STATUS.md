@@ -1,6 +1,6 @@
 # Estado del proyecto · YSM Expediente
 
-Última actualización: **v0.21-debug**.
+Última actualización: **v0.21-debug + revisión de estabilidad**.
 
 ## Propósito
 Aplicación educativa offline para estudiantes de odontología. Enseña cómo llenar un expediente clínico físico y ofrece exámenes interactivos. No es un expediente electrónico de pacientes y no sustituye supervisión docente ni diagnóstico clínico definitivo.
@@ -27,10 +27,15 @@ Aplicación educativa offline para estudiantes de odontología. Enseña cómo ll
 - CPOD/ceod interactivo con cálculo automático.
 - Mucosas, signos vitales, oclusión, auxiliares, periodontograma, endodoncia y prótesis cuentan con módulos educativos interactivos.
 
-## Correcciones de estabilidad y publicación
+## Correcciones de la revisión
 - El ejercicio educativo activo se conserva durante recreaciones de la Activity, como una rotación de pantalla, mediante un `ViewModel` en memoria.
 - GitHub Pages y el APK público se despliegan únicamente desde `main`; una rama de desarrollo ya no puede reemplazar accidentalmente la publicación de producción.
 - El workflow de Android ejecuta pruebas unitarias y Android Lint antes de generar el APK.
+- IPC conserva durante la sesión los seis códigos por diente y reconstruye los resultados de sextante a partir de esos datos persistentes.
+- IHOS conserva sustitutos y exclusiones; la pantalla y el motor de la nota de ingreso usan los mismos dientes evaluables y respetan dientes marcados como ausentes.
+- O’Leary mantiene su propio conjunto de dientes evaluables, separado del odontograma, distingue estado no inicializado de “todos excluidos” y conserva por separado la selección de dentición permanente y temporal.
+- El cálculo global de O’Leary ignora la cara oclusal, que no forma parte del índice.
+- Se agregaron pruebas de regresión para estado de sesión, CPOD, IPC, IHOS y O’Leary.
 
 ## Sistema adaptable
 - Ancho clasificado como compacto, mediano o expandido.
@@ -61,9 +66,9 @@ Aplicación educativa offline para estudiantes de odontología. Enseña cómo ll
 - Prótesis total y fija; materiales, terminaciones y pónticos.
 
 ## Próximos puntos sugeridos
-1. Probar v0.21 en teléfono real, especialmente navegación atrás, gesto lateral, onboarding y recreación por rotación.
-2. Añadir pruebas unitarias para los motores de índices odontológicos y periodontales.
-3. Persistir explícitamente en el modelo del ejercicio las selecciones de sustitutos/exclusiones de IHOS para que el resumen global use exactamente la misma selección que la pantalla.
+1. Probar la rama de revisión en teléfono real, especialmente rotación, regreso, IPC, IHOS y cambio entre dentición permanente/temporal en O’Leary.
+2. Añadir más pruebas unitarias para periodontograma, diagnóstico pulpar/periapical y Kennedy/Applegate.
+3. Añadir Gradle Wrapper al repositorio para compilaciones completamente reproducibles fuera de GitHub Actions.
 4. Sustituir colores antiguos codificados directamente por `MaterialTheme` donde aún existan.
 5. Continuar con Cirugía interactiva y protocolos después de estabilizar la interfaz.
 
