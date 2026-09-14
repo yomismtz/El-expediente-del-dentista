@@ -19,6 +19,36 @@ class ClinicalEnginesTest {
     }
 
     @Test
+    fun ihos_excludesSelectedToothMarkedMissing() {
+        val session = EducationalSession(
+            teeth = mapOf(16 to ToothRecord(status = ToothStatus.MISSING_OTHER)),
+            ihosDebris = mapOf(16 to 3),
+            ihosCalculus = mapOf(16 to 3)
+        )
+
+        val result = ClinicalEngines.ihos(session)
+
+        assertEquals(0.0, result, 0.0001)
+    }
+
+    @Test
+    fun oleary_usesDedicatedEvaluableTeethAndIgnoresOcclusalSurface() {
+        val session = EducationalSession(
+            presentTeeth = setOf(11, 12, 13, 14),
+            oleary = mapOf(
+                11 to setOf(Surface.VESTIBULAR, Surface.MESIAL, Surface.OCCLUSAL),
+                12 to setOf(Surface.DISTAL)
+            ),
+            olearyPresentTeeth = setOf(11, 12),
+            olearyPermanentInitialized = true
+        )
+
+        val result = ClinicalEngines.olearyPercentage(session)
+
+        assertEquals(37.5, result, 0.0001)
+    }
+
+    @Test
     fun ipcHighest_returnsHighestNumericCode() {
         assertEquals("4", ClinicalEngines.ipcHighest(listOf("0", "2", "4", "X", "1", "3")))
     }
