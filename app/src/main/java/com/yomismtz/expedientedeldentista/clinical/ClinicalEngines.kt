@@ -41,15 +41,22 @@ object ClinicalEngines {
     }
 
     fun olearyPercentage(session: EducationalSession): Double {
-        val present = session.presentTeeth.filter { tooth ->
-            when (session.teeth[tooth]?.status ?: ToothStatus.HEALTHY) {
-                ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER -> false
-                else -> true
-            }
+        val hasDedicatedState = session.olearyPermanentInitialized || session.olearyPrimaryInitialized
+        val present = if (hasDedicatedState) {
+            session.olearyPresentTeeth
+        } else {
+            session.presentTeeth.filter { tooth ->
+                when (session.teeth[tooth]?.status ?: ToothStatus.HEALTHY) {
+                    ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER -> false
+                    else -> true
+                }
+            }.toSet()
         }
         val denominator = present.size * 4
         if (denominator == 0) return 0.0
-        val affected = present.sumOf { session.oleary[it]?.size ?: 0 }
+        val affected = present.sumOf { tooth ->
+            (session.oleary[tooth] ?: emptySet()).count { it != Surface.OCCLUSAL }
+        }
         return affected * 100.0 / denominator
     }
 
