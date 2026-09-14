@@ -11,7 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModelProvider
+import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.SettingsStore
 import com.yomismtz.expedientedeldentista.ui.AppRootV19
@@ -22,16 +22,18 @@ import com.yomismtz.expedientedeldentista.ui.theme.ExpedienteTheme
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val store = SettingsStore(this)
-        val appState = ViewModelProvider(this)[MainViewModel::class.java]
+        val initialPreferences = runCatching { store.load() }
+            .getOrElse { AppPreferences() }
 
         setContent {
-            var preferences by remember { mutableStateOf(store.load()) }
-            val session = appState.session
+            var preferences by remember { mutableStateOf(initialPreferences) }
+            var session by remember { mutableStateOf(EducationalSession()) }
 
             val savePreferences: (AppPreferences) -> Unit = { updated ->
                 preferences = updated
-                store.save(updated)
+                runCatching { store.save(updated) }
             }
 
             ExpedienteTheme(
@@ -45,6 +47,7 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         Modifier
                     }
+
                     Box(Modifier.fillMaxSize().then(swipeBackModifier)) {
                         if (!preferences.onboardingComplete) {
                             OnboardingV15Screen(
@@ -62,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                                     savePreferences(preferences.copy(languageTag = tag))
                                 },
                                 session = session,
-                                onSessionChanged = appState::updateSession
+                                onSessionChanged = { session = it }
                             )
                         }
                     }
