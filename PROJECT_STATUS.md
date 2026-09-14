@@ -1,6 +1,6 @@
 # Estado del proyecto · YSM Expediente
 
-Última actualización: **v0.19-debug**.
+Última actualización: **v0.21-debug**.
 
 ## Propósito
 Aplicación educativa offline para estudiantes de odontología. Enseña cómo llenar un expediente clínico físico y ofrece exámenes interactivos. No es un expediente electrónico de pacientes y no sustituye supervisión docente ni diagnóstico clínico definitivo.
@@ -10,32 +10,34 @@ Aplicación educativa offline para estudiantes de odontología. Enseña cómo ll
 - Logo/icono: ave académica + expediente dental + diente.
 - Slogan: **“Deja volar tu imaginación y tus conocimientos renacerán”**.
 - Paleta predeterminada: **Agaporni**.
-- Paletas: Agaporni, Tucán, Pavo real, Fénix, Colibrí, Pato mandarín, Ninfa, Martín pescador, Guacamaya y Quetzal.
+- Paletas: Agaporni, Tucán, Pavo real, Fénix, Colibrí, Pato mandarín, Ninfa, Martín pescador, Guacamaya, Quetzal, Trichoglossus moluccanus, Cuervo y Abejaruco.
 - Idiomas: Español e Inglés.
 - Primera configuración: idioma, Doctor/Doctora y paleta.
 - Configuración persistente: idioma, tratamiento, paleta, tipo de letra y tamaño de letra se restauran al reabrir.
 - La app respeta también la escala de fuente configurada en Android.
 
-## Correcciones v0.19 tras prueba en teléfono real
-- La barra superior dejó de ser flotante: **Nota de ingreso** y **Configuración** ocupan espacio propio y ya no deben tapar títulos/subtítulos.
-- Nueva navegación adaptable para teléfonos compactos, estándar y grandes.
-- O’Leary e ICDAS comparten un nuevo diente visto desde **oclusal**, sin raíces, con contorno coronario, caras V/L-P/M/D y centro oclusal cuando corresponde.
-- Selectores dentales separados en **dos filas: maxilar arriba y mandibular abajo**.
-- **CPOD/ceod ahora es interactivo**: cada diente puede marcarse sano, cariado, obturado, ausente por caries, ausente por otra causa o sellado; el resultado cambia automáticamente.
-- **Mucosas**: nueva boca abierta frontal con labios, carrillos, dientes, encía, paladar duro/blando, úvula, lengua, piso y orofaringe; las regiones son seleccionables.
-- **Signos vitales**: agrega interpretación educativa de temperatura y glucosa capilar según contexto.
-  - temperatura: alrededor de 37 °C habitual; ≥38 °C fiebre; ≤35 °C muy baja, con advertencia sobre sitio/método.
-  - glucosa: alerta <70 mg/dL; ayuno 70–99 habitual; 100–125 elevado; ≥126 requiere evaluación/confirmación; objetivos frecuentes ADA 80–130 preprandial y <180 mg/dL pico posprandial.
-  - una lectura capilar aislada no diagnostica diabetes.
-- **Oclusión**: dibujos propios para plano terminal recto, escalón mesial/distal, Angle molar I/II/III, relación canina I/II/III, overjet, overbite/mordida abierta y mordida cruzada.
-- Fuentes conceptuales resumidas en la app: NHS, MedlinePlus, CDC, ADA y Columbia University; se prioriza protocolo institucional.
+## Cambios principales hasta v0.21
+- Navegación atrás con historial real dentro de los módulos y gesto desde el borde izquierdo.
+- El gesto de regreso queda desactivado durante la configuración inicial para evitar salidas accidentales.
+- Onboarding actualizado con avatares Doctor/Doctora y nuevas paletas de aves.
+- Barra superior reservada para **Nota de ingreso** y **Configuración**, sin superponerse al contenido.
+- Navegación adaptable para teléfonos compactos, estándar y grandes.
+- O’Leary e ICDAS comparten un diente visto desde oclusal, sin raíces, con caras V/L-P/M/D y centro oclusal cuando corresponde.
+- Selectores dentales separados en maxilar y mandíbula.
+- CPOD/ceod interactivo con cálculo automático.
+- Mucosas, signos vitales, oclusión, auxiliares, periodontograma, endodoncia y prótesis cuentan con módulos educativos interactivos.
+
+## Correcciones de estabilidad y publicación
+- El ejercicio educativo activo se conserva durante recreaciones de la Activity, como una rotación de pantalla, mediante un `ViewModel` en memoria.
+- GitHub Pages y el APK público se despliegan únicamente desde `main`; una rama de desarrollo ya no puede reemplazar accidentalmente la publicación de producción.
+- El workflow de Android ejecuta pruebas unitarias y Android Lint antes de generar el APK.
 
 ## Sistema adaptable
 - Ancho clasificado como compacto, mediano o expandido.
 - Con letra grande se reducen columnas automáticamente.
 - Contenido largo usa desplazamiento vertical.
-- Carpeta y centro de exámenes adaptan cantidad de columnas al dispositivo.
-- Nuevas pantallas toman colores de `MaterialTheme` para respetar la paleta elegida.
+- Carpeta y centro de exámenes adaptan la cantidad de columnas al dispositivo.
+- Las pantallas nuevas toman colores de `MaterialTheme` para respetar la paleta elegida.
 
 ## Módulos principales incorporados
 - Nota de ingreso como centro de navegación.
@@ -59,10 +61,11 @@ Aplicación educativa offline para estudiantes de odontología. Enseña cómo ll
 - Prótesis total y fija; materiales, terminaciones y pónticos.
 
 ## Próximos puntos sugeridos
-1. Probar v0.19 en teléfono real, especialmente encabezados, boca abierta, caras dentales y dibujos de oclusión.
-2. Llevar el mismo pulido visual a periodontograma, ATM, endodoncia y formularios largos.
-3. Sustituir colores antiguos codificados directamente por `MaterialTheme` donde aún existan.
-4. Continuar con Cirugía interactiva y protocolos después de estabilizar la interfaz.
+1. Probar v0.21 en teléfono real, especialmente navegación atrás, gesto lateral, onboarding y recreación por rotación.
+2. Añadir pruebas unitarias para los motores de índices odontológicos y periodontales.
+3. Persistir explícitamente en el modelo del ejercicio las selecciones de sustitutos/exclusiones de IHOS para que el resumen global use exactamente la misma selección que la pantalla.
+4. Sustituir colores antiguos codificados directamente por `MaterialTheme` donde aún existan.
+5. Continuar con Cirugía interactiva y protocolos después de estabilizar la interfaz.
 
 ## Repositorio
 https://github.com/yomismtz/El-expediente-del-dentista
