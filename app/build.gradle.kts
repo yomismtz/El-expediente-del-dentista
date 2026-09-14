@@ -19,6 +19,13 @@ android {
     }
 
     buildTypes {
+        create("preview") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".preview"
+            versionNameSuffix = "-preview"
+            matchingFallbacks += listOf("debug")
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -54,4 +61,5 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     debugImplementation("androidx.compose.ui:ui-tooling")
+    "previewImplementation"("androidx.compose.ui:ui-tooling")
 }
