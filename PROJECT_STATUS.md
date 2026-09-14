@@ -1,76 +1,74 @@
 # Estado del proyecto · YSM Expediente
 
-Última actualización: **v0.21-debug + revisión de estabilidad**.
+Última actualización: **v0.26 de revisión**.
 
 ## Propósito
-Aplicación educativa offline para estudiantes de odontología. Enseña cómo llenar un expediente clínico físico y ofrece exámenes interactivos. No es un expediente electrónico de pacientes y no sustituye supervisión docente ni diagnóstico clínico definitivo.
+Aplicación educativa offline para estudiantes de odontología. Enseña cómo llenar un expediente clínico físico y ofrece exámenes interactivos y herramientas de cálculo. No es un expediente electrónico de pacientes, no prescribe medicamentos y no sustituye supervisión docente ni diagnóstico clínico definitivo.
 
 ## Identidad e interfaz
 - Nombre: **YSM Expediente · El expediente del dentista**.
 - Logo/icono: ave académica + expediente dental + diente.
 - Slogan: **“Deja volar tu imaginación y tus conocimientos renacerán”**.
 - Paleta predeterminada: **Agaporni**.
-- Paletas: Agaporni, Tucán, Pavo real, Fénix, Colibrí, Pato mandarín, Ninfa, Martín pescador, Guacamaya, Quetzal, Trichoglossus moluccanus, Cuervo y Abejaruco.
-- Idiomas: Español e Inglés.
-- Primera configuración: idioma, Doctor/Doctora y paleta.
-- Configuración persistente: idioma, tratamiento, paleta, tipo de letra y tamaño de letra se restauran al reabrir.
-- La app respeta también la escala de fuente configurada en Android.
+- Paletas inspiradas en aves, idioma Español/English y tratamiento Doctor/Doctora.
+- Configuración persistente de idioma, tratamiento, paleta, tipografía y tamaño de letra.
+- Créditos y privacidad reconocen la asistencia de ChatGPT (OpenAI) durante desarrollo, bajo revisión y adaptación del autor, sin implicar respaldo de OpenAI.
 
-## Cambios principales hasta v0.21
-- Navegación atrás con historial real dentro de los módulos y gesto desde el borde izquierdo.
-- El gesto de regreso queda desactivado durante la configuración inicial para evitar salidas accidentales.
-- Onboarding actualizado con avatares Doctor/Doctora y nuevas paletas de aves.
-- Barra superior reservada para **Nota de ingreso** y **Configuración**, sin superponerse al contenido.
-- Navegación adaptable para teléfonos compactos, estándar y grandes.
-- O’Leary e ICDAS comparten un diente visto desde oclusal, sin raíces, con caras V/L-P/M/D y centro oclusal cuando corresponde.
-- Selectores dentales separados en maxilar y mandíbula.
-- CPOD/ceod interactivo con cálculo automático.
-- Mucosas, signos vitales, oclusión, auxiliares, periodontograma, endodoncia y prótesis cuentan con módulos educativos interactivos.
+## Estabilidad y distribución
+- La carga inicial de preferencias está protegida con valores de respaldo para evitar fallos de arranque por configuración inválida.
+- La sesión educativa se mantiene en memoria durante la ejecución y no se almacena como expediente clínico.
+- La variante `preview` usa un `applicationId` separado para pruebas.
+- GitHub Pages y el APK público se despliegan únicamente desde `main`.
+- CI valida pruebas unitarias, Lint, ensamblado Preview, prueba instrumental y arranque en emulador Android 10.
 
-## Correcciones de la revisión
-- El ejercicio educativo activo se conserva durante recreaciones de la Activity, como una rotación de pantalla, mediante un `ViewModel` en memoria.
-- GitHub Pages y el APK público se despliegan únicamente desde `main`; una rama de desarrollo ya no puede reemplazar accidentalmente la publicación de producción.
-- El workflow de Android ejecuta pruebas unitarias y Android Lint antes de generar el APK.
-- IPC conserva durante la sesión los seis códigos por diente y reconstruye los resultados de sextante a partir de esos datos persistentes.
-- IHOS conserva sustitutos y exclusiones; la pantalla y el motor de la nota de ingreso usan los mismos dientes evaluables y respetan dientes marcados como ausentes.
-- O’Leary mantiene su propio conjunto de dientes evaluables, separado del odontograma, distingue estado no inicializado de “todos excluidos” y conserva por separado la selección de dentición permanente y temporal.
-- El cálculo global de O’Leary ignora la cara oclusal, que no forma parte del índice.
-- Se agregaron pruebas de regresión para estado de sesión, CPOD, IPC, IHOS y O’Leary.
+## Exploración clínica incorporada
+- Exploración general.
+- Cabeza y cuello: cráneo, cara, músculos de la expresión facial, músculos de la masticación, cuello y cadenas ganglionares.
+- ATM con apertura/cierre, lateralidades, protrusión/retrusión, apertura máxima, DVO/DVR, dolor, chasquido, crepitación, bloqueo y trayectoria.
+- Examen de mucosas por región y morfología.
+- Signos vitales, oclusión, postura y auxiliares.
 
-## Sistema adaptable
-- Ancho clasificado como compacto, mediano o expandido.
-- Con letra grande se reducen columnas automáticamente.
-- Contenido largo usa desplazamiento vertical.
-- Carpeta y centro de exámenes adaptan la cantidad de columnas al dispositivo.
-- Las pantallas nuevas toman colores de `MaterialTheme` para respetar la paleta elegida.
-
-## Módulos principales incorporados
-- Nota de ingreso como centro de navegación.
-- Identificación, anamnesis/ASA, medicamentos y alergias.
-- Signos vitales, ATM, oclusión, mucosas, postura y auxiliares.
+## Registros e índices
 - Odontograma por cuadrantes.
-- ICDAS, CPOD/ceod, O'Leary, IPC, IHOS y periodontograma.
-- Diagnóstico pulpar y periapical interactivos.
-- Endodoncia interactiva con conductometría y protocolos educativos.
-- Prótesis: Kennedy/Applegate, Seibert, retenedores PPR, PPR, total y fija.
-- En los exámenes se conserva la guía de **qué escribir al final en el expediente físico**.
+- ICDAS, CPOD/ceod, O'Leary, IPC e IHOS.
+- Periodontograma por diente con seis sitios.
+- Diagnóstico pulpar y periapical educativos.
+- Endodoncia, prótesis, cirugía, consentimiento y notas de evolución.
 
-## Prótesis · estado actual
-- Dos arcadas con presente/ausente.
-- Detección automática de espacios edéntulos.
-- Kennedy I–IV y modificaciones.
-- Reglas de Applegate paso a paso.
-- Seibert.
-- Akers, RPI, RPA, barra I y combinado.
-- Diseñador PPR con descansos, retención, planos guía y base/malla.
-- Prótesis total y fija; materiales, terminaciones y pónticos.
+## Nuevo en v0.26
+### Signos y síntomas
+Acceso rápido persistente durante la sesión para registrar:
+- dolor, localización, inicio y evolución;
+- intensidad y carácter;
+- desencadenantes y factores de alivio;
+- aumento de volumen, sangrado, fiebre;
+- limitación de apertura, alteración sensitiva y disfagia;
+- notas y redacción rápida sugerida.
 
-## Próximos puntos sugeridos
-1. Probar la rama de revisión en teléfono real, especialmente rotación, regreso, IPC, IHOS y cambio entre dentición permanente/temporal en O’Leary.
-2. Añadir más pruebas unitarias para periodontograma, diagnóstico pulpar/periapical y Kennedy/Applegate.
-3. Añadir Gradle Wrapper al repositorio para compilaciones completamente reproducibles fuera de GitHub Actions.
-4. Sustituir colores antiguos codificados directamente por `MaterialTheme` donde aún existan.
-5. Continuar con Cirugía interactiva y protocolos después de estabilizar la interfaz.
+### Calculadoras clínicas
+- **Dosis pediátrica:** calcula mg por dosis, mg/día y mL por dosis a partir de peso, dosis indicada, frecuencia y concentración. La app no selecciona el medicamento ni la dosis.
+- **Anestésicos locales:** lidocaína con epinefrina, lidocaína sola, mepivacaína, mepivacaína con epinefrina y articaína.
+- Calcula concentración en mg/mL, mg por cartucho, máximo conservador por peso, máximo teórico de cartuchos y epinefrina por cartucho cuando aplica.
+- El volumen del cartucho se introduce de forma explícita porque varía por presentación/mercado.
+- Se advierte que la ficha técnica, vasoconstrictor, edad, enfermedades, embarazo, medicamentos concomitantes y otras condiciones pueden imponer un límite menor.
+
+## Web
+- Nuevo acceso a **Signos y síntomas**.
+- Nueva sección **Calculadoras clínicas** con cálculo local en JavaScript.
+- Los valores introducidos en estos formularios no se envían a un servidor del proyecto ni se guardan en una base de datos.
+- Política de privacidad actualizada para reflejar estas funciones.
+
+## Correcciones previas importantes
+- IPC conserva códigos detallados durante la sesión.
+- IHOS respeta sustituciones, exclusiones y dientes ausentes.
+- O’Leary mantiene sus propios dientes evaluables y excluye la cara oclusal del denominador.
+- Se agregaron pruebas de regresión para CPOD, IPC, IHOS y O’Leary.
+
+## Próximos puntos
+1. Continuar reorganizando el folder principal conforme a la estructura completa de Historia clínica definida para el proyecto.
+2. Ampliar Historia clínica con antecedentes y exploración física por subviñetas.
+3. Añadir CAMBRA al flujo principal.
+4. Seguir ampliando pruebas automáticas y validación en teléfonos reales.
 
 ## Repositorio
 https://github.com/yomismtz/El-expediente-del-dentista
