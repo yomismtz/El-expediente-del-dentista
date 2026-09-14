@@ -41,11 +41,22 @@ import com.yomismtz.expedientedeldentista.clinical.AppScreen
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 
-private data class TabV19(val screen:AppScreen,val icon:String,val es:String,val en:String,val group:Int)
+private enum class ExtraScreenV26 { SYMPTOMS, CALCULATORS }
+
+private data class TabV19(
+    val screen: AppScreen?,
+    val icon: String,
+    val es: String,
+    val en: String,
+    val group: Int,
+    val extra: ExtraScreenV26? = null
+)
 
 private val tabsV19=listOf(
     TabV19(AppScreen.IDENTIFICATION,"👤","Identificación","Identification",0),
     TabV19(AppScreen.HISTORY,"🩺","Anamnesis / ASA","History / ASA",0),
+    TabV19(null,"🩹","Signos y síntomas","Signs and symptoms",0,ExtraScreenV26.SYMPTOMS),
+    TabV19(null,"🧮","Calculadoras clínicas","Clinical calculators",0,ExtraScreenV26.CALCULATORS),
     TabV19(AppScreen.INTAKE,"📋","Nota de ingreso","Intake note",0),
     TabV19(AppScreen.VITALS,"❤️","Signos vitales","Vital signs",0),
     TabV19(AppScreen.ATM,"◉","ATM","TMJ",0),
@@ -81,54 +92,68 @@ fun AdaptiveBaseRootV19(
     onSessionChanged:(EducationalSession)->Unit
 ) {
     var screen by remember { mutableStateOf(AppScreen.HOME) }
+    var extraScreen by remember { mutableStateOf<ExtraScreenV26?>(null) }
     val history = remember { mutableStateListOf<AppScreen>() }
     val lang=preferences.languageTag
 
     fun navigate(next: AppScreen) {
+        extraScreen = null
         if (next == screen) return
         history.add(screen)
         screen = next
     }
 
+    fun openExtra(next: ExtraScreenV26) {
+        extraScreen = next
+    }
+
     fun goBack() {
+        if (extraScreen != null) {
+            extraScreen = null
+            return
+        }
         screen = if (history.isNotEmpty()) history.removeAt(history.lastIndex) else AppScreen.HOME
     }
 
     val backPrevious = { goBack() }
 
-    BackHandler(enabled=screen!=AppScreen.HOME) { goBack() }
+    BackHandler(enabled=extraScreen != null || screen!=AppScreen.HOME) { goBack() }
 
-    when(screen) {
-        AppScreen.HOME -> CoverV19(lang){navigate(AppScreen.FOLDER)}
-        AppScreen.FOLDER -> FolderV19(lang,{navigate(it)},backPrevious)
-        AppScreen.SETTINGS -> ResponsiveScreenV17(tr(lang,"Configuración","Settings"),tr(lang,"Usa el botón de Configuración de la barra superior.","Use Settings in the top bar."),backPrevious){ }
-        AppScreen.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.HISTORY -> HistoryScreen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.INTAKE -> IntakeNoteScreen(lang,session,backPrevious)
-        AppScreen.ACTIVITIES -> ActivitiesScreen(lang,backPrevious)
-        AppScreen.VITALS -> VitalsInteractiveV19Screen(lang,backPrevious)
-        AppScreen.ATM -> AtmScreen(lang,backPrevious)
-        AppScreen.OCCLUSION -> OcclusionInteractiveV19Screen(lang,backPrevious)
-        AppScreen.MUCOSA -> MucosaExamV24Screen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.AUXILIARIES -> AuxiliariesV20Screen(lang,backPrevious)
-        AppScreen.ODONTOGRAM -> OdontogramV20Screen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.ICDAS -> IcdasScreen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.CPOD -> CpodInteractiveV19Screen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.OLEARY -> OlearyScreen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.IPC -> IpcResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.IHOS -> IhosResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.PERIODONTOGRAM -> PeriodontogramScreen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.POSTURE -> PostureVisualScreen(lang,backPrevious)
-        AppScreen.PULPAL,AppScreen.APICAL -> PulpalPeriapicalInteractiveV2Screen(lang,session,onSessionChanged,{navigate(AppScreen.ENDO)},backPrevious)
-        AppScreen.TREATMENT -> TreatmentScreen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.SESSIONS -> TreatmentBySessionsScreen(lang,backPrevious)
-        AppScreen.ENDO -> EndodonticInteractiveV2Screen(lang,session,{navigate(AppScreen.PULPAL)},{navigate(AppScreen.PULPAL)},backPrevious)
-        AppScreen.PROSTHETIC -> ProstheticResponsiveV17Screen(lang,backPrevious)
-        AppScreen.SURGICAL -> SurgicalSheetScreen(lang,backPrevious)
-        AppScreen.CONSENT -> ConsentTeachingScreen(lang,backPrevious)
-        AppScreen.REQUEST -> SimpleEducationalSheet(lang,"Solicitud de tratamiento","Treatment request","Aprende para qué sirve y qué debe identificar claramente.","Learn its purpose and what it should clearly identify.",listOf("Servicio solicitado","Motivo","Área u órgano dentario","Prioridad / referencia","Responsable y supervisión"),listOf("Requested service","Reason","Area or tooth","Priority / referral","Responsible clinician and supervision"),backPrevious)
-        AppScreen.BUDGET -> SimpleEducationalSheet(lang,"Presupuesto","Budget","Aprende su estructura administrativa sin registrar cobros reales.","Learn its administrative structure without recording real payments.",listOf("Procedimiento","Cantidad","Costo unitario","Subtotal","Total","Laboratorio cuando proceda"),listOf("Procedure","Quantity","Unit cost","Subtotal","Total","Laboratory when applicable"),backPrevious)
-        AppScreen.EVOLUTION -> EvolutionScreen(lang,session,backPrevious)
+    when (extraScreen) {
+        ExtraScreenV26.SYMPTOMS -> QuickSignsSymptomsV26Screen(lang, session, onSessionChanged, backPrevious)
+        ExtraScreenV26.CALCULATORS -> ClinicalCalculatorsV26Screen(lang, backPrevious)
+        null -> when(screen) {
+            AppScreen.HOME -> CoverV19(lang){navigate(AppScreen.FOLDER)}
+            AppScreen.FOLDER -> FolderV19(lang,{navigate(it)},{openExtra(it)},backPrevious)
+            AppScreen.SETTINGS -> ResponsiveScreenV17(tr(lang,"Configuración","Settings"),tr(lang,"Usa el botón de Configuración de la barra superior.","Use Settings in the top bar."),backPrevious){ }
+            AppScreen.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.HISTORY -> HistoryScreen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.INTAKE -> IntakeNoteScreen(lang,session,backPrevious)
+            AppScreen.ACTIVITIES -> ActivitiesScreen(lang,backPrevious)
+            AppScreen.VITALS -> VitalsInteractiveV19Screen(lang,backPrevious)
+            AppScreen.ATM -> AtmScreen(lang,backPrevious)
+            AppScreen.OCCLUSION -> OcclusionInteractiveV19Screen(lang,backPrevious)
+            AppScreen.MUCOSA -> MucosaExamV24Screen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.AUXILIARIES -> AuxiliariesV20Screen(lang,backPrevious)
+            AppScreen.ODONTOGRAM -> OdontogramV20Screen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.ICDAS -> IcdasScreen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.CPOD -> CpodInteractiveV19Screen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.OLEARY -> OlearyScreen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.IPC -> IpcResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.IHOS -> IhosResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.PERIODONTOGRAM -> PeriodontogramScreen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.POSTURE -> PostureVisualScreen(lang,backPrevious)
+            AppScreen.PULPAL,AppScreen.APICAL -> PulpalPeriapicalInteractiveV2Screen(lang,session,onSessionChanged,{navigate(AppScreen.ENDO)},backPrevious)
+            AppScreen.TREATMENT -> TreatmentScreen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.SESSIONS -> TreatmentBySessionsScreen(lang,backPrevious)
+            AppScreen.ENDO -> EndodonticInteractiveV2Screen(lang,session,{navigate(AppScreen.PULPAL)},{navigate(AppScreen.PULPAL)},backPrevious)
+            AppScreen.PROSTHETIC -> ProstheticResponsiveV17Screen(lang,backPrevious)
+            AppScreen.SURGICAL -> SurgicalSheetScreen(lang,backPrevious)
+            AppScreen.CONSENT -> ConsentTeachingScreen(lang,backPrevious)
+            AppScreen.REQUEST -> SimpleEducationalSheet(lang,"Solicitud de tratamiento","Treatment request","Aprende para qué sirve y qué debe identificar claramente.","Learn its purpose and what it should clearly identify.",listOf("Servicio solicitado","Motivo","Área u órgano dentario","Prioridad / referencia","Responsable y supervisión"),listOf("Requested service","Reason","Area or tooth","Priority / referral","Responsible clinician and supervision"),backPrevious)
+            AppScreen.BUDGET -> SimpleEducationalSheet(lang,"Presupuesto","Budget","Aprende su estructura administrativa sin registrar cobros reales.","Learn its administrative structure without recording real payments.",listOf("Procedimiento","Cantidad","Costo unitario","Subtotal","Total","Laboratorio cuando proceda"),listOf("Procedure","Quantity","Unit cost","Subtotal","Total","Laboratory when applicable"),backPrevious)
+            AppScreen.EVOLUTION -> EvolutionScreen(lang,session,backPrevious)
+        }
     }
 }
 
@@ -149,9 +174,14 @@ private fun CoverV19(lang:String,onOpen:()->Unit) {
 }
 
 @Composable
-private fun FolderV19(lang:String,onNavigate:(AppScreen)->Unit,onClose:()->Unit) {
+private fun FolderV19(
+    lang:String,
+    onNavigate:(AppScreen)->Unit,
+    onExtra:(ExtraScreenV26)->Unit,
+    onClose:()->Unit
+) {
     var group by remember { mutableStateOf(0) }
-    ResponsiveScreenV17("YSM Expediente",tr(lang,"Elige una sección. La barra superior queda reservada y nunca tapa el contenido.","Choose a section. The top bar has reserved space and never covers content."),onClose) { profile ->
+    ResponsiveScreenV17("YSM Expediente",tr(lang,"Elige una sección. Signos y síntomas y las calculadoras tienen acceso directo desde el folder.","Choose a section. Signs and symptoms and the calculators have direct access from the folder."),onClose) { profile ->
         val names=listOf(tr(lang,"Ingreso","Intake"),tr(lang,"Exámenes","Exams"),tr(lang,"Tratamiento","Treatment"))
         ResponsiveSectionV17(tr(lang,"Secciones del expediente","Record sections")) {
             AdaptiveGridV17(3,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 3) { i ->
@@ -162,7 +192,13 @@ private fun FolderV19(lang:String,onNavigate:(AppScreen)->Unit,onClose:()->Unit)
             val items=tabsV19.filter{it.group==group}
             AdaptiveGridV17(items.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2) { i ->
                 val tab=items[i]
-                Card(onClick={onNavigate(tab.screen)},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer.copy(alpha=.55f)),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.30f)),shape=RoundedCornerShape(16.dp)) {
+                Card(
+                    onClick={ tab.extra?.let(onExtra) ?: tab.screen?.let(onNavigate) },
+                    modifier=Modifier.fillMaxWidth(),
+                    colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer.copy(alpha=.55f)),
+                    border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.30f)),
+                    shape=RoundedCornerShape(16.dp)
+                ) {
                     Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(3.dp)) {
                         Text("${tab.icon} ${if(lang=="en")tab.en else tab.es}",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
                         Text(tr(lang,"Toca para abrir","Tap to open"),style=MaterialTheme.typography.bodyMedium)
