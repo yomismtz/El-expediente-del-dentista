@@ -134,6 +134,25 @@ data class HeadNeckExplorationState(
     val notes: Map<String, String> = emptyMap()
 )
 
+/** IX.3.7 ATM / TMJ. Stores measurements and observed signs without assigning a definitive diagnosis. */
+data class AtmExamState(
+    val openingMm: String = "",
+    val rightLateralityMm: String = "",
+    val leftLateralityMm: String = "",
+    val protrusionMm: String = "",
+    val retrusionFinding: String = "",
+    val openingPath: String = "",
+    val pain: Boolean = false,
+    val click: Boolean = false,
+    val crepitus: Boolean = false,
+    val locking: Boolean = false,
+    val rightTenderness: Boolean = false,
+    val leftTenderness: Boolean = false,
+    val dvoMm: String = "",
+    val dvrMm: String = "",
+    val notes: String = ""
+)
+
 /** Clinical morphology for one oral-mucosa region. No visual diagnosis is assigned automatically. */
 data class MucosaFindingState(
     val findingType: String = "",
@@ -151,6 +170,7 @@ data class EducationalSession(
     val history: HistoryState = HistoryState(),
     val generalInspection: GeneralInspectionState = GeneralInspectionState(),
     val headNeckExploration: HeadNeckExplorationState = HeadNeckExplorationState(),
+    val atmExam: AtmExamState = AtmExamState(),
     val mucosaFindings: Map<String, MucosaFindingState> = emptyMap(),
     val teeth: Map<Int, ToothRecord> = emptyMap(),
     val odontogramSurfaces: Map<Int, Map<Surface, SurfaceMark>> = emptyMap(),
