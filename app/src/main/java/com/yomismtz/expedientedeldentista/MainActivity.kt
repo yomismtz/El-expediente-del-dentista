@@ -39,11 +39,12 @@ class MainActivity : AppCompatActivity() {
                 textSizeStyle = preferences.textSizeStyle
             ) {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    Box(
+                    val swipeBackModifier = if (preferences.onboardingComplete) {
+                        Modifier.edgeSwipeBackV21 { onBackPressedDispatcher.onBackPressed() }
+                    } else {
                         Modifier
-                            .fillMaxSize()
-                            .edgeSwipeBackV21 { onBackPressedDispatcher.onBackPressed() }
-                    ) {
+                    }
+                    Box(Modifier.fillMaxSize().then(swipeBackModifier)) {
                         if (!preferences.onboardingComplete) {
                             OnboardingV15Screen(
                                 preferences = preferences,
