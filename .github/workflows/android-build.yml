@@ -34,6 +34,41 @@ jobs:
       - name: Build preview APK
         run: gradle :app:assemblePreview --stacktrace
 
+      - name: Compile launch instrumentation test
+        run: gradle :app:assemblePreviewAndroidTest --stacktrace
+
+      - name: Run startup smoke test on Android 10
+        shell: bash
+        run: |
+          set -euo pipefail
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager "platform-tools" "emulator" "system-images;android-29;google_apis;x86_64"
+          echo no | avdmanager create avd --force --name ci-api29 --package "system-images;android-29;google_apis;x86_64"
+          sudo chmod 666 /dev/kvm 2>/dev/null || true
+          nohup "$ANDROID_HOME/emulator/emulator" \
+            -avd ci-api29 \
+            -no-window \
+            -noaudio \
+            -no-boot-anim \
+            -gpu swiftshader_indirect \
+            -camera-back none \
+            -camera-front none \
+            > emulator.log 2>&1 &
+          adb wait-for-device
+          timeout 360 bash -c 'until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" = "1" ]; do sleep 5; done'
+          adb shell settings put global window_animation_scale 0
+          adb shell settings put global transition_animation_scale 0
+          adb shell settings put global animator_duration_scale 0
+          gradle :app:connectedPreviewAndroidTest --stacktrace
+
+      - name: Upload emulator log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-emulator-log
+          path: emulator.log
+          if-no-files-found: ignore
+
       - name: Upload preview APK
         uses: actions/upload-artifact@v4
         with:
