@@ -106,8 +106,8 @@ fun AppRootV7(
                         V7Overlay.ICDAS -> IcdasScreen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.CPOD -> CpodInteractiveV19Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.OLEARY -> OlearyScreen(lang,session,onSessionChanged,backPrevious)
-                        V7Overlay.IPC -> IpcResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
-                        V7Overlay.IHOS -> IhosResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.IPC -> IpcPersistentV22Screen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.IHOS -> IhosPersistentV22Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.PERIODONTAL -> PeriodontogramScreen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.POSTURE -> PostureVisualScreen(lang,backPrevious)
                         V7Overlay.PULPAL_APICAL -> PulpalPeriapicalInteractiveV2Screen(
