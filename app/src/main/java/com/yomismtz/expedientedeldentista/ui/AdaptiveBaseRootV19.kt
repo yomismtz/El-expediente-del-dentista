@@ -47,10 +47,12 @@ private val tabsV19=listOf(
     TabV19(AppScreen.IDENTIFICATION,"👤","Identificación","Identification",0),
     TabV19(AppScreen.HISTORY,"🩺","Anamnesis / ASA","History / ASA",0),
     TabV19(AppScreen.INTAKE,"📋","Nota de ingreso","Intake note",0),
+    TabV19(AppScreen.GENERAL_INSPECTION,"👁","IX.2 Exploración general","IX.2 General inspection",0),
+    TabV19(AppScreen.HEAD_NECK,"🧑","IX.3 Cabeza y cuello","IX.3 Head and neck",0),
     TabV19(AppScreen.VITALS,"❤️","Signos vitales","Vital signs",0),
-    TabV19(AppScreen.ATM,"◉","ATM y músculos","TMJ and muscles",0),
+    TabV19(AppScreen.ATM,"◉","ATM","TMJ",0),
     TabV19(AppScreen.OCCLUSION,"↔","Oclusión","Occlusion",0),
-    TabV19(AppScreen.MUCOSA,"👄","Mucosas","Mucosa",0),
+    TabV19(AppScreen.MUCOSA,"👄","Mucosas orales","Oral mucosa",0),
     TabV19(AppScreen.AUXILIARIES,"🧪","Auxiliares","Auxiliaries",0),
 
     TabV19(AppScreen.ODONTOGRAM,"🦷","Odontograma","Odontogram",1),
@@ -106,10 +108,12 @@ fun AdaptiveBaseRootV19(
         AppScreen.HISTORY -> HistoryScreen(lang,session,onSessionChanged,backPrevious)
         AppScreen.INTAKE -> IntakeNoteScreen(lang,session,backPrevious)
         AppScreen.ACTIVITIES -> ActivitiesScreen(lang,backPrevious)
+        AppScreen.GENERAL_INSPECTION -> GeneralInspectionV24Screen(lang,session,onSessionChanged,backPrevious)
+        AppScreen.HEAD_NECK -> HeadNeckExplorationV24Screen(lang,session,onSessionChanged,backPrevious)
         AppScreen.VITALS -> VitalsInteractiveV19Screen(lang,backPrevious)
         AppScreen.ATM -> AtmScreen(lang,backPrevious)
         AppScreen.OCCLUSION -> OcclusionInteractiveV19Screen(lang,backPrevious)
-        AppScreen.MUCOSA -> MucosaInteractiveV19Screen(lang,backPrevious)
+        AppScreen.MUCOSA -> MucosaExamV24Screen(lang,session,onSessionChanged,backPrevious)
         AppScreen.AUXILIARIES -> AuxiliariesV20Screen(lang,backPrevious)
         AppScreen.ODONTOGRAM -> OdontogramV20Screen(lang,session,onSessionChanged,backPrevious)
         AppScreen.ICDAS -> IcdasScreen(lang,session,onSessionChanged,backPrevious)
