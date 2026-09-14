@@ -2,7 +2,7 @@ package com.yomismtz.expedientedeldentista.clinical
 
 enum class AppScreen {
     HOME, FOLDER, SETTINGS,
-    IDENTIFICATION, HISTORY, INTAKE, ACTIVITIES, VITALS, ATM, OCCLUSION, MUCOSA, AUXILIARIES,
+    IDENTIFICATION, HISTORY, INTAKE, ACTIVITIES, GENERAL_INSPECTION, HEAD_NECK, VITALS, ATM, OCCLUSION, MUCOSA, AUXILIARIES,
     ODONTOGRAM, ICDAS, CPOD, OLEARY, IPC, IHOS, PERIODONTOGRAM, POSTURE,
     PULPAL, APICAL, TREATMENT, SESSIONS, ENDO, PROSTHETIC, SURGICAL,
     CONSENT, REQUEST, BUDGET, EVOLUTION
@@ -87,9 +87,71 @@ data class PulpalAssessment(
     val previousPartialEndo: Boolean = false
 )
 
+/** Structured, neutral observations for IX.2 Inspección general. Empty values mean not evaluated. */
+data class GeneralInspectionState(
+    val apparentAge: String = "",
+    val gait: String = "",
+    val facies: String = "",
+    val attitude: String = "",
+    val constitution: String = "",
+    val abnormalMovements: String = "",
+    val consciousness: String = "",
+    val psychologicalAttitude: String = "",
+    val personalCare: String = "",
+    val cooperation: String = "",
+    val notes: String = ""
+)
+
+data class LymphNodeState(
+    val status: String = "",
+    val side: String = "",
+    val sizeMm: String = "",
+    val tenderness: String = "",
+    val consistency: String = "",
+    val mobility: String = "",
+    val notes: String = ""
+)
+
+/** IX.3 Exploración de cabeza y cuello. Values are observations, not diagnoses. */
+data class HeadNeckExplorationState(
+    val craniumObservation: String = "",
+    val cranialWidthMm: String = "",
+    val cranialLengthMm: String = "",
+    val headCircumferenceCm: String = "",
+    val hairline: String = "",
+    val cranialPalpation: String = "",
+    val faceProfile: String = "",
+    val faceSymmetry: String = "",
+    val facialSkin: String = "",
+    val facialMuscleFunction: String = "",
+    val facialMuscleTone: String = "",
+    val masticatoryMuscleFinding: String = "",
+    val masticatoryMuscleTone: String = "",
+    val neckInspection: String = "",
+    val neckMobility: String = "",
+    val neckTenderness: String = "",
+    val lymphNodes: Map<String, LymphNodeState> = emptyMap(),
+    val notes: Map<String, String> = emptyMap()
+)
+
+/** Clinical morphology for one oral-mucosa region. No visual diagnosis is assigned automatically. */
+data class MucosaFindingState(
+    val findingType: String = "",
+    val sizeMm: String = "",
+    val color: String = "",
+    val surface: String = "",
+    val borders: String = "",
+    val consistency: String = "",
+    val symptoms: String = "",
+    val notes: String = ""
+)
+
 data class EducationalSession(
     val profile: PatientProfile = PatientProfile(),
     val history: HistoryState = HistoryState(),
+    val generalInspection: GeneralInspectionState = GeneralInspectionState(),
+    val headNeckExploration: HeadNeckExplorationState = HeadNeckExplorationState(),
+    val mucosaFindings: Map<String, MucosaFindingState> = emptyMap(),
     val teeth: Map<Int, ToothRecord> = emptyMap(),
     val odontogramSurfaces: Map<Int, Map<Surface, SurfaceMark>> = emptyMap(),
     val icdasSurfaces: Map<Int, Map<Surface, Int>> = emptyMap(),
