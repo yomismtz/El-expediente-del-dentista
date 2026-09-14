@@ -100,9 +100,9 @@ fun AppRootV7(
                         V7Overlay.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.HISTORY -> HistoryScreen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.GENERAL_INSPECTION -> GeneralInspectionV24Screen(lang,session,onSessionChanged,backPrevious)
-                        V7Overlay.HEAD_NECK -> HeadNeckExplorationV24Screen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.HEAD_NECK -> HeadNeckExplorationV25Screen(lang,session,onSessionChanged,{openOverlay(V7Overlay.ATM)},backPrevious)
                         V7Overlay.VITALS -> VitalsInteractiveV19Screen(lang,backPrevious)
-                        V7Overlay.ATM -> AtmScreen(lang,backPrevious)
+                        V7Overlay.ATM -> AtmDiagnosisV25Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.OCCLUSION -> OcclusionInteractiveV19Screen(lang,backPrevious)
                         V7Overlay.MUCOSA -> MucosaExamV24Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.AUXILIARIES -> AuxiliariesV20Screen(lang,backPrevious)
@@ -193,8 +193,8 @@ private fun FloatingActions19(lang:String,onWriting:()->Unit,onIntake:()->Unit,m
             }
         } else {
             Row(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
-                OutlinedButton(onClick=onWriting){Text("✍️ ${tr(lang,"Qué escribir","What to write")}")}
-                OutlinedButton(onClick=onIntake){Text("↩ ${tr(lang,"Ingreso","Intake")}")}
+                OutlinedButton(onClick=onWriting){Text("✍️ ${tr(lang,"Qué escribir","What to write")}")
+                OutlinedButton(onClick=onIntake){Text("↩ ${tr(lang,"Ingreso","Intake")}")
             }
         }
     }
@@ -203,7 +203,8 @@ private fun FloatingActions19(lang:String,onWriting:()->Unit,onIntake:()->Unit,m
 private fun finalWriting19(screen:V7Overlay,lang:String):String {
     if(lang=="en") return when(screen) {
         V7Overlay.GENERAL_INSPECTION -> "General inspection: apparent age ___; gait ___; facies ___; attitude/cooperation ___; consciousness/orientation ___; abnormal movements ___; additional objective observations ___."
-        V7Overlay.HEAD_NECK -> "Head and neck: cranium ___; face/profile/symmetry ___; facial muscle function ___; masticatory muscles ___; neck ___; lymph-node chains ___; describe any palpable node by side, size, tenderness, consistency and mobility."
+        V7Overlay.HEAD_NECK -> "Head and neck: cranium ___; face/profile/symmetry/skin color ___; facial muscle function ___; masticatory muscles ___; neck ___; lymph-node chains ___; describe palpable nodes by side, size, tenderness, consistency and mobility."
+        V7Overlay.ATM -> "TMJ: maximum opening ___ mm; opening path ___; right/left laterality ___/___ mm; protrusion ___ mm; joint sounds ___; pain/tenderness ___; locking ___; OVD ___ mm; RVD ___ mm. Interpret findings in clinical context."
         V7Overlay.PULPAL_APICAL -> "Tooth ___: pulpal diagnosis most compatible with ___; apical diagnosis most compatible with ___; supported by ___. State missing tests."
         V7Overlay.IPC -> "CPI: S1=__ · S2=__ · S3=__ · S4=__ · S5=__ · S6=__. Add relevant periodontal findings."
         V7Overlay.IHOS -> "OHI-S = ___ (DI-S ___ + CI-S ___). Add the interpretation."
@@ -219,7 +220,8 @@ private fun finalWriting19(screen:V7Overlay,lang:String):String {
     }
     return when(screen) {
         V7Overlay.GENERAL_INSPECTION -> "Exploración general: edad aparente ___; marcha ___; facies ___; actitud/cooperación ___; conciencia/orientación ___; movimientos anormales ___; observaciones objetivas adicionales ___."
-        V7Overlay.HEAD_NECK -> "Cabeza y cuello: cráneo ___; cara/perfil/simetría ___; función de músculos faciales ___; músculos masticatorios ___; cuello ___; cadenas ganglionares ___; si hay ganglio palpable, describe lado, tamaño, dolor, consistencia y movilidad."
+        V7Overlay.HEAD_NECK -> "Cabeza y cuello: cráneo ___; cara/perfil/simetría/coloración ___; función de músculos faciales ___; músculos masticatorios ___; cuello ___; cadenas ganglionares ___; si hay ganglio palpable, describe lado, tamaño, dolor, consistencia y movilidad."
+        V7Overlay.ATM -> "ATM: apertura máxima ___ mm; trayectoria ___; lateralidad derecha/izquierda ___/___ mm; protrusión ___ mm; ruidos articulares ___; dolor a movimiento/palpación ___; bloqueo ___; DVO ___ mm; DVR ___ mm. Interpreta en contexto clínico."
         V7Overlay.PULPAL_APICAL -> "OD ___: diagnóstico pulpar más compatible con ___; diagnóstico periapical más compatible con ___; sustentado por ___. Indica pruebas faltantes."
         V7Overlay.IPC -> "IPC: S1=__ · S2=__ · S3=__ · S4=__ · S5=__ · S6=__. Añade hallazgos periodontales relevantes."
         V7Overlay.IHOS -> "IHOS = ___ (ID-S ___ + IC-S ___). Añade la interpretación obtenida."
