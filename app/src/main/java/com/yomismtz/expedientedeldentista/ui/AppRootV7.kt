@@ -84,6 +84,8 @@ fun AppRootV7(
                             lang,
                             onIdentification={openOverlay(V7Overlay.IDENTIFICATION)},
                             onHistory={openOverlay(V7Overlay.HISTORY)},
+                            onGeneralInspection={openOverlay(V7Overlay.GENERAL_INSPECTION)},
+                            onHeadNeck={openOverlay(V7Overlay.HEAD_NECK)},
                             onVitals={openOverlay(V7Overlay.VITALS)},
                             onAtm={openOverlay(V7Overlay.ATM)},
                             onOcclusion={openOverlay(V7Overlay.OCCLUSION)},
