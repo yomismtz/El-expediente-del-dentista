@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -46,13 +47,13 @@ fun AppRootV7(
     val lang=preferences.languageTag
     val backToIntake={overlay=V7Overlay.INTAKE}
 
-    Column(Modifier.fillMaxSize()) {
+    Column(Modifier.fillMaxSize().navigationBarsPadding()) {
         GlobalBar19(lang,{overlay=V7Overlay.INTAKE},onOpenSettings)
         Box(Modifier.weight(1f).fillMaxWidth()) {
             AdaptiveBaseRootV17(preferences,onPreferencesChanged,onLanguageChanged,session,onSessionChanged)
 
             if(overlay!=V7Overlay.NONE) {
-                Surface(Modifier.fillMaxSize(),tonalElevation=8.dp) {
+                Surface(Modifier.fillMaxSize().navigationBarsPadding(),tonalElevation=8.dp) {
                     when(overlay) {
                         V7Overlay.INTAKE -> IntakeInteractiveV3Screen(
                             lang,
@@ -75,8 +76,8 @@ fun AppRootV7(
                         V7Overlay.ATM -> AtmScreen(lang,backToIntake)
                         V7Overlay.OCCLUSION -> OcclusionInteractiveV19Screen(lang,backToIntake)
                         V7Overlay.MUCOSA -> MucosaInteractiveV19Screen(lang,backToIntake)
-                        V7Overlay.AUXILIARIES -> AuxiliariesInteractiveScreen(lang,backToIntake)
-                        V7Overlay.ODONTOGRAM -> OdontogramResponsiveV17Screen(lang,session,onSessionChanged,backToIntake)
+                        V7Overlay.AUXILIARIES -> AuxiliariesV20Screen(lang,backToIntake)
+                        V7Overlay.ODONTOGRAM -> OdontogramV20Screen(lang,session,onSessionChanged,backToIntake)
                         V7Overlay.ICDAS -> IcdasScreen(lang,session,onSessionChanged,backToIntake)
                         V7Overlay.CPOD -> CpodInteractiveV19Screen(lang,session,onSessionChanged,backToIntake)
                         V7Overlay.OLEARY -> OlearyScreen(lang,session,onSessionChanged,backToIntake)
@@ -175,6 +176,7 @@ private fun finalWriting19(screen:V7Overlay,lang:String):String {
         V7Overlay.ENDO -> "Tooth ___; pulpal ___; apical ___; procedure ___; coronal reference ___; working lengths ___; irrigation per protocol; restoration ___; follow-up ___."
         V7Overlay.PROSTHETIC -> "Arch ___; Kennedy ___ mod. ___ when applicable; edentulous areas ___; prosthesis/material/design ___; stage ___; instructions ___."
         V7Overlay.MUCOSA -> "Describe each examined mucosal region. For a lesion record site, size, color, surface, borders, consistency and symptoms."
+        V7Overlay.AUXILIARIES -> "Record the exact laboratory/pathology/imaging result first, then a cautious interpretation and any missing confirmation or faculty review."
         else -> "Summarize result, interpretation, supporting findings and missing information."
     }
     return when(screen) {
@@ -188,6 +190,7 @@ private fun finalWriting19(screen:V7Overlay,lang:String):String {
         V7Overlay.ENDO -> "OD ___; diagnóstico pulpar ___; periapical ___; procedimiento ___; referencia coronal ___; longitudes ___; irrigación según protocolo; restauración ___; seguimiento ___."
         V7Overlay.PROSTHETIC -> "Arco ___; Kennedy ___ mod. ___ cuando aplique; áreas edéntulas ___; tipo/material/diseño ___; etapa ___; indicaciones ___."
         V7Overlay.MUCOSA -> "Describe cada zona de mucosa. Si hay lesión: localización, tamaño, color, superficie, bordes, consistencia y síntomas."
+        V7Overlay.AUXILIARIES -> "Primero copia el resultado exacto del laboratorio, biopsia o imagen; después añade interpretación prudente, discrepancias y lo que falta confirmar con docente/profesional."
         else -> "Resume resultado, interpretación, hallazgos que lo sustentan y datos faltantes."
     }
 }
