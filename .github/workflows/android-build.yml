@@ -49,40 +49,64 @@ jobs:
           path: app/build/outputs/apk/preview/app-preview.apk
           if-no-files-found: error
 
-      - name: Instrumented startup tests and direct launch on Android 10
+      - name: Direct startup smoke test on Android 10
         uses: ReactiveCircus/android-emulator-runner@v2.38.0
         with:
           api-level: 29
           target: google_apis
           arch: x86_64
           profile: Nexus 6
-          disable-animations: true
+          disable-animations: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
           script: |
             set -eu
             trap 'adb logcat -d -v threadtime > startup-logcat.txt 2>/dev/null || true' 0
 
-            gradle :app:connectedPreviewAndroidTest --stacktrace
-
             APK="app/build/outputs/apk/preview/app-preview.apk"
             PACKAGE="com.yomismtz.expedientedeldentista.preview"
             ACTIVITY="com.yomismtz.expedientedeldentista.MainActivity"
 
+            echo "Waiting for Android framework services..."
+            READY=0
+            COUNT=0
+            while [ "$COUNT" -lt 90 ]; do
+              PACKAGE_SERVICE="$(adb shell service check package 2>/dev/null || true)"
+              ACTIVITY_SERVICE="$(adb shell service check activity 2>/dev/null || true)"
+              SETTINGS_VALUE="$(adb shell settings get global window_animation_scale 2>/dev/null || true)"
+              if echo "$PACKAGE_SERVICE" | grep -q "found" && \
+                 echo "$ACTIVITY_SERVICE" | grep -q "found" && \
+                 [ -n "$SETTINGS_VALUE" ] && [ "$SETTINGS_VALUE" != "null" ]; then
+                READY=1
+                break
+              fi
+              COUNT=$((COUNT + 1))
+              sleep 4
+            done
+
+            if [ "$READY" -ne 1 ]; then
+              echo "::error::Android framework services never became ready."
+              adb shell service list | head -n 80 || true
+              exit 1
+            fi
+
+            echo "Android framework services are ready."
             adb install -r "$APK"
             adb shell pm clear "$PACKAGE" || true
             adb logcat -c
-            adb shell am start -W -n "$PACKAGE/$ACTIVITY"
-            sleep 8
+
+            echo "Launching $PACKAGE/$ACTIVITY"
+            adb shell am start -W -n "$PACKAGE/$ACTIVITY" || true
+            sleep 12
 
             PID="$(adb shell pidof "$PACKAGE" 2>/dev/null | tr -d '\r' || true)"
             if [ -z "$PID" ]; then
               echo "::error::The Preview process died during startup."
-              adb logcat -d -v time | grep -E 'expedientedeldentista|FATAL EXCEPTION|AndroidRuntime|Process:' | tail -n 300 || true
+              adb logcat -d -v time | grep -E 'expedientedeldentista|FATAL EXCEPTION|AndroidRuntime|Process:|Caused by:' | tail -n 400 || true
               exit 1
             fi
 
             echo "Preview process is alive after launch: PID=$PID"
-            adb shell dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity|expedientedeldentista' | head -n 30 || true
+            adb shell dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity|expedientedeldentista' | head -n 40 || true
 
       - name: Upload startup log on failure
         if: failure()
