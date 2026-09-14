@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- MainActivity is a ComponentActivity, so a platform Material theme is sufficient and
-         avoids AppCompat delegate/theme initialization during the critical startup path. -->
-    <style name="Theme.ExpedienteDentista" parent="@android:style/Theme.Material.Light.NoActionBar">
+    <style name="Theme.ExpedienteDentista" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:statusBarColor">@android:color/white</item>
         <item name="android:navigationBarColor">@android:color/white</item>
-        <item name="android:windowNoTitle">true</item>
     </style>
 </resources>
