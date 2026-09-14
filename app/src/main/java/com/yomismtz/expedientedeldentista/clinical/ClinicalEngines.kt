@@ -55,15 +55,13 @@ object ClinicalEngines {
 
     fun ihos(session: EducationalSession): Double {
         val indexTeeth = listOf(16, 11, 26, 36, 31, 46)
-        val valid = indexTeeth.filter { tooth ->
-            when (session.teeth[tooth]?.status ?: ToothStatus.HEALTHY) {
-                ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER -> false
-                else -> true
-            }
+        val validSlots = indexTeeth.filterNot { it in session.ihosExcludedSlots }
+        if (validSlots.isEmpty()) return 0.0
+        val total = validSlots.sumOf { indexTooth ->
+            val selectedTooth = session.ihosSelections[indexTooth] ?: indexTooth
+            (session.ihosDebris[selectedTooth] ?: 0) + (session.ihosCalculus[selectedTooth] ?: 0)
         }
-        if (valid.isEmpty()) return 0.0
-        val total = valid.sumOf { (session.ihosDebris[it] ?: 0) + (session.ihosCalculus[it] ?: 0) }
-        return total.toDouble() / valid.size
+        return total.toDouble() / validSlots.size
     }
 
     fun ihosInterpretation(value: Double, lang: String): String {
