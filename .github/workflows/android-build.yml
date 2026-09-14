@@ -37,6 +37,13 @@ jobs:
       - name: Build preview APK
         run: gradle :app:assemblePreview --stacktrace
 
+      - name: Upload preview APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: El-expediente-del-dentista-preview
+          path: app/build/outputs/apk/preview/app-preview.apk
+          if-no-files-found: error
+
       - name: Compile launch instrumentation test
         run: gradle :app:assemblePreviewAndroidTest --stacktrace
 
@@ -71,10 +78,3 @@ jobs:
           name: android-emulator-log
           path: emulator.log
           if-no-files-found: ignore
-
-      - name: Upload preview APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: El-expediente-del-dentista-preview
-          path: app/build/outputs/apk/preview/app-preview.apk
-          if-no-files-found: error
