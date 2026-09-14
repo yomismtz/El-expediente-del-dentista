@@ -7,6 +7,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+concurrency:
+  group: android-build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -55,8 +59,8 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
           script: |
-            set -euo pipefail
-            trap 'adb logcat -d -v threadtime > startup-logcat.txt 2>/dev/null || true' EXIT
+            set -eu
+            trap 'adb logcat -d -v threadtime > startup-logcat.txt 2>/dev/null || true' 0
 
             gradle :app:connectedPreviewAndroidTest --stacktrace
 
