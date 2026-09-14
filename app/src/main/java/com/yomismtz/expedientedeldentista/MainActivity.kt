@@ -11,7 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.yomismtz.expedientedeldentista.clinical.EducationalSession
+import androidx.lifecycle.ViewModelProvider
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.SettingsStore
 import com.yomismtz.expedientedeldentista.ui.AppRootV19
@@ -23,10 +23,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val store = SettingsStore(this)
+        val appState = ViewModelProvider(this)[MainViewModel::class.java]
 
         setContent {
             var preferences by remember { mutableStateOf(store.load()) }
-            var session by remember { mutableStateOf(EducationalSession()) }
+            val session = appState.session
 
             val savePreferences: (AppPreferences) -> Unit = { updated ->
                 preferences = updated
@@ -61,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                                     savePreferences(preferences.copy(languageTag = tag))
                                 },
                                 session = session,
-                                onSessionChanged = { session = it }
+                                onSessionChanged = appState::updateSession
                             )
                         }
                     }
