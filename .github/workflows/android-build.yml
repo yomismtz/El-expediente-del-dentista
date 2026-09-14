@@ -10,6 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -44,10 +45,7 @@ jobs:
           path: app/build/outputs/apk/preview/app-preview.apk
           if-no-files-found: error
 
-      - name: Compile launch instrumentation test
-        run: gradle :app:assemblePreviewAndroidTest --stacktrace
-
-      - name: Run startup smoke test on Android 10
+      - name: Run direct startup smoke test on Android 10
         shell: bash
         run: |
           set -euo pipefail
@@ -69,7 +67,31 @@ jobs:
           adb shell settings put global window_animation_scale 0
           adb shell settings put global transition_animation_scale 0
           adb shell settings put global animator_duration_scale 0
-          gradle :app:connectedPreviewAndroidTest --stacktrace
+
+          APK="app/build/outputs/apk/preview/app-preview.apk"
+          PACKAGE="com.yomismtz.expedientedeldentista.preview"
+          ACTIVITY="com.yomismtz.expedientedeldentista.MainActivity"
+
+          adb install -r "$APK"
+          adb logcat -c
+          adb shell am force-stop "$PACKAGE" || true
+          adb shell am start -W -n "$PACKAGE/$ACTIVITY"
+          sleep 6
+
+          PID="$(adb shell pidof "$PACKAGE" 2>/dev/null | tr -d '\r' || true)"
+          if [ -z "$PID" ]; then
+            echo "::error::The Preview process died during startup."
+            echo "===== AndroidRuntime ====="
+            adb logcat -d -v time 'AndroidRuntime:E' '*:S' || true
+            echo "===== ActivityTaskManager / ActivityManager ====="
+            adb logcat -d -v time 'ActivityTaskManager:E' 'ActivityManager:E' '*:S' || true
+            echo "===== Recent app-related logcat ====="
+            adb logcat -d -v time | grep -E 'expedientedeldentista|FATAL EXCEPTION|AndroidRuntime|Process:' | tail -n 250 || true
+            exit 1
+          fi
+
+          echo "Preview process is alive after launch: PID=$PID"
+          adb shell dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity|expedientedeldentista' | head -n 30 || true
 
       - name: Upload emulator log on failure
         if: failure()
