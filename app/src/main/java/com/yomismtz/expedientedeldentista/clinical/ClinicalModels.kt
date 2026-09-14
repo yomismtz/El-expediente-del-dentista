@@ -96,8 +96,11 @@ data class EducationalSession(
     val oleary: Map<Int, Set<Surface>> = emptyMap(),
     val presentTeeth: Set<Int> = emptySet(),
     val ipcCodes: List<String> = List(6) { "0" },
+    val ipcSiteCodes: Map<Int, List<String>> = emptyMap(),
     val ihosDebris: Map<Int, Int> = emptyMap(),
     val ihosCalculus: Map<Int, Int> = emptyMap(),
+    val ihosSelections: Map<Int, Int> = emptyMap(),
+    val ihosExcludedSlots: Set<Int> = emptySet(),
     val periodontogram: Map<Int, PerioRecord> = emptyMap(),
     val pulpal: PulpalAssessment = PulpalAssessment()
 )
