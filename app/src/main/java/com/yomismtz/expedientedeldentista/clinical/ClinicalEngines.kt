@@ -55,7 +55,17 @@ object ClinicalEngines {
 
     fun ihos(session: EducationalSession): Double {
         val indexTeeth = listOf(16, 11, 26, 36, 31, 46)
-        val validSlots = indexTeeth.filterNot { it in session.ihosExcludedSlots }
+        val validSlots = indexTeeth.filter { indexTooth ->
+            if (indexTooth in session.ihosExcludedSlots) {
+                false
+            } else {
+                val selectedTooth = session.ihosSelections[indexTooth] ?: indexTooth
+                when (session.teeth[selectedTooth]?.status ?: ToothStatus.HEALTHY) {
+                    ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER -> false
+                    else -> true
+                }
+            }
+        }
         if (validSlots.isEmpty()) return 0.0
         val total = validSlots.sumOf { indexTooth ->
             val selectedTooth = session.ihosSelections[indexTooth] ?: indexTooth
