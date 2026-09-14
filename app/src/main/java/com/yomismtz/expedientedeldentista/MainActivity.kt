@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.SettingsStore
-import com.yomismtz.expedientedeldentista.ui.AppRootV16
+import com.yomismtz.expedientedeldentista.ui.AppRootV19
 import com.yomismtz.expedientedeldentista.ui.OnboardingV15Screen
 import com.yomismtz.expedientedeldentista.ui.theme.ExpedienteTheme
 
@@ -26,8 +26,6 @@ class MainActivity : AppCompatActivity() {
             var preferences by remember { mutableStateOf(store.load()) }
             var session by remember { mutableStateOf(EducationalSession()) }
 
-            // Toda preferencia visual se guarda en SharedPreferences en el mismo
-            // instante en que cambia; al cerrar y volver a abrir se restaura.
             val savePreferences: (AppPreferences) -> Unit = { updated ->
                 preferences = updated
                 store.save(updated)
@@ -48,7 +46,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         )
                     } else {
-                        AppRootV16(
+                        AppRootV19(
                             preferences = preferences,
                             onPreferencesChanged = savePreferences,
                             onLanguageChanged = { tag ->

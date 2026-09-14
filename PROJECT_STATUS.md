@@ -1,64 +1,68 @@
 # Estado del proyecto · YSM Expediente
 
-Última actualización planificada: **v0.17-debug**.
+Última actualización: **v0.19-debug**.
 
 ## Propósito
-Aplicación educativa offline para estudiantes de odontología. Enseña cómo llenar un expediente clínico físico y ofrece exámenes interactivos. No es un expediente electrónico de pacientes y no debe sustituir supervisión docente ni diagnóstico clínico definitivo.
+Aplicación educativa offline para estudiantes de odontología. Enseña cómo llenar un expediente clínico físico y ofrece exámenes interactivos. No es un expediente electrónico de pacientes y no sustituye supervisión docente ni diagnóstico clínico definitivo.
 
-## Interfaz e identidad
+## Identidad e interfaz
 - Nombre: **YSM Expediente · El expediente del dentista**.
-- Paleta predeterminada: **Agaporni** (lavanda, lila, púrpura, menta/turquesa).
-- Paletas disponibles: Agaporni, Tucán, Pavo real, Fénix, Colibrí, Pato mandarín, Ninfa, Martín pescador, Guacamaya y Quetzal.
-- Primera pantalla: selección de idioma, Doctor/Doctora y paleta antes de continuar.
-- Idiomas actuales: Español e Inglés.
-- Botón de **Configuración** disponible dentro de la app.
-- Configuración persistente: idioma, Doctor/Doctora, paleta, tipo de letra y tamaño de letra se restauran al volver a abrir la app.
-- Tamaños internos: pequeña, normal, grande y muy grande.
-- La tipografía sigue usando `sp`, por lo que también respeta la escala de letra configurada en Android.
+- Logo/icono: ave académica + expediente dental + diente.
+- Slogan: **“Deja volar tu imaginación y tus conocimientos renacerán”**.
+- Paleta predeterminada: **Agaporni**.
+- Paletas: Agaporni, Tucán, Pavo real, Fénix, Colibrí, Pato mandarín, Ninfa, Martín pescador, Guacamaya y Quetzal.
+- Idiomas: Español e Inglés.
+- Primera configuración: idioma, Doctor/Doctora y paleta.
+- Configuración persistente: idioma, tratamiento, paleta, tipo de letra y tamaño de letra se restauran al reabrir.
+- La app respeta también la escala de fuente configurada en Android.
 
-## Sistema adaptable v0.17
-- La interfaz clasifica el ancho disponible como compacto, mediano o expandido.
-- Si Android usa letra grande, las cuadrículas reducen automáticamente el número de columnas y priorizan lectura sobre densidad.
-- Las pantallas principales son desplazables verticalmente y evitan depender de alturas fijas.
-- La carpeta clínica cambia de diseño: una sección por vez en teléfono pequeño, dos columnas en tamaño medio y tres hojas/grupos en pantalla amplia.
-- El centro de exámenes cambia de 1 a 3 columnas según el dispositivo.
-- La barra flotante de “Qué escribir” / “Nota de ingreso” se simplifica a iconos en pantallas estrechas o con letra grande.
-- Las paletas nuevas se toman desde `MaterialTheme` en las nuevas interfaces para que Agaporni, Tucán, Pavo real, Fénix, Colibrí, Pato mandarín, Ninfa, Martín pescador, Guacamaya y Quetzal cambien realmente el aspecto.
+## Correcciones v0.19 tras prueba en teléfono real
+- La barra superior dejó de ser flotante: **Nota de ingreso** y **Configuración** ocupan espacio propio y ya no deben tapar títulos/subtítulos.
+- Nueva navegación adaptable para teléfonos compactos, estándar y grandes.
+- O’Leary e ICDAS comparten un nuevo diente visto desde **oclusal**, sin raíces, con contorno coronario, caras V/L-P/M/D y centro oclusal cuando corresponde.
+- Selectores dentales separados en **dos filas: maxilar arriba y mandibular abajo**.
+- **CPOD/ceod ahora es interactivo**: cada diente puede marcarse sano, cariado, obturado, ausente por caries, ausente por otra causa o sellado; el resultado cambia automáticamente.
+- **Mucosas**: nueva boca abierta frontal con labios, carrillos, dientes, encía, paladar duro/blando, úvula, lengua, piso y orofaringe; las regiones son seleccionables.
+- **Signos vitales**: agrega interpretación educativa de temperatura y glucosa capilar según contexto.
+  - temperatura: alrededor de 37 °C habitual; ≥38 °C fiebre; ≤35 °C muy baja, con advertencia sobre sitio/método.
+  - glucosa: alerta <70 mg/dL; ayuno 70–99 habitual; 100–125 elevado; ≥126 requiere evaluación/confirmación; objetivos frecuentes ADA 80–130 preprandial y <180 mg/dL pico posprandial.
+  - una lectura capilar aislada no diagnostica diabetes.
+- **Oclusión**: dibujos propios para plano terminal recto, escalón mesial/distal, Angle molar I/II/III, relación canina I/II/III, overjet, overbite/mordida abierta y mordida cruzada.
+- Fuentes conceptuales resumidas en la app: NHS, MedlinePlus, CDC, ADA y Columbia University; se prioriza protocolo institucional.
 
-## Módulos principales ya incorporados
+## Sistema adaptable
+- Ancho clasificado como compacto, mediano o expandido.
+- Con letra grande se reducen columnas automáticamente.
+- Contenido largo usa desplazamiento vertical.
+- Carpeta y centro de exámenes adaptan cantidad de columnas al dispositivo.
+- Nuevas pantallas toman colores de `MaterialTheme` para respetar la paleta elegida.
+
+## Módulos principales incorporados
 - Nota de ingreso como centro de navegación.
+- Identificación, anamnesis/ASA, medicamentos y alergias.
+- Signos vitales, ATM, oclusión, mucosas, postura y auxiliares.
 - Odontograma por cuadrantes.
 - ICDAS, CPOD/ceod, O'Leary, IPC, IHOS y periodontograma.
-- Signos vitales, ATM, oclusión, mucosas, postura y auxiliares.
 - Diagnóstico pulpar y periapical interactivos.
 - Endodoncia interactiva con conductometría y protocolos educativos.
-- Prótesis interactiva: dos arcadas, presente/ausente, espacios edéntulos, Kennedy y modificaciones, reglas de Applegate, Seibert, retenedores PPR, PPR, prótesis total y fija.
-- En cada examen debe existir una guía de **qué escribir al final en el expediente físico**.
-
-## Pantallas responsivas nuevas v0.17
-- **Odontograma:** dentición permanente/temporal, cuadrantes adaptables, dientes en rejilla dinámica, selector de caries/restauración/sellador, diagrama de superficies y presente/ausente.
-- **IPC:** sextantes adaptables, selección de diente, seis sitios, códigos 0–4/X y resumen automático sin comprimir texto.
-- **IHOS:** dientes índice, sustitutos, exclusión de sitio no evaluable, detritos/cálculo 0–3 y resultado automático.
-- **Kennedy:** dos arcadas, presente/ausente, detección de espacios, Kennedy I–IV, modificaciones, segundos molares que no se reemplazan y reglas de Applegate paso a paso.
-- **Prótesis:** desde Kennedy adaptable se conserva acceso al diseñador completo de PPR, total y fija.
-- **Centro de exámenes:** tarjetas de acceso que cambian automáticamente de 1, 2 o 3 columnas.
+- Prótesis: Kennedy/Applegate, Seibert, retenedores PPR, PPR, total y fija.
+- En los exámenes se conserva la guía de **qué escribir al final en el expediente físico**.
 
 ## Prótesis · estado actual
-- Tocar cada diente para marcarlo presente/ausente.
-- Detectar espacios edéntulos automáticamente.
-- Proponer Kennedy I, II, III o IV y modificaciones.
-- Explicar qué espacio determina la clase y por qué.
-- Aplicar reglas de Applegate paso a paso.
-- Clasificación de Seibert.
-- Retenedores Akers, RPI, RPA, barra I y combinado.
+- Dos arcadas con presente/ausente.
+- Detección automática de espacios edéntulos.
+- Kennedy I–IV y modificaciones.
+- Reglas de Applegate paso a paso.
+- Seibert.
+- Akers, RPI, RPA, barra I y combinado.
 - Diseñador PPR con descansos, retención, planos guía y base/malla.
-- Prótesis total y fija; materiales y terminaciones.
+- Prótesis total y fija; materiales, terminaciones y pónticos.
 
 ## Próximos puntos sugeridos
-1. Llevar el mismo patrón adaptable a ICDAS, O'Leary, periodontograma, ATM, oclusión, mucosas, endodoncia y formularios largos.
-2. Terminar de sustituir colores antiguos codificados directamente por colores de `MaterialTheme`.
-3. Continuar con Cirugía interactiva y protocolos una vez que la base visual adaptable esté estable en teléfonos reales.
-4. Seguir refinando Prótesis con diseño anatómico más visual para descansos, retenedores, conectores, bases y pónticos.
+1. Probar v0.19 en teléfono real, especialmente encabezados, boca abierta, caras dentales y dibujos de oclusión.
+2. Llevar el mismo pulido visual a periodontograma, ATM, endodoncia y formularios largos.
+3. Sustituir colores antiguos codificados directamente por `MaterialTheme` donde aún existan.
+4. Continuar con Cirugía interactiva y protocolos después de estabilizar la interfaz.
 
 ## Repositorio
 https://github.com/yomismtz/El-expediente-del-dentista
