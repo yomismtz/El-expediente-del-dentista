@@ -3,6 +3,7 @@ package com.yomismtz.expedientedeldentista
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
@@ -15,6 +16,7 @@ import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.SettingsStore
 import com.yomismtz.expedientedeldentista.ui.AppRootV19
 import com.yomismtz.expedientedeldentista.ui.OnboardingV15Screen
+import com.yomismtz.expedientedeldentista.ui.edgeSwipeBackV21
 import com.yomismtz.expedientedeldentista.ui.theme.ExpedienteTheme
 
 class MainActivity : AppCompatActivity() {
@@ -37,24 +39,30 @@ class MainActivity : AppCompatActivity() {
                 textSizeStyle = preferences.textSizeStyle
             ) {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    if (!preferences.onboardingComplete) {
-                        OnboardingV15Screen(
-                            preferences = preferences,
-                            onPreferencesChanged = savePreferences,
-                            onContinue = { completed ->
-                                savePreferences(completed.copy(onboardingComplete = true))
-                            }
-                        )
-                    } else {
-                        AppRootV19(
-                            preferences = preferences,
-                            onPreferencesChanged = savePreferences,
-                            onLanguageChanged = { tag ->
-                                savePreferences(preferences.copy(languageTag = tag))
-                            },
-                            session = session,
-                            onSessionChanged = { session = it }
-                        )
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .edgeSwipeBackV21 { onBackPressedDispatcher.onBackPressed() }
+                    ) {
+                        if (!preferences.onboardingComplete) {
+                            OnboardingV15Screen(
+                                preferences = preferences,
+                                onPreferencesChanged = savePreferences,
+                                onContinue = { completed ->
+                                    savePreferences(completed.copy(onboardingComplete = true))
+                                }
+                            )
+                        } else {
+                            AppRootV19(
+                                preferences = preferences,
+                                onPreferencesChanged = savePreferences,
+                                onLanguageChanged = { tag ->
+                                    savePreferences(preferences.copy(languageTag = tag))
+                                },
+                                session = session,
+                                onSessionChanged = { session = it }
+                            )
+                        }
                     }
                 }
             }
