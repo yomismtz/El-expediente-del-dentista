@@ -1,11 +1,13 @@
 package com.yomismtz.expedientedeldentista
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,20 +28,18 @@ class MainActivity : ComponentActivity() {
         val loadedPreferences = runCatching { store.load() }
             .getOrElse { AppPreferences() }
 
-        // Preview builds are frequently installed over earlier test builds.  Start a new
-        // Preview version from a known-safe onboarding state once, so an old navigation
-        // preference cannot skip directly into a stale screen graph.
-        val runtimePrefs = getSharedPreferences("expediente_runtime", MODE_PRIVATE)
+        val runtimePrefs = getSharedPreferences(RUNTIME_PREFS, MODE_PRIVATE)
         val isPreview = BuildConfig.APPLICATION_ID.endsWith(".preview")
-        val seenVersion = runtimePrefs.getInt("preview_seen_version", -1)
+        val seenVersion = runtimePrefs.safeInt(PREVIEW_SEEN_VERSION, -1)
         val isFirstLaunchOfPreviewVersion = isPreview && seenVersion != BuildConfig.VERSION_CODE
+
+        // A Preview version always starts from the known-safe onboarding path on its first
+        // successful launch. The version is marked as seen only after Compose has completed
+        // its first composition; a crash before that point cannot poison the next launch.
         val initialPreferences = if (isFirstLaunchOfPreviewVersion) {
             loadedPreferences.copy(onboardingComplete = false)
         } else {
             loadedPreferences
-        }
-        if (isPreview) {
-            runtimePrefs.edit().putInt("preview_seen_version", BuildConfig.VERSION_CODE).apply()
         }
 
         setContent {
@@ -49,6 +49,16 @@ class MainActivity : ComponentActivity() {
             val savePreferences: (AppPreferences) -> Unit = { updated ->
                 preferences = updated
                 runCatching { store.save(updated) }
+            }
+
+            LaunchedEffect(isPreview, isFirstLaunchOfPreviewVersion) {
+                if (isPreview && isFirstLaunchOfPreviewVersion) {
+                    runCatching {
+                        runtimePrefs.edit()
+                            .putInt(PREVIEW_SEEN_VERSION, BuildConfig.VERSION_CODE)
+                            .commit()
+                    }
+                }
             }
 
             ExpedienteTheme(
@@ -81,5 +91,22 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    /**
+     * SharedPreferences throws ClassCastException when an old build stored the same key with
+     * another type. Treat that as stale/corrupt test state instead of crashing MainActivity.
+     */
+    private fun SharedPreferences.safeInt(key: String, fallback: Int): Int {
+        return runCatching { getInt(key, fallback) }
+            .getOrElse {
+                runCatching { edit().remove(key).commit() }
+                fallback
+            }
+    }
+
+    private companion object {
+        const val RUNTIME_PREFS = "expediente_runtime"
+        const val PREVIEW_SEEN_VERSION = "preview_seen_version"
     }
 }
