@@ -87,7 +87,6 @@ data class PulpalAssessment(
     val previousPartialEndo: Boolean = false
 )
 
-/** Structured, neutral observations for IX.2 Inspección general. Empty values mean not evaluated. */
 data class GeneralInspectionState(
     val apparentAge: String = "",
     val gait: String = "",
@@ -112,7 +111,6 @@ data class LymphNodeState(
     val notes: String = ""
 )
 
-/** IX.3 Exploración de cabeza y cuello. Values are observations, not diagnoses. */
 data class HeadNeckExplorationState(
     val craniumObservation: String = "",
     val cranialWidthMm: String = "",
@@ -134,7 +132,6 @@ data class HeadNeckExplorationState(
     val notes: Map<String, String> = emptyMap()
 )
 
-/** IX.3.7 ATM / TMJ. Stores measurements and observed signs without assigning a definitive diagnosis. */
 data class AtmExamState(
     val openingMm: String = "",
     val rightLateralityMm: String = "",
@@ -153,7 +150,25 @@ data class AtmExamState(
     val notes: String = ""
 )
 
-/** Clinical morphology for one oral-mucosa region. No visual diagnosis is assigned automatically. */
+/** Fast chairside symptom record. Mirrors key history questions without replacing the full history. */
+data class QuickSignsSymptomsState(
+    val painStatus: String = "",
+    val location: String = "",
+    val onset: String = "",
+    val evolution: String = "",
+    val intensity: String = "",
+    val character: String = "",
+    val triggers: String = "",
+    val relief: String = "",
+    val swelling: String = "",
+    val bleeding: String = "",
+    val fever: String = "",
+    val limitedOpening: String = "",
+    val alteredSensation: String = "",
+    val dysphagia: String = "",
+    val notes: String = ""
+)
+
 data class MucosaFindingState(
     val findingType: String = "",
     val sizeMm: String = "",
@@ -171,6 +186,7 @@ data class EducationalSession(
     val generalInspection: GeneralInspectionState = GeneralInspectionState(),
     val headNeckExploration: HeadNeckExplorationState = HeadNeckExplorationState(),
     val atmExam: AtmExamState = AtmExamState(),
+    val quickSignsSymptoms: QuickSignsSymptomsState = QuickSignsSymptomsState(),
     val mucosaFindings: Map<String, MucosaFindingState> = emptyMap(),
     val teeth: Map<Int, ToothRecord> = emptyMap(),
     val odontogramSurfaces: Map<Int, Map<Surface, SurfaceMark>> = emptyMap(),
