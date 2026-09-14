@@ -25,18 +25,18 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Run unit tests
-        run: gradle :app:testDebugUnitTest --stacktrace
+      - name: Run preview unit tests
+        run: gradle :app:testPreviewUnitTest --stacktrace
 
-      - name: Run Android lint
-        run: gradle :app:lintDebug --stacktrace
+      - name: Run Android lint for preview
+        run: gradle :app:lintPreview --stacktrace
 
-      - name: Build debug APK
-        run: gradle :app:assembleDebug --stacktrace
+      - name: Build preview APK
+        run: gradle :app:assemblePreview --stacktrace
 
-      - name: Upload debug APK
+      - name: Upload preview APK
         uses: actions/upload-artifact@v4
         with:
-          name: El-expediente-del-dentista-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: El-expediente-del-dentista-preview
+          path: app/build/outputs/apk/preview/app-preview.apk
           if-no-files-found: error
