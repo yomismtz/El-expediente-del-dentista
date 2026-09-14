@@ -7,6 +7,7 @@ plugins {
 android {
     namespace = "com.yomismtz.expedientedeldentista"
     compileSdk = 35
+    testBuildType = "preview"
 
     defaultConfig {
         applicationId = "com.yomismtz.expedientedeldentista"
