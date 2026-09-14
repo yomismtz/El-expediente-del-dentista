@@ -27,7 +27,8 @@ import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 
 private enum class IntakeOverlay {
-    NONE, INTAKE, IDENTIFICATION, HISTORY, VITALS, ATM, OCCLUSION, MUCOSA, CPOD, PERIODONTAL, PULPAL, PROSTHETIC
+    NONE, INTAKE, IDENTIFICATION, HISTORY, GENERAL_INSPECTION, HEAD_NECK,
+    VITALS, ATM, OCCLUSION, MUCOSA, CPOD, PERIODONTAL, PULPAL, PROSTHETIC
 }
 
 @Composable
@@ -69,6 +70,8 @@ fun AppRootV6(
                         lang = preferences.languageTag,
                         onIdentification = { overlay = IntakeOverlay.IDENTIFICATION },
                         onHistory = { overlay = IntakeOverlay.HISTORY },
+                        onGeneralInspection = { overlay = IntakeOverlay.GENERAL_INSPECTION },
+                        onHeadNeck = { overlay = IntakeOverlay.HEAD_NECK },
                         onVitals = { overlay = IntakeOverlay.VITALS },
                         onAtm = { overlay = IntakeOverlay.ATM },
                         onOcclusion = { overlay = IntakeOverlay.OCCLUSION },
@@ -81,10 +84,12 @@ fun AppRootV6(
                     )
                     IntakeOverlay.IDENTIFICATION -> IdentificationScreen(preferences.languageTag, session, onSessionChanged) { overlay = IntakeOverlay.INTAKE }
                     IntakeOverlay.HISTORY -> HistoryScreen(preferences.languageTag, session, onSessionChanged) { overlay = IntakeOverlay.INTAKE }
+                    IntakeOverlay.GENERAL_INSPECTION -> GeneralInspectionV24Screen(preferences.languageTag, session, onSessionChanged) { overlay = IntakeOverlay.INTAKE }
+                    IntakeOverlay.HEAD_NECK -> HeadNeckExplorationV24Screen(preferences.languageTag, session, onSessionChanged) { overlay = IntakeOverlay.INTAKE }
                     IntakeOverlay.VITALS -> VitalsInteractiveScreen(preferences.languageTag) { overlay = IntakeOverlay.INTAKE }
                     IntakeOverlay.ATM -> AtmScreen(preferences.languageTag) { overlay = IntakeOverlay.INTAKE }
                     IntakeOverlay.OCCLUSION -> OcclusionScreen(preferences.languageTag) { overlay = IntakeOverlay.INTAKE }
-                    IntakeOverlay.MUCOSA -> MucosaInteractiveV2Screen(preferences.languageTag) { overlay = IntakeOverlay.INTAKE }
+                    IntakeOverlay.MUCOSA -> MucosaExamV24Screen(preferences.languageTag, session, onSessionChanged) { overlay = IntakeOverlay.INTAKE }
                     IntakeOverlay.CPOD -> CpodScreen(preferences.languageTag, session) { overlay = IntakeOverlay.INTAKE }
                     IntakeOverlay.PERIODONTAL -> PeriodontogramScreen(preferences.languageTag, session, onSessionChanged) { overlay = IntakeOverlay.INTAKE }
                     IntakeOverlay.PULPAL -> PulpalScreen(preferences.languageTag, session, onSessionChanged) { overlay = IntakeOverlay.INTAKE }
@@ -143,10 +148,12 @@ private fun writeBackText(screen: IntakeOverlay, lang: String): String {
     val es = when (screen) {
         IntakeOverlay.IDENTIFICATION -> "Registra únicamente los datos solicitados por el formato físico. Motivo de consulta y padecimiento actual deben ser breves, cronológicos y fieles a lo referido."
         IntakeOverlay.HISTORY -> "Resume antecedentes positivos, estado/control actual, tratamiento o medicamentos relevantes y la clasificación ASA sustentada. Si faltan datos, indícalo y confirma con supervisión docente."
+        IntakeOverlay.GENERAL_INSPECTION -> "Exploración general: edad aparente ___; marcha ___; facies ___; actitud/cooperación ___; constitución/habitus ___; movimientos anormales ___; conciencia/orientación ___; actitud psicológica observable ___; cuidado personal ___."
+        IntakeOverlay.HEAD_NECK -> "Cabeza y cuello: cráneo ___; cara/perfil/simetría ___; músculos de expresión ___; músculos masticatorios ___; cuello ___; cadenas ganglionares ___. Para un ganglio palpable documenta lado, tamaño, dolor, consistencia y movilidad."
         IntakeOverlay.VITALS -> "Ejemplo de estructura: TA ___/___ mmHg · FC ___ lpm · FR ___ rpm · T ___ °C · peso ___ kg · talla ___ m · IMC ___ cuando corresponda."
-        IntakeOverlay.ATM -> "Ejemplo: “ATM: apertura ___ mm, trayectoria ___, ruidos ___, dolor ___; músculos masticatorios: palpación ___”. Añade el hallazgo o diagnóstico presuntivo más compatible solo si la exploración lo sustenta."
+        IntakeOverlay.ATM -> "Ejemplo: “ATM: apertura ___ mm, trayectoria ___, ruidos ___, dolor ___”. Los músculos masticatorios se documentan en la exploración de cabeza y cuello."
         IntakeOverlay.OCCLUSION -> "Ejemplo: “Dentición ___; relación molar ___; canina ___; overjet ___ mm; overbite ___%; líneas medias ___; mordida abierta/cruzada/profunda: ___”."
-        IntakeOverlay.MUCOSA -> "Ejemplo: “Mucosas: labios ___, carrillos ___, encía ___, lengua ___, piso de boca ___, paladar ___, orofaringe ___”. Si existe lesión: localización + tamaño + color + superficie + bordes + consistencia + síntomas."
+        IntakeOverlay.MUCOSA -> "Ejemplo: “Mucosas: labios ___, carrillos ___, encía ___, lengua ___, piso de boca ___, paladar ___, orofaringe ___”. Si existe lesión: localización exacta + tipo + tamaño + color + superficie + bordes + consistencia + síntomas + evolución."
         IntakeOverlay.CPOD -> "Registra C, P y O (o c, e, o en dentición temporal), el total y los dientes que sustentan cada componente. No mezcles denticiones en un mismo índice."
         IntakeOverlay.PERIODONTAL -> "Resume sondaje, sangrado, placa, cálculo, recesión, movilidad y furcación según el examen realizado. Si usas IPC/IHOS, anota también su resultado e interpretación."
         IntakeOverlay.PULPAL -> "Ejemplo: “OD ___: diagnóstico pulpar más compatible con ___; diagnóstico periapical ___; sustentado por ___”. Mantén pulpar y periapical separados y señala pruebas faltantes si las hay."
@@ -156,10 +163,12 @@ private fun writeBackText(screen: IntakeOverlay, lang: String): String {
     val en = when (screen) {
         IntakeOverlay.IDENTIFICATION -> "Record only the data requested by the physical form. Reason for visit and current condition should be brief, chronological and faithful to what was reported."
         IntakeOverlay.HISTORY -> "Summarize positive history, current control/status, relevant treatment or medicines, and the supported ASA class. If information is missing, state it and confirm with faculty supervision."
+        IntakeOverlay.GENERAL_INSPECTION -> "General inspection: apparent age ___; gait ___; facies ___; attitude/cooperation ___; body habitus ___; abnormal movements ___; consciousness/orientation ___; observable psychological attitude ___; personal care ___."
+        IntakeOverlay.HEAD_NECK -> "Head and neck: cranium ___; face/profile/symmetry ___; muscles of facial expression ___; masticatory muscles ___; neck ___; lymph-node chains ___. For a palpable node record side, size, tenderness, consistency and mobility."
         IntakeOverlay.VITALS -> "Example structure: BP ___/___ mmHg · HR ___ bpm · RR ___ rpm · T ___ °C · weight ___ kg · height ___ m · BMI ___ when appropriate."
-        IntakeOverlay.ATM -> "Example: “TMJ: opening ___ mm, path ___, sounds ___, pain ___; masticatory muscles: palpation ___”. Add the closest presumptive finding only when supported by the examination."
+        IntakeOverlay.ATM -> "Example: “TMJ: opening ___ mm, path ___, sounds ___, pain ___”. Document masticatory muscles in the head-and-neck examination."
         IntakeOverlay.OCCLUSION -> "Example: “Dentition ___; molar relation ___; canine relation ___; overjet ___ mm; overbite ___%; midlines ___; open/cross/deep bite: ___”."
-        IntakeOverlay.MUCOSA -> "Example: “Mucosa: lips ___, cheeks ___, gingiva ___, tongue ___, floor of mouth ___, palate ___, oropharynx ___”. If a lesion is present: site + size + color + surface + borders + consistency + symptoms."
+        IntakeOverlay.MUCOSA -> "Example: “Mucosa: lips ___, cheeks ___, gingiva ___, tongue ___, floor of mouth ___, palate ___, oropharynx ___”. If a lesion is present: exact site + type + size + color + surface + borders + consistency + symptoms + evolution."
         IntakeOverlay.CPOD -> "Record D, M and F (or d, e, f in primary dentition), the total, and the teeth supporting each component. Do not mix dentitions in the same index."
         IntakeOverlay.PERIODONTAL -> "Summarize probing, bleeding, plaque, calculus, recession, mobility and furcation according to the examination. If CPI/OHI-S are used, include their result and interpretation."
         IntakeOverlay.PULPAL -> "Example: “Tooth ___: pulpal diagnosis most compatible with ___; apical diagnosis ___; supported by ___”. Keep pulpal and apical diagnoses separate and state missing tests when applicable."
