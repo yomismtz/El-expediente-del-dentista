@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -45,58 +45,45 @@ jobs:
           path: app/build/outputs/apk/preview/app-preview.apk
           if-no-files-found: error
 
-      - name: Run direct startup smoke test on Android 10
-        shell: bash
-        run: |
-          set -euo pipefail
-          yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager "platform-tools" "emulator" "system-images;android-29;google_apis;x86_64"
-          echo no | avdmanager create avd --force --name ci-api29 --package "system-images;android-29;google_apis;x86_64"
-          sudo chmod 666 /dev/kvm 2>/dev/null || true
-          nohup "$ANDROID_HOME/emulator/emulator" \
-            -avd ci-api29 \
-            -no-window \
-            -noaudio \
-            -no-boot-anim \
-            -gpu swiftshader_indirect \
-            -camera-back none \
-            -camera-front none \
-            > emulator.log 2>&1 &
-          adb wait-for-device
-          timeout 360 bash -c 'until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" = "1" ]; do sleep 5; done'
-          adb shell settings put global window_animation_scale 0
-          adb shell settings put global transition_animation_scale 0
-          adb shell settings put global animator_duration_scale 0
+      - name: Instrumented startup tests and direct launch on Android 10
+        uses: ReactiveCircus/android-emulator-runner@v2.38.0
+        with:
+          api-level: 29
+          target: google_apis
+          arch: x86_64
+          profile: Nexus 6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          script: |
+            set -euo pipefail
+            trap 'adb logcat -d -v threadtime > startup-logcat.txt 2>/dev/null || true' EXIT
 
-          APK="app/build/outputs/apk/preview/app-preview.apk"
-          PACKAGE="com.yomismtz.expedientedeldentista.preview"
-          ACTIVITY="com.yomismtz.expedientedeldentista.MainActivity"
+            gradle :app:connectedPreviewAndroidTest --stacktrace
 
-          adb install -r "$APK"
-          adb logcat -c
-          adb shell am force-stop "$PACKAGE" || true
-          adb shell am start -W -n "$PACKAGE/$ACTIVITY"
-          sleep 6
+            APK="app/build/outputs/apk/preview/app-preview.apk"
+            PACKAGE="com.yomismtz.expedientedeldentista.preview"
+            ACTIVITY="com.yomismtz.expedientedeldentista.MainActivity"
 
-          PID="$(adb shell pidof "$PACKAGE" 2>/dev/null | tr -d '\r' || true)"
-          if [ -z "$PID" ]; then
-            echo "::error::The Preview process died during startup."
-            echo "===== AndroidRuntime ====="
-            adb logcat -d -v time 'AndroidRuntime:E' '*:S' || true
-            echo "===== ActivityTaskManager / ActivityManager ====="
-            adb logcat -d -v time 'ActivityTaskManager:E' 'ActivityManager:E' '*:S' || true
-            echo "===== Recent app-related logcat ====="
-            adb logcat -d -v time | grep -E 'expedientedeldentista|FATAL EXCEPTION|AndroidRuntime|Process:' | tail -n 250 || true
-            exit 1
-          fi
+            adb install -r "$APK"
+            adb shell pm clear "$PACKAGE" || true
+            adb logcat -c
+            adb shell am start -W -n "$PACKAGE/$ACTIVITY"
+            sleep 8
 
-          echo "Preview process is alive after launch: PID=$PID"
-          adb shell dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity|expedientedeldentista' | head -n 30 || true
+            PID="$(adb shell pidof "$PACKAGE" 2>/dev/null | tr -d '\r' || true)"
+            if [ -z "$PID" ]; then
+              echo "::error::The Preview process died during startup."
+              adb logcat -d -v time | grep -E 'expedientedeldentista|FATAL EXCEPTION|AndroidRuntime|Process:' | tail -n 300 || true
+              exit 1
+            fi
 
-      - name: Upload emulator log on failure
+            echo "Preview process is alive after launch: PID=$PID"
+            adb shell dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity|expedientedeldentista' | head -n 30 || true
+
+      - name: Upload startup log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: android-emulator-log
-          path: emulator.log
+          name: android-startup-logcat
+          path: startup-logcat.txt
           if-no-files-found: ignore
