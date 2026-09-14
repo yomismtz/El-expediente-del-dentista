@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle as ComposeFontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -63,7 +66,7 @@ fun OnboardingV15Screen(
         Image(
             painter = painterResource(R.drawable.ysm_logo),
             contentDescription = if (lang == "en") "YSM bird and dental record logo" else "Logo YSM con ave y expediente dental",
-            modifier = Modifier.size(190.dp)
+            modifier = Modifier.size(176.dp)
         )
         Text(
             "YSM Expediente",
@@ -110,18 +113,61 @@ fun OnboardingV15Screen(
                     )
                 }
 
-                Text(if (lang == "en") "2 · Professional title" else "2 · ¿Cómo quieres que te llame la app?", fontWeight = FontWeight.Black)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(
-                        selected = preferences.clinicianTitle == ClinicianTitle.DOCTOR,
-                        onClick = { onPreferencesChanged(preferences.copy(clinicianTitle = ClinicianTitle.DOCTOR)) },
-                        label = { Text("Doctor") }
-                    )
-                    FilterChip(
-                        selected = preferences.clinicianTitle == ClinicianTitle.DOCTORA,
-                        onClick = { onPreferencesChanged(preferences.copy(clinicianTitle = ClinicianTitle.DOCTORA)) },
-                        label = { Text("Doctora") }
-                    )
+                Text(
+                    if (lang == "en") "2 · Are you Doctor or Doctora?"
+                    else "2 · ¿Eres Doctor o Doctora?",
+                    fontWeight = FontWeight.Black,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    if (lang == "en") "Choose your anime profile. Doctora is accompanied by an Agaporni; Doctor by a rainbow lorikeet."
+                    else "Elige tu perfil anime. La Doctora está acompañada por un agaporni y el Doctor por un Trichoglossus moluccanus.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                BoxWithConstraints(Modifier.fillMaxWidth()) {
+                    val stacked = maxWidth < 430.dp || LocalDensity.current.fontScale >= 1.20f
+                    if (stacked) {
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            ClinicianCardV21(
+                                title = ClinicianTitle.DOCTORA,
+                                selected = preferences.clinicianTitle == ClinicianTitle.DOCTORA,
+                                imageRes = R.drawable.doctora_agaporni_anime,
+                                bird = "Agaporni",
+                                lang = lang,
+                                onClick = { onPreferencesChanged(preferences.copy(clinicianTitle = ClinicianTitle.DOCTORA)) }
+                            )
+                            ClinicianCardV21(
+                                title = ClinicianTitle.DOCTOR,
+                                selected = preferences.clinicianTitle == ClinicianTitle.DOCTOR,
+                                imageRes = R.drawable.doctor_lori_anime,
+                                bird = "Trichoglossus moluccanus",
+                                lang = lang,
+                                onClick = { onPreferencesChanged(preferences.copy(clinicianTitle = ClinicianTitle.DOCTOR)) }
+                            )
+                        }
+                    } else {
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            ClinicianCardV21(
+                                title = ClinicianTitle.DOCTORA,
+                                selected = preferences.clinicianTitle == ClinicianTitle.DOCTORA,
+                                imageRes = R.drawable.doctora_agaporni_anime,
+                                bird = "Agaporni",
+                                lang = lang,
+                                onClick = { onPreferencesChanged(preferences.copy(clinicianTitle = ClinicianTitle.DOCTORA)) },
+                                modifier = Modifier.weight(1f)
+                            )
+                            ClinicianCardV21(
+                                title = ClinicianTitle.DOCTOR,
+                                selected = preferences.clinicianTitle == ClinicianTitle.DOCTOR,
+                                imageRes = R.drawable.doctor_lori_anime,
+                                bird = "Trichoglossus moluccanus",
+                                lang = lang,
+                                onClick = { onPreferencesChanged(preferences.copy(clinicianTitle = ClinicianTitle.DOCTOR)) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -179,12 +225,54 @@ fun OnboardingV15Screen(
         }
 
         Text(
-            if (lang == "en") "You can change language, title and palette later in Settings."
-            else "Después podrás cambiar idioma, título y paleta desde Configuración.",
+            if (lang == "en") "You can change language, title, palette, font and text size later in Settings."
+            else "Después podrás cambiar idioma, título, paleta, tipo y tamaño de letra desde Configuración.",
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             color = cs.onSurface.copy(alpha = 0.76f)
         )
+    }
+}
+
+@Composable
+private fun ClinicianCardV21(
+    title: ClinicianTitle,
+    selected: Boolean,
+    imageRes: Int,
+    bird: String,
+    lang: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val cs = MaterialTheme.colorScheme
+    Card(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = if (selected) cs.primaryContainer else cs.surface),
+        border = BorderStroke(if (selected) 3.dp else 1.dp, if (selected) cs.primary else cs.outline.copy(alpha = .45f)),
+        shape = RoundedCornerShape(20.dp)
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+            Image(
+                painter = painterResource(imageRes),
+                contentDescription = if (title == ClinicianTitle.DOCTORA) "Doctora anime con agaporni" else "Doctor anime con Trichoglossus moluccanus",
+                modifier = Modifier.fillMaxWidth().height(220.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                Modifier.fillMaxWidth().padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(3.dp)
+            ) {
+                Text(
+                    if (title == ClinicianTitle.DOCTORA) "Doctora" else "Doctor",
+                    fontWeight = FontWeight.Black,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text("🐦 $bird", style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
+                if (selected) Text(if (lang == "en") "Selected ✓" else "Seleccionado ✓", color = cs.primary, fontWeight = FontWeight.Bold)
+            }
+        }
     }
 }
 
@@ -201,9 +289,7 @@ private fun BirdPaletteCard(
     Card(
         onClick = onClick,
         modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = if (selected) cs.primaryContainer else cs.surface
-        ),
+        colors = CardDefaults.cardColors(containerColor = if (selected) cs.primaryContainer else cs.surface),
         border = BorderStroke(if (selected) 2.dp else 1.dp, if (selected) cs.primary else cs.outline.copy(alpha = 0.45f)),
         shape = RoundedCornerShape(16.dp)
     ) {

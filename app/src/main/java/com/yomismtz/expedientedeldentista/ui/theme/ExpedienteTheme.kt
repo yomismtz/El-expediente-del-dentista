@@ -38,6 +38,9 @@ fun paletteDisplayName(style: BirdPaletteStyle, lang: String = "es"): String = w
     BirdPaletteStyle.MARTIN_PESCADOR -> if (lang == "en") "Kingfisher" else "Martín pescador"
     BirdPaletteStyle.GUACAMAYA -> if (lang == "en") "Macaw" else "Guacamaya"
     BirdPaletteStyle.QUETZAL -> "Quetzal"
+    BirdPaletteStyle.TRICHOGLOSSUS_MOLUCCANUS -> "Trichoglossus moluccanus"
+    BirdPaletteStyle.CUERVO -> if (lang == "en") "Raven" else "Cuervo"
+    BirdPaletteStyle.ABEJARUCO -> if (lang == "en") "Bee-eater" else "Abejaruco"
 }
 
 fun birdPalette(style: BirdPaletteStyle): BirdPalette = when (style) {
@@ -101,6 +104,24 @@ fun birdPalette(style: BirdPaletteStyle): BirdPalette = when (style) {
         background = Color(0xFFF0FAF6), surface = Color(0xFFFCFFFD), onSurface = Color(0xFF17362F),
         primaryContainer = Color(0xFFD2F1E6), secondaryContainer = Color(0xFFD4F5F2), outline = Color(0xFF87A39B)
     )
+    BirdPaletteStyle.TRICHOGLOSSUS_MOLUCCANUS -> BirdPalette(
+        primary = Color(0xFF2C63C7), onPrimary = Color.White,
+        secondary = Color(0xFF49A82D), tertiary = Color(0xFFF28A18),
+        background = Color(0xFFF4F9FF), surface = Color(0xFFFEFFFF), onSurface = Color(0xFF172B4C),
+        primaryContainer = Color(0xFFD9E7FF), secondaryContainer = Color(0xFFE3F4D8), outline = Color(0xFF8EA1B5)
+    )
+    BirdPaletteStyle.CUERVO -> BirdPalette(
+        primary = Color(0xFF24212E), onPrimary = Color.White,
+        secondary = Color(0xFF5E4B8B), tertiary = Color(0xFF8E78B7),
+        background = Color(0xFFF4F2F7), surface = Color(0xFFFCFBFE), onSurface = Color(0xFF201C29),
+        primaryContainer = Color(0xFFE4DFEB), secondaryContainer = Color(0xFFE8E1F3), outline = Color(0xFF8F8898)
+    )
+    BirdPaletteStyle.ABEJARUCO -> BirdPalette(
+        primary = Color(0xFF0A7E55), onPrimary = Color.White,
+        secondary = Color(0xFFF1B929), tertiary = Color(0xFF34BFC2),
+        background = Color(0xFFF5FBF7), surface = Color(0xFFFEFFFD), onSurface = Color(0xFF173429),
+        primaryContainer = Color(0xFFD5F0E3), secondaryContainer = Color(0xFFFFEDB2), outline = Color(0xFF8AA497)
+    )
 }
 
 fun paletteSwatches(style: BirdPaletteStyle): List<Color> {
@@ -159,9 +180,6 @@ fun ExpedienteTheme(
         onSurfaceVariant = p.onSurface.copy(alpha = 0.82f)
     )
 
-    // El tamaño elegido aquí se suma al escalado de fuente de Android porque
-    // todas las medidas siguen expresándose en sp. Así, si el teléfono usa letra
-    // grande, YSM Expediente también crece sin anular la preferencia del sistema.
     val typography = Typography(
         displaySmall = TextStyle(fontFamily = family, fontSize = scaledSp(32f, textSizeStyle)),
         headlineMedium = TextStyle(fontFamily = family, fontSize = scaledSp(26f, textSizeStyle)),

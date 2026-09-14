@@ -22,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,12 +44,36 @@ fun AppRootV7(
     onOpenSettings:(()->Unit)?=null
 ) {
     var overlay by remember{ mutableStateOf(V7Overlay.NONE) }
+    val overlayHistory = remember { mutableStateListOf<V7Overlay>() }
     var writingHelp by remember{ mutableStateOf(false) }
     val lang=preferences.languageTag
-    val backToIntake={overlay=V7Overlay.INTAKE}
+
+    fun openOverlay(next: V7Overlay) {
+        if (next == overlay) return
+        overlayHistory.add(overlay)
+        overlay = next
+        writingHelp = false
+    }
+
+    fun goBackOverlay() {
+        if (writingHelp) {
+            writingHelp = false
+            return
+        }
+        overlay = if (overlayHistory.isNotEmpty()) {
+            overlayHistory.removeAt(overlayHistory.lastIndex)
+        } else {
+            V7Overlay.NONE
+        }
+    }
+
+    val backPrevious = { goBackOverlay() }
+    val goToIntake = {
+        if (overlay != V7Overlay.INTAKE) openOverlay(V7Overlay.INTAKE)
+    }
 
     Column(Modifier.fillMaxSize().navigationBarsPadding()) {
-        GlobalBar19(lang,{overlay=V7Overlay.INTAKE},onOpenSettings)
+        GlobalBar19(lang,goToIntake,onOpenSettings)
         Box(Modifier.weight(1f).fillMaxWidth()) {
             AdaptiveBaseRootV17(preferences,onPreferencesChanged,onLanguageChanged,session,onSessionChanged)
 
@@ -57,52 +82,61 @@ fun AppRootV7(
                     when(overlay) {
                         V7Overlay.INTAKE -> IntakeInteractiveV3Screen(
                             lang,
-                            onIdentification={overlay=V7Overlay.IDENTIFICATION},
-                            onHistory={overlay=V7Overlay.HISTORY},
-                            onVitals={overlay=V7Overlay.VITALS},
-                            onAtm={overlay=V7Overlay.ATM},
-                            onOcclusion={overlay=V7Overlay.OCCLUSION},
-                            onMucosa={overlay=V7Overlay.MUCOSA},
-                            onCpod={overlay=V7Overlay.CPOD},
-                            onPeriodontal={overlay=V7Overlay.PERIODONTAL},
-                            onPulpal={overlay=V7Overlay.PULPAL_APICAL},
-                            onProsthetic={overlay=V7Overlay.PROSTHETIC},
-                            onBack={overlay=V7Overlay.NONE}
+                            onIdentification={openOverlay(V7Overlay.IDENTIFICATION)},
+                            onHistory={openOverlay(V7Overlay.HISTORY)},
+                            onVitals={openOverlay(V7Overlay.VITALS)},
+                            onAtm={openOverlay(V7Overlay.ATM)},
+                            onOcclusion={openOverlay(V7Overlay.OCCLUSION)},
+                            onMucosa={openOverlay(V7Overlay.MUCOSA)},
+                            onCpod={openOverlay(V7Overlay.CPOD)},
+                            onPeriodontal={openOverlay(V7Overlay.PERIODONTAL)},
+                            onPulpal={openOverlay(V7Overlay.PULPAL_APICAL)},
+                            onProsthetic={openOverlay(V7Overlay.PROSTHETIC)},
+                            onBack=backPrevious
                         )
-                        V7Overlay.HUB -> ExamHubV1Screen(lang,{overlay=it},backToIntake)
-                        V7Overlay.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backToIntake)
-                        V7Overlay.HISTORY -> HistoryScreen(lang,session,onSessionChanged,backToIntake)
-                        V7Overlay.VITALS -> VitalsInteractiveV19Screen(lang,backToIntake)
-                        V7Overlay.ATM -> AtmScreen(lang,backToIntake)
-                        V7Overlay.OCCLUSION -> OcclusionInteractiveV19Screen(lang,backToIntake)
-                        V7Overlay.MUCOSA -> MucosaInteractiveV19Screen(lang,backToIntake)
-                        V7Overlay.AUXILIARIES -> AuxiliariesV20Screen(lang,backToIntake)
-                        V7Overlay.ODONTOGRAM -> OdontogramV20Screen(lang,session,onSessionChanged,backToIntake)
-                        V7Overlay.ICDAS -> IcdasScreen(lang,session,onSessionChanged,backToIntake)
-                        V7Overlay.CPOD -> CpodInteractiveV19Screen(lang,session,onSessionChanged,backToIntake)
-                        V7Overlay.OLEARY -> OlearyScreen(lang,session,onSessionChanged,backToIntake)
-                        V7Overlay.IPC -> IpcResponsiveV17Screen(lang,session,onSessionChanged,backToIntake)
-                        V7Overlay.IHOS -> IhosResponsiveV17Screen(lang,session,onSessionChanged,backToIntake)
-                        V7Overlay.PERIODONTAL -> PeriodontogramScreen(lang,session,onSessionChanged,backToIntake)
-                        V7Overlay.POSTURE -> PostureVisualScreen(lang,backToIntake)
-                        V7Overlay.PULPAL_APICAL -> PulpalPeriapicalInteractiveV2Screen(lang,session,onSessionChanged,{overlay=V7Overlay.ENDO},backToIntake)
-                        V7Overlay.ENDO -> EndodonticInteractiveV2Screen(lang,session,{overlay=V7Overlay.PULPAL_APICAL},{overlay=V7Overlay.PULPAL_APICAL},backToIntake)
-                        V7Overlay.PROSTHETIC -> ProstheticResponsiveV17Screen(lang,backToIntake)
-                        V7Overlay.SURGICAL -> SurgicalSheetScreen(lang,backToIntake)
-                        V7Overlay.CONSENT -> ConsentTeachingScreen(lang,backToIntake)
-                        V7Overlay.EVOLUTION -> EvolutionScreen(lang,session,backToIntake)
+                        V7Overlay.HUB -> ExamHubV1Screen(lang,{openOverlay(it)},backPrevious)
+                        V7Overlay.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.HISTORY -> HistoryScreen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.VITALS -> VitalsInteractiveV19Screen(lang,backPrevious)
+                        V7Overlay.ATM -> AtmScreen(lang,backPrevious)
+                        V7Overlay.OCCLUSION -> OcclusionInteractiveV19Screen(lang,backPrevious)
+                        V7Overlay.MUCOSA -> MucosaInteractiveV19Screen(lang,backPrevious)
+                        V7Overlay.AUXILIARIES -> AuxiliariesV20Screen(lang,backPrevious)
+                        V7Overlay.ODONTOGRAM -> OdontogramV20Screen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.ICDAS -> IcdasScreen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.CPOD -> CpodInteractiveV19Screen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.OLEARY -> OlearyScreen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.IPC -> IpcResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.IHOS -> IhosResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.PERIODONTAL -> PeriodontogramScreen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.POSTURE -> PostureVisualScreen(lang,backPrevious)
+                        V7Overlay.PULPAL_APICAL -> PulpalPeriapicalInteractiveV2Screen(
+                            lang,session,onSessionChanged,
+                            {openOverlay(V7Overlay.ENDO)},
+                            backPrevious
+                        )
+                        V7Overlay.ENDO -> EndodonticInteractiveV2Screen(
+                            lang,session,
+                            backPrevious,
+                            backPrevious,
+                            backPrevious
+                        )
+                        V7Overlay.PROSTHETIC -> ProstheticResponsiveV17Screen(lang,backPrevious)
+                        V7Overlay.SURGICAL -> SurgicalSheetScreen(lang,backPrevious)
+                        V7Overlay.CONSENT -> ConsentTeachingScreen(lang,backPrevious)
+                        V7Overlay.EVOLUTION -> EvolutionScreen(lang,session,backPrevious)
                         V7Overlay.NONE -> Unit
                     }
                 }
 
                 if(overlay==V7Overlay.INTAKE) {
-                    OutlinedButton(onClick={overlay=V7Overlay.HUB},modifier=Modifier.align(Alignment.BottomStart).safeDrawingPadding().padding(12.dp)) {
+                    OutlinedButton(onClick={openOverlay(V7Overlay.HUB)},modifier=Modifier.align(Alignment.BottomStart).safeDrawingPadding().padding(12.dp)) {
                         Text("🧭 ${tr(lang,"Todos los exámenes","All examinations")}")
                     }
                 }
 
                 if(overlay !in listOf(V7Overlay.NONE,V7Overlay.INTAKE,V7Overlay.HUB)) {
-                    FloatingActions19(lang,{writingHelp=true},backToIntake,Modifier.align(Alignment.BottomEnd))
+                    FloatingActions19(lang,{writingHelp=true},goToIntake,Modifier.align(Alignment.BottomEnd))
                 }
 
                 if(writingHelp) {
@@ -120,10 +154,8 @@ fun AppRootV7(
         }
     }
 
-    BackHandler(enabled=overlay!=V7Overlay.NONE) {
-        if(writingHelp) writingHelp=false
-        else if(overlay==V7Overlay.INTAKE) overlay=V7Overlay.NONE
-        else overlay=V7Overlay.INTAKE
+    BackHandler(enabled=overlay!=V7Overlay.NONE || writingHelp) {
+        goBackOverlay()
     }
 }
 

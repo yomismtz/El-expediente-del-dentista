@@ -5,7 +5,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,10 +20,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -82,42 +81,54 @@ fun AdaptiveBaseRootV19(
     onSessionChanged:(EducationalSession)->Unit
 ) {
     var screen by remember { mutableStateOf(AppScreen.HOME) }
+    val history = remember { mutableStateListOf<AppScreen>() }
     val lang=preferences.languageTag
-    val folderBack={screen=AppScreen.FOLDER}
 
-    BackHandler(enabled=screen!=AppScreen.HOME) { screen=if(screen==AppScreen.FOLDER)AppScreen.HOME else AppScreen.FOLDER }
+    fun navigate(next: AppScreen) {
+        if (next == screen) return
+        history.add(screen)
+        screen = next
+    }
+
+    fun goBack() {
+        screen = if (history.isNotEmpty()) history.removeAt(history.lastIndex) else AppScreen.HOME
+    }
+
+    val backPrevious = { goBack() }
+
+    BackHandler(enabled=screen!=AppScreen.HOME) { goBack() }
 
     when(screen) {
-        AppScreen.HOME -> CoverV19(lang){screen=AppScreen.FOLDER}
-        AppScreen.FOLDER -> FolderV19(lang,{screen=it},{screen=AppScreen.HOME})
-        AppScreen.SETTINGS -> ResponsiveScreenV17(tr(lang,"Configuración","Settings"),tr(lang,"Usa el botón de Configuración de la barra superior.","Use Settings in the top bar."),folderBack){ }
-        AppScreen.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,folderBack)
-        AppScreen.HISTORY -> HistoryScreen(lang,session,onSessionChanged,folderBack)
-        AppScreen.INTAKE -> IntakeNoteScreen(lang,session,folderBack)
-        AppScreen.ACTIVITIES -> ActivitiesScreen(lang,folderBack)
-        AppScreen.VITALS -> VitalsInteractiveV19Screen(lang,folderBack)
-        AppScreen.ATM -> AtmScreen(lang,folderBack)
-        AppScreen.OCCLUSION -> OcclusionInteractiveV19Screen(lang,folderBack)
-        AppScreen.MUCOSA -> MucosaInteractiveV19Screen(lang,folderBack)
-        AppScreen.AUXILIARIES -> AuxiliariesV20Screen(lang,folderBack)
-        AppScreen.ODONTOGRAM -> OdontogramV20Screen(lang,session,onSessionChanged,folderBack)
-        AppScreen.ICDAS -> IcdasScreen(lang,session,onSessionChanged,folderBack)
-        AppScreen.CPOD -> CpodInteractiveV19Screen(lang,session,onSessionChanged,folderBack)
-        AppScreen.OLEARY -> OlearyScreen(lang,session,onSessionChanged,folderBack)
-        AppScreen.IPC -> IpcResponsiveV17Screen(lang,session,onSessionChanged,folderBack)
-        AppScreen.IHOS -> IhosResponsiveV17Screen(lang,session,onSessionChanged,folderBack)
-        AppScreen.PERIODONTOGRAM -> PeriodontogramScreen(lang,session,onSessionChanged,folderBack)
-        AppScreen.POSTURE -> PostureVisualScreen(lang,folderBack)
-        AppScreen.PULPAL,AppScreen.APICAL -> PulpalPeriapicalInteractiveV2Screen(lang,session,onSessionChanged,{screen=AppScreen.ENDO},folderBack)
-        AppScreen.TREATMENT -> TreatmentScreen(lang,session,onSessionChanged,folderBack)
-        AppScreen.SESSIONS -> TreatmentBySessionsScreen(lang,folderBack)
-        AppScreen.ENDO -> EndodonticInteractiveV2Screen(lang,session,{screen=AppScreen.PULPAL},{screen=AppScreen.PULPAL},folderBack)
-        AppScreen.PROSTHETIC -> ProstheticResponsiveV17Screen(lang,folderBack)
-        AppScreen.SURGICAL -> SurgicalSheetScreen(lang,folderBack)
-        AppScreen.CONSENT -> ConsentTeachingScreen(lang,folderBack)
-        AppScreen.REQUEST -> SimpleEducationalSheet(lang,"Solicitud de tratamiento","Treatment request","Aprende para qué sirve y qué debe identificar claramente.","Learn its purpose and what it should clearly identify.",listOf("Servicio solicitado","Motivo","Área u órgano dentario","Prioridad / referencia","Responsable y supervisión"),listOf("Requested service","Reason","Area or tooth","Priority / referral","Responsible clinician and supervision"),folderBack)
-        AppScreen.BUDGET -> SimpleEducationalSheet(lang,"Presupuesto","Budget","Aprende su estructura administrativa sin registrar cobros reales.","Learn its administrative structure without recording real payments.",listOf("Procedimiento","Cantidad","Costo unitario","Subtotal","Total","Laboratorio cuando proceda"),listOf("Procedure","Quantity","Unit cost","Subtotal","Total","Laboratory when applicable"),folderBack)
-        AppScreen.EVOLUTION -> EvolutionScreen(lang,session,folderBack)
+        AppScreen.HOME -> CoverV19(lang){navigate(AppScreen.FOLDER)}
+        AppScreen.FOLDER -> FolderV19(lang,{navigate(it)},backPrevious)
+        AppScreen.SETTINGS -> ResponsiveScreenV17(tr(lang,"Configuración","Settings"),tr(lang,"Usa el botón de Configuración de la barra superior.","Use Settings in the top bar."),backPrevious){ }
+        AppScreen.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
+        AppScreen.HISTORY -> HistoryScreen(lang,session,onSessionChanged,backPrevious)
+        AppScreen.INTAKE -> IntakeNoteScreen(lang,session,backPrevious)
+        AppScreen.ACTIVITIES -> ActivitiesScreen(lang,backPrevious)
+        AppScreen.VITALS -> VitalsInteractiveV19Screen(lang,backPrevious)
+        AppScreen.ATM -> AtmScreen(lang,backPrevious)
+        AppScreen.OCCLUSION -> OcclusionInteractiveV19Screen(lang,backPrevious)
+        AppScreen.MUCOSA -> MucosaInteractiveV19Screen(lang,backPrevious)
+        AppScreen.AUXILIARIES -> AuxiliariesV20Screen(lang,backPrevious)
+        AppScreen.ODONTOGRAM -> OdontogramV20Screen(lang,session,onSessionChanged,backPrevious)
+        AppScreen.ICDAS -> IcdasScreen(lang,session,onSessionChanged,backPrevious)
+        AppScreen.CPOD -> CpodInteractiveV19Screen(lang,session,onSessionChanged,backPrevious)
+        AppScreen.OLEARY -> OlearyScreen(lang,session,onSessionChanged,backPrevious)
+        AppScreen.IPC -> IpcResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
+        AppScreen.IHOS -> IhosResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
+        AppScreen.PERIODONTOGRAM -> PeriodontogramScreen(lang,session,onSessionChanged,backPrevious)
+        AppScreen.POSTURE -> PostureVisualScreen(lang,backPrevious)
+        AppScreen.PULPAL,AppScreen.APICAL -> PulpalPeriapicalInteractiveV2Screen(lang,session,onSessionChanged,{navigate(AppScreen.ENDO)},backPrevious)
+        AppScreen.TREATMENT -> TreatmentScreen(lang,session,onSessionChanged,backPrevious)
+        AppScreen.SESSIONS -> TreatmentBySessionsScreen(lang,backPrevious)
+        AppScreen.ENDO -> EndodonticInteractiveV2Screen(lang,session,{navigate(AppScreen.PULPAL)},{navigate(AppScreen.PULPAL)},backPrevious)
+        AppScreen.PROSTHETIC -> ProstheticResponsiveV17Screen(lang,backPrevious)
+        AppScreen.SURGICAL -> SurgicalSheetScreen(lang,backPrevious)
+        AppScreen.CONSENT -> ConsentTeachingScreen(lang,backPrevious)
+        AppScreen.REQUEST -> SimpleEducationalSheet(lang,"Solicitud de tratamiento","Treatment request","Aprende para qué sirve y qué debe identificar claramente.","Learn its purpose and what it should clearly identify.",listOf("Servicio solicitado","Motivo","Área u órgano dentario","Prioridad / referencia","Responsable y supervisión"),listOf("Requested service","Reason","Area or tooth","Priority / referral","Responsible clinician and supervision"),backPrevious)
+        AppScreen.BUDGET -> SimpleEducationalSheet(lang,"Presupuesto","Budget","Aprende su estructura administrativa sin registrar cobros reales.","Learn its administrative structure without recording real payments.",listOf("Procedimiento","Cantidad","Costo unitario","Subtotal","Total","Laboratorio cuando proceda"),listOf("Procedure","Quantity","Unit cost","Subtotal","Total","Laboratory when applicable"),backPrevious)
+        AppScreen.EVOLUTION -> EvolutionScreen(lang,session,backPrevious)
     }
 }
 
