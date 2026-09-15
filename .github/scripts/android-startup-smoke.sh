@@ -29,29 +29,43 @@ if [[ "$ready" -ne 1 ]]; then
   exit 1
 fi
 
+check_alive() {
+  local phase="$1"
+  sleep 10
+  local pid
+  pid="$(adb shell pidof "$PACKAGE" 2>/dev/null | tr -d '\r' || true)"
+  if [[ -z "$pid" ]]; then
+    echo "::error::Preview process died during ${phase}."
+    capture_log
+    grep -E 'expedientedeldentista|FATAL EXCEPTION|AndroidRuntime|Process:|Caused by:' "$LOG" | tail -n 400 || true
+    exit 1
+  fi
+  echo "Preview process alive after ${phase}: PID=$pid"
+}
+
+launch_preview() {
+  local phase="$1"
+  echo "Launching $PACKAGE/$ACTIVITY · ${phase}"
+  local output
+  output="$(adb shell am start -W -n "$PACKAGE/$ACTIVITY" 2>&1 || true)"
+  echo "$output"
+  check_alive "$phase"
+}
+
 echo "Installing Preview APK..."
 adb install -r "$APK"
 adb shell pm clear "$PACKAGE" || true
 adb logcat -c
 
-echo "Launching $PACKAGE/$ACTIVITY"
-START_OUTPUT="$(adb shell am start -W -n "$PACKAGE/$ACTIVITY" 2>&1 || true)"
-echo "$START_OUTPUT"
-sleep 12
-
-PID="$(adb shell pidof "$PACKAGE" 2>/dev/null | tr -d '\r' || true)"
-if [[ -z "$PID" ]]; then
-  echo "::error::The Preview process died during startup."
-  capture_log
-  grep -E 'expedientedeldentista|FATAL EXCEPTION|AndroidRuntime|Process:|Caused by:' "$LOG" | tail -n 400 || true
-  exit 1
-fi
+launch_preview "first launch"
 
 RESUMED="$(adb shell dumpsys activity activities 2>/dev/null | grep -E 'mResumedActivity|topResumedActivity' | grep "$PACKAGE" || true)"
 if [[ -z "$RESUMED" ]]; then
   echo "::warning::Preview process is alive, but MainActivity is not reported as resumed."
-  adb shell dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity|expedientedeldentista' | head -n 60 || true
 else
-  echo "Preview process is alive and resumed after launch: PID=$PID"
   echo "$RESUMED"
 fi
+
+echo "Testing a normal relaunch without clearing app data..."
+adb shell am force-stop "$PACKAGE"
+launch_preview "second launch"
