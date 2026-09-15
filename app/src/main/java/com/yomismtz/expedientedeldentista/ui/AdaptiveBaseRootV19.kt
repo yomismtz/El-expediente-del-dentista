@@ -95,7 +95,7 @@ fun AdaptiveBaseRootV19(
     when (extraScreen) {
         FolderExtraV33.SYMPTOMS -> QuickSignsSymptomsV26Screen(lang, session, onSessionChanged, backPrevious)
         FolderExtraV33.CALCULATORS -> ClinicalCalculatorsV26Screen(lang, backPrevious)
-        FolderExtraV33.HISTORY_HUB -> HistoryMenuV35Screen(lang, { navigate(it) }, { openExtra(it) }, backPrevious)
+        FolderExtraV33.HISTORY_HUB -> HistoryMenuV37Screen(lang, { navigate(it) }, backPrevious)
         FolderExtraV33.ODONTOGRAM_HUB -> OdontogramHubV35Screen(lang, { navigate(it) }, backPrevious)
         FolderExtraV33.HEAD_NECK -> HeadNeckExplorationV25Screen(lang, session, onSessionChanged, { navigate(AppScreen.ATM) }, backPrevious)
         FolderExtraV33.GENERAL_INSPECTION -> GeneralInspectionV24Screen(lang, session, onSessionChanged, backPrevious)
@@ -121,6 +121,11 @@ fun AdaptiveBaseRootV19(
                 }
             }
             AppScreen.HISTORY -> HistoryScreen(lang, session, onSessionChanged, backPrevious)
+            AppScreen.HISTORY_REASON -> ReasonPresentIllnessV37Screen(lang, backPrevious)
+            AppScreen.HISTORY_FAMILY -> FamilyHistoryV37Screen(lang, backPrevious)
+            AppScreen.HISTORY_NONPATH -> NonPathologicalHistoryV37Screen(lang, backPrevious)
+            AppScreen.HISTORY_PATHOLOGICAL -> PathologicalHistoryV37Screen(lang, backPrevious)
+            AppScreen.HISTORY_SURGICAL_TRAUMA -> SurgicalTraumaHistoryV37Screen(lang, backPrevious)
             AppScreen.INTAKE -> IntakeNoteScreen(lang, session, backPrevious)
             AppScreen.ACTIVITIES -> ActivitiesScreen(lang, backPrevious)
             AppScreen.VITALS -> VitalsInteractiveV19Screen(lang, backPrevious)
