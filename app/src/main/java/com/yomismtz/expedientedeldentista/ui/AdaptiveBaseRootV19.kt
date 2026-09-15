@@ -51,6 +51,7 @@ fun AdaptiveBaseRootV19(
 ) {
     var screen by remember { mutableStateOf(AppScreen.HOME) }
     var extraScreen by remember { mutableStateOf<FolderExtraV33?>(null) }
+    var identificationSheetMode by remember { mutableStateOf(false) }
     val navigationHistory = remember { mutableStateListOf<NavigationStateV35>() }
     val lang = preferences.languageTag
 
@@ -59,16 +60,20 @@ fun AdaptiveBaseRootV19(
     }
 
     fun navigate(next: AppScreen) {
-        if (extraScreen == null && next == screen) return
+        val openingIdentificationSheet =
+            next == AppScreen.IDENTIFICATION && screen == AppScreen.FOLDER && extraScreen == null
+        if (extraScreen == null && next == screen && !openingIdentificationSheet) return
         saveCurrentRoute()
         screen = next
         extraScreen = null
+        identificationSheetMode = openingIdentificationSheet
     }
 
     fun openExtra(next: FolderExtraV33) {
         if (next == extraScreen) return
         saveCurrentRoute()
         extraScreen = next
+        identificationSheetMode = false
     }
 
     fun goBack() {
@@ -80,6 +85,7 @@ fun AdaptiveBaseRootV19(
             screen = AppScreen.HOME
             extraScreen = null
         }
+        identificationSheetMode = false
     }
 
     val backPrevious = { goBack() }
@@ -107,7 +113,13 @@ fun AdaptiveBaseRootV19(
                 tr(lang, "Usa el botón de Configuración de la barra superior.", "Use Settings in the top bar."),
                 backPrevious
             ) { }
-            AppScreen.IDENTIFICATION -> IdentificationScreen(lang, session, onSessionChanged, backPrevious)
+            AppScreen.IDENTIFICATION -> {
+                if (identificationSheetMode) {
+                    IdentificationSheetV36Screen(lang, backPrevious)
+                } else {
+                    PatientIdentificationV36Screen(lang, backPrevious)
+                }
+            }
             AppScreen.HISTORY -> HistoryScreen(lang, session, onSessionChanged, backPrevious)
             AppScreen.INTAKE -> IntakeNoteScreen(lang, session, backPrevious)
             AppScreen.ACTIVITIES -> ActivitiesScreen(lang, backPrevious)
