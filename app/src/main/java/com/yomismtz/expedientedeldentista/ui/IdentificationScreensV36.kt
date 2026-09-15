@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,6 +27,13 @@ private data class IdentificationItemV36(
     val en: String,
     val helpEs: String,
     val helpEn: String
+)
+
+private data class SheetDiagnosisV37(
+    val es: String,
+    val en: String,
+    val optionsEs: List<String>,
+    val optionsEn: List<String>
 )
 
 private val patientIdentificationItemsV36 = listOf(
@@ -107,79 +117,267 @@ private val patientIdentificationItemsV36 = listOf(
     )
 )
 
-private val identificationSheetFieldsV36 = listOf(
-    "Nombre" to "Name",
-    "Género" to "Gender",
-    "Edad" to "Age",
-    "Fecha de nacimiento" to "Date of birth",
-    "Lugar de nacimiento" to "Place of birth",
-    "Dirección" to "Address",
-    "Teléfono" to "Telephone",
-    "Ocupación anterior" to "Previous occupation",
-    "Ocupación actual" to "Current occupation",
-    "Religión" to "Religion",
-    "Número de miembros en la familia" to "Number of family members",
-    "Estado civil" to "Marital status",
-    "Escolaridad" to "Education",
-    "Servicio de salud: privado / institucional / especifique" to "Health service: private / institutional / specify"
+private val asaOptionsV37 = listOf(
+    "ASA I · sano",
+    "ASA II · enfermedad sistémica leve",
+    "ASA III · enfermedad sistémica grave",
+    "ASA IV · enfermedad grave con amenaza constante para la vida",
+    "ASA V · paciente moribundo",
+    "ASA VI · donador de órganos con muerte encefálica",
+    "ASA E · emergencia, si aplica"
 )
 
-/**
- * Top-level physical identification sheet.
- * It intentionally looks like a blank form and does not collect patient data.
- */
+private val bloodGroupsV37 = listOf("A+", "A−", "B+", "B−", "AB+", "AB−", "O+", "O−", "Desconocido")
+
+private val medicationAllergiesV37 = listOf(
+    "Penicilina / amoxicilina", "Cefalosporinas", "Sulfonamidas", "AINE / aspirina",
+    "Macrólidos", "Clindamicina", "Anestésico local o conservador referido", "Otro medicamento"
+)
+
+private val foodAllergiesV37 = listOf(
+    "Cacahuate / nueces", "Mariscos", "Pescado", "Leche", "Huevo", "Soya", "Trigo", "Otro alimento"
+)
+
+private val dentalMaterialAllergiesV37 = listOf(
+    "Látex", "Acrílico / metacrilatos", "Níquel", "Cobalto / cromo", "Resinas / adhesivos",
+    "Eugenol", "Clorhexidina", "Material de impresión", "Guantes / barreras", "Otro material odontológico"
+)
+
+private val reactionOptionsV37 = listOf(
+    "Urticaria", "Angioedema", "Disnea / broncoespasmo", "Anafilaxia", "Dermatitis / reacción de contacto",
+    "Síntoma gastrointestinal", "Efecto adverso no alérgico", "Reacción desconocida"
+)
+
+private val diagnosisGroupsV37 = listOf(
+    SheetDiagnosisV37(
+        "Diagnóstico sistémico / cardiológico",
+        "Systemic / cardiovascular diagnosis",
+        listOf("Sin enfermedad sistémica referida", "Hipertensión", "Cardiopatía / arritmia", "Diabetes / endocrino", "Respiratorio", "Hematológico", "Renal", "Otro · describir"),
+        listOf("No reported systemic disease", "Hypertension", "Cardiac disease / arrhythmia", "Diabetes / endocrine", "Respiratory", "Hematologic", "Renal", "Other · describe")
+    ),
+    SheetDiagnosisV37(
+        "Diagnóstico de caries y anomalías",
+        "Caries and anomaly diagnosis",
+        listOf("Sin lesión de caries detectada", "Lesión inicial", "Lesión moderada", "Lesión severa/cavitada", "Anomalía dental presente", "Pendiente de completar odontograma / ICDAS"),
+        listOf("No caries lesion detected", "Initial lesion", "Moderate lesion", "Severe/cavitated lesion", "Dental anomaly present", "Odontogram / ICDAS incomplete")
+    ),
+    SheetDiagnosisV37(
+        "Diagnóstico de oclusión",
+        "Occlusal diagnosis",
+        listOf("Relación oclusal dentro de referencia", "Clase I", "Clase II", "Clase III", "Mordida abierta", "Mordida profunda", "Mordida cruzada", "No valorable / describir"),
+        listOf("Occlusion within reference", "Class I", "Class II", "Class III", "Open bite", "Deep bite", "Crossbite", "Not assessable / describe")
+    ),
+    SheetDiagnosisV37(
+        "Diagnóstico periodontal",
+        "Periodontal diagnosis",
+        listOf("Salud periodontal", "Gingivitis", "Periodontitis · estadio/grado por determinar", "Periodontitis · estadio/grado documentado", "Absceso periodontal", "Lesión endoperiodontal", "Otro"),
+        listOf("Periodontal health", "Gingivitis", "Periodontitis · stage/grade pending", "Periodontitis · documented stage/grade", "Periodontal abscess", "Endo-periodontal lesion", "Other")
+    ),
+    SheetDiagnosisV37(
+        "Diagnóstico endodóntico · pulpar y periapical",
+        "Endodontic diagnosis · pulpal and apical",
+        listOf("Pulpa normal", "Pulpitis reversible", "Pulpitis irreversible", "Necrosis pulpar", "Previamente tratado/iniciado", "Tejidos apicales normales", "Periodontitis apical", "Absceso apical", "Otro / pendiente de pruebas"),
+        listOf("Normal pulp", "Reversible pulpitis", "Irreversible pulpitis", "Pulp necrosis", "Previously treated/initiated", "Normal apical tissues", "Apical periodontitis", "Apical abscess", "Other / tests pending")
+    ),
+    SheetDiagnosisV37(
+        "ATM y músculos",
+        "TMJ and muscles",
+        listOf("Sin alteraciones aparentes", "Dolor miofascial", "Artralgia", "Chasquido", "Crepitación", "Limitación / bloqueo", "Hiperlaxitud / luxación", "Bruxismo / sobrecarga", "Otro"),
+        listOf("No apparent alteration", "Myofascial pain", "Arthralgia", "Click", "Crepitus", "Limitation / locking", "Hypermobility / dislocation", "Bruxism / overload", "Other")
+    ),
+    SheetDiagnosisV37(
+        "Diagnóstico de mucosas / patología oral",
+        "Oral mucosa / oral pathology diagnosis",
+        listOf("Sin lesión aparente", "Lesión traumática", "Úlcera", "Lesión blanca", "Lesión roja", "Aumento de volumen", "Lesión pigmentada", "Infección probable", "Requiere diagnóstico diferencial / biopsia"),
+        listOf("No apparent lesion", "Traumatic lesion", "Ulcer", "White lesion", "Red lesion", "Swelling", "Pigmented lesion", "Probable infection", "Differential diagnosis / biopsy required")
+    ),
+    SheetDiagnosisV37(
+        "Índice CPOD / ceod",
+        "DMFT / dmft index",
+        listOf("CPOD registrado", "ceod registrado", "Dentición mixta · registrar ambos", "Pendiente de completar"),
+        listOf("DMFT recorded", "dmft recorded", "Mixed dentition · record both", "Incomplete")
+    ),
+    SheetDiagnosisV37(
+        "Diagnóstico protésico",
+        "Prosthetic diagnosis",
+        listOf("Dentición completa / sin indicación protésica", "Kennedy I", "Kennedy II", "Kennedy III", "Kennedy IV", "Edéntulo total", "Prótesis existente · valorar estado", "Otro"),
+        listOf("Complete dentition / no prosthetic indication", "Kennedy I", "Kennedy II", "Kennedy III", "Kennedy IV", "Completely edentulous", "Existing prosthesis · assess condition", "Other")
+    ),
+    SheetDiagnosisV37(
+        "Diagnóstico quirúrgico",
+        "Surgical diagnosis",
+        listOf("Sin indicación quirúrgica actual", "Extracción indicada", "Tercer molar / retención", "Diente incluido / impactado", "Lesión que requiere biopsia", "Infección odontógena con valoración quirúrgica", "Otro"),
+        listOf("No current surgical indication", "Extraction indicated", "Third molar / retention", "Included / impacted tooth", "Lesion requiring biopsy", "Odontogenic infection requiring surgical assessment", "Other")
+    )
+)
+
 @Composable
 fun IdentificationSheetV36Screen(lang: String, onBack: () -> Unit) {
+    var patientName by remember { mutableStateOf("") }
+    var recordNumber by remember { mutableStateOf("") }
+    var date by remember { mutableStateOf("") }
+    var ldc by remember { mutableStateOf("") }
+    var shift by remember { mutableStateOf("") }
+    var selectedAsa by remember { mutableStateOf("") }
+    var selectedBloodGroup by remember { mutableStateOf("") }
+    var currentMedicines by remember { mutableStateOf("") }
+    var allergyDetail by remember { mutableStateOf("") }
+    val selectedMedicationAllergies = remember { mutableStateListOf<String>() }
+    val selectedFoodAllergies = remember { mutableStateListOf<String>() }
+    val selectedMaterialAllergies = remember { mutableStateListOf<String>() }
+    val selectedReactions = remember { mutableStateListOf<String>() }
+    val selectedDiagnosisOptions = remember { mutableStateListOf<String>() }
+    val diagnosisNotes = remember { MutableList(diagnosisGroupsV37.size) { mutableStateOf("") } }
+
     ResponsiveScreenV17(
         tr(lang, "Ficha de identificación", "Identification sheet"),
         tr(
             lang,
-            "Vista didáctica del formato físico. Esta ficha es distinta del apartado “Identificación del paciente” dentro de Historia clínica.",
-            "Teaching view of the physical form. This sheet is different from the “Patient identification” section inside the clinical history."
+            "Ficha-resumen del expediente odontológico. No es lo mismo que “Identificación del paciente” dentro de Historia clínica.",
+            "Dental-record summary sheet. It is not the same as “Patient identification” inside the clinical history."
         ),
         onBack
     ) { profile ->
         NoticeCard(
             tr(
                 lang,
-                "No escribas datos identificables de pacientes reales. La ficha se muestra para aprender su estructura y dónde corresponde cada dato.",
-                "Do not enter identifiable data from real patients. The sheet is shown only to teach its structure and where each item belongs."
+                "Esta vista es didáctica. Usa datos ficticios para practicar. La ficha integra datos de control, ASA, grupo sanguíneo, alergias, medicamentos y el resumen diagnóstico obtenido de los demás apartados del expediente.",
+                "This is a teaching view. Use fictional data for practice. The sheet integrates control data, ASA, blood group, allergies, medicines and the diagnostic summary obtained from the other record sections."
             )
         )
-        ResponsiveSectionV17(tr(lang, "Formato", "Form")) {
-            val columns = if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2
-            AdaptiveGridV17(identificationSheetFieldsV36.size, columns) { index ->
-                val field = identificationSheetFieldsV36[index]
+
+        ResponsiveSectionV17(tr(lang, "Datos de la ficha", "Sheet data")) {
+            OutlinedTextField(patientName, { patientName = it }, label = { Text(tr(lang, "Nombre", "Name")) }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(recordNumber, { recordNumber = it }, label = { Text(tr(lang, "No. de expediente", "Record number")) }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(date, { date = it }, label = { Text(tr(lang, "Fecha", "Date")) }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(ldc, { ldc = it }, label = { Text("LDC") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(shift, { shift = it }, label = { Text(tr(lang, "Turno", "Shift")) }, modifier = Modifier.fillMaxWidth())
+        }
+
+        ResponsiveSectionV17(tr(lang, "Clasificación ASA", "ASA classification")) {
+            Text(tr(lang,
+                "Selecciona sólo después de integrar antecedentes, estado actual y valoración clínica. La letra E se añade cuando el procedimiento es de emergencia.",
+                "Select only after integrating medical history, current status and clinical assessment. The E modifier is added for emergency procedures."
+            ))
+            AdaptiveGridV17(asaOptionsV37.size, if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2) { index ->
+                val option = asaOptionsV37[index]
+                FilterChip(selected = selectedAsa == option, onClick = { selectedAsa = option }, label = { Text(option) }, modifier = Modifier.fillMaxWidth())
+            }
+        }
+
+        ResponsiveSectionV17(tr(lang, "Tipo de sangre", "Blood group")) {
+            AdaptiveGridV17(bloodGroupsV37.size, if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 3) { index ->
+                val option = bloodGroupsV37[index]
+                FilterChip(selected = selectedBloodGroup == option, onClick = { selectedBloodGroup = option }, label = { Text(option) }, modifier = Modifier.fillMaxWidth())
+            }
+            NoticeCard(tr(lang,
+                "Si el paciente no conoce su grupo sanguíneo o no existe documento, selecciona “Desconocido”; no lo infieras.",
+                "If the patient does not know the blood group or there is no documentation, select “Unknown”; do not infer it."
+            ))
+        }
+
+        ResponsiveSectionV17(tr(lang, "Alergias", "Allergies")) {
+            Text(tr(lang, "Medicamentos", "Medicines"), fontWeight = FontWeight.Black)
+            AllergyChipGridV37(profile, medicationAllergiesV37, selectedMedicationAllergies)
+            Text(tr(lang, "Alimentos", "Foods"), fontWeight = FontWeight.Black)
+            AllergyChipGridV37(profile, foodAllergiesV37, selectedFoodAllergies)
+            Text(tr(lang, "Materiales y materiales relacionados con odontología", "Materials and dental-related materials"), fontWeight = FontWeight.Black)
+            AllergyChipGridV37(profile, dentalMaterialAllergiesV37, selectedMaterialAllergies)
+            Text(tr(lang, "Tipo de reacción referida", "Reported reaction type"), fontWeight = FontWeight.Black)
+            AllergyChipGridV37(profile, reactionOptionsV37, selectedReactions)
+            OutlinedTextField(
+                allergyDetail,
+                { allergyDetail = it },
+                label = { Text(tr(lang, "Detalle: sustancia, reacción, cuándo ocurrió y atención requerida", "Detail: substance, reaction, when it occurred and treatment required")) },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 2
+            )
+            NoticeCard(tr(lang,
+                "Distingue alergia de efecto adverso o intolerancia. Una reacción previa debe describirse; no etiquetes como alergia sólo porque el paciente tuvo náusea, dolor u otro efecto secundario.",
+                "Distinguish allergy from adverse effect or intolerance. Describe the previous reaction; do not label an allergy solely because nausea, pain or another side effect occurred."
+            ))
+        }
+
+        ResponsiveSectionV17(tr(lang, "Medicamentos actuales", "Current medicines")) {
+            OutlinedTextField(
+                currentMedicines,
+                { currentMedicines = it },
+                label = { Text(tr(lang, "Nombre · presentación/dosis referida · vía · intervalo · motivo", "Name · reported strength/dose · route · interval · reason")) },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3
+            )
+        }
+
+        ResponsiveSectionV17(tr(lang, "Resumen diagnóstico", "Diagnostic summary")) {
+            Text(tr(lang,
+                "Selecciona opciones sólo cuando estén sustentadas por la historia y el examen correspondiente. Usa el campo libre para órgano dentario, superficie, lateralidad, estadio/grado, clasificación u otros detalles.",
+                "Select options only when supported by the corresponding history and examination. Use the free-text field for tooth, surface, laterality, stage/grade, classification or other details."
+            ))
+            diagnosisGroupsV37.forEachIndexed { groupIndex, group ->
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .45f)),
-                    shape = RoundedCornerShape(12.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .35f)),
+                    shape = RoundedCornerShape(14.dp)
                 ) {
-                    Column(
-                        Modifier.fillMaxWidth().padding(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(if (lang == "en") field.second else field.first, fontWeight = FontWeight.Bold)
-                        Text("____________________________", color = MaterialTheme.colorScheme.primary)
+                    Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(if (lang == "en") group.en else group.es, fontWeight = FontWeight.Black)
+                        val options = if (lang == "en") group.optionsEn else group.optionsEs
+                        AdaptiveGridV17(options.size, if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2) { optionIndex ->
+                            val option = options[optionIndex]
+                            val key = "$groupIndex::$option"
+                            FilterChip(
+                                selected = key in selectedDiagnosisOptions,
+                                onClick = {
+                                    val previous = selectedDiagnosisOptions.filter { it.startsWith("$groupIndex::") }
+                                    selectedDiagnosisOptions.removeAll(previous)
+                                    selectedDiagnosisOptions.add(key)
+                                },
+                                label = { Text(option) },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                        OutlinedTextField(
+                            diagnosisNotes[groupIndex].value,
+                            { diagnosisNotes[groupIndex].value = it },
+                            label = { Text(tr(lang, "Detalle / redacción final", "Detail / final wording")) },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 2
+                        )
                     }
                 }
             }
         }
+
         NoticeCard(
             tr(
                 lang,
-                "Después, en Historia clínica → Identificación del paciente, se explica la utilidad de cada uno de estos datos. Motivo de consulta y padecimiento actual son apartados distintos y no forman parte de esta identificación.",
-                "Then, under Clinical history → Patient identification, the purpose of each item is explained. Chief complaint and present illness are separate sections and are not part of this identification."
+                "Identificación del paciente (nombre, edad, nacimiento, domicilio, ocupación, escolaridad, etc.) permanece dentro de Historia clínica. Motivo de consulta y padecimiento actual son apartados posteriores e independientes.",
+                "Patient identification (name, age, birth, address, occupation, education, etc.) remains inside the clinical history. Chief complaint and present illness are later, separate sections."
             )
         )
     }
 }
 
-/**
- * Clinical-history subsection: Patient identification.
- * This is explanatory, not the top-level physical identification sheet.
- */
+@Composable
+private fun AllergyChipGridV37(
+    profile: ScreenProfileV17,
+    items: List<String>,
+    selected: MutableList<String>
+) {
+    AdaptiveGridV17(items.size, if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2) { index ->
+        val item = items[index]
+        FilterChip(
+            selected = item in selected,
+            onClick = {
+                if (item in selected) selected.remove(item) else selected.add(item)
+            },
+            label = { Text(item) },
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
 @Composable
 fun PatientIdentificationV36Screen(lang: String, onBack: () -> Unit) {
     var opened by remember { mutableStateOf<Int?>(0) }
