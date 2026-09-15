@@ -2,6 +2,7 @@ package com.yomismtz.expedientedeldentista.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
@@ -21,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.ClinicalContent
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEngines
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
+import com.yomismtz.expedientedeldentista.clinical.Surface
+import com.yomismtz.expedientedeldentista.clinical.SurfaceMark
 import com.yomismtz.expedientedeldentista.clinical.ToothRecord
 import com.yomismtz.expedientedeldentista.clinical.ToothStatus
 import kotlin.math.pow
@@ -157,40 +160,159 @@ private fun cpodStatus19(status:ToothStatus,lang:String):String = when(status) {
     ToothStatus.SEALANT -> tr(lang,"Sellador / no cuenta como O","Sealant / not counted as F")
 }
 
+private fun cpodSurfaceMark19(mark:SurfaceMark,lang:String):String = when(mark) {
+    SurfaceMark.HEALTHY -> tr(lang,"Sana / borrar","Sound / clear")
+    SurfaceMark.CARIES -> tr(lang,"Cariada","Decayed")
+    SurfaceMark.RESTORATION -> tr(lang,"Obturada","Filled")
+    SurfaceMark.SEALANT -> tr(lang,"Sellada / no cuenta","Sealant / not counted")
+}
+
+private fun cpodSurfaces19(tooth:Int):List<Surface> {
+    val position=tooth%10
+    val posterior=position>=4
+    return if(posterior) listOf(Surface.VESTIBULAR,Surface.LINGUAL_PALATAL,Surface.MESIAL,Surface.DISTAL,Surface.OCCLUSAL)
+    else listOf(Surface.VESTIBULAR,Surface.LINGUAL_PALATAL,Surface.MESIAL,Surface.DISTAL)
+}
+
 @Composable
 fun CpodInteractiveV19Screen(lang:String,session:EducationalSession,onSessionChanged:(EducationalSession)->Unit,onBack:()->Unit) {
     var primary by remember{mutableStateOf(false)}
+    var surfaceMode by remember{mutableStateOf(false)}
+    var selectedMark by remember{mutableStateOf(SurfaceMark.CARIES)}
     val shown=if(primary)ClinicalContent.primaryTeeth else ClinicalContent.permanentTeeth
     var selected by remember{mutableStateOf(shown.first())}
     if(selected !in shown) selected=shown.first()
     val record=session.teeth[selected]?:ToothRecord()
     val result=ClinicalEngines.cpod(session.teeth,primary)
     val choices=listOf(ToothStatus.HEALTHY,ToothStatus.CARIES,ToothStatus.RESTORED,ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER,ToothStatus.SEALANT)
+    val applicableSurfaces=cpodSurfaces19(selected)
+    val surfaceMap=session.odontogramSurfaces[selected]?:emptyMap()
+
     fun setStatus(status:ToothStatus) {
         val present=session.presentTeeth.toMutableSet()
         if(status==ToothStatus.MISSING_CARIES||status==ToothStatus.MISSING_OTHER)present.remove(selected) else present.add(selected)
-        onSessionChanged(session.copy(teeth=session.teeth+(selected to record.copy(status=status)),presentTeeth=present))
+        val cleared=if(status==ToothStatus.MISSING_CARIES||status==ToothStatus.MISSING_OTHER) session.odontogramSurfaces-selected else session.odontogramSurfaces
+        onSessionChanged(session.copy(teeth=session.teeth+(selected to record.copy(status=status)),presentTeeth=present,odontogramSurfaces=cleared))
     }
 
-    ResponsiveScreenV17(tr(lang,"CPOD / ceod interactivo","Interactive DMFT / dmft"),tr(lang,"Toca cada diente, clasifícalo y observa el cálculo automático.","Tap each tooth, classify it and view the automatic calculation."),onBack) { profile ->
+    fun setSurface(surface:Surface) {
+        if(surface !in applicableSurfaces) return
+        val updated=surfaceMap.toMutableMap()
+        if(selectedMark==SurfaceMark.HEALTHY) updated.remove(surface) else updated[surface]=selectedMark
+        val derived=when {
+            updated.values.any{it==SurfaceMark.CARIES}->ToothStatus.CARIES
+            updated.values.any{it==SurfaceMark.RESTORATION}->ToothStatus.RESTORED
+            updated.values.any{it==SurfaceMark.SEALANT}->ToothStatus.SEALANT
+            else->ToothStatus.HEALTHY
+        }
+        onSessionChanged(session.copy(
+            odontogramSurfaces=session.odontogramSurfaces+(selected to updated),
+            teeth=session.teeth+(selected to record.copy(status=derived)),
+            presentTeeth=session.presentTeeth+selected
+        ))
+    }
+
+    val surfaceCounts=run {
+        var d=0; var m=0; var f=0
+        shown.forEach { tooth ->
+            val r=session.teeth[tooth]?:ToothRecord()
+            val surfaces=cpodSurfaces19(tooth)
+            when(r.status) {
+                ToothStatus.MISSING_CARIES -> m+=surfaces.size
+                ToothStatus.MISSING_OTHER -> Unit
+                else -> {
+                    val marks=session.odontogramSurfaces[tooth]?:emptyMap()
+                    surfaces.forEach { s ->
+                        when(marks[s]) {
+                            SurfaceMark.CARIES -> d++
+                            SurfaceMark.RESTORATION -> f++
+                            else -> Unit
+                        }
+                    }
+                }
+            }
+        }
+        Triple(d,m,f)
+    }
+    val surfaceTotal=surfaceCounts.first+surfaceCounts.second+surfaceCounts.third
+
+    ResponsiveScreenV17(
+        tr(lang,"CPOD / ceod · diente y superficie","DMFT / dmft · tooth and surface"),
+        tr(lang,"Alterna entre el índice por diente (CPOD/ceod) y por superficie (CPOS/ceos).","Switch between tooth-level DMFT/dmft and surface-level DMFS/dmfs."),
+        onBack
+    ) { profile ->
+        ResponsiveSectionV17(tr(lang,"Modo de registro","Recording mode")) {
+            AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2) { i ->
+                val surfaces=i==1
+                FilterChip(surfaceMode==surfaces,{surfaceMode=surfaces},{Text(if(surfaces)tr(lang,"Por superficie · CPOS/ceos","By surface · DMFS/dmfs") else tr(lang,"Por diente · CPOD/ceod","By tooth · DMFT/dmft"))},modifier=Modifier.fillMaxWidth())
+            }
+        }
         ResponsiveSectionV17(tr(lang,"Dentición","Dentition")) {
             AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2) { i ->
                 val p=i==1
-                FilterChip(primary==p,{primary=p},{Text(if(p)tr(lang,"Temporal · ceod","Primary · dmft") else tr(lang,"Permanente · CPOD","Permanent · DMFT"))},modifier=Modifier.fillMaxWidth())
+                FilterChip(primary==p,{primary=p},{Text(if(p)tr(lang,"Temporal","Primary") else tr(lang,"Permanente","Permanent"))},modifier=Modifier.fillMaxWidth())
             }
         }
         ResponsiveSectionV17(tr(lang,"Maxilar arriba · mandibular abajo","Maxillary above · mandibular below")) {
-            DentalArchSelector(shown,selected,{selected=it}) { tooth -> session.teeth[tooth]?.status?.let{it!=ToothStatus.HEALTHY}==true }
-        }
-        ResponsiveSectionV17("OD $selected") { choices.forEach { s -> FilterChip(record.status==s,{setStatus(s)},{Text(cpodStatus19(s,lang))},modifier=Modifier.fillMaxWidth()) } }
-        Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)) {
-            Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
-                Text(if(primary)"ceod" else "CPOD",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleLarge)
-                Text(if(primary)"c = ${result.carious}   e = ${result.missing}   o = ${result.filled}" else "C = ${result.carious}   P = ${result.missing}   O = ${result.filled}")
-                Text("${if(primary)"ceod" else "CPOD"} = ${result.total}",fontWeight=FontWeight.Black,style=MaterialTheme.typography.headlineSmall)
-                Text(ClinicalEngines.cpodInterpretation(result.total,lang))
+            DentalArchSelector(shown,selected,{selected=it}) { tooth ->
+                if(surfaceMode) session.odontogramSurfaces[tooth]?.isNotEmpty()==true || session.teeth[tooth]?.status==ToothStatus.MISSING_CARIES
+                else session.teeth[tooth]?.status?.let{it!=ToothStatus.HEALTHY}==true
             }
         }
-        NoticeCard(tr(lang,"La unidad es el diente. Caries activa tiene prioridad sobre una restauración para el conteo. Ausencias por causas distintas de caries no suman como P/e.","The unit is the tooth. Active caries takes priority over a restoration for counting. Missing teeth for causes other than caries do not count as M/e."))
+
+        if(!surfaceMode) {
+            ResponsiveSectionV17("OD $selected") {
+                choices.forEach { s -> FilterChip(record.status==s,{setStatus(s)},{Text(cpodStatus19(s,lang))},modifier=Modifier.fillMaxWidth()) }
+            }
+            Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)) {
+                Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
+                    Text(if(primary)"ceod" else "CPOD",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleLarge)
+                    Text(if(primary)"c = ${result.carious}   e = ${result.missing}   o = ${result.filled}" else "C = ${result.carious}   P = ${result.missing}   O = ${result.filled}")
+                    Text("${if(primary)"ceod" else "CPOD"} = ${result.total}",fontWeight=FontWeight.Black,style=MaterialTheme.typography.headlineSmall)
+                    Text(ClinicalEngines.cpodInterpretation(result.total,lang))
+                }
+            }
+            NoticeCard(tr(lang,"La unidad es el diente. Caries activa tiene prioridad sobre una restauración para el conteo. Ausencias por causas distintas de caries no suman como P/e.","The unit is the tooth. Active caries takes priority over a restoration for counting. Missing teeth for causes other than caries do not count as M/e."))
+        } else {
+            ResponsiveSectionV17("OD $selected · ${if(primary)"ceos" else "CPOS"}") {
+                if(record.status==ToothStatus.MISSING_CARIES) {
+                    Text(tr(lang,"Diente ausente por caries: sus superficies se contabilizan en el componente P/e del índice por superficies.","Tooth missing due to caries: its surfaces are counted in the M/e component of the surface index."),fontWeight=FontWeight.Bold)
+                    FilterChip(false,{setStatus(ToothStatus.HEALTHY)},{Text(tr(lang,"Marcar diente presente","Mark tooth present"))},modifier=Modifier.fillMaxWidth())
+                } else {
+                    SurfaceMark.entries.forEach { mark ->
+                        FilterChip(selectedMark==mark,{selectedMark=mark},{Text(cpodSurfaceMark19(mark,lang))},modifier=Modifier.fillMaxWidth())
+                    }
+                    DentalSurfaceDiagram(
+                        centerEnabled=applicableSurfaces.contains(Surface.OCCLUSAL),
+                        surfaceColor={surface ->
+                            when(surfaceMap[surface]) {
+                                SurfaceMark.CARIES -> MaterialTheme.colorScheme.errorContainer
+                                SurfaceMark.RESTORATION -> MaterialTheme.colorScheme.primaryContainer
+                                SurfaceMark.SEALANT -> MaterialTheme.colorScheme.tertiaryContainer
+                                else -> MaterialTheme.colorScheme.surfaceVariant
+                            }
+                        },
+                        onSurfaceTap={setSurface(it)},
+                        modifier=Modifier.fillMaxWidth()
+                    )
+                    Text(tr(lang,
+                        if(applicableSurfaces.size==5)"Este diente posterior tiene 5 superficies evaluables." else "Este diente anterior tiene 4 superficies evaluables.",
+                        if(applicableSurfaces.size==5)"This posterior tooth has 5 evaluable surfaces." else "This anterior tooth has 4 evaluable surfaces."
+                    ),fontWeight=FontWeight.SemiBold)
+                    FilterChip(false,{setStatus(ToothStatus.MISSING_CARIES)},{Text(tr(lang,"Ausente por caries","Missing due to caries"))},modifier=Modifier.fillMaxWidth())
+                }
+            }
+            Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)) {
+                Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
+                    Text(if(primary)"ceos" else "CPOS",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleLarge)
+                    Text(if(primary)"c = ${surfaceCounts.first}   e = ${surfaceCounts.second}   o = ${surfaceCounts.third}" else "C = ${surfaceCounts.first}   P = ${surfaceCounts.second}   O = ${surfaceCounts.third}")
+                    Text("${if(primary)"ceos" else "CPOS"} = $surfaceTotal",fontWeight=FontWeight.Black,style=MaterialTheme.typography.headlineSmall)
+                }
+            }
+            NoticeCard(tr(lang,
+                "En el registro por superficies, dientes anteriores usan 4 caras y posteriores 5. Una superficie con caries y restauración se contabiliza como cariada; selladores y ausencias por causas distintas de caries no suman al índice.",
+                "In surface recording, anterior teeth use 4 surfaces and posterior teeth 5. A surface with both caries and restoration is counted as decayed; sealants and teeth missing for causes other than caries are excluded."
+            ))
+        }
     }
 }
