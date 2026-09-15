@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,10 +23,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.clinical.PediatricDoseBasis
+import com.yomismtz.expedientedeldentista.clinical.PediatricMedicationCategoryV27
+import com.yomismtz.expedientedeldentista.clinical.PediatricMedicationSpecV27
 import com.yomismtz.expedientedeldentista.clinical.QuickSignsSymptomsState
 import com.yomismtz.expedientedeldentista.clinical.calculateLocalAnesthetic
-import com.yomismtz.expedientedeldentista.clinical.calculatePediatricDose
+import com.yomismtz.expedientedeldentista.clinical.calculatePediatricMedicationRangeV27
 import com.yomismtz.expedientedeldentista.clinical.localAnestheticSpecsV26
+import com.yomismtz.expedientedeldentista.clinical.pediatricMedicationSpecsV27
+import kotlin.math.abs
 
 private data class ChoiceV26(val value: String, val es: String, val en: String)
 
@@ -40,6 +45,21 @@ private fun decimalInputV26(raw: String, maxChars: Int = 8): String {
     val firstDot = normalized.indexOf('.')
     val singleDot = if (firstDot < 0) normalized else normalized.substring(0, firstDot + 1) + normalized.substring(firstDot + 1).replace(".", "")
     return singleDot.take(maxChars)
+}
+
+private fun doseRangeV27(min: Double, max: Double, decimals: Int = 1): String {
+    val pattern = if (decimals == 2) "%.2f" else "%.1f"
+    val minText = pattern.format(min)
+    val maxText = pattern.format(max)
+    return if (abs(max - min) < 0.005) minText else "$minText–$maxText"
+}
+
+private fun categoryLabelV27(lang: String, category: PediatricMedicationCategoryV27): String = when (category) {
+    PediatricMedicationCategoryV27.ANALGESIC -> tr(lang, "Analgésicos", "Analgesics")
+    PediatricMedicationCategoryV27.NSAID -> tr(lang, "AINE", "NSAIDs")
+    PediatricMedicationCategoryV27.ANTIBIOTIC -> tr(lang, "Antibióticos", "Antibiotics")
+    PediatricMedicationCategoryV27.NITROIMIDAZOLE -> tr(lang, "Nitroimidazoles", "Nitroimidazoles")
+    PediatricMedicationCategoryV27.ANTIVIRAL -> tr(lang, "Antivirales", "Antivirals")
 }
 
 @Composable
@@ -145,15 +165,15 @@ fun ClinicalCalculatorsV26Screen(lang: String, onBack: () -> Unit) {
     ResponsiveScreenV17(
         tr(lang, "Calculadoras clínicas", "Clinical calculators"),
         tr(lang,
-            "Herramientas matemáticas educativas. Verifica siempre peso, presentación, ficha técnica y la indicación clínica antes de utilizar un resultado.",
-            "Educational math tools. Always verify weight, formulation, product label and clinical indication before using a result."),
+            "Herramientas educativas con referencias pediátricas precargadas. Verifica siempre peso, edad, indicación, alergias, función renal/hepática y la ficha técnica del producto disponible.",
+            "Educational tools with preloaded pediatric references. Always verify weight, age, indication, allergies, renal/hepatic function, and the actual product label."),
         onBack
     ) { profile ->
         AdaptiveGridV17(2, if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2) { index ->
             FilterChip(
                 selected = tab == index,
                 onClick = { tab = index },
-                label = { Text(if (index == 0) tr(lang, "Dosis pediátrica", "Pediatric dose") else tr(lang, "Anestésicos locales", "Local anesthetics")) },
+                label = { Text(if (index == 0) tr(lang, "Medicamentos pediátricos", "Pediatric medicines") else tr(lang, "Anestésicos locales", "Local anesthetics")) },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -164,55 +184,170 @@ fun ClinicalCalculatorsV26Screen(lang: String, onBack: () -> Unit) {
 @Composable
 private fun PediatricDoseCalculatorV26(lang: String) {
     var weight by remember { mutableStateOf("") }
-    var orderedMgKg by remember { mutableStateOf("") }
-    var concentration by remember { mutableStateOf("") }
-    var dosesPerDay by remember { mutableStateOf("") }
-    var basis by remember { mutableStateOf(PediatricDoseBasis.PER_DOSE) }
+    var selectedIds by remember { mutableStateOf(setOf<String>()) }
 
-    val result = calculatePediatricDose(
-        weightKg = weight.toDoubleOrNull() ?: 0.0,
-        orderedMgKg = orderedMgKg.toDoubleOrNull() ?: 0.0,
-        concentrationMgMl = concentration.toDoubleOrNull() ?: 0.0,
-        dosesPerDay = dosesPerDay.toIntOrNull() ?: 0,
-        basis = basis
-    )
-
-    ResponsiveSectionV17(tr(lang, "Cálculo de dosis pediátrica", "Pediatric dose calculation")) {
+    ResponsiveSectionV17(tr(lang, "Paciente y medicamentos", "Patient and medicines")) {
         NoticeCard(tr(lang,
-            "La app NO selecciona medicamento ni recomienda una dosis. Introduce la dosis en mg/kg tomada de una prescripción, protocolo o fuente farmacológica verificada.",
-            "The app does NOT select a medicine or recommend a dose. Enter the mg/kg dose from a verified prescription, protocol, or drug reference."))
-        OutlinedTextField(weight, { weight = decimalInputV26(it) }, label = { Text(tr(lang, "Peso (kg)", "Weight (kg)")) }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(orderedMgKg, { orderedMgKg = decimalInputV26(it) }, label = { Text(tr(lang, "Dosis indicada (mg/kg)", "Ordered dose (mg/kg)")) }, modifier = Modifier.fillMaxWidth())
-        ChoiceGridV26(
-            lang,
-            "La dosis indicada está expresada como…",
-            "The ordered dose is expressed as…",
-            basis.name,
-            listOf(
-                ChoiceV26(PediatricDoseBasis.PER_DOSE.name, "mg/kg por dosis", "mg/kg per dose"),
-                ChoiceV26(PediatricDoseBasis.PER_DAY.name, "mg/kg por día", "mg/kg per day")
-            )
-        ) { basis = PediatricDoseBasis.valueOf(it) }
-        OutlinedTextField(dosesPerDay, { dosesPerDay = it.filter(Char::isDigit).take(2) }, label = { Text(tr(lang, "Número de dosis al día", "Doses per day")) }, modifier = Modifier.fillMaxWidth())
+            "Selecciona uno o varios medicamentos. La app muestra rangos pediátricos de referencia y presentaciones comunes encontradas en México; no elige la indicación ni sustituye la prescripción. La dosis pediátrica nunca debe exceder el límite adulto aplicable.",
+            "Select one or more medicines. The app shows pediatric reference ranges and common formulations found in Mexico; it does not choose the indication or replace prescribing. Pediatric dosing must never exceed the applicable adult limit."))
         OutlinedTextField(
-            concentration,
-            { concentration = decimalInputV26(it) },
-            label = { Text(tr(lang, "Concentración (mg/mL)", "Concentration (mg/mL)")) },
-            supportingText = { Text(tr(lang, "Convierte primero la presentación a mg/mL si la etiqueta está en mg/5 mL.", "Convert the formulation to mg/mL first if the label is in mg/5 mL.")) },
+            weight,
+            { weight = decimalInputV26(it) },
+            label = { Text(tr(lang, "Peso (kg)", "Weight (kg)")) },
+            supportingText = { Text(tr(lang, "El peso se aplica a todos los medicamentos seleccionados.", "The weight is applied to every selected medicine.")) },
             modifier = Modifier.fillMaxWidth()
         )
+
+        PediatricMedicationCategoryV27.entries.forEach { category ->
+            val medicines = pediatricMedicationSpecsV27.filter { it.category == category }
+            Text(categoryLabelV27(lang, category), fontWeight = FontWeight.Black, style = MaterialTheme.typography.titleMedium)
+            medicines.forEach { medicine ->
+                val selected = medicine.id in selectedIds
+                FilterChip(
+                    selected = selected,
+                    onClick = {
+                        selectedIds = if (selected) selectedIds - medicine.id else selectedIds + medicine.id
+                    },
+                    label = { Text(if (lang == "en") medicine.nameEn else medicine.nameEs) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 
-    ResponsiveSectionV17(tr(lang, "Resultado matemático", "Mathematical result")) {
-        if (result == null) {
-            Text(tr(lang, "Completa peso, dosis, frecuencia y concentración con valores mayores que cero.", "Enter weight, dose, frequency and concentration with values greater than zero."))
-        } else {
-            Text(tr(lang, "Por dosis: ${"%.2f".format(result.doseMg)} mg", "Per dose: ${"%.2f".format(result.doseMg)} mg"), fontWeight = FontWeight.Black)
-            Text(tr(lang, "Volumen por dosis: ${"%.2f".format(result.mlPerDose)} mL", "Volume per dose: ${"%.2f".format(result.mlPerDose)} mL"), fontWeight = FontWeight.Black)
-            Text(tr(lang, "Total diario matemático: ${"%.2f".format(result.dailyMg)} mg/día", "Mathematical daily total: ${"%.2f".format(result.dailyMg)} mg/day"))
+    if (selectedIds.isEmpty()) {
+        ResponsiveSectionV17(tr(lang, "Cálculo", "Calculation")) {
+            Text(tr(lang,
+                "Selecciona uno o varios medicamentos para ver dosis por kg, intervalo en horas, presentaciones y cálculo por peso.",
+                "Select one or more medicines to see weight-based dosing, hourly interval, formulations, and weight-based calculation."))
+        }
+    } else {
+        pediatricMedicationSpecsV27.filter { it.id in selectedIds }.forEach { medicine ->
+            key(medicine.id) {
+                PediatricMedicationCardV27(lang, weight.toDoubleOrNull() ?: 0.0, medicine)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PediatricMedicationCardV27(
+    lang: String,
+    weightKg: Double,
+    medicine: PediatricMedicationSpecV27
+) {
+    var regimenIndex by remember(medicine.id) { mutableIntStateOf(0) }
+    var presentationIndex by remember(medicine.id) { mutableIntStateOf(0) }
+    val presentation = medicine.presentations[presentationIndex]
+    val regimen = medicine.regimens[regimenIndex]
+    var intervalHours by remember(medicine.id, regimenIndex) { mutableIntStateOf(regimen.intervalHours.first()) }
+    val result = calculatePediatricMedicationRangeV27(weightKg, regimen, intervalHours, presentation)
+    val name = if (lang == "en") medicine.nameEn else medicine.nameEs
+
+    ResponsiveSectionV17(name) {
+        Text(categoryLabelV27(lang, medicine.category), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+
+        Text(tr(lang, "Presentación", "Formulation"), fontWeight = FontWeight.Black)
+        medicine.presentations.forEachIndexed { index, option ->
+            FilterChip(
+                selected = presentationIndex == index,
+                onClick = { presentationIndex = index },
+                label = { Text(if (lang == "en") option.labelEn else option.labelEs) },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        val presentationNote = if (lang == "en") presentation.noteEn else presentation.noteEs
+        if (presentationNote.isNotBlank()) NoticeCard(presentationNote)
+
+        if (presentation.isTopical) {
             NoticeCard(tr(lang,
-                "Antes de usar el resultado compara la dosis por toma y la dosis diaria con el máximo permitido para ESE medicamento, edad, indicación y función renal/hepática. La calculadora no realiza esa decisión clínica.",
-                "Before using the result, compare the per-dose and daily dose with the maximum for THAT medicine, age, indication, and renal/hepatic function. The calculator does not make that clinical decision."))
+                "Esta presentación es tópica y no se calcula en mg/kg. Sigue la frecuencia, edad e indicación específicas de la ficha farmacológica mostrada.",
+                "This is a topical formulation and is not calculated in mg/kg. Follow the specific frequency, age, and indication in the displayed drug reference."))
+        } else {
+            if (medicine.regimens.size > 1) {
+                Text(tr(lang, "Esquema de referencia", "Reference regimen"), fontWeight = FontWeight.Black)
+                medicine.regimens.forEachIndexed { index, option ->
+                    FilterChip(
+                        selected = regimenIndex == index,
+                        onClick = { regimenIndex = index },
+                        label = { Text(if (lang == "en") option.labelEn else option.labelEs) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            } else {
+                Text(if (lang == "en") regimen.labelEn else regimen.labelEs, fontWeight = FontWeight.Bold)
+            }
+
+            val basisText = if (regimen.basis == PediatricDoseBasis.PER_DOSE) {
+                tr(lang, "mg/kg por dosis", "mg/kg per dose")
+            } else {
+                tr(lang, "mg/kg por día", "mg/kg per day")
+            }
+            Text(tr(lang,
+                "Dosis de referencia: ${doseRangeV27(regimen.minMgKg, regimen.maxMgKg)} $basisText",
+                "Reference dose: ${doseRangeV27(regimen.minMgKg, regimen.maxMgKg)} $basisText"),
+                fontWeight = FontWeight.Black)
+            regimen.maxDailyMgKg?.let { maxKg ->
+                Text(tr(lang, "Máximo por peso: ${doseRangeV27(maxKg, maxKg)} mg/kg/día", "Weight-based maximum: ${doseRangeV27(maxKg, maxKg)} mg/kg/day"))
+            }
+            regimen.maxSingleMg?.let { maxSingle ->
+                Text(tr(lang, "Máximo por toma: ${doseRangeV27(maxSingle, maxSingle)} mg", "Maximum per dose: ${doseRangeV27(maxSingle, maxSingle)} mg"))
+            }
+            regimen.maxDailyMg?.let { maxDaily ->
+                Text(tr(lang, "Máximo absoluto: ${doseRangeV27(maxDaily, maxDaily)} mg/24 h", "Absolute maximum: ${doseRangeV27(maxDaily, maxDaily)} mg/24 h"))
+            }
+
+            Text(tr(lang, "¿Cada cuántas horas?", "How many hours between doses?"), fontWeight = FontWeight.Black)
+            regimen.intervalHours.forEach { hours ->
+                FilterChip(
+                    selected = intervalHours == hours,
+                    onClick = { intervalHours = hours },
+                    label = { Text(tr(lang, "Cada $hours h", "Every $hours h")) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            val regimenNote = if (lang == "en") regimen.noteEn else regimen.noteEs
+            NoticeCard(regimenNote)
+
+            if (weightKg <= 0.0 || result == null) {
+                Text(tr(lang, "Introduce el peso para calcular esta presentación.", "Enter weight to calculate this formulation."))
+            } else {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                ) {
+                    Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                        Text(tr(lang, "Resultado por toma", "Result per dose"), fontWeight = FontWeight.Black)
+                        Text("${doseRangeV27(result.doseMinMg, result.doseMaxMg)} mg", fontWeight = FontWeight.Black)
+                        if (result.mlMin != null && result.mlMax != null) {
+                            Text(tr(lang,
+                                "Volumen: ${doseRangeV27(result.mlMin, result.mlMax, 2)} mL cada $intervalHours h",
+                                "Volume: ${doseRangeV27(result.mlMin, result.mlMax, 2)} mL every $intervalHours h"),
+                                fontWeight = FontWeight.Black)
+                        }
+                        if (result.unitsMin != null && result.unitsMax != null) {
+                            Text(tr(lang,
+                                "Equivalente matemático de la presentación: ${doseRangeV27(result.unitsMin, result.unitsMax, 2)} unidad(es) cada $intervalHours h.",
+                                "Mathematical formulation equivalent: ${doseRangeV27(result.unitsMin, result.unitsMax, 2)} unit(s) every $intervalHours h."))
+                            Text(tr(lang,
+                                "No implica que una tableta o cápsula pueda o deba fraccionarse; verifica la forma farmacéutica real.",
+                                "This does not mean a tablet or capsule can or should be split; verify the actual dosage form."))
+                        }
+                        Text(tr(lang,
+                            "Total equivalente: ${doseRangeV27(result.dailyMinMg, result.dailyMaxMg)} mg/24 h",
+                            "Equivalent total: ${doseRangeV27(result.dailyMinMg, result.dailyMaxMg)} mg/24 h"))
+                    }
+                }
+            }
+        }
+
+        val caution = if (lang == "en") medicine.cautionEn else medicine.cautionEs
+        NoticeCard(caution)
+        if (medicine.category == PediatricMedicationCategoryV27.ANTIBIOTIC || medicine.category == PediatricMedicationCategoryV27.NITROIMIDAZOLE) {
+            NoticeCard(tr(lang,
+                "Los antibióticos no se indican por dolor dental aislado. Debe confirmarse una indicación infecciosa apropiada y considerar alergias, resistencia, función renal/hepática y guías locales.",
+                "Antibiotics are not indicated for isolated dental pain. Confirm an appropriate infectious indication and consider allergies, resistance, renal/hepatic function, and local guidance."))
         }
     }
 }
@@ -252,7 +387,7 @@ private fun LocalAnestheticCalculatorV26(lang: String) {
             cartridgeMl,
             { cartridgeMl = decimalInputV26(it, 4) },
             label = { Text(tr(lang, "Volumen real del cartucho (mL)", "Actual cartridge volume (mL)")) },
-            supportingText = { Text(tr(lang, "No asumas 1.8 mL: confirma lo impreso en el cartucho/caja.", "Do not assume 1.8 mL: confirm the cartridge/box label.")) },
+            supportingText = { Text(tr(lang, "Confirma siempre lo impreso en el cartucho/caja; el volumen comercial puede variar.", "Always confirm the cartridge/box label; commercial volume may vary.")) },
             modifier = Modifier.fillMaxWidth()
         )
         if (spec.epinephrineRatios.isNotEmpty()) {
@@ -298,7 +433,7 @@ private fun LocalAnestheticCalculatorV26(lang: String) {
             }
         }
         NoticeCard(tr(lang,
-            "El número mostrado NO es una indicación de cuántos cartuchos aplicar. El vasoconstrictor, la edad, enfermedades cardiovasculares, otros fármacos, embarazo, función hepática, técnica y ficha técnica pueden imponer un límite menor. Usa siempre la menor dosis eficaz y verifica el producto disponible.",
-            "The displayed number is NOT a recommendation of how many cartridges to administer. Vasoconstrictor exposure, age, cardiovascular disease, other drugs, pregnancy, hepatic function, technique and the product label can impose a lower limit. Always use the lowest effective dose and verify the actual product."))
+            "El número mostrado NO es una indicación de cuántos cartuchos aplicar. El vasoconstrictor, la edad, enfermedades cardiovasculares, otros fármacos, embarazo, función hepática, técnica y ficha técnica pueden imponer un límite menor. AAPD recomienda usar la menor dosis total que logre anestesia eficaz.",
+            "The displayed number is NOT a recommendation of how many cartridges to administer. Vasoconstrictor exposure, age, cardiovascular disease, other drugs, pregnancy, hepatic function, technique and the product label can impose a lower limit. AAPD recommends using the lowest total dose that provides effective anesthesia."))
     }
 }
