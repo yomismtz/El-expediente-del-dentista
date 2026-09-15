@@ -32,30 +32,20 @@
     ['Exploración de Anomalías Dentales','anomalias-v33'],['Exploración anomalías dentales de erupción','erupcion-v33'],['Hábitos y Parafunciones','habitos-v33']
   ];
 
-  S['cambra-v33']={k:'RIESGO DE CARIES',t:'CAMBRA',i:'Caries Management by Risk Assessment: evaluación del riesgo para orientar prevención y manejo.',c:[
-    ['Indicadores de enfermedad','Lesiones o cavitación reciente, restauraciones recientes y otros datos de actividad de caries.'],
-    ['Factores de riesgo','Exposición frecuente a carbohidratos fermentables, flujo salival reducido y otros factores biológicos/contextuales.'],
-    ['Factores protectores','Fluoruro, higiene, control dietético y otras medidas preventivas individualizadas.'],
-    ['Edad','Usa la herramienta correspondiente a 0–6 años o >6 años; los factores no se ponderan igual en todas las edades.']
-  ]};
-  S['atm-v33']={k:'EXPLORACIÓN',t:'ARTICULACIÓN TEMPOROMANDIBULAR',i:'Registro de movimientos, dolor y ruidos articulares.',c:[
-    ['Movimientos','Apertura/cierre, lateralidad derecha/izquierda, protrusión y retrusión.'],['Mediciones','Apertura máxima, DVO y DVR cuando el formato lo solicite.'],
-    ['Hallazgos','Dolor, chasquido, crepitación, desviación, limitación o bloqueo.']
-  ]};
-  S['cabeza-cuello-v33']={k:'EXPLORACIÓN',t:'CABEZA Y CUELLO',i:'Exploración organizada por regiones.',c:[
-    ['Cráneo','Forma, simetría, palpación y observaciones objetivas.'],['Cara','Perfil, simetría, piel y expresión.'],
-    ['Músculos','Músculos faciales y de la masticación.'],['Cuello y ganglios','Inspección, movilidad, palpación y cadenas ganglionares.']
-  ]};
-  S['anomalias-v33']={k:'HISTORIA / EXAMEN',t:'ANOMALÍAS DENTALES',i:'Registrar presencia, órgano dentario y descripción.',c:[
-    ['Número','Aumento o disminución.'],['Tamaño','Macrodoncia / microdoncia.'],['Forma','Localizada o generalizada.'],
-    ['Estructura','Esmalte, dentina o cemento.'],['Color','Intrínseco o extrínseco.']
-  ]};
-  S['erupcion-v33']={k:'HISTORIA / EXAMEN',t:'ALTERACIONES DE ERUPCIÓN Y POSICIÓN',i:'Registrar el diente y la localización.',c:[
-    ['Erupción ectópica / transposición','Describir diente y posición.'],['Erupción tardía','Retención, impactación o inclusión.'],['Erupción precoz','Diente natal o neonatal cuando corresponda.']
-  ]};
-  S['habitos-v33']={k:'HISTORIA',t:'HÁBITOS Y PARAFUNCIONES',i:'Registrar presencia, duración/frecuencia y manifestaciones clínicas.',c:[
-    ['Hábitos','Succión digital, interposición lingual, succión labial, respiración bucal, onicofagia y chupón.'],['Parafunción','Bruxismo / rechinamiento.'],['Contexto','Desde cuándo, frecuencia, desencadenantes y manifestaciones faciales u odontológicas.']
-  ]};
+  Object.assign(S,{
+    actividades:{k:'TRATAMIENTO / REGISTRO',t:'AUTORIZACIÓN DE ACTIVIDADES',i:'Registro de actividades planeadas, autorización, realización y supervisión.',c:[['Antes de iniciar','Identificar actividad y obtener autorización/supervisión según el protocolo docente.'],['Después','Registrar la actividad realizada y observaciones relevantes.']]},
+    tratamiento:{k:'TRATAMIENTO',t:'DIAGNÓSTICO Y TRATAMIENTO',i:'Integra los hallazgos antes de formular el plan.',c:[['Diagnóstico','Separar hallazgos, diagnóstico clínico y diagnósticos diferenciales cuando corresponda.'],['Plan','Priorizar urgencias, control de enfermedad, restauración y rehabilitación según el caso.']]},
+    sesiones:{k:'TRATAMIENTO',t:'TRATAMIENTO POR SESIONES',i:'Organización educativa del plan por sesiones.',c:[['Secuencia','Urgencias/diagnóstico → control de enfermedad → tratamiento definitivo → seguimiento.'],['Adaptación','La secuencia cambia con edad, cooperación, pronóstico y necesidad clínica.']]},
+    consentimiento:{k:'REGISTRO',t:'CONSENTIMIENTO INFORMADO',i:'Documento de información y decisión compartida.',c:[['Debe incluir','Procedimiento, beneficios esperados, riesgos relevantes, alternativas y posibilidad de aclarar dudas.'],['Registro','Fecha, identidad y firmas según el formato institucional.']]},
+    solicitud:{k:'REGISTRO',t:'SOLICITUD DE TRATAMIENTO',i:'Identifica claramente el servicio o tratamiento solicitado.',c:[['Datos','Servicio, motivo, área u órgano dentario y prioridad.'],['Responsable','Profesional/estudiante y supervisión cuando corresponda.']]},
+    presupuesto:{k:'ADMINISTRATIVO',t:'PRESUPUESTO',i:'Estructura administrativa educativa.',c:[['Conceptos','Procedimiento, cantidad, costo unitario y subtotal.'],['Total','Incluir laboratorio o servicios externos cuando proceda.']]},
+    'cambra-v33':{k:'RIESGO DE CARIES',t:'CAMBRA',i:'Caries Management by Risk Assessment: evaluación del riesgo para orientar prevención y manejo.',c:[['Indicadores de enfermedad','Lesiones o cavitación reciente, restauraciones recientes y otros datos de actividad de caries.'],['Factores de riesgo','Exposición frecuente a carbohidratos fermentables, flujo salival reducido y otros factores biológicos/contextuales.'],['Factores protectores','Fluoruro, higiene, control dietético y otras medidas preventivas individualizadas.'],['Edad','Usa la herramienta correspondiente a 0–6 años o >6 años; los factores no se ponderan igual en todas las edades.']]},
+    'atm-v33':{k:'EXPLORACIÓN',t:'ARTICULACIÓN TEMPOROMANDIBULAR',i:'Registro de movimientos, dolor y ruidos articulares.',c:[['Movimientos','Apertura/cierre, lateralidad derecha/izquierda, protrusión y retrusión.'],['Mediciones','Apertura máxima, DVO y DVR cuando el formato lo solicite.'],['Hallazgos','Dolor, chasquido, crepitación, desviación, limitación o bloqueo.']]},
+    'cabeza-cuello-v33':{k:'EXPLORACIÓN',t:'CABEZA Y CUELLO',i:'Exploración organizada por regiones.',c:[['Cráneo','Forma, simetría, palpación y observaciones objetivas.'],['Cara','Perfil, simetría, piel y expresión.'],['Músculos','Músculos faciales y de la masticación.'],['Cuello y ganglios','Inspección, movilidad, palpación y cadenas ganglionares.']]},
+    'anomalias-v33':{k:'HISTORIA / EXAMEN',t:'ANOMALÍAS DENTALES',i:'Registrar presencia, órgano dentario y descripción.',c:[['Número','Aumento o disminución.'],['Tamaño','Macrodoncia / microdoncia.'],['Forma','Localizada o generalizada.'],['Estructura','Esmalte, dentina o cemento.'],['Color','Intrínseco o extrínseco.']]},
+    'erupcion-v33':{k:'HISTORIA / EXAMEN',t:'ALTERACIONES DE ERUPCIÓN Y POSICIÓN',i:'Registrar el diente y la localización.',c:[['Erupción ectópica / transposición','Describir diente y posición.'],['Erupción tardía','Retención, impactación o inclusión.'],['Erupción precoz','Diente natal o neonatal cuando corresponda.']]},
+    'habitos-v33':{k:'HISTORIA',t:'HÁBITOS Y PARAFUNCIONES',i:'Registrar presencia, duración/frecuencia y manifestaciones clínicas.',c:[['Hábitos','Succión digital, interposición lingual, succión labial, respiración bucal, onicofagia y chupón.'],['Parafunción','Bruxismo / rechinamiento.'],['Contexto','Desde cuándo, frecuencia, desencadenantes y manifestaciones faciales u odontológicas.']]}
+  });
 
   const shell=document.querySelector('.folder-shell');
   const stage=shell?.querySelector('.folder-stage');
@@ -64,7 +54,6 @@
 
   const menu=document.createElement('div');
   menu.className='folder-v33';
-  menu.innerHTML=`<section><h3>Hoja izquierda · tratamiento y herramientas</h3><div class="folder-v33-col" data-col="left"></div></section><section><h3>Hoja derecha · historia y exploración</h3><div class="folder-v33-col" data-col="right"></div></section>`;
   shell.insertBefore(menu,stage);
   stage.hidden=true;
 
