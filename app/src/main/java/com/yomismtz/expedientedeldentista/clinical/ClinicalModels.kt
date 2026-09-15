@@ -2,11 +2,23 @@ package com.yomismtz.expedientedeldentista.clinical
 
 enum class AppScreen {
     HOME, FOLDER, SETTINGS,
-    IDENTIFICATION, HISTORY, HISTORY_REASON, HISTORY_FAMILY, HISTORY_NONPATH, HISTORY_PATHOLOGICAL, HISTORY_SURGICAL_TRAUMA,
-    INTAKE, ACTIVITIES, VITALS, ATM, OCCLUSION, MUCOSA, AUXILIARIES,
+    IDENTIFICATION, HISTORY, INTAKE, ACTIVITIES, VITALS, ATM, OCCLUSION, MUCOSA, AUXILIARIES,
     ODONTOGRAM, ICDAS, CPOD, OLEARY, IPC, IHOS, PERIODONTOGRAM, POSTURE,
     PULPAL, APICAL, TREATMENT, SESSIONS, ENDO, PROSTHETIC, SURGICAL,
-    CONSENT, REQUEST, BUDGET, EVOLUTION
+    CONSENT, REQUEST, BUDGET, EVOLUTION;
+
+    /**
+     * Compatibility aliases kept for the first V37 history menu implementation.
+     * They are not enum entries, so legacy exhaustive `when(AppScreen)` blocks remain source-compatible.
+     * The active V38 history router uses its own HistorySectionV38 enum and does not depend on these aliases.
+     */
+    companion object {
+        val HISTORY_REASON: AppScreen get() = HISTORY
+        val HISTORY_FAMILY: AppScreen get() = HISTORY
+        val HISTORY_NONPATH: AppScreen get() = HISTORY
+        val HISTORY_PATHOLOGICAL: AppScreen get() = HISTORY
+        val HISTORY_SURGICAL_TRAUMA: AppScreen get() = HISTORY
+    }
 }
 
 enum class Surface { VESTIBULAR, LINGUAL_PALATAL, MESIAL, DISTAL, OCCLUSAL }
