@@ -1,11 +1,7 @@
-// v0.33 bootstrap: preserve the verified v0.32 clinical tools, then load the new folder hierarchy.
+// v0.33 bootstrap. The verified calculators remain inline as a safe fallback;
+// v033.js is loaded after the page has initialized.
 (function(){
-  const core=document.createElement('script');
-  core.src='v026-core.js';
-  core.onload=()=>{
-    const hierarchy=document.createElement('script');
-    hierarchy.src='v033.js';
-    document.body.appendChild(hierarchy);
-  };
-  document.body.appendChild(core);
+  const hierarchy=document.createElement('script');
+  hierarchy.src='v033.js';
+  document.body.appendChild(hierarchy);
 })();
