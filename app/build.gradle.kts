@@ -6,15 +6,15 @@ plugins {
 
 android {
     namespace = "com.yomismtz.expedientedeldentista"
-    compileSdk = 35
+    compileSdk = 36
     testBuildType = "preview"
 
     defaultConfig {
         applicationId = "com.yomismtz.expedientedeldentista"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 28
-        versionName = "0.33-debug"
+        targetSdk = 36
+        versionCode = 29
+        versionName = "0.34-debug"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
