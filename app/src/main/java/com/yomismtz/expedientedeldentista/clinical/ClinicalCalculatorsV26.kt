@@ -41,8 +41,8 @@ enum class LocalAnestheticId {
     LIDOCAINE_EPI,
     LIDOCAINE_PLAIN,
     MEPIVACAINE_PLAIN,
-    MEPIVACAINE_EPI,
-    ARTICAINE
+    ARTICAINE,
+    BUPIVACAINE
 }
 
 data class LocalAnestheticSpec(
@@ -79,33 +79,34 @@ val localAnestheticSpecsV26 = listOf(
     ),
     LocalAnestheticSpec(
         id = LocalAnestheticId.MEPIVACAINE_PLAIN,
-        nameEs = "Mepivacaína",
-        nameEn = "Mepivacaine",
+        nameEs = "Mepivacaína sin vasoconstrictor",
+        nameEn = "Plain mepivacaine",
         concentrationPercent = 3.0,
         conservativeMaxMgKg = 4.4,
-        cautionEs = "La presentación dental sin vasoconstrictor suele ser 3%. AAPD usa 4.4 mg/kg como máximo dental pediátrico conservador.",
-        cautionEn = "The plain dental formulation is commonly 3%. AAPD uses 4.4 mg/kg as a conservative pediatric dental maximum."
-    ),
-    LocalAnestheticSpec(
-        id = LocalAnestheticId.MEPIVACAINE_EPI,
-        nameEs = "Mepivacaína con epinefrina",
-        nameEn = "Mepivacaine with epinephrine",
-        concentrationPercent = 2.0,
-        conservativeMaxMgKg = 4.4,
-        epinephrineRatios = listOf(100_000),
-        cautionEs = "Existen presentaciones internacionales 2% con epinefrina 1:100,000, pero en otros mercados la mepivacaína 2% se combina con levonordefrina. Verifica el cartucho disponible antes de usar el cálculo.",
-        cautionEn = "International 2% + 1:100,000 epinephrine presentations exist, while other markets use 2% mepivacaine with levonordefrin. Verify the actual cartridge before using the calculation."
+        cautionEs = "AAPD incluye mepivacaína 3% sin vasoconstrictor y usa 4.4 mg/kg como máximo dental pediátrico conservador.",
+        cautionEn = "AAPD lists plain 3% mepivacaine and uses 4.4 mg/kg as a conservative pediatric dental maximum."
     ),
     LocalAnestheticSpec(
         id = LocalAnestheticId.ARTICAINE,
-        nameEs = "Articaína",
-        nameEn = "Articaine",
+        nameEs = "Articaína con epinefrina",
+        nameEn = "Articaine with epinephrine",
         concentrationPercent = 4.0,
         conservativeMaxMgKg = 7.0,
         epinephrineRatios = listOf(100_000, 200_000),
         minimumAgeYears = 4,
-        cautionEs = "Las presentaciones dentales de referencia contienen epinefrina 1:100,000 o 1:200,000. No se recomienda en menores de 4 años.",
-        cautionEn = "Reference dental formulations contain epinephrine 1:100,000 or 1:200,000. Use under 4 years of age is not recommended."
+        cautionEs = "AAPD incluye articaína 4% con epinefrina 1:100,000 o 1:200,000. No se recomienda en menores de 4 años.",
+        cautionEn = "AAPD lists 4% articaine with 1:100,000 or 1:200,000 epinephrine. Use under 4 years of age is not recommended."
+    ),
+    LocalAnestheticSpec(
+        id = LocalAnestheticId.BUPIVACAINE,
+        nameEs = "Bupivacaína con epinefrina",
+        nameEn = "Bupivacaine with epinephrine",
+        concentrationPercent = 0.5,
+        conservativeMaxMgKg = 1.3,
+        epinephrineRatios = listOf(200_000),
+        minimumAgeYears = 12,
+        cautionEs = "AAPD incluye bupivacaína 0.5% con epinefrina 1:200,000 y máximo dental de 1.3 mg/kg. No se recomienda en menores de 12 años.",
+        cautionEn = "AAPD lists 0.5% bupivacaine with 1:200,000 epinephrine and a 1.3 mg/kg dental maximum. Use under 12 years is not recommended."
     )
 )
 
