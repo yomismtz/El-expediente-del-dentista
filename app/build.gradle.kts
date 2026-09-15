@@ -13,8 +13,8 @@ android {
         applicationId = "com.yomismtz.expedientedeldentista"
         minSdk = 26
         targetSdk = 35
-        versionCode = 26
-        versionName = "0.31-debug"
+        versionCode = 27
+        versionName = "0.32-debug"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
