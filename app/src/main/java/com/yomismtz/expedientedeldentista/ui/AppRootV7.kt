@@ -97,7 +97,7 @@ fun AppRootV7(
                             onBack=backPrevious
                         )
                         V7Overlay.HUB -> ExamHubV1Screen(lang,{openOverlay(it)},backPrevious)
-                        V7Overlay.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.IDENTIFICATION -> PatientIdentificationV36Screen(lang,backPrevious)
                         V7Overlay.HISTORY -> HistoryScreen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.GENERAL_INSPECTION -> GeneralInspectionV24Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.HEAD_NECK -> HeadNeckExplorationV25Screen(lang,session,onSessionChanged,{openOverlay(V7Overlay.ATM)},backPrevious)
@@ -193,8 +193,8 @@ private fun FloatingActions19(lang:String,onWriting:()->Unit,onIntake:()->Unit,m
             }
         } else {
             Row(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
-                OutlinedButton(onClick=onWriting){Text("✍️ ${tr(lang,"Qué escribir","What to write")}")}
-                OutlinedButton(onClick=onIntake){Text("↩ ${tr(lang,"Ingreso","Intake")}")}
+                OutlinedButton(onClick=onWriting){Text("✍️ ${tr(lang,"Qué escribir","What to write")}")
+                OutlinedButton(onClick=onIntake){Text("↩ ${tr(lang,"Ingreso","Intake")}")
             }
         }
     }
