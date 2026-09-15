@@ -67,11 +67,11 @@ Aplicación educativa offline para estudiantes de odontología. Enseña cómo ll
 - Los cálculos se realizan localmente en el navegador y no se envían a un servidor del proyecto.
 
 ## Validación v0.32
-Workflow Android build **#187** sobre `b2db8b815d16e1380e8cae165ca7f6d5118de906`:
+Workflow Android build **#187** sobre el commit de aplicación `b2db8b815d16e1380e8cae165ca7f6d5118de906`:
 - pruebas unitarias ✅
 - Android Lint ✅
 - `assemblePreview` ✅
 - APK Preview ✅
 - arranque real en Android 10 ✅
 
-`main` permanece sin modificar hasta revisión/merge.
+Los commits posteriores a ese workflow son únicamente documentación de esta misma revisión. `main` permanece sin modificar hasta revisión/merge.
