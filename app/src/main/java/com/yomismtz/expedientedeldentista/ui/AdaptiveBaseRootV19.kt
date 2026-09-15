@@ -36,6 +36,11 @@ import com.yomismtz.expedientedeldentista.clinical.AppScreen
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 
+private data class NavigationStateV35(
+    val screen: AppScreen,
+    val extra: FolderExtraV33?
+)
+
 @Composable
 fun AdaptiveBaseRootV19(
     preferences: AppPreferences,
@@ -46,30 +51,35 @@ fun AdaptiveBaseRootV19(
 ) {
     var screen by remember { mutableStateOf(AppScreen.HOME) }
     var extraScreen by remember { mutableStateOf<FolderExtraV33?>(null) }
-    val extraHistory = remember { mutableStateListOf<FolderExtraV33>() }
-    val history = remember { mutableStateListOf<AppScreen>() }
+    val navigationHistory = remember { mutableStateListOf<NavigationStateV35>() }
     val lang = preferences.languageTag
 
+    fun saveCurrentRoute() {
+        navigationHistory.add(NavigationStateV35(screen, extraScreen))
+    }
+
     fun navigate(next: AppScreen) {
-        extraScreen = null
-        extraHistory.clear()
-        if (next == screen) return
-        history.add(screen)
+        if (extraScreen == null && next == screen) return
+        saveCurrentRoute()
         screen = next
+        extraScreen = null
     }
 
     fun openExtra(next: FolderExtraV33) {
         if (next == extraScreen) return
-        extraScreen?.let { extraHistory.add(it) }
+        saveCurrentRoute()
         extraScreen = next
     }
 
     fun goBack() {
-        if (extraScreen != null) {
-            extraScreen = if (extraHistory.isNotEmpty()) extraHistory.removeAt(extraHistory.lastIndex) else null
-            return
+        if (navigationHistory.isNotEmpty()) {
+            val previous = navigationHistory.removeAt(navigationHistory.lastIndex)
+            screen = previous.screen
+            extraScreen = previous.extra
+        } else {
+            screen = AppScreen.HOME
+            extraScreen = null
         }
-        screen = if (history.isNotEmpty()) history.removeAt(history.lastIndex) else AppScreen.HOME
     }
 
     val backPrevious = { goBack() }
@@ -79,19 +89,19 @@ fun AdaptiveBaseRootV19(
     when (extraScreen) {
         FolderExtraV33.SYMPTOMS -> QuickSignsSymptomsV26Screen(lang, session, onSessionChanged, backPrevious)
         FolderExtraV33.CALCULATORS -> ClinicalCalculatorsV26Screen(lang, backPrevious)
-        FolderExtraV33.HISTORY_HUB -> HistoryMenuV33Screen(lang, { navigate(it) }, { openExtra(it) }, backPrevious)
-        FolderExtraV33.ODONTOGRAM_HUB -> OdontogramHubV33Screen(lang, { navigate(it) }, backPrevious)
+        FolderExtraV33.HISTORY_HUB -> HistoryMenuV35Screen(lang, { navigate(it) }, { openExtra(it) }, backPrevious)
+        FolderExtraV33.ODONTOGRAM_HUB -> OdontogramHubV35Screen(lang, { navigate(it) }, backPrevious)
         FolderExtraV33.HEAD_NECK -> HeadNeckExplorationV25Screen(lang, session, onSessionChanged, { navigate(AppScreen.ATM) }, backPrevious)
         FolderExtraV33.GENERAL_INSPECTION -> GeneralInspectionV24Screen(lang, session, onSessionChanged, backPrevious)
-        FolderExtraV33.PHYSICAL_HUB -> PhysicalExamMenuV33Screen(lang, { navigate(it) }, { openExtra(it) }, backPrevious)
+        FolderExtraV33.PHYSICAL_HUB -> PhysicalExamMenuV35Screen(lang, { navigate(it) }, { openExtra(it) }, backPrevious)
         FolderExtraV33.CAMBRA -> CambraV33Screen(lang, backPrevious)
-        FolderExtraV33.DENTAL_ANOMALIES -> DentalAnomaliesV33Screen(lang, backPrevious)
-        FolderExtraV33.ERUPTION_ANOMALIES -> EruptionAnomaliesV33Screen(lang, backPrevious)
+        FolderExtraV33.DENTAL_ANOMALIES -> DentalAnomaliesV35Screen(lang, backPrevious)
+        FolderExtraV33.ERUPTION_ANOMALIES -> EruptionAnomaliesV35Screen(lang, backPrevious)
         FolderExtraV33.HABITS -> HabitsParafunctionsV33Screen(lang, backPrevious)
         FolderExtraV33.ORTHODONTIC_HISTORY -> OrthodonticHistoryV33Screen(lang, backPrevious)
         null -> when (screen) {
             AppScreen.HOME -> CoverV19(lang) { navigate(AppScreen.FOLDER) }
-            AppScreen.FOLDER -> FolderMenuV33Screen(lang, { navigate(it) }, { openExtra(it) }, backPrevious)
+            AppScreen.FOLDER -> FolderMenuV35Screen(lang, { navigate(it) }, { openExtra(it) }, backPrevious)
             AppScreen.SETTINGS -> ResponsiveScreenV17(
                 tr(lang, "Configuración", "Settings"),
                 tr(lang, "Usa el botón de Configuración de la barra superior.", "Use Settings in the top bar."),
