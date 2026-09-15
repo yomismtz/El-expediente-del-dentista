@@ -38,7 +38,8 @@ import com.yomismtz.expedientedeldentista.settings.AppPreferences
 
 private data class NavigationStateV35(
     val screen: AppScreen,
-    val extra: FolderExtraV33?
+    val extra: FolderExtraV33?,
+    val historySection: HistorySectionV38?
 )
 
 @Composable
@@ -51,28 +52,37 @@ fun AdaptiveBaseRootV19(
 ) {
     var screen by remember { mutableStateOf(AppScreen.HOME) }
     var extraScreen by remember { mutableStateOf<FolderExtraV33?>(null) }
+    var historySection by remember { mutableStateOf<HistorySectionV38?>(null) }
     var identificationSheetMode by remember { mutableStateOf(false) }
     val navigationHistory = remember { mutableStateListOf<NavigationStateV35>() }
     val lang = preferences.languageTag
 
     fun saveCurrentRoute() {
-        navigationHistory.add(NavigationStateV35(screen, extraScreen))
+        navigationHistory.add(NavigationStateV35(screen, extraScreen, historySection))
     }
 
     fun navigate(next: AppScreen) {
         val openingIdentificationSheet =
-            next == AppScreen.IDENTIFICATION && screen == AppScreen.FOLDER && extraScreen == null
-        if (extraScreen == null && next == screen && !openingIdentificationSheet) return
+            next == AppScreen.IDENTIFICATION && screen == AppScreen.FOLDER && extraScreen == null && historySection == null
+        if (extraScreen == null && historySection == null && next == screen && !openingIdentificationSheet) return
         saveCurrentRoute()
         screen = next
         extraScreen = null
+        historySection = null
         identificationSheetMode = openingIdentificationSheet
     }
 
     fun openExtra(next: FolderExtraV33) {
-        if (next == extraScreen) return
+        if (next == extraScreen && historySection == null) return
         saveCurrentRoute()
         extraScreen = next
+        historySection = null
+        identificationSheetMode = false
+    }
+
+    fun openHistorySection(next: HistorySectionV38) {
+        saveCurrentRoute()
+        historySection = next
         identificationSheetMode = false
     }
 
@@ -81,21 +91,29 @@ fun AdaptiveBaseRootV19(
             val previous = navigationHistory.removeAt(navigationHistory.lastIndex)
             screen = previous.screen
             extraScreen = previous.extra
+            historySection = previous.historySection
         } else {
             screen = AppScreen.HOME
             extraScreen = null
+            historySection = null
         }
         identificationSheetMode = false
     }
 
     val backPrevious = { goBack() }
 
-    BackHandler(enabled = extraScreen != null || screen != AppScreen.HOME) { goBack() }
+    BackHandler(enabled = historySection != null || extraScreen != null || screen != AppScreen.HOME) { goBack() }
+
+    val activeHistorySection = historySection
+    if (activeHistorySection != null) {
+        HistorySectionV38Screen(activeHistorySection, lang, backPrevious)
+        return
+    }
 
     when (extraScreen) {
         FolderExtraV33.SYMPTOMS -> QuickSignsSymptomsV26Screen(lang, session, onSessionChanged, backPrevious)
         FolderExtraV33.CALCULATORS -> ClinicalCalculatorsV26Screen(lang, backPrevious)
-        FolderExtraV33.HISTORY_HUB -> HistoryMenuV37Screen(lang, { navigate(it) }, backPrevious)
+        FolderExtraV33.HISTORY_HUB -> HistoryMenuV38Screen(lang, { navigate(it) }, { openHistorySection(it) }, backPrevious)
         FolderExtraV33.ODONTOGRAM_HUB -> OdontogramHubV35Screen(lang, { navigate(it) }, backPrevious)
         FolderExtraV33.HEAD_NECK -> HeadNeckExplorationV25Screen(lang, session, onSessionChanged, { navigate(AppScreen.ATM) }, backPrevious)
         FolderExtraV33.GENERAL_INSPECTION -> GeneralInspectionV24Screen(lang, session, onSessionChanged, backPrevious)
@@ -121,11 +139,6 @@ fun AdaptiveBaseRootV19(
                 }
             }
             AppScreen.HISTORY -> HistoryScreen(lang, session, onSessionChanged, backPrevious)
-            AppScreen.HISTORY_REASON -> ReasonPresentIllnessV37Screen(lang, backPrevious)
-            AppScreen.HISTORY_FAMILY -> FamilyHistoryV37Screen(lang, backPrevious)
-            AppScreen.HISTORY_NONPATH -> NonPathologicalHistoryV37Screen(lang, backPrevious)
-            AppScreen.HISTORY_PATHOLOGICAL -> PathologicalHistoryV37Screen(lang, backPrevious)
-            AppScreen.HISTORY_SURGICAL_TRAUMA -> SurgicalTraumaHistoryV37Screen(lang, backPrevious)
             AppScreen.INTAKE -> IntakeNoteScreen(lang, session, backPrevious)
             AppScreen.ACTIVITIES -> ActivitiesScreen(lang, backPrevious)
             AppScreen.VITALS -> VitalsInteractiveV19Screen(lang, backPrevious)
