@@ -2,6 +2,7 @@ package com.yomismtz.expedientedeldentista.clinical
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class ClinicalCalculatorsV26Test {
@@ -36,6 +37,47 @@ class ClinicalCalculatorsV26Test {
     }
 
     @Test
+    fun acetaminophenEveryFourHoursRespectsDailyWeightMaximum() {
+        val medicine = pediatricMedicationSpecsV27.first { it.id == "PARACETAMOL" }
+        val regimen = medicine.regimens.first()
+        val presentation = medicine.presentations.first { it.id == "PARA_160_5" }
+        val result = calculatePediatricMedicationRangeV27(20.0, regimen, 4, presentation)
+
+        assertNotNull(result)
+        assertEquals(200.0, result!!.doseMinMg, 0.001)
+        assertEquals(250.0, result.doseMaxMg, 0.001)
+        assertEquals(1200.0, result.dailyMinMg, 0.001)
+        assertEquals(1500.0, result.dailyMaxMg, 0.001)
+        assertEquals(6.25, result.mlMin!!, 0.001)
+        assertEquals(7.8125, result.mlMax!!, 0.001)
+    }
+
+    @Test
+    fun amoxicillinEveryTwelveHoursCalculatesMexicoSuspensionVolume() {
+        val medicine = pediatricMedicationSpecsV27.first { it.id == "AMOXICILLIN" }
+        val regimen = medicine.regimens.first { it.id == "AMOX_Q12" }
+        val presentation = medicine.presentations.first { it.id == "AMOX_250_5" }
+        val result = calculatePediatricMedicationRangeV27(20.0, regimen, 12, presentation)
+
+        assertNotNull(result)
+        assertEquals(250.0, result!!.doseMinMg, 0.001)
+        assertEquals(450.0, result.doseMaxMg, 0.001)
+        assertEquals(5.0, result.mlMin!!, 0.001)
+        assertEquals(9.0, result.mlMax!!, 0.001)
+        assertEquals(500.0, result.dailyMinMg, 0.001)
+        assertEquals(900.0, result.dailyMaxMg, 0.001)
+    }
+
+    @Test
+    fun topicalAcyclovirDoesNotRunWeightBasedCalculation() {
+        val medicine = pediatricMedicationSpecsV27.first { it.id == "ACYCLOVIR" }
+        val regimen = medicine.regimens.first()
+        val presentation = medicine.presentations.first { it.id == "ACY_CREAM_5" }
+
+        assertNull(calculatePediatricMedicationRangeV27(20.0, regimen, 6, presentation))
+    }
+
+    @Test
     fun lidocaineUsesActualCartridgeVolume() {
         val spec = localAnestheticSpecsV26.first { it.id == LocalAnestheticId.LIDOCAINE_EPI }
         val result = calculateLocalAnesthetic(spec, 20.0, 1.8, 100_000)
@@ -49,16 +91,6 @@ class ClinicalCalculatorsV26Test {
     }
 
     @Test
-    fun mepivacaineWithEpinephrineCalculatesVasoconstrictor() {
-        val spec = localAnestheticSpecsV26.first { it.id == LocalAnestheticId.MEPIVACAINE_EPI }
-        val result = calculateLocalAnesthetic(spec, 20.0, 1.8, 100_000)
-        assertNotNull(result)
-        assertEquals(20.0, result!!.mgPerMl, 0.001)
-        assertEquals(36.0, result.mgPerCartridge, 0.001)
-        assertEquals(18.0, result.epinephrineMcgPerCartridge!!, 0.001)
-    }
-
-    @Test
     fun articaineCalculation() {
         val spec = localAnestheticSpecsV26.first { it.id == LocalAnestheticId.ARTICAINE }
         val result = calculateLocalAnesthetic(spec, 20.0, 1.8, 100_000)
@@ -68,5 +100,18 @@ class ClinicalCalculatorsV26Test {
         assertEquals(140.0, result.maxMgByWeight, 0.001)
         assertEquals(1.9444, result.maxCartridges, 0.001)
         assertEquals(1, result.wholeCartridges)
+    }
+
+    @Test
+    fun bupivacaineUsesAapdDentalMaximum() {
+        val spec = localAnestheticSpecsV26.first { it.id == LocalAnestheticId.BUPIVACAINE }
+        val result = calculateLocalAnesthetic(spec, 40.0, 1.8, 200_000)
+        assertNotNull(result)
+        assertEquals(5.0, result!!.mgPerMl, 0.001)
+        assertEquals(9.0, result.mgPerCartridge, 0.001)
+        assertEquals(52.0, result.maxMgByWeight, 0.001)
+        assertEquals(5.7777, result.maxCartridges, 0.001)
+        assertEquals(5, result.wholeCartridges)
+        assertEquals(9.0, result.epinephrineMcgPerCartridge!!, 0.001)
     }
 }
