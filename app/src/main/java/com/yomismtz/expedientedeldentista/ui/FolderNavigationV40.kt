@@ -56,7 +56,7 @@ private val rightV40=listOf(
 )
 
 @Composable
-fun FolderMenuV40Screen(lang:String,onNavigate:(AppScreen)->Unit,onExtra:(FolderExtraV33)->Unit,onBack:()->Unit){
+internal fun FolderMenuV40Screen(lang:String,onNavigate:(AppScreen)->Unit,onExtra:(FolderExtraV33)->Unit,onBack:()->Unit){
     ResponsiveScreenV17("Expediente del dentista · guía interactiva","La app enseña a llenar e interpretar apartados; no crea un expediente real.",onBack){profile->
         val stack=profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT
         if(stack){MenuColumnV40(leftV40,MaterialTheme.colorScheme.tertiaryContainer,onNavigate,onExtra);MenuColumnV40(rightV40,MaterialTheme.colorScheme.secondaryContainer,onNavigate,onExtra)}
