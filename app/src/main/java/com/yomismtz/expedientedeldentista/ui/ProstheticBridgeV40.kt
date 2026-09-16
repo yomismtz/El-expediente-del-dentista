@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 
 private val kennedyV40=listOf(
     "Kennedy I" to "Áreas edéntulas posteriores bilaterales a los dientes remanentes.",
@@ -39,12 +40,12 @@ fun ProstheticBridgeV40Screen(lang:String,onBack:()->Unit){
         ResponsiveSectionV17("Diagnóstico protésico"){
             kennedyV40.forEachIndexed{i,(name,detail)->
                 Card(onClick={selected=i},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=if(selected==i)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant)){
-                    Column(Modifier.padding(androidx.compose.ui.unit.dp(10f)),verticalArrangement=Arrangement.spacedBy(androidx.compose.ui.unit.dp(4f))){Text(name,fontWeight=FontWeight.Black);if(selected==i)Text(detail)}
+                    Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){Text(name,fontWeight=FontWeight.Black);if(selected==i)Text(detail)}
                 }
             }
             val summary="$arch · ${kennedyV40[selected].first} · ${kennedyV40[selected].second}"
-            Card(onClick={TeachingStateV40.moduleSummaries["prosthetic"]=summary},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){Text("Guardar diagnóstico protésico",Modifier.padding(androidx.compose.ui.unit.dp(12f)),fontWeight=FontWeight.Black)}
+            Card(onClick={TeachingStateV40.moduleSummaries["prosthetic"]=summary},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){Text("Guardar diagnóstico protésico",Modifier.padding(12.dp),fontWeight=FontWeight.Black)}
         }
-        Card(onClick={full=true},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){Text("Abrir ficha protésica completa existente",Modifier.padding(androidx.compose.ui.unit.dp(14f)),fontWeight=FontWeight.Black)}
+        Card(onClick={full=true},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){Text("Abrir ficha protésica completa existente",Modifier.padding(14.dp),fontWeight=FontWeight.Black)}
     }
 }
