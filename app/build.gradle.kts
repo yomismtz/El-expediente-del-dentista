@@ -13,8 +13,8 @@ android {
         applicationId = "com.yomismtz.expedientedeldentista"
         minSdk = 26
         targetSdk = 36
-        versionCode = 30
-        versionName = "0.35-debug"
+        versionCode = 31
+        versionName = "0.36-debug"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -59,6 +59,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
     testImplementation("junit:junit:4.13.2")
 
