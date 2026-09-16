@@ -36,11 +36,7 @@ import com.yomismtz.expedientedeldentista.clinical.AppScreen
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 
-private data class NavigationStateV35(
-    val screen: AppScreen,
-    val extra: FolderExtraV33?,
-    val historySection: HistorySectionV38?
-)
+private data class NavigationStateV40(val screen:AppScreen,val extra:FolderExtraV33?)
 
 @Composable
 fun AdaptiveBaseRootV19(
@@ -52,179 +48,74 @@ fun AdaptiveBaseRootV19(
 ) {
     var screen by remember { mutableStateOf(AppScreen.HOME) }
     var extraScreen by remember { mutableStateOf<FolderExtraV33?>(null) }
-    var historySection by remember { mutableStateOf<HistorySectionV38?>(null) }
-    var identificationSheetMode by remember { mutableStateOf(false) }
-    val navigationHistory = remember { mutableStateListOf<NavigationStateV35>() }
-    val lang = preferences.languageTag
+    val navigationHistory=remember{mutableStateListOf<NavigationStateV40>()}
+    val lang=preferences.languageTag
 
-    fun saveCurrentRoute() {
-        navigationHistory.add(NavigationStateV35(screen, extraScreen, historySection))
-    }
+    fun save(){navigationHistory.add(NavigationStateV40(screen,extraScreen))}
+    fun navigate(next:AppScreen){if(extraScreen==null&&next==screen)return;save();screen=next;extraScreen=null}
+    fun openExtra(next:FolderExtraV33){if(next==extraScreen)return;save();extraScreen=next}
+    fun goBack(){if(navigationHistory.isNotEmpty()){val p=navigationHistory.removeAt(navigationHistory.lastIndex);screen=p.screen;extraScreen=p.extra}else{screen=AppScreen.HOME;extraScreen=null}}
+    val backPrevious={goBack()}
+    BackHandler(enabled=extraScreen!=null||screen!=AppScreen.HOME){goBack()}
 
-    fun navigate(next: AppScreen) {
-        val openingIdentificationSheet =
-            next == AppScreen.IDENTIFICATION && screen == AppScreen.FOLDER && extraScreen == null && historySection == null
-        if (extraScreen == null && historySection == null && next == screen && !openingIdentificationSheet) return
-        saveCurrentRoute()
-        screen = next
-        extraScreen = null
-        historySection = null
-        identificationSheetMode = openingIdentificationSheet
-    }
-
-    fun openExtra(next: FolderExtraV33) {
-        if (next == extraScreen && historySection == null) return
-        saveCurrentRoute()
-        extraScreen = next
-        historySection = null
-        identificationSheetMode = false
-    }
-
-    fun openHistorySection(next: HistorySectionV38) {
-        saveCurrentRoute()
-        historySection = next
-        identificationSheetMode = false
-    }
-
-    fun goBack() {
-        if (navigationHistory.isNotEmpty()) {
-            val previous = navigationHistory.removeAt(navigationHistory.lastIndex)
-            screen = previous.screen
-            extraScreen = previous.extra
-            historySection = previous.historySection
-        } else {
-            screen = AppScreen.HOME
-            extraScreen = null
-            historySection = null
-        }
-        identificationSheetMode = false
-    }
-
-    val backPrevious = { goBack() }
-
-    BackHandler(enabled = historySection != null || extraScreen != null || screen != AppScreen.HOME) { goBack() }
-
-    val activeHistorySection = historySection
-    if (activeHistorySection != null) {
-        HistorySectionV38Screen(activeHistorySection, lang, backPrevious)
-        return
-    }
-
-    when (extraScreen) {
-        FolderExtraV33.SYMPTOMS -> QuickSignsSymptomsV26Screen(lang, session, onSessionChanged, backPrevious)
-        FolderExtraV33.CALCULATORS -> ClinicalCalculatorsV26Screen(lang, backPrevious)
-        FolderExtraV33.HISTORY_HUB -> HistoryMenuV38Screen(lang, { navigate(it) }, { openHistorySection(it) }, backPrevious)
-        FolderExtraV33.ODONTOGRAM_HUB -> OdontogramHubV35Screen(lang, { navigate(it) }, backPrevious)
-        FolderExtraV33.HEAD_NECK -> HeadNeckExplorationV25Screen(lang, session, onSessionChanged, { navigate(AppScreen.ATM) }, backPrevious)
-        FolderExtraV33.GENERAL_INSPECTION -> GeneralInspectionV24Screen(lang, session, onSessionChanged, backPrevious)
-        FolderExtraV33.PHYSICAL_HUB -> PhysicalExamMenuV35Screen(lang, { navigate(it) }, { openExtra(it) }, backPrevious)
-        FolderExtraV33.CAMBRA -> CambraInteractiveV39Screen(lang, backPrevious)
-        FolderExtraV33.DENTAL_ANOMALIES -> DentalAnomaliesV35Screen(lang, backPrevious)
-        FolderExtraV33.ERUPTION_ANOMALIES -> EruptionAnomaliesV35Screen(lang, backPrevious)
-        FolderExtraV33.HABITS -> HabitsParafunctionsV33Screen(lang, backPrevious)
-        FolderExtraV33.ORTHODONTIC_HISTORY -> OrthodonticHistoryV33Screen(lang, backPrevious)
-        null -> when (screen) {
-            AppScreen.HOME -> CoverV19(lang) { navigate(AppScreen.FOLDER) }
-            AppScreen.FOLDER -> FolderMenuV35Screen(lang, { navigate(it) }, { openExtra(it) }, backPrevious)
-            AppScreen.SETTINGS -> ResponsiveScreenV17(
-                tr(lang, "Configuración", "Settings"),
-                tr(lang, "Usa el botón de Configuración de la barra superior.", "Use Settings in the top bar."),
-                backPrevious
-            ) { }
-            AppScreen.IDENTIFICATION -> {
-                if (identificationSheetMode) {
-                    IdentificationGuideV39Screen(lang, backPrevious)
-                } else {
-                    PatientIdentificationV36Screen(lang, backPrevious)
-                }
-            }
-            AppScreen.HISTORY -> HistoryScreen(lang, session, onSessionChanged, backPrevious)
-            AppScreen.INTAKE -> IntakeNoteScreen(lang, session, backPrevious)
-            AppScreen.ACTIVITIES -> ActivitiesScreen(lang, backPrevious)
-            AppScreen.VITALS -> VitalsInteractiveV19Screen(lang, backPrevious)
-            AppScreen.ATM -> AtmScreen(lang, backPrevious)
-            AppScreen.OCCLUSION -> OcclusionInteractiveV19Screen(lang, backPrevious)
-            AppScreen.MUCOSA -> MucosaAtlasV39Screen(lang, backPrevious)
-            AppScreen.AUXILIARIES -> AuxiliariesV20Screen(lang, backPrevious)
-            AppScreen.ODONTOGRAM -> OdontogramV20Screen(lang, session, onSessionChanged, backPrevious)
-            AppScreen.ICDAS -> IcdasScreen(lang, session, onSessionChanged, backPrevious)
-            AppScreen.CPOD -> CpodInteractiveV19Screen(lang, session, onSessionChanged, backPrevious)
-            AppScreen.OLEARY -> OlearyScreen(lang, session, onSessionChanged, backPrevious)
-            AppScreen.IPC -> IpcResponsiveV17Screen(lang, session, onSessionChanged, backPrevious)
-            AppScreen.IHOS -> IhosResponsiveV17Screen(lang, session, onSessionChanged, backPrevious)
-            AppScreen.PERIODONTOGRAM -> PeriodontogramScreen(lang, session, onSessionChanged, backPrevious)
-            AppScreen.POSTURE -> PostureVisualScreen(lang, backPrevious)
-            AppScreen.PULPAL, AppScreen.APICAL -> PulpalPeriapicalInteractiveV2Screen(lang, session, onSessionChanged, { navigate(AppScreen.ENDO) }, backPrevious)
-            AppScreen.TREATMENT -> TreatmentScreen(lang, session, onSessionChanged, backPrevious)
-            AppScreen.SESSIONS -> TreatmentBySessionsScreen(lang, backPrevious)
-            AppScreen.ENDO -> EndodonticInteractiveV2Screen(lang, session, { navigate(AppScreen.PULPAL) }, { navigate(AppScreen.PULPAL) }, backPrevious)
-            AppScreen.PROSTHETIC -> ProstheticResponsiveV17Screen(lang, backPrevious)
-            AppScreen.SURGICAL -> SurgicalSheetScreen(lang, backPrevious)
-            AppScreen.CONSENT -> ConsentTeachingScreen(lang, backPrevious)
-            AppScreen.REQUEST -> SimpleEducationalSheet(
-                lang,
-                "Solicitud de tratamiento",
-                "Treatment request",
-                "Aprende para qué sirve y qué debe identificar claramente.",
-                "Learn its purpose and what it should clearly identify.",
-                listOf("Servicio solicitado", "Motivo", "Área u órgano dentario", "Prioridad / referencia", "Responsable y supervisión"),
-                listOf("Requested service", "Reason", "Area or tooth", "Priority / referral", "Responsible clinician and supervision"),
-                backPrevious
-            )
-            AppScreen.BUDGET -> SimpleEducationalSheet(
-                lang,
-                "Presupuesto",
-                "Budget",
-                "Aprende su estructura administrativa sin registrar cobros reales.",
-                "Learn its administrative structure without recording real payments.",
-                listOf("Procedimiento", "Cantidad", "Costo unitario", "Subtotal", "Total", "Laboratorio cuando proceda"),
-                listOf("Procedure", "Quantity", "Unit cost", "Subtotal", "Total", "Laboratory when applicable"),
-                backPrevious
-            )
-            AppScreen.EVOLUTION -> EvolutionScreen(lang, session, backPrevious)
+    when(extraScreen){
+        FolderExtraV33.SYMPTOMS->VitalsInteractiveV19Screen(lang,backPrevious)
+        FolderExtraV33.CALCULATORS->ClinicalCalculatorsV26Screen(lang,backPrevious)
+        FolderExtraV33.HISTORY_HUB->HistoryHubV40Screen(lang,{navigate(AppScreen.VITALS)},backPrevious)
+        FolderExtraV33.ODONTOGRAM_HUB->OdontogramHubV35Screen(lang,{navigate(it)},backPrevious)
+        FolderExtraV33.HEAD_NECK->HeadNeckTeachingV40Screen(lang,backPrevious)
+        FolderExtraV33.GENERAL_INSPECTION->GeneralInspectionV40Screen(lang,backPrevious)
+        FolderExtraV33.PHYSICAL_HUB->PhysicalExamHubV40Screen(lang,{navigate(AppScreen.VITALS)},backPrevious)
+        FolderExtraV33.CAMBRA->CambraInteractiveV39Screen(lang,backPrevious)
+        FolderExtraV33.DENTAL_ANOMALIES->DentalAnomaliesTeachingV40Screen(lang,backPrevious)
+        FolderExtraV33.ERUPTION_ANOMALIES->EruptionAnomaliesTeachingV40Screen(lang,backPrevious)
+        FolderExtraV33.HABITS->HabitsTeachingV40Screen(lang,backPrevious)
+        FolderExtraV33.ORTHODONTIC_HISTORY->OrthodonticHistoryV33Screen(lang,backPrevious)
+        null->when(screen){
+            AppScreen.HOME->CoverV19(lang){navigate(AppScreen.FOLDER)}
+            AppScreen.FOLDER->FolderMenuV40Screen(lang,{navigate(it)},{openExtra(it)},backPrevious)
+            AppScreen.SETTINGS->ResponsiveScreenV17(tr(lang,"Configuración","Settings"),tr(lang,"Idioma, paleta de ave, tipo y tamaño de letra se conservan en la configuración de la app.","Language, bird palette, font and text size are kept in app settings."),backPrevious){}
+            AppScreen.IDENTIFICATION->IdentificationTeachingV40Screen(lang,backPrevious)
+            AppScreen.HISTORY->HistoryHubV40Screen(lang,{navigate(AppScreen.VITALS)},backPrevious)
+            AppScreen.INTAKE->IntakeNoteScreen(lang,session,backPrevious)
+            AppScreen.ACTIVITIES->ActivitiesTableV40Screen(lang,backPrevious)
+            AppScreen.VITALS->VitalsInteractiveV19Screen(lang,backPrevious)
+            AppScreen.ATM->TmjTeachingV40Screen(lang,backPrevious)
+            AppScreen.OCCLUSION->OcclusionTeachingV40Screen(lang,backPrevious)
+            AppScreen.MUCOSA->MucosaAtlasV40Screen(lang,backPrevious)
+            AppScreen.AUXILIARIES->AuxiliariesV20Screen(lang,backPrevious)
+            AppScreen.ODONTOGRAM->OdontogramV20Screen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.ICDAS->IcdasScreen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.CPOD->CpodCeosV40Screen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.OLEARY->OlearyScreen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.IPC->IpcResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.IHOS->IhosResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.PERIODONTOGRAM->PeriodontalTeachingV40Screen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.POSTURE->PostureVisualScreen(lang,backPrevious)
+            AppScreen.PULPAL,AppScreen.APICAL->EndodonticTeachingV40Screen(lang,backPrevious)
+            AppScreen.TREATMENT->TreatmentPlannerV40Screen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.SESSIONS->TreatmentSessionsV40Screen(lang,backPrevious)
+            AppScreen.ENDO->EndodonticTeachingV40Screen(lang,backPrevious)
+            AppScreen.PROSTHETIC->ProstheticResponsiveV17Screen(lang,backPrevious)
+            AppScreen.SURGICAL->SurgicalTeachingV40Screen(lang,backPrevious)
+            AppScreen.CONSENT->ConsentTeachingScreen(lang,backPrevious)
+            AppScreen.REQUEST->TreatmentRequestGuideV40Screen(lang,backPrevious)
+            AppScreen.BUDGET->BudgetGuideV40Screen(lang,backPrevious)
+            AppScreen.EVOLUTION->EvolutionExamplesV40Screen(lang,backPrevious)
         }
     }
 }
 
 @Composable
-private fun CoverV19(lang: String, onOpen: () -> Unit) {
-    BoxWithConstraints(
-        Modifier.fillMaxSize().background(
-            Brush.verticalGradient(
-                listOf(
-                    MaterialTheme.colorScheme.primary,
-                    MaterialTheme.colorScheme.primaryContainer,
-                    MaterialTheme.colorScheme.background
-                )
-            )
-        )
-    ) {
-        val compact = maxWidth < 360.dp || LocalDensity.current.fontScale >= 1.30f
-        Column(
-            Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = if (compact) 16.dp else 28.dp, vertical = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painterResource(R.drawable.ysm_logo),
-                tr(lang, "Logo YSM con ave y expediente dental", "YSM bird and dental record logo"),
-                Modifier.size(if (compact) 118.dp else 158.dp),
-                contentScale = ContentScale.Fit
-            )
-            Spacer(Modifier.height(10.dp))
-            Text("YSM Expediente", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black, textAlign = TextAlign.Center)
-            Text(tr(lang, "El expediente del dentista", "The dentist's record"), style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)
-            Text(
-                tr(lang, "Deja volar tu imaginación y tus conocimientos renacerán", "Let your imagination take flight and your knowledge be reborn"),
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Spacer(Modifier.height(18.dp))
-            Button(onClick = onOpen, modifier = Modifier.fillMaxWidth()) {
-                Text("📖 ${tr(lang, "Abrir expediente", "Open record")}", fontWeight = FontWeight.Black)
-            }
+private fun CoverV19(lang:String,onOpen:()->Unit){
+    BoxWithConstraints(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(MaterialTheme.colorScheme.primary,MaterialTheme.colorScheme.primaryContainer,MaterialTheme.colorScheme.background)))){
+        val compact=maxWidth<360.dp||LocalDensity.current.fontScale>=1.30f
+        Column(Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal=if(compact)16.dp else 28.dp,vertical=20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.Center){
+            Image(painterResource(R.drawable.ysm_logo),tr(lang,"Logo YSM con ave y expediente dental","YSM bird and dental record logo"),Modifier.size(if(compact)118.dp else 158.dp),contentScale=ContentScale.Fit)
+            Spacer(Modifier.height(10.dp));Text("YSM Expediente",style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Black,textAlign=TextAlign.Center)
+            Text(tr(lang,"El expediente del dentista","The dentist's record"),style=MaterialTheme.typography.titleLarge,textAlign=TextAlign.Center)
+            Text(tr(lang,"Deja volar tu imaginación y tus conocimientos renacerán","Let your imagination take flight and your knowledge be reborn"),style=MaterialTheme.typography.bodyLarge,fontWeight=FontWeight.SemiBold,textAlign=TextAlign.Center,color=MaterialTheme.colorScheme.secondary)
+            Spacer(Modifier.height(18.dp));Button(onClick=onOpen,modifier=Modifier.fillMaxWidth()){Text("📖 ${tr(lang,"Abrir guía","Open guide")}",fontWeight=FontWeight.Black)}
         }
     }
 }
