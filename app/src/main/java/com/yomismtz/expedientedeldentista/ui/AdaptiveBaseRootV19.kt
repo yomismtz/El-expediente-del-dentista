@@ -96,7 +96,7 @@ fun AdaptiveBaseRootV19(
             AppScreen.ACTIVITIES -> ActivitiesTableV40Screen(lang, backPrevious)
             AppScreen.VITALS -> VitalsInteractiveV19Screen(lang, backPrevious)
             AppScreen.ATM -> TmjTeachingV40Screen(lang, backPrevious)
-            AppScreen.OCCLUSION -> OcclusionTeachingV40Screen(lang, backPrevious)
+            AppScreen.OCCLUSION -> OcclusionTeachingV41Screen(lang, backPrevious)
             AppScreen.MUCOSA -> MucosaAtlasV40Screen(lang, backPrevious)
             AppScreen.AUXILIARIES -> AuxiliariesV20Screen(lang, backPrevious)
             AppScreen.ODONTOGRAM -> OdontogramV20Screen(lang, session, onSessionChanged, backPrevious)
