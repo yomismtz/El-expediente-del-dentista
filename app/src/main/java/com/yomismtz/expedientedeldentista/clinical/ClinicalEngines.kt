@@ -41,29 +41,44 @@ object ClinicalEngines {
     }
 
     fun olearyPercentage(session: EducationalSession): Double {
-        val present = session.presentTeeth.filter { tooth ->
-            when (session.teeth[tooth]?.status ?: ToothStatus.HEALTHY) {
-                ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER -> false
-                else -> true
-            }
+        val hasDedicatedState = session.olearyPermanentInitialized || session.olearyPrimaryInitialized
+        val present = if (hasDedicatedState) {
+            session.olearyPresentTeeth
+        } else {
+            session.presentTeeth.filter { tooth ->
+                when (session.teeth[tooth]?.status ?: ToothStatus.HEALTHY) {
+                    ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER -> false
+                    else -> true
+                }
+            }.toSet()
         }
         val denominator = present.size * 4
         if (denominator == 0) return 0.0
-        val affected = present.sumOf { session.oleary[it]?.size ?: 0 }
+        val affected = present.sumOf { tooth ->
+            (session.oleary[tooth] ?: emptySet()).count { it != Surface.OCCLUSAL }
+        }
         return affected * 100.0 / denominator
     }
 
     fun ihos(session: EducationalSession): Double {
         val indexTeeth = listOf(16, 11, 26, 36, 31, 46)
-        val valid = indexTeeth.filter { tooth ->
-            when (session.teeth[tooth]?.status ?: ToothStatus.HEALTHY) {
-                ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER -> false
-                else -> true
+        val validSlots = indexTeeth.filter { indexTooth ->
+            if (indexTooth in session.ihosExcludedSlots) {
+                false
+            } else {
+                val selectedTooth = session.ihosSelections[indexTooth] ?: indexTooth
+                when (session.teeth[selectedTooth]?.status ?: ToothStatus.HEALTHY) {
+                    ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER -> false
+                    else -> true
+                }
             }
         }
-        if (valid.isEmpty()) return 0.0
-        val total = valid.sumOf { (session.ihosDebris[it] ?: 0) + (session.ihosCalculus[it] ?: 0) }
-        return total.toDouble() / valid.size
+        if (validSlots.isEmpty()) return 0.0
+        val total = validSlots.sumOf { indexTooth ->
+            val selectedTooth = session.ihosSelections[indexTooth] ?: indexTooth
+            (session.ihosDebris[selectedTooth] ?: 0) + (session.ihosCalculus[selectedTooth] ?: 0)
+        }
+        return total.toDouble() / validSlots.size
     }
 
     fun ihosInterpretation(value: Double, lang: String): String {
