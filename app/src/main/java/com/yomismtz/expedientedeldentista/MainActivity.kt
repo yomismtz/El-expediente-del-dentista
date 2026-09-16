@@ -19,18 +19,26 @@ import com.yomismtz.expedientedeldentista.ui.OnboardingV15Screen
 import com.yomismtz.expedientedeldentista.ui.edgeSwipeBackV21
 import com.yomismtz.expedientedeldentista.ui.theme.ExpedienteTheme
 
+/**
+ * Launcher shell intentionally kept equivalent to the last stable main-line implementation.
+ * Clinical modules remain on the review branch, but no preview-only runtime/bootstrap state is
+ * touched before the first Compose frame.
+ */
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val store = SettingsStore(this)
+        val initialPreferences = runCatching { store.load() }
+            .getOrElse { AppPreferences() }
 
         setContent {
-            var preferences by remember { mutableStateOf(store.load()) }
+            var preferences by remember { mutableStateOf(initialPreferences) }
             var session by remember { mutableStateOf(EducationalSession()) }
 
             val savePreferences: (AppPreferences) -> Unit = { updated ->
                 preferences = updated
-                store.save(updated)
+                runCatching { store.save(updated) }
             }
 
             ExpedienteTheme(
@@ -44,6 +52,7 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         Modifier
                     }
+
                     Box(Modifier.fillMaxSize().then(swipeBackModifier)) {
                         if (!preferences.onboardingComplete) {
                             OnboardingV15Screen(

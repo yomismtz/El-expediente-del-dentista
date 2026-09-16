@@ -32,23 +32,41 @@ import com.yomismtz.expedientedeldentista.clinical.ClinicalContent
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEngines
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.clinical.Surface
+import com.yomismtz.expedientedeldentista.clinical.ToothStatus
 
 @Composable
 fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (EducationalSession) -> Unit, onBack: () -> Unit) {
     var primary by remember { mutableStateOf(false) }
     val shown = if (primary) ClinicalContent.primaryTeeth else ClinicalContent.permanentTeeth
+    val shownSet = shown.toSet()
     var selectedTooth by remember { mutableStateOf(shown.first()) }
     if (selectedTooth !in shown) selectedTooth = shown.first()
     val surfaces = listOf(Surface.VESTIBULAR, Surface.LINGUAL_PALATAL, Surface.MESIAL, Surface.DISTAL)
-    val present = if (session.presentTeeth.intersect(shown.toSet()).isEmpty()) shown.toSet() else session.presentTeeth.intersect(shown.toSet())
+    val initialized = if (primary) session.olearyPrimaryInitialized else session.olearyPermanentInitialized
+    val odontogramPresent = shownSet.filter { tooth ->
+        session.teeth[tooth]?.status !in setOf(ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER)
+    }.toSet()
+    val present = if (initialized) session.olearyPresentTeeth.intersect(shownSet) else odontogramPresent
+    val otherDentitionPresent = session.olearyPresentTeeth - shownSet
     val selectedSurfaces = (session.oleary[selectedTooth] ?: emptySet()).intersect(surfaces.toSet())
     val plaqueFaces = present.sumOf { tooth -> (session.oleary[tooth] ?: emptySet()).count { it in surfaces } }
     val totalFaces = present.size * 4
     val percentage = if (totalFaces == 0) 0.0 else ClinicalEngines.round1(plaqueFaces * 100.0 / totalFaces)
 
+    fun saveState(currentDentitionPresent: Set<Int>, map: Map<Int, Set<Surface>> = session.oleary) {
+        onSessionChanged(
+            session.copy(
+                oleary = map,
+                olearyPresentTeeth = otherDentitionPresent + currentDentitionPresent,
+                olearyPermanentInitialized = session.olearyPermanentInitialized || !primary,
+                olearyPrimaryInitialized = session.olearyPrimaryInitialized || primary
+            )
+        )
+    }
+
     fun setMarks(newSet: Set<Surface>) {
         val map = session.oleary.toMutableMap().apply { put(selectedTooth, newSet) }
-        onSessionChanged(session.copy(oleary = map, presentTeeth = present + selectedTooth))
+        saveState(present + selectedTooth, map)
     }
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -60,10 +78,10 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
         item { SectionCard(tr(lang,"Arcada y dientes evaluables","Arch and evaluable teeth")) {
             DentalArchSelector(shown,selectedTooth,{selectedTooth=it}) { tooth -> session.oleary[tooth]?.any{it in surfaces}==true }
             Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                FilterChip(selectedTooth in present,{onSessionChanged(session.copy(presentTeeth=present+selectedTooth))},{Text(tr(lang,"Presente","Present"))})
+                FilterChip(selectedTooth in present,{saveState(present+selectedTooth)},{Text(tr(lang,"Presente","Present"))})
                 FilterChip(selectedTooth !in present,{
                     val p=present-selectedTooth; val map=session.oleary.toMutableMap().apply{remove(selectedTooth)}
-                    onSessionChanged(session.copy(presentTeeth=p,oleary=map))
+                    saveState(p,map)
                 },{Text(tr(lang,"Ausente / excluir","Missing / exclude"))})
             }
         } }

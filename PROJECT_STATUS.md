@@ -1,68 +1,63 @@
 # Estado del proyecto · YSM Expediente
 
-Última actualización: **v0.19-debug**.
+Última actualización: **v0.33 de revisión**.
 
 ## Propósito
-Aplicación educativa offline para estudiantes de odontología. Enseña cómo llenar un expediente clínico físico y ofrece exámenes interactivos. No es un expediente electrónico de pacientes y no sustituye supervisión docente ni diagnóstico clínico definitivo.
+Aplicación educativa offline para estudiantes de odontología. Enseña cómo llenar un expediente clínico físico y ofrece exámenes interactivos y herramientas de cálculo. No es un expediente electrónico de pacientes, no prescribe medicamentos y no sustituye supervisión docente ni diagnóstico clínico definitivo.
 
 ## Identidad e interfaz
 - Nombre: **YSM Expediente · El expediente del dentista**.
 - Logo/icono: ave académica + expediente dental + diente.
 - Slogan: **“Deja volar tu imaginación y tus conocimientos renacerán”**.
 - Paleta predeterminada: **Agaporni**.
-- Paletas: Agaporni, Tucán, Pavo real, Fénix, Colibrí, Pato mandarín, Ninfa, Martín pescador, Guacamaya y Quetzal.
-- Idiomas: Español e Inglés.
-- Primera configuración: idioma, Doctor/Doctora y paleta.
-- Configuración persistente: idioma, tratamiento, paleta, tipo de letra y tamaño de letra se restauran al reabrir.
-- La app respeta también la escala de fuente configurada en Android.
+- Paletas inspiradas en aves, idioma Español/English y tratamiento Doctor/Doctora.
+- Configuración persistente de idioma, tratamiento, paleta, tipografía y tamaño de letra.
 
-## Correcciones v0.19 tras prueba en teléfono real
-- La barra superior dejó de ser flotante: **Nota de ingreso** y **Configuración** ocupan espacio propio y ya no deben tapar títulos/subtítulos.
-- Nueva navegación adaptable para teléfonos compactos, estándar y grandes.
-- O’Leary e ICDAS comparten un nuevo diente visto desde **oclusal**, sin raíces, con contorno coronario, caras V/L-P/M/D y centro oclusal cuando corresponde.
-- Selectores dentales separados en **dos filas: maxilar arriba y mandibular abajo**.
-- **CPOD/ceod ahora es interactivo**: cada diente puede marcarse sano, cariado, obturado, ausente por caries, ausente por otra causa o sellado; el resultado cambia automáticamente.
-- **Mucosas**: nueva boca abierta frontal con labios, carrillos, dientes, encía, paladar duro/blando, úvula, lengua, piso y orofaringe; las regiones son seleccionables.
-- **Signos vitales**: agrega interpretación educativa de temperatura y glucosa capilar según contexto.
-  - temperatura: alrededor de 37 °C habitual; ≥38 °C fiebre; ≤35 °C muy baja, con advertencia sobre sitio/método.
-  - glucosa: alerta <70 mg/dL; ayuno 70–99 habitual; 100–125 elevado; ≥126 requiere evaluación/confirmación; objetivos frecuentes ADA 80–130 preprandial y <180 mg/dL pico posprandial.
-  - una lectura capilar aislada no diagnostica diabetes.
-- **Oclusión**: dibujos propios para plano terminal recto, escalón mesial/distal, Angle molar I/II/III, relación canina I/II/III, overjet, overbite/mordida abierta y mordida cruzada.
-- Fuentes conceptuales resumidas en la app: NHS, MedlinePlus, CDC, ADA y Columbia University; se prioriza protocolo institucional.
+## Jerarquía del expediente · v0.33
+- Al abrir el expediente se muestran dos hojas de navegación, siguiendo el esquema docente entregado.
+- **Izquierda, verde limón:** autorización de actividades, diagnóstico/tratamiento, sesiones, endodoncia, prótesis, periodontograma, cirugía, trastornos temporomandibulares, signos/síntomas, calculadora, O’Leary y CAMBRA.
+- **Derecha, azul aqua:** identificación, historia clínica, mucosas, auxiliares, odontograma/exámenes diagnósticos, presupuesto, consentimiento, solicitud de tratamiento, evolución, cabeza/cuello, ATM, oclusión, anomalías dentales, anomalías de erupción y hábitos/parafunciones.
+- Historia clínica abre un segundo nivel con identificación, motivo/padecimiento actual, antecedentes heredo-familiares, personales no patológicos, personales patológicos, quirúrgicos/traumáticos, exploración física y antecedentes ortodónticos.
+- Exploración física abre signos vitales, signos/síntomas, exploración general y cabeza/cuello.
+- Odontograma abre un hub con odontograma clínico, CPOD, ceod, ICDAS, IHOS e IPC.
+- CPOD y ceod comparten el módulo existente y se diferencian mediante el selector de dentición permanente/temporal.
+- CAMBRA queda como módulo educativo de riesgo de caries con indicadores de enfermedad, factores de riesgo y factores protectores.
 
-## Sistema adaptable
-- Ancho clasificado como compacto, mediano o expandido.
-- Con letra grande se reducen columnas automáticamente.
-- Contenido largo usa desplazamiento vertical.
-- Carpeta y centro de exámenes adaptan cantidad de columnas al dispositivo.
-- Nuevas pantallas toman colores de `MaterialTheme` para respetar la paleta elegida.
+## Estabilidad y distribución
+- La carga inicial de preferencias está protegida con valores de respaldo para evitar fallos de arranque por configuración inválida.
+- La sesión educativa se mantiene en memoria durante la ejecución y no se almacena como expediente clínico.
+- La variante `preview` usa un `applicationId` separado para pruebas.
+- GitHub Pages y el APK público se despliegan únicamente desde `main`.
+- CI valida pruebas unitarias, Lint, ensamblado Preview y arranque real en emulador Android 10.
+- v0.30 corrigió el cierre al iniciar causado por recursos JPG inválidos del onboarding.
 
-## Módulos principales incorporados
-- Nota de ingreso como centro de navegación.
-- Identificación, anamnesis/ASA, medicamentos y alergias.
-- Signos vitales, ATM, oclusión, mucosas, postura y auxiliares.
-- Odontograma por cuadrantes.
-- ICDAS, CPOD/ceod, O'Leary, IPC, IHOS y periodontograma.
-- Diagnóstico pulpar y periapical interactivos.
-- Endodoncia interactiva con conductometría y protocolos educativos.
-- Prótesis: Kennedy/Applegate, Seibert, retenedores PPR, PPR, total y fija.
-- En los exámenes se conserva la guía de **qué escribir al final en el expediente físico**.
+## Exploración clínica
+- Exploración general persistente.
+- Cabeza y cuello: cráneo, cara, músculos de la expresión facial, músculos de la masticación, cuello y cadenas ganglionares.
+- ATM: apertura/cierre, lateralidades, protrusión/retrusión, apertura máxima, DVO/DVR, dolor, chasquido, crepitación, bloqueo, trayectoria y palpación.
+- Examen de mucosas persistente por región y morfología.
+- Signos y síntomas con acceso rápido desde el folder.
 
-## Prótesis · estado actual
-- Dos arcadas con presente/ausente.
-- Detección automática de espacios edéntulos.
-- Kennedy I–IV y modificaciones.
-- Reglas de Applegate paso a paso.
-- Seibert.
-- Akers, RPI, RPA, barra I y combinado.
-- Diseñador PPR con descansos, retención, planos guía y base/malla.
-- Prótesis total y fija; materiales, terminaciones y pónticos.
+## Calculadoras clínicas · v0.32+
+- El peso se introduce una sola vez y se pueden seleccionar varios medicamentos.
+- La frecuencia se expresa como **cada cuántas horas**.
+- Catálogo actual: paracetamol, ibuprofeno, naproxeno, amoxicilina, amoxicilina/ácido clavulánico, azitromicina, cefalexina, claritromicina, clindamicina, metronidazol, aciclovir y valaciclovir.
+- Las dosis se basan prioritariamente en AAPD Useful Medications for Oral Conditions y las presentaciones se contrastaron con fuentes mexicanas.
+- Amoxicilina/clavulanato está separada por relación 4:1 y 7:1 para evitar intercambios incorrectos de presentación/esquema.
+- Los anestésicos locales conservan límites pediátricos y alertas de edad; el resultado es educativo y no prescribe cuántos cartuchos aplicar.
 
-## Próximos puntos sugeridos
-1. Probar v0.19 en teléfono real, especialmente encabezados, boca abierta, caras dentales y dibujos de oclusión.
-2. Llevar el mismo pulido visual a periodontograma, ATM, endodoncia y formularios largos.
-3. Sustituir colores antiguos codificados directamente por `MaterialTheme` donde aún existan.
-4. Continuar con Cirugía interactiva y protocolos después de estabilizar la interfaz.
+## Índices y exámenes
+- IPC persistente por sitios.
+- IHOS con sustituciones/exclusiones y dientes faltantes.
+- O’Leary con conjunto de dientes evaluables propio.
+- CPOD/ceod, ICDAS, odontograma, periodontograma y diagnóstico pulpar/periapical.
 
-## Repositorio
-https://github.com/yomismtz/El-expediente-del-dentista
+## Web
+- La web replica el folder verde limón / azul aqua y los submenús Historia clínica y Odontograma.
+- Conserva Signos/síntomas y las calculadoras verificadas v0.32.
+- Los cálculos se realizan localmente en el navegador y no se envían a un servidor del proyecto.
+
+## Validación
+La v0.33 está en proceso de validación automática. No debe marcarse como estable hasta completar pruebas unitarias, Lint, `assemblePreview` y prueba de arranque real en Android 10.
+
+`main` permanece sin modificar hasta revisión/merge.

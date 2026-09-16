@@ -95,7 +95,7 @@ private fun SettingsV19Screen(
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedButton(onClick = onBack) { Text("‹") }
                 Column(Modifier.weight(1f)) {
-                    Text(tr(lang,"Apariencia y accesibilidad","Appearance & accessibility"),style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black)
+                    Text(tr(lang,"Apariencia, accesibilidad e información","Appearance, accessibility & information"),style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black)
                     Text(tr(lang,"Los cambios se guardan automáticamente y permanecen al cerrar la app.","Changes save automatically and remain after closing the app."),style=MaterialTheme.typography.bodyMedium)
                 }
             }
@@ -145,6 +145,38 @@ private fun SettingsV19Screen(
                 Text("📱 ${tr(lang,"Ancho disponible","Available width")}: $widthDp dp")
                 Text("🔤 ${tr(lang,"Escala Android","Android scale")}: ${"%.0f".format(systemScale*100)}%")
                 Text(if(compact)tr(lang,"Modo compacto activo: se prioriza una columna para evitar recortes.","Compact mode active: one column is prioritized to prevent clipping.") else tr(lang,"Modo estándar/ampliado: se aprovecha el ancho disponible.","Standard/expanded mode: available width is used."))
+            }
+
+            SettingCardV19(tr(lang,"Créditos","Credits")) {
+                Text(
+                    tr(lang,
+                        "Parte del contenido visual, las ilustraciones educativas, la organización de información y el apoyo de redacción de esta aplicación fueron desarrollados con asistencia de ChatGPT (OpenAI), bajo revisión, selección y adaptación del autor del proyecto.",
+                        "Part of the visual content, educational illustrations, information organization and writing support in this application were developed with assistance from ChatGPT (OpenAI), under review, selection and adaptation by the project author."
+                    )
+                )
+                Text(
+                    tr(lang,
+                        "La mención de ChatGPT/OpenAI reconoce la herramienta utilizada durante el desarrollo y no implica patrocinio, certificación clínica ni respaldo de OpenAI al proyecto.",
+                        "The ChatGPT/OpenAI reference acknowledges a tool used during development and does not imply sponsorship, clinical certification or endorsement of the project by OpenAI."
+                    ),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            SettingCardV19(tr(lang,"Privacidad y uso de inteligencia artificial","Privacy and AI use")) {
+                Text(
+                    tr(lang,
+                        "ChatGPT (OpenAI) se utilizó durante el desarrollo como herramienta de apoyo para crear o refinar material educativo. La versión Android instalada funciona sin conexión y no comparte automáticamente datos personales, clínicos ni información sensible con ChatGPT/OpenAI.",
+                        "ChatGPT (OpenAI) was used during development as a support tool to create or refine educational material. The installed Android version works offline and does not automatically share personal, clinical or sensitive information with ChatGPT/OpenAI."
+                    )
+                )
+                Text(
+                    tr(lang,
+                        "Esta aplicación es una guía educativa. No introduzcas información identificable de pacientes reales.",
+                        "This application is an educational guide. Do not enter identifiable information about real patients."
+                    ),
+                    fontWeight = FontWeight.Bold
+                )
             }
 
             Button(onClick=onBack,modifier=Modifier.fillMaxWidth()) { Text(tr(lang,"Guardar y volver","Save and return"),fontWeight=FontWeight.Black) }

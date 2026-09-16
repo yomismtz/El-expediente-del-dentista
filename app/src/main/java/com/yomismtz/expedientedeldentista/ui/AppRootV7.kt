@@ -84,6 +84,8 @@ fun AppRootV7(
                             lang,
                             onIdentification={openOverlay(V7Overlay.IDENTIFICATION)},
                             onHistory={openOverlay(V7Overlay.HISTORY)},
+                            onGeneralInspection={openOverlay(V7Overlay.GENERAL_INSPECTION)},
+                            onHeadNeck={openOverlay(V7Overlay.HEAD_NECK)},
                             onVitals={openOverlay(V7Overlay.VITALS)},
                             onAtm={openOverlay(V7Overlay.ATM)},
                             onOcclusion={openOverlay(V7Overlay.OCCLUSION)},
@@ -95,19 +97,21 @@ fun AppRootV7(
                             onBack=backPrevious
                         )
                         V7Overlay.HUB -> ExamHubV1Screen(lang,{openOverlay(it)},backPrevious)
-                        V7Overlay.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.IDENTIFICATION -> PatientIdentificationV36Screen(lang,backPrevious)
                         V7Overlay.HISTORY -> HistoryScreen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.GENERAL_INSPECTION -> GeneralInspectionV24Screen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.HEAD_NECK -> HeadNeckExplorationV25Screen(lang,session,onSessionChanged,{openOverlay(V7Overlay.ATM)},backPrevious)
                         V7Overlay.VITALS -> VitalsInteractiveV19Screen(lang,backPrevious)
-                        V7Overlay.ATM -> AtmScreen(lang,backPrevious)
+                        V7Overlay.ATM -> AtmDiagnosisV25Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.OCCLUSION -> OcclusionInteractiveV19Screen(lang,backPrevious)
-                        V7Overlay.MUCOSA -> MucosaInteractiveV19Screen(lang,backPrevious)
+                        V7Overlay.MUCOSA -> MucosaExamV24Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.AUXILIARIES -> AuxiliariesV20Screen(lang,backPrevious)
                         V7Overlay.ODONTOGRAM -> OdontogramV20Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.ICDAS -> IcdasScreen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.CPOD -> CpodInteractiveV19Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.OLEARY -> OlearyScreen(lang,session,onSessionChanged,backPrevious)
-                        V7Overlay.IPC -> IpcResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
-                        V7Overlay.IHOS -> IhosResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.IPC -> IpcPersistentV22Screen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.IHOS -> IhosPersistentV23Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.PERIODONTAL -> PeriodontogramScreen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.POSTURE -> PostureVisualScreen(lang,backPrevious)
                         V7Overlay.PULPAL_APICAL -> PulpalPeriapicalInteractiveV2Screen(
@@ -198,6 +202,9 @@ private fun FloatingActions19(lang:String,onWriting:()->Unit,onIntake:()->Unit,m
 
 private fun finalWriting19(screen:V7Overlay,lang:String):String {
     if(lang=="en") return when(screen) {
+        V7Overlay.GENERAL_INSPECTION -> "General inspection: apparent age ___; gait ___; facies ___; attitude/cooperation ___; consciousness/orientation ___; abnormal movements ___; additional objective observations ___."
+        V7Overlay.HEAD_NECK -> "Head and neck: cranium ___; face/profile/symmetry/skin color ___; facial muscle function ___; masticatory muscles ___; neck ___; lymph-node chains ___; describe palpable nodes by side, size, tenderness, consistency and mobility."
+        V7Overlay.ATM -> "TMJ: maximum opening ___ mm; opening path ___; right/left laterality ___/___ mm; protrusion ___ mm; joint sounds ___; pain/tenderness ___; locking ___; OVD ___ mm; RVD ___ mm. Interpret findings in clinical context."
         V7Overlay.PULPAL_APICAL -> "Tooth ___: pulpal diagnosis most compatible with ___; apical diagnosis most compatible with ___; supported by ___. State missing tests."
         V7Overlay.IPC -> "CPI: S1=__ · S2=__ · S3=__ · S4=__ · S5=__ · S6=__. Add relevant periodontal findings."
         V7Overlay.IHOS -> "OHI-S = ___ (DI-S ___ + CI-S ___). Add the interpretation."
@@ -207,11 +214,14 @@ private fun finalWriting19(screen:V7Overlay,lang:String):String {
         V7Overlay.VITALS -> "BP ___/___ mmHg · HR ___ bpm · RR ___ rpm · T ___ °C · capillary glucose ___ mg/dL (fasting/premeal/postmeal/random) · weight ___ kg · height ___ · BMI ___."
         V7Overlay.ENDO -> "Tooth ___; pulpal ___; apical ___; procedure ___; coronal reference ___; working lengths ___; irrigation per protocol; restoration ___; follow-up ___."
         V7Overlay.PROSTHETIC -> "Arch ___; Kennedy ___ mod. ___ when applicable; edentulous areas ___; prosthesis/material/design ___; stage ___; instructions ___."
-        V7Overlay.MUCOSA -> "Describe each examined mucosal region. For a lesion record site, size, color, surface, borders, consistency and symptoms."
+        V7Overlay.MUCOSA -> "Describe every examined mucosal region. For a lesion record exact site, type, size, color, surface, borders, consistency, symptoms, duration/evolution and relevant trauma; do not assign a visual diagnosis automatically."
         V7Overlay.AUXILIARIES -> "Record the exact laboratory/pathology/imaging result first, then a cautious interpretation and any missing confirmation or faculty review."
         else -> "Summarize result, interpretation, supporting findings and missing information."
     }
     return when(screen) {
+        V7Overlay.GENERAL_INSPECTION -> "Exploración general: edad aparente ___; marcha ___; facies ___; actitud/cooperación ___; conciencia/orientación ___; movimientos anormales ___; observaciones objetivas adicionales ___."
+        V7Overlay.HEAD_NECK -> "Cabeza y cuello: cráneo ___; cara/perfil/simetría/coloración ___; función de músculos faciales ___; músculos masticatorios ___; cuello ___; cadenas ganglionares ___; si hay ganglio palpable, describe lado, tamaño, dolor, consistencia y movilidad."
+        V7Overlay.ATM -> "ATM: apertura máxima ___ mm; trayectoria ___; lateralidad derecha/izquierda ___/___ mm; protrusión ___ mm; ruidos articulares ___; dolor a movimiento/palpación ___; bloqueo ___; DVO ___ mm; DVR ___ mm. Interpreta en contexto clínico."
         V7Overlay.PULPAL_APICAL -> "OD ___: diagnóstico pulpar más compatible con ___; diagnóstico periapical más compatible con ___; sustentado por ___. Indica pruebas faltantes."
         V7Overlay.IPC -> "IPC: S1=__ · S2=__ · S3=__ · S4=__ · S5=__ · S6=__. Añade hallazgos periodontales relevantes."
         V7Overlay.IHOS -> "IHOS = ___ (ID-S ___ + IC-S ___). Añade la interpretación obtenida."
@@ -221,7 +231,7 @@ private fun finalWriting19(screen:V7Overlay,lang:String):String {
         V7Overlay.VITALS -> "TA ___/___ mmHg · FC ___ lpm · FR ___ rpm · T ___ °C · glucosa capilar ___ mg/dL (ayuno/preprandial/posprandial/casual) · peso ___ kg · talla ___ · IMC ___."
         V7Overlay.ENDO -> "OD ___; diagnóstico pulpar ___; periapical ___; procedimiento ___; referencia coronal ___; longitudes ___; irrigación según protocolo; restauración ___; seguimiento ___."
         V7Overlay.PROSTHETIC -> "Arco ___; Kennedy ___ mod. ___ cuando aplique; áreas edéntulas ___; tipo/material/diseño ___; etapa ___; indicaciones ___."
-        V7Overlay.MUCOSA -> "Describe cada zona de mucosa. Si hay lesión: localización, tamaño, color, superficie, bordes, consistencia y síntomas."
+        V7Overlay.MUCOSA -> "Describe cada zona examinada. Si hay lesión: localización exacta, tipo, tamaño, color, superficie, bordes, consistencia, síntomas, duración/evolución y trauma relevante; no asignes diagnóstico visual automático."
         V7Overlay.AUXILIARIES -> "Primero copia el resultado exacto del laboratorio, biopsia o imagen; después añade interpretación prudente, discrepancias y lo que falta confirmar con docente/profesional."
         else -> "Resume resultado, interpretación, hallazgos que lo sustentan y datos faltantes."
     }
