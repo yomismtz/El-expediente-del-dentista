@@ -118,7 +118,7 @@ fun AdaptiveBaseRootV19(
         FolderExtraV33.HEAD_NECK -> HeadNeckExplorationV25Screen(lang, session, onSessionChanged, { navigate(AppScreen.ATM) }, backPrevious)
         FolderExtraV33.GENERAL_INSPECTION -> GeneralInspectionV24Screen(lang, session, onSessionChanged, backPrevious)
         FolderExtraV33.PHYSICAL_HUB -> PhysicalExamMenuV35Screen(lang, { navigate(it) }, { openExtra(it) }, backPrevious)
-        FolderExtraV33.CAMBRA -> CambraV33Screen(lang, backPrevious)
+        FolderExtraV33.CAMBRA -> CambraInteractiveV39Screen(lang, backPrevious)
         FolderExtraV33.DENTAL_ANOMALIES -> DentalAnomaliesV35Screen(lang, backPrevious)
         FolderExtraV33.ERUPTION_ANOMALIES -> EruptionAnomaliesV35Screen(lang, backPrevious)
         FolderExtraV33.HABITS -> HabitsParafunctionsV33Screen(lang, backPrevious)
@@ -133,7 +133,7 @@ fun AdaptiveBaseRootV19(
             ) { }
             AppScreen.IDENTIFICATION -> {
                 if (identificationSheetMode) {
-                    IdentificationSheetV36Screen(lang, backPrevious)
+                    IdentificationGuideV39Screen(lang, backPrevious)
                 } else {
                     PatientIdentificationV36Screen(lang, backPrevious)
                 }
@@ -144,7 +144,7 @@ fun AdaptiveBaseRootV19(
             AppScreen.VITALS -> VitalsInteractiveV19Screen(lang, backPrevious)
             AppScreen.ATM -> AtmScreen(lang, backPrevious)
             AppScreen.OCCLUSION -> OcclusionInteractiveV19Screen(lang, backPrevious)
-            AppScreen.MUCOSA -> MucosaExamV24Screen(lang, session, onSessionChanged, backPrevious)
+            AppScreen.MUCOSA -> MucosaAtlasV39Screen(lang, backPrevious)
             AppScreen.AUXILIARIES -> AuxiliariesV20Screen(lang, backPrevious)
             AppScreen.ODONTOGRAM -> OdontogramV20Screen(lang, session, onSessionChanged, backPrevious)
             AppScreen.ICDAS -> IcdasScreen(lang, session, onSessionChanged, backPrevious)
