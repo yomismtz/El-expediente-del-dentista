@@ -79,15 +79,16 @@ fun OnboardingV40Screen(preferences:AppPreferences,onPreferencesChanged:(AppPref
 
 @Composable private fun ClinicianBirdIllustrationV40(title:ClinicianTitle,style:BirdPaletteStyle){
     val sw=paletteSwatches(style)
+    val outline=MaterialTheme.colorScheme.outline
+    val primary=MaterialTheme.colorScheme.primary
     Canvas(Modifier.fillMaxWidth().height(190.dp)){
         val w=size.width;val h=size.height;val skin=Color(0xFFD9A27F);val coat=Color.White
         drawCircle(skin,w*.12f,Offset(w*.50f,h*.29f))
         val hair=if(title==ClinicianTitle.DOCTORA)Color(0xFF4B2E2B) else Color(0xFF332A26)
         drawArc(hair,190f,160f,false,Offset(w*.37f,h*.14f),Size(w*.26f,h*.25f),style=Stroke(w*.055f))
         val torso=Path().apply{moveTo(w*.25f,h*.92f);lineTo(w*.30f,h*.48f);quadraticBezierTo(w*.50f,h*.40f,w*.70f,h*.48f);lineTo(w*.75f,h*.92f);close()}
-        drawPath(torso,coat);drawPath(torso,MaterialTheme.colorScheme.outline,style=Stroke(2f))
-        drawLine(MaterialTheme.colorScheme.primary,Offset(w*.50f,h*.50f),Offset(w*.50f,h*.90f),strokeWidth=3f)
-        // Bird perched on shoulder: palette-specific morphology. It is drawn as a bird rather than a fixed wrong species image.
+        drawPath(torso,coat);drawPath(torso,outline,style=Stroke(2f))
+        drawLine(primary,Offset(w*.50f,h*.50f),Offset(w*.50f,h*.90f),strokeWidth=3f)
         val bx=w*.72f;val by=h*.48f
         drawOval(sw[0],Offset(bx-w*.055f,by-h*.045f),Size(w*.11f,h*.10f))
         drawCircle(sw[1],w*.036f,Offset(bx+w*.035f,by-h*.055f))
