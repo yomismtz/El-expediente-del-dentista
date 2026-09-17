@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -102,5 +103,41 @@ fun ChipChoices(
             }
             repeat(columns - row.size) { Text("", modifier = Modifier.weight(1f)) }
         }
+    }
+}
+
+
+@Composable
+fun PracticeSaveControlsV48(
+    lang: String,
+    sectionKey: String,
+    modifier: Modifier = Modifier
+) {
+    val saved = TeachingStateV40.savedPracticeSections[sectionKey] == true
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Button(
+            onClick = { TeachingStateV40.savedPracticeSections[sectionKey] = true },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                if (saved) {
+                    tr(lang, "Guardado ✓", "Saved ✓")
+                } else {
+                    tr(lang, "Guardar práctica", "Save practice")
+                },
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Text(
+            tr(
+                lang,
+                "Guarda únicamente el avance educativo de esta sección durante la sesión actual. No almacena datos personales ni sustituye el expediente clínico institucional.",
+                "This only saves the educational progress of this section during the current session. It does not store personal data or replace the institutional clinical record."
+            ),
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }
