@@ -150,6 +150,7 @@ fun ChiefComplaintV40Screen(lang:String,onBack:()->Unit){
     var selected by remember{mutableStateOf(0)}
     var current by remember{mutableStateOf("")}
     ResponsiveScreenV17("Motivo de consulta y padecimiento actual","Primero se conserva el motivo literal; después se plantean posibilidades clínicas que deben verificarse con exploración.",onBack){profile->
+        PracticeSaveControlsV48(lang, "history_chief_complaint_v48")
         ResponsiveSectionV17("Motivos de consulta frecuentes · 30 ejemplos"){
             AdaptiveGridV17(complaintsV40.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
                 val c=complaintsV40[i]
@@ -159,11 +160,16 @@ fun ChiefComplaintV40Screen(lang:String,onBack:()->Unit){
         ResponsiveSectionV17("Padecimiento actual · opciones para razonar"){
             Text("Motivo literal seleccionado: ${complaintsV40[selected].complaint}",fontWeight=FontWeight.Black)
             complaintsV40[selected].current.forEach{option->FilterChip(current==option,{current=option},{Text(option)},Modifier.fillMaxWidth())}
+            Text("✍️ Cómo se escribe", fontWeight=FontWeight.SemiBold, color=MaterialTheme.colorScheme.primary)
+            Text("Conserva primero las palabras del paciente entre comillas o claramente identificadas como referidas; después describe inicio, evolución, desencadenantes, duración, intensidad y factores que modifican el problema.")
             if(current.isNotBlank()){
-                Text("Ejemplo de redacción clínica: “Se evalúa ${complaintsV40[selected].complaint.removeSurrounding("“","”").lowercase()}; hallazgos compatibles con $current, pendiente de correlación con exploración y pruebas”.")
+                Text("🧾 Ejemplo: “Se evalúa ${complaintsV40[selected].complaint.removeSurrounding("“","”").lowercase()}; hallazgos compatibles con $current, pendiente de correlación con exploración y pruebas”.")
             }
+            Text("⚠️ Error común", fontWeight=FontWeight.SemiBold, color=MaterialTheme.colorScheme.error)
+            Text("Convertir el motivo de consulta en un diagnóstico antes de explorar o cambiar las palabras del paciente por una interpretación clínica.")
             NoticeCard("Estas tres opciones son hipótesis educativas, no diagnósticos automáticos. Por ejemplo, un diente oscuro puede representar caries activa, caries inactiva, tinción, restauración o cambio pulpar según los hallazgos.")
         }
+        PracticeSaveControlsV48(lang, "history_chief_complaint_v48")
     }
 }
 
@@ -187,6 +193,7 @@ fun NonPathologicalV40Screen(lang:String,onBack:()->Unit){
     val foodGroups=listOf("Dulces/caramelos","Refrescos/bebidas azucaradas","Pan dulce/galletas","Ultraprocesados/snacks","Fruta fresca","Verduras","Huevo","Lácteos","Leguminosas","Cereales integrales","Carne blanca/pescado","Carne roja")
     var activeFood by remember{mutableStateOf(foodGroups.first())};var foodFreq by remember{mutableStateOf("")}
     ResponsiveScreenV17("Antecedentes personales no patológicos · selector educativo","Todo se practica con opciones; no solicita datos reales ni texto libre.",onBack){profile->
+        PracticeSaveControlsV48(lang, "history_nonpath_v48")
         nonPathGroupsV40.forEach{group->
             ResponsiveSectionV17(group.title){group.options.forEach{(label,meaning)->ExpandableChoiceV40(label,meaning,selected)}}
         }
@@ -201,6 +208,7 @@ fun NonPathologicalV40Screen(lang:String,onBack:()->Unit){
             if(foodFreq.isNotBlank())Text("Lectura: $activeFood · $foodFreq. Para caries importa especialmente la FRECUENCIA de exposición a azúcares fermentables entre comidas, no sólo la cantidad total.")
         }
         HabitsExposureV40(selected,profile)
+        PracticeSaveControlsV48(lang, "history_nonpath_v48")
     }
 }
 
@@ -252,11 +260,14 @@ fun PathologicalV40Screen(lang:String,onBack:()->Unit){
     val vaccines=remember{mutableStateListOf<String>()};var openVaccine by remember{mutableStateOf<Int?>(null)}
     var disease by remember{mutableStateOf("Hipertensión")};var onsetN by remember{mutableStateOf(1)};var onsetUnit by remember{mutableStateOf("años")};var status by remember{mutableStateOf("En tratamiento / control")};var med by remember{mutableStateOf("")}
     ResponsiveScreenV17("Antecedentes personales patológicos","Vacunación, enfermedades por sistemas, tiempo de evolución, estado actual y medicamentos referidos.",onBack){profile->
+        PracticeSaveControlsV48(lang, "history_pathological_v48")
         ResponsiveSectionV17("Vacunación · checklist con explicación"){
             AdaptiveGridV17(vaccinesV40.size,if(profile.largeSystemText)1 else 2){i->val v=vaccinesV40[i];Card(onClick={toggleV40(vaccines,v.name);openVaccine=i},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=if(v.name in vaccines)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant)){Column(Modifier.padding(10.dp)){Text((if(v.name in vaccines)"✓ " else "")+v.name,fontWeight=FontWeight.Black);if(openVaccine==i){Text("Protege contra: ${v.protects}");Text("Cuándo: ${v.schedule}")}}}}
             NoticeCard("Los esquemas cambian. Para una persona real siempre se verifica la Cartilla Nacional de Salud y lineamientos vigentes, no la memoria del paciente ni esta app.")
         }
         ResponsiveSectionV17("Enfermedad del ejercicio"){
+            Text("🔎 Qué va aquí", fontWeight=FontWeight.SemiBold, color=MaterialTheme.colorScheme.primary)
+            Text("Enfermedad referida, tiempo de evolución, estado actual y medicamentos. Si es positiva, agrega control, complicaciones y atención médica relacionada.")
             diseaseMedsV40.forEach{d->FilterChip(disease==d.disease,{disease=d.disease;med=""},{Text(d.disease)},Modifier.fillMaxWidth())}
             Text("Desde cuándo")
             Row(horizontalArrangement=Arrangement.spacedBy(5.dp)){listOf(1,2,3,5,10,15,20).forEach{n->FilterChip(onsetN==n,{onsetN=n},{Text(n.toString())})}}
@@ -265,8 +276,13 @@ fun PathologicalV40Screen(lang:String,onBack:()->Unit){
             listOf("Recién diagnosticado / comenzando","Resuelto/curado","Estable / mantenimiento","En tratamiento / control","Mal controlado / actualmente enfermo","No sabe").forEach{s->FilterChip(status==s,{status=s},{Text(s)},Modifier.fillMaxWidth())}
             Text("Medicamento referido")
             diseaseMedsV40.firstOrNull{it.disease==disease}?.meds?.forEach{m->FilterChip(med==m,{med=m},{Text(m)},Modifier.fillMaxWidth())}
-            Text("Resumen del ejercicio: $disease desde hace $onsetN $onsetUnit · $status"+(if(med.isNotBlank())" · medicamento referido: $med (registrar dosis/vía/intervalo exactamente como lo diga la persona)" else ""))
+            Text("✍️ Cómo se escribe", fontWeight=FontWeight.SemiBold, color=MaterialTheme.colorScheme.primary)
+            Text("Distingue siempre entre “refiere” y un diagnóstico confirmado en documentos disponibles. Registra nombre del medicamento, dosis/concentración, vía e intervalo sólo si se conocen.")
+            Text("🧾 Resumen del ejercicio: $disease desde hace $onsetN $onsetUnit · $status"+(if(med.isNotBlank())" · medicamento referido: $med (registrar dosis/vía/intervalo exactamente como lo diga la persona)" else ""))
+            Text("⚠️ Error común", fontWeight=FontWeight.SemiBold, color=MaterialTheme.colorScheme.error)
+            Text("Anotar únicamente el nombre de la enfermedad sin tiempo de evolución, control actual, tratamiento o complicaciones; también es un error suspender o modificar medicamentos desde esta guía.")
         }
+        PracticeSaveControlsV48(lang, "history_pathological_v48")
     }
 }
 
@@ -277,6 +293,7 @@ fun SurgicalTraumaHistoryV40Screen(lang:String,onBack:()->Unit){
     val sites=listOf("Cráneo/cara","Mandíbula","Maxilar","Nariz","Clavícula/hombro","Brazo/antebrazo","Mano","Costillas","Columna","Pelvis","Fémur/pierna","Tobillo/pie","Diente/periodonto")
     val treatments=listOf("Observación/control","Inmovilización/ferulización","Reducción cerrada","Reducción abierta y fijación","Sutura","Tratamiento dental","Cirugía","Hospitalización","Rehabilitación/fisioterapia","No recuerda")
     ResponsiveScreenV17("Antecedentes quirúrgicos y traumáticos","Toca un evento para saber qué significa y arma un resumen ficticio.",onBack){profile->
+        PracticeSaveControlsV48(lang, "history_surgical_trauma_v48")
         ResponsiveSectionV17("Eventos"){
             events.forEach{e->ExpandableSelectableV40(e,when(e){"Fractura"->"Pérdida de continuidad completa del hueso.";"Fisura"->"Trazo incompleto sin separación completa.";"Luxación"->"Pérdida completa de congruencia articular; en diente, desplazamiento traumático según tipo.";"Subluxación"->"Lesión con movilidad/aumento de movilidad sin pérdida completa de posición.";"Transfusión recibida"->"Recepción de componentes sanguíneos; preguntar cuándo, por qué y si hubo reacción.";"Donación de sangre"->"Antecedente de haber donado; no equivale a transfusión.";"Hospitalización"->"Ingreso a hospital por una condición o procedimiento.";else->"Evento relevante que debe contextualizarse con fecha, causa, tratamiento y secuelas."},event==e){event=e}}
         }
@@ -290,6 +307,8 @@ fun SurgicalTraumaHistoryV40Screen(lang:String,onBack:()->Unit){
             treatments.forEach{t->FilterChip(treatment==t,{treatment=t},{Text(t)},Modifier.fillMaxWidth())}
         }
         NoticeCard("Resumen: antecedente de $event en $site durante $age; tratamiento referido: $treatment. En un expediente real se agregan fecha aproximada, causa, hospital, secuelas y documentación disponible.")
+        Text("⚠️ Error común: escribir sólo “cirugía” o “fractura” sin sitio, fecha aproximada, causa, tratamiento, secuelas o reacción asociada.", color=MaterialTheme.colorScheme.error)
+        PracticeSaveControlsV48(lang, "history_surgical_trauma_v48")
     }
 }
 
