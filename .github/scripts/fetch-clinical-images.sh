@@ -9,7 +9,7 @@ fetch() {
   local file="$2"
   local tmp="$OUT/.${file}.download.$$.$RANDOM"
   echo "Descargando $file"
-  if curl -L --fail --connect-timeout 3 --max-time 7 --retry 0 \
+  if curl -L --fail --connect-timeout 3 --max-time 12 --retry 1 \
     -A "YSM-Expediente-Educational-App/1.0" \
     "$url" -o "$tmp" >/dev/null 2>&1 && [ -s "$tmp" ]; then
     mv -f "$tmp" "$OUT/$file"
@@ -27,7 +27,13 @@ commons() {
   fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/${encoded_name}" "$file"
 }
 
-# Se ejecutan en paralelo para que una fuente lenta no bloquee la generación del AAB.
+# Retratos principales. Se empaquetan en drawable-nodpi para conservar la fotografía completa.
+# Doctor: U.S. Air Force / DVIDS, dominio público (2026), cirujano oral y maxilofacial en entorno clínico.
+commons "86th%20Dental%20Squadron%E2%80%99s%20Maj%20Van%20Hoof%20sees%20the%20person%20behind%20the%20procedure%20%289505983%29.jpg" "clinician_doctor_photo.jpg" &
+# Doctora: Erik Christensen, CC BY-SA 3.0, odontóloga y asistente en consultorio dental.
+commons "Dentist.2.jpg" "clinician_doctora_photo.jpg" &
+
+# Referencias clínicas.
 fetch "https://wwwn.cdc.gov/phil///PHIL_Images/20040908/2d4664936550421d85a71364ed879b68/6121_lores.jpg" "clinical_varicella.jpg" &
 fetch "https://wwwn.cdc.gov/phil/PHIL_Images/10491/10491_lores.jpg" "clinical_smallpox.jpg" &
 fetch "https://wwwn.cdc.gov/phil/PHIL_Images/4497/4497_lores.jpg" "clinical_measles.jpg" &
@@ -79,4 +85,4 @@ commons "Angular%20Cheilitis.JPG" "ref_angular_cheilitis.jpg" &
 
 wait || true
 
-echo "Referencias clínicas procesadas. Las descargas válidas sustituyeron los marcadores; las fallidas conservaron el recurso local para no bloquear el AAB."
+echo "Referencias clínicas y retratos odontológicos procesados. Las descargas válidas se empaquetan dentro del APK; las fallidas conservan el recurso local de reserva."
