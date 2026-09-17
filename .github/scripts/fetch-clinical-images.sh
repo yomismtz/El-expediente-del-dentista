@@ -8,10 +8,17 @@ fetch() {
   local url="$1"
   local file="$2"
   echo "Descargando $file"
-  curl -L --fail --retry 3 --retry-delay 2 \
+  if ! curl -L --fail --connect-timeout 4 --max-time 12 --retry 1 --retry-delay 1 \
     -A "YSM-Expediente-Educational-App/1.0" \
-    "$url" -o "$OUT/$file"
-  test -s "$OUT/$file"
+    "$url" -o "$OUT/$file"; then
+    echo "AVISO: no se pudo descargar $file; la compilación continuará y la app mostrará la referencia disponible empaquetada/local." >&2
+    rm -f "$OUT/$file"
+    return 0
+  fi
+  if [ ! -s "$OUT/$file" ]; then
+    echo "AVISO: $file quedó vacío; se elimina y continúa la compilación." >&2
+    rm -f "$OUT/$file"
+  fi
 }
 
 commons() {
@@ -84,4 +91,4 @@ commons "Geographic%20tongue.JPG" "ref_geographic_tongue.jpg"
 commons "Fissured%20geographic%20tongue.jpg" "ref_fissured_tongue.jpg"
 commons "Angular%20Cheilitis.JPG" "ref_angular_cheilitis.jpg"
 
-echo "Imágenes clínicas descargadas y empaquetadas correctamente."
+echo "Descarga de referencias clínicas finalizada; los fallos individuales no bloquean la compilación."
