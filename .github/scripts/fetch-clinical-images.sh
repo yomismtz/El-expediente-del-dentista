@@ -9,7 +9,7 @@ fetch() {
   local file="$2"
   local tmp="$OUT/.${file}.download.$$.$RANDOM"
   echo "Descargando $file"
-  if curl -L --fail --connect-timeout 3 --max-time 12 --retry 1 \
+  if curl -L --fail --connect-timeout 3 --max-time 12 --retry 1 --retry-delay 1 --retry-max-time 25 \
     -A "YSM-Expediente-Educational-App/1.0" \
     "$url" -o "$tmp" >/dev/null 2>&1 && [ -s "$tmp" ]; then
     mv -f "$tmp" "$OUT/$file"
