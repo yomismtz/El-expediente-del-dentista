@@ -14,7 +14,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -50,6 +50,62 @@ jobs:
       - name: Build preview APK
         run: gradle :app:assemblePreview --stacktrace
 
+      - name: Generate Play upload key for this release stream
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ysm-play-key"
+          KS="$RUNNER_TEMP/ysm-play-key/ysm-upload-key.jks"
+          PASS="$(openssl rand -hex 24)"
+          ALIAS="ysm-upload"
+          echo "::add-mask::$PASS"
+          keytool -genkeypair -v \
+            -storetype JKS \
+            -keystore "$KS" \
+            -storepass "$PASS" \
+            -keypass "$PASS" \
+            -alias "$ALIAS" \
+            -dname "CN=YSM Expediente,O=YSM,C=MX" \
+            -keyalg RSA -keysize 4096 -validity 10000
+          echo "YSM_KEYSTORE_PATH=$KS" >> "$GITHUB_ENV"
+          echo "YSM_KEYSTORE_PASSWORD=$PASS" >> "$GITHUB_ENV"
+          echo "YSM_KEY_ALIAS=$ALIAS" >> "$GITHUB_ENV"
+          echo "YSM_KEY_PASSWORD=$PASS" >> "$GITHUB_ENV"
+          cat > "$RUNNER_TEMP/ysm-play-key/UPLOAD-KEY-CREDENTIALS.txt" <<EOF
+          IMPORTANTE: conserva estos archivos de forma segura. Esta es la clave de carga usada para firmar el AAB de esta compilación.
+          Alias: $ALIAS
+          Contraseña del almacén: $PASS
+          Contraseña de la clave: $PASS
+          Archivo: ysm-upload-key.jks
+          EOF
+          keytool -list -v -keystore "$KS" -storepass "$PASS" -alias "$ALIAS" > "$RUNNER_TEMP/ysm-play-key/UPLOAD-KEY-CERTIFICATE.txt"
+
+      - name: Build signed Play AAB and R8 mapping
+        run: gradle :app:bundleRelease --stacktrace
+
+      - name: Verify AAB signature
+        run: jarsigner -verify -verbose -certs app/build/outputs/bundle/release/app-release.aab
+
+      - name: Prepare Play Console package
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/play-console"
+          mkdir -p "$OUT"
+          cp app/build/outputs/bundle/release/app-release.aab "$OUT/El-expediente-del-dentista-v0.46.aab"
+          cp app/build/outputs/mapping/release/mapping.txt "$OUT/mapping.txt"
+          cat > "$OUT/README-PLAY-CONSOLE.txt" <<'EOF'
+          EL EXPEDIENTE DEL DENTISTA · v0.46
+
+          1) El-expediente-del-dentista-v0.46.aab = Android App Bundle firmado para Google Play.
+          2) mapping.txt = archivo de desofuscación R8 de esta compilación.
+          3) La app no incluye bibliotecas nativas .so propias; por ello no hay un archivo de símbolos nativos que deba subirse.
+          4) El ZIP de este paquete es sólo para conservar/transferir juntos el AAB, el mapa y este README; no se sube en lugar del AAB.
+          5) La clave de carga se entrega como un artefacto separado y debe guardarse de forma segura para futuras actualizaciones.
+          EOF
+          (cd "$OUT" && zip -9 "El-expediente-del-dentista-PlayConsole-v0.46.zip" "El-expediente-del-dentista-v0.46.aab" "mapping.txt" "README-PLAY-CONSOLE.txt")
+          sha256sum "$OUT/El-expediente-del-dentista-v0.46.aab" "$OUT/mapping.txt" "$OUT/El-expediente-del-dentista-PlayConsole-v0.46.zip" > "$OUT/SHA256SUMS.txt"
+
       - name: Locate debug keystore
         run: |
           if [ ! -f "$HOME/.android/debug.keystore" ]; then
@@ -61,6 +117,25 @@ jobs:
         with:
           name: El-expediente-del-dentista-preview
           path: app/build/outputs/apk/preview/app-preview.apk
+          if-no-files-found: error
+
+      - name: Upload Play Console files
+        uses: actions/upload-artifact@v4
+        with:
+          name: El-expediente-del-dentista-play-console-v0.46
+          path: |
+            ${{ runner.temp }}/play-console/El-expediente-del-dentista-v0.46.aab
+            ${{ runner.temp }}/play-console/mapping.txt
+            ${{ runner.temp }}/play-console/El-expediente-del-dentista-PlayConsole-v0.46.zip
+            ${{ runner.temp }}/play-console/README-PLAY-CONSOLE.txt
+            ${{ runner.temp }}/play-console/SHA256SUMS.txt
+          if-no-files-found: error
+
+      - name: Upload Play upload key backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: El-expediente-del-dentista-upload-key-v0.46
+          path: ${{ runner.temp }}/ysm-play-key/
           if-no-files-found: error
 
       - name: Upload local resigning kit
