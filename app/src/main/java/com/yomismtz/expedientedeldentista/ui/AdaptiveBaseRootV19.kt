@@ -42,7 +42,9 @@ fun AdaptiveBaseRootV19(
     onPreferencesChanged: (AppPreferences) -> Unit,
     onLanguageChanged: (String) -> Unit,
     session: EducationalSession,
-    onSessionChanged: (EducationalSession) -> Unit
+    onSessionChanged: (EducationalSession) -> Unit,
+    onIntake: (() -> Unit)? = null,
+    onSettings: (() -> Unit)? = null
 ) {
     val screenState = remember { mutableStateOf(AppScreen.HOME) }
     val extraState = remember { mutableStateOf<FolderExtraV33?>(null) }
@@ -84,7 +86,14 @@ fun AdaptiveBaseRootV19(
         FolderExtraV33.ORTHODONTIC_HISTORY -> OrthodonticHistoryV33Screen(lang, backPrevious)
         null -> when (screenState.value) {
             AppScreen.HOME -> CoverV19(lang) { navigate(AppScreen.FOLDER) }
-            AppScreen.FOLDER -> FolderMenuV40Screen(lang, { navigate(it) }, { openExtra(it) }, backPrevious)
+            AppScreen.FOLDER -> FolderMenuV40Screen(
+                lang,
+                { navigate(it) },
+                { openExtra(it) },
+                onIntake ?: { navigate(AppScreen.INTAKE) },
+                onSettings ?: { navigate(AppScreen.SETTINGS) },
+                backPrevious
+            )
             AppScreen.SETTINGS -> ResponsiveScreenV17(
                 tr(lang, "Configuración", "Settings"),
                 tr(lang, "Idioma, paleta de ave, tipo y tamaño de letra se conservan en la configuración de la app.", "Language, bird palette, font and text size are kept in app settings."),
