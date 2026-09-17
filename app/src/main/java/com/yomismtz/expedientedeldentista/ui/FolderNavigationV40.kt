@@ -56,8 +56,29 @@ private val rightV40=listOf(
 )
 
 @Composable
-internal fun FolderMenuV40Screen(lang:String,onNavigate:(AppScreen)->Unit,onExtra:(FolderExtraV33)->Unit,onBack:()->Unit){
+internal fun FolderMenuV40Screen(
+    lang:String,
+    onNavigate:(AppScreen)->Unit,
+    onExtra:(FolderExtraV33)->Unit,
+    onIntake:()->Unit,
+    onSettings:()->Unit,
+    onBack:()->Unit
+){
     ResponsiveScreenV17("Expediente del dentista · guía interactiva","La app enseña a llenar e interpretar apartados; no crea un expediente real.",onBack){profile->
+        AdaptiveGridV17(2,if(profile.largeSystemText)1 else 2){i->
+            val title=if(i==0) tr(lang,"Nota de ingreso","Intake note") else tr(lang,"Configuración","Settings")
+            val icon=if(i==0)"📋" else "⚙"
+            val color=if(i==0)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+            Card(
+                onClick=if(i==0)onIntake else onSettings,
+                modifier=Modifier.fillMaxWidth(),
+                colors=CardDefaults.cardColors(containerColor=color),
+                border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline),
+                shape=RoundedCornerShape(12.dp)
+            ){
+                Text("$icon $title",Modifier.fillMaxWidth().padding(13.dp),textAlign=TextAlign.Center,fontWeight=FontWeight.Black)
+            }
+        }
         val stack=profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT
         if(stack){MenuColumnV40(leftV40,MaterialTheme.colorScheme.tertiaryContainer,onNavigate,onExtra);MenuColumnV40(rightV40,MaterialTheme.colorScheme.secondaryContainer,onNavigate,onExtra)}
         else Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(12.dp)){
