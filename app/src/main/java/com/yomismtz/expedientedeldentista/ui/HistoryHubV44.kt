@@ -20,16 +20,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 private enum class HistorySectionV44 { IDENTIFICATION, COMPLAINT, FAMILY, NONPATH, PATH, SURGICAL, PHYSICAL, ORTHO }
-private data class HistoryCardV44(val section: HistorySectionV44, val title: String, val detail: String)
+private data class HistoryCardV44(
+    val section: HistorySectionV44,
+    val titleEs: String,
+    val titleEn: String,
+    val detailEs: String,
+    val detailEn: String
+)
 private val historyCardsV44 = listOf(
-    HistoryCardV44(HistorySectionV44.IDENTIFICATION, "Identificación del paciente", "Qué datos suelen ir en el expediente real y para qué sirven; aquí no se capturan datos personales."),
-    HistoryCardV44(HistorySectionV44.COMPLAINT, "Motivo de consulta y padecimiento actual", "30 motivos frecuentes y tres hipótesis de padecimiento actual por ejemplo."),
-    HistoryCardV44(HistorySectionV44.FAMILY, "Antecedentes heredo-familiares", "Familiar → categoría → lista de enfermedades frecuentes; no requiere escribir nombres."),
-    HistoryCardV44(HistorySectionV44.NONPATH, "Antecedentes personales no patológicos", "Vivienda, higiene, alimentación, hábitos y antecedentes gineco-obstétricos."),
-    HistoryCardV44(HistorySectionV44.PATH, "Antecedentes personales patológicos", "Vacunación, enfermedades, medicamentos y atlas visual de exantemas/dermatología."),
-    HistoryCardV44(HistorySectionV44.SURGICAL, "Antecedentes quirúrgicos y traumáticos", "Cirugías, hospitalizaciones, transfusiones, fracturas/luxaciones y resumen."),
-    HistoryCardV44(HistorySectionV44.PHYSICAL, "Exploración física", "Dos rutas: signos vitales/glucosa e inspección general con los 10 rubros clínicos."),
-    HistoryCardV44(HistorySectionV44.ORTHO, "Antecedentes ortodónticos y ortopédicos", "Brackets, aparatos de ortopedia, para qué sirven, duración orientativa y motivo/diagnóstico referido.")
+    HistoryCardV44(HistorySectionV44.IDENTIFICATION, "Identificación del paciente", "Patient identification", "Qué datos suelen ir en el expediente real, cómo se redactan y qué errores evitar; aquí no se capturan datos personales.", "Which data belong in the real record, how to write them and which mistakes to avoid; no personal data are collected here."),
+    HistoryCardV44(HistorySectionV44.COMPLAINT, "Motivo de consulta y padecimiento actual", "Chief complaint and present illness", "Motivo literal, evolución del problema e hipótesis educativas que deben verificarse.", "Literal complaint, course of the problem and educational hypotheses that must be verified."),
+    HistoryCardV44(HistorySectionV44.FAMILY, "Antecedentes heredo-familiares", "Family history", "Familiar → categoría → enfermedades frecuentes y qué ampliar cuando el antecedente es positivo.", "Relative → category → common conditions and what to expand when history is positive."),
+    HistoryCardV44(HistorySectionV44.NONPATH, "Antecedentes personales no patológicos", "Non-pathological personal history", "Vivienda, higiene, alimentación, hábitos y antecedentes gineco-obstétricos.", "Housing, hygiene, diet, habits and gynecologic-obstetric history."),
+    HistoryCardV44(HistorySectionV44.PATH, "Antecedentes personales patológicos", "Pathological personal history", "Vacunación, enfermedades, medicamentos y atlas visual de apoyo.", "Vaccination, diseases, medications and a supporting visual atlas."),
+    HistoryCardV44(HistorySectionV44.SURGICAL, "Antecedentes quirúrgicos y traumáticos", "Surgical and trauma history", "Cirugías, hospitalizaciones, transfusiones, fracturas/luxaciones y resumen.", "Surgeries, hospitalizations, transfusions, fractures/dislocations and summary."),
+    HistoryCardV44(HistorySectionV44.PHYSICAL, "Exploración física", "Physical examination", "Signos vitales/glucosa e inspección general con los rubros clínicos.", "Vital signs/glucose and general inspection using the clinical sections."),
+    HistoryCardV44(HistorySectionV44.ORTHO, "Antecedentes ortodónticos y ortopédicos", "Orthodontic and orthopedic history", "Brackets, aparatos de ortopedia, finalidad, duración orientativa y motivo/diagnóstico referido.", "Braces and orthopedic appliances, purpose, approximate duration and reported reason/diagnosis.")
 )
 
 @Composable
@@ -66,8 +72,8 @@ fun HistoryHubV44Screen(lang: String, onVitals: () -> Unit, onBack: () -> Unit) 
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
             ) {
                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                    Text(item.title, fontWeight = FontWeight.Black)
-                    Text(item.detail, style = MaterialTheme.typography.bodySmall)
+                    Text(if (lang == "en") item.titleEn else item.titleEs, fontWeight = FontWeight.Black)
+                    Text(if (lang == "en") item.detailEn else item.detailEs, style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
