@@ -112,15 +112,16 @@ fun AdaptiveBaseRootV19(preferences:AppPreferences,onPreferencesChanged:(AppPref
     val config=LocalConfiguration.current
     val fontScale=LocalDensity.current.fontScale
     BoxWithConstraints(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(MaterialTheme.colorScheme.primary,MaterialTheme.colorScheme.primaryContainer,MaterialTheme.colorScheme.background)))){
-        val compact=maxWidth<380.dp||fontScale>=1.30f
+        val availableWidth=maxWidth
+        val compact=availableWidth<380.dp||fontScale>=1.30f
         val landscape=config.screenWidthDp>config.screenHeightDp
-        val portraitSize=when{compact->148.dp;landscape->172.dp;maxWidth>=600.dp->230.dp;else->200.dp}
-        Column(Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(horizontal=if(maxWidth>=600.dp)36.dp else 18.dp,vertical=14.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(if(compact)7.dp else 10.dp)){
-            Image(painterResource(R.drawable.ysm_logo),tr(lang,"Logo YSM con ave y expediente dental","YSM bird and dental record logo"),Modifier.size(if(compact)76.dp else if(maxWidth>=600.dp)116.dp else 94.dp),contentScale=ContentScale.Fit)
+        val portraitSize=when{compact->148.dp;landscape->172.dp;availableWidth>=600.dp->230.dp;else->200.dp}
+        Column(Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(horizontal=if(availableWidth>=600.dp)36.dp else 18.dp,vertical=14.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(if(compact)7.dp else 10.dp)){
+            Image(painterResource(R.drawable.ysm_logo),tr(lang,"Logo YSM con ave y expediente dental","YSM bird and dental record logo"),Modifier.size(if(compact)76.dp else if(availableWidth>=600.dp)116.dp else 94.dp),contentScale=ContentScale.Fit)
             Text("YSM Expediente",style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Black,textAlign=TextAlign.Center)
             Text(tr(lang,"El expediente del dentista","The dentist's record"),style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.SemiBold,textAlign=TextAlign.Center)
             Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface.copy(alpha=.94f)),shape=RoundedCornerShape(22.dp),modifier=Modifier.fillMaxWidth().heightIn(min=portraitSize+36.dp)){
-                if(landscape&&maxWidth>=600.dp&&fontScale<1.3f) Row(Modifier.fillMaxWidth().padding(14.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(16.dp)){
+                if(landscape&&availableWidth>=600.dp&&fontScale<1.3f) Row(Modifier.fillMaxWidth().padding(14.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(16.dp)){
                     ClinicianPortraitV47(preferences.clinicianTitle,Modifier.size(portraitSize),clinicianDescription(lang,preferences.clinicianTitle))
                     CoverGuideText(preferences,Modifier.weight(1f))
                 } else Column(Modifier.fillMaxWidth().padding(12.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(7.dp)){
