@@ -35,6 +35,9 @@ jobs:
         with:
           gradle-version: '8.11.1'
 
+      - name: Fetch cited clinical images into APK resources
+        run: bash .github/scripts/fetch-clinical-images.sh
+
       - name: Run preview unit tests
         run: gradle :app:testPreviewUnitTest --stacktrace
 
