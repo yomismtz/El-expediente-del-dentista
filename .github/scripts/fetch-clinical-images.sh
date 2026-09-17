@@ -20,8 +20,14 @@ fetch "https://wwwn.cdc.gov/phil/PHIL_Images/10491/10491_lores.jpg" "clinical_sm
 fetch "https://wwwn.cdc.gov/phil/PHIL_Images/4497/4497_lores.jpg" "clinical_measles.jpg"
 fetch "https://wwwn.cdc.gov/phil/PHIL_Images/712/712_lores.jpg" "clinical_rubella.jpg"
 
-# Dermatología. Wikimedia Commons, archivos con licencia indicada en la app.
+# Dermatología. Wikimedia Commons; la atribución/licencia se muestra en la app.
 fetch "https://upload.wikimedia.org/wikipedia/commons/9/9c/Atopic_dermatitis.png" "clinical_eczema.png"
 fetch "https://upload.wikimedia.org/wikipedia/commons/0/01/Psoriasis.jpg" "clinical_psoriasis.jpg"
+
+# Cabeza y cuello. Wikimedia Commons.
+# Hairline.jpg: Acr319, dominio público.
+fetch "https://upload.wikimedia.org/wikipedia/commons/3/35/Hairline.jpg" "hairline_reference.jpg"
+# Head diameter measurement.jpg: fotografía de la U.S. Air Force, dominio público.
+fetch "https://upload.wikimedia.org/wikipedia/commons/5/5a/Head_diameter_measurement.jpg" "head_circumference_reference.jpg"
 
 echo "Imágenes clínicas descargadas correctamente."

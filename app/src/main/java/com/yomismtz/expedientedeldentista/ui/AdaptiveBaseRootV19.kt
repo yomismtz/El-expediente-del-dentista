@@ -72,11 +72,11 @@ fun AdaptiveBaseRootV19(
     when (extraState.value) {
         FolderExtraV33.SYMPTOMS -> VitalsInteractiveV19Screen(lang, backPrevious)
         FolderExtraV33.CALCULATORS -> ClinicalCalculatorsV26Screen(lang, backPrevious)
-        FolderExtraV33.HISTORY_HUB -> HistoryHubV40Screen(lang, { navigate(AppScreen.VITALS) }, backPrevious)
+        FolderExtraV33.HISTORY_HUB -> HistoryHubV44Screen(lang, { navigate(AppScreen.VITALS) }, backPrevious)
         FolderExtraV33.ODONTOGRAM_HUB -> OdontogramHubV35Screen(lang, { navigate(it) }, backPrevious)
-        FolderExtraV33.HEAD_NECK -> HeadNeckTeachingV40Screen(lang, backPrevious)
-        FolderExtraV33.GENERAL_INSPECTION -> GeneralInspectionV40Screen(lang, backPrevious)
-        FolderExtraV33.PHYSICAL_HUB -> PhysicalExamHubV40Screen(lang, { navigate(AppScreen.VITALS) }, backPrevious)
+        FolderExtraV33.HEAD_NECK -> HeadNeckTeachingV44Screen(lang, backPrevious)
+        FolderExtraV33.GENERAL_INSPECTION -> GeneralInspectionV44Screen(lang, backPrevious)
+        FolderExtraV33.PHYSICAL_HUB -> PhysicalExamHubV44Screen(lang, { navigate(AppScreen.VITALS) }, backPrevious)
         FolderExtraV33.CAMBRA -> CambraInteractiveV39Screen(lang, backPrevious)
         FolderExtraV33.DENTAL_ANOMALIES -> DentalAnomaliesTeachingV40Screen(lang, backPrevious)
         FolderExtraV33.ERUPTION_ANOMALIES -> EruptionAnomaliesTeachingV40Screen(lang, backPrevious)
@@ -91,7 +91,7 @@ fun AdaptiveBaseRootV19(
                 backPrevious
             ) { }
             AppScreen.IDENTIFICATION -> IdentificationTeachingV40Screen(lang, backPrevious)
-            AppScreen.HISTORY -> HistoryHubV40Screen(lang, { navigate(AppScreen.VITALS) }, backPrevious)
+            AppScreen.HISTORY -> HistoryHubV44Screen(lang, { navigate(AppScreen.VITALS) }, backPrevious)
             AppScreen.INTAKE -> IntakeNoteScreen(lang, session, backPrevious)
             AppScreen.ACTIVITIES -> ActivitiesTableV40Screen(lang, backPrevious)
             AppScreen.VITALS -> VitalsInteractiveV19Screen(lang, backPrevious)
