@@ -14,13 +14,14 @@ import com.yomismtz.expedientedeldentista.settings.ClinicianTitle
 
 @DrawableRes
 internal fun clinicianPortraitResourceV47(title: ClinicianTitle): Int = when (title) {
-    ClinicianTitle.DOCTOR -> R.drawable.doctor_lori_anime
-    ClinicianTitle.DOCTORA -> R.drawable.doctora_agaporni_anime
+    ClinicianTitle.DOCTOR -> R.drawable.clinician_doctor_photo
+    ClinicianTitle.DOCTORA -> R.drawable.clinician_doctora_photo
 }
 
 /**
  * Retrato odontológico reutilizable para onboarding y portada.
- * Usa Fit para conservar la ilustración completa y evitar recortes en pantallas compactas.
+ * Las fotografías se empaquetan en drawable-nodpi durante el build para funcionar offline.
+ * ContentScale.Fit conserva la imagen completa y evita recortes en teléfonos, tablets y fuente grande.
  */
 @Composable
 internal fun ClinicianPortraitV47(
