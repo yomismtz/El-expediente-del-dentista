@@ -25,9 +25,10 @@ fetch "https://upload.wikimedia.org/wikipedia/commons/9/9c/Atopic_dermatitis.png
 fetch "https://upload.wikimedia.org/wikipedia/commons/0/01/Psoriasis.jpg" "clinical_psoriasis.jpg"
 
 # Cabeza y cuello. Wikimedia Commons.
-# Hairline.jpg: Acr319, dominio público.
 fetch "https://upload.wikimedia.org/wikipedia/commons/3/35/Hairline.jpg" "hairline_reference.jpg"
-# Head diameter measurement.jpg: fotografía de la U.S. Air Force, dominio público.
 fetch "https://upload.wikimedia.org/wikipedia/commons/5/5a/Head_diameter_measurement.jpg" "head_circumference_reference.jpg"
+
+# Anatomía de la ATM. OpenStax College, CC BY 3.0, Wikimedia Commons.
+fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/913%20Tempomandibular%20Joint.jpg" "tmj_anatomy.jpg"
 
 echo "Imágenes clínicas descargadas correctamente."
