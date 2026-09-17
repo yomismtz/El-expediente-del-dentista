@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -73,9 +72,16 @@ fun AppRootV7(
     }
 
     Column(Modifier.fillMaxSize().navigationBarsPadding()) {
-        GlobalBar19(lang,goToIntake,onOpenSettings)
         Box(Modifier.weight(1f).fillMaxWidth()) {
-            AdaptiveBaseRootV17(preferences,onPreferencesChanged,onLanguageChanged,session,onSessionChanged)
+            AdaptiveBaseRootV17(
+                preferences,
+                onPreferencesChanged,
+                onLanguageChanged,
+                session,
+                onSessionChanged,
+                onIntake = goToIntake,
+                onSettings = onOpenSettings
+            )
 
             if(overlay!=V7Overlay.NONE) {
                 Surface(Modifier.fillMaxSize().navigationBarsPadding(),tonalElevation=8.dp) {
@@ -164,25 +170,6 @@ fun AppRootV7(
 }
 
 @Composable
-private fun GlobalBar19(lang:String,onIntake:()->Unit,onSettings:(()->Unit)?) {
-    Surface(color=MaterialTheme.colorScheme.surface,tonalElevation=4.dp,shadowElevation=2.dp) {
-        BoxWithConstraints(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal=10.dp,vertical=7.dp)) {
-            val compact=maxWidth<380.dp || LocalDensity.current.fontScale>=1.20f
-            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                Button(onClick=onIntake,modifier=Modifier.weight(1f)) {
-                    Text(if(compact)"📋 ${tr(lang,"Ingreso","Intake")}" else "📋 ${tr(lang,"Nota de ingreso","Intake note")}")
-                }
-                if(onSettings!=null) {
-                    OutlinedButton(onClick=onSettings,modifier=Modifier.weight(1f)) {
-                        Text(if(compact)"⚙ ${tr(lang,"Ajustes","Settings")}" else "⚙ ${tr(lang,"Configuración","Settings")}")
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun FloatingActions19(lang:String,onWriting:()->Unit,onIntake:()->Unit,modifier:Modifier=Modifier) {
     BoxWithConstraints(modifier.safeDrawingPadding().padding(10.dp)) {
         val compact=maxWidth<330.dp || LocalDensity.current.fontScale>=1.25f
@@ -193,8 +180,8 @@ private fun FloatingActions19(lang:String,onWriting:()->Unit,onIntake:()->Unit,m
             }
         } else {
             Row(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
-                OutlinedButton(onClick=onWriting){Text("✍️ ${tr(lang,"Qué escribir","What to write")}")}
-                OutlinedButton(onClick=onIntake){Text("↩ ${tr(lang,"Ingreso","Intake")}")}
+                OutlinedButton(onClick=onWriting){Text("✍️ ${tr(lang,"Qué escribir","What to write")}")
+                OutlinedButton(onClick=onIntake){Text("↩ ${tr(lang,"Ingreso","Intake")}")
             }
         }
     }
