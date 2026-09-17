@@ -33,6 +33,7 @@ import com.yomismtz.expedientedeldentista.R
 import com.yomismtz.expedientedeldentista.clinical.AppScreen
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
+import com.yomismtz.expedientedeldentista.settings.ClinicianTitle
 
 private data class NavigationStateV40(val screen: AppScreen, val extra: FolderExtraV33?)
 
@@ -85,7 +86,7 @@ fun AdaptiveBaseRootV19(
         FolderExtraV33.HABITS -> HabitsTeachingV40Screen(lang, backPrevious)
         FolderExtraV33.ORTHODONTIC_HISTORY -> OrthodonticHistoryV33Screen(lang, backPrevious)
         null -> when (screenState.value) {
-            AppScreen.HOME -> CoverV19(lang) { navigate(AppScreen.FOLDER) }
+            AppScreen.HOME -> CoverV19(lang, preferences.clinicianTitle) { navigate(AppScreen.FOLDER) }
             AppScreen.FOLDER -> FolderMenuV40Screen(
                 lang,
                 { navigate(it) },
@@ -131,7 +132,7 @@ fun AdaptiveBaseRootV19(
 }
 
 @Composable
-private fun CoverV19(lang: String, onOpen: () -> Unit) {
+private fun CoverV19(lang: String, clinicianTitle: ClinicianTitle, onOpen: () -> Unit) {
     BoxWithConstraints(
         Modifier.fillMaxSize().background(
             Brush.verticalGradient(
@@ -144,20 +145,43 @@ private fun CoverV19(lang: String, onOpen: () -> Unit) {
         )
     ) {
         val compact = maxWidth < 360.dp || LocalDensity.current.fontScale >= 1.30f
+        val portraitSize = if (compact) 154.dp else 205.dp
         Column(
-            Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = if (compact) 16.dp else 28.dp, vertical = 20.dp),
+            Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = if (compact) 16.dp else 28.dp, vertical = if (compact) 12.dp else 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Image(
                 painterResource(R.drawable.ysm_logo),
                 tr(lang, "Logo YSM con ave y expediente dental", "YSM bird and dental record logo"),
-                Modifier.size(if (compact) 118.dp else 158.dp),
+                Modifier.size(if (compact) 92.dp else 120.dp),
                 contentScale = ContentScale.Fit
             )
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(6.dp))
             Text("YSM Expediente", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black, textAlign = TextAlign.Center)
             Text(tr(lang, "El expediente del dentista", "The dentist's record"), style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)
+            Spacer(Modifier.height(if (compact) 6.dp else 10.dp))
+            ClinicianPortraitV47(
+                title = clinicianTitle,
+                modifier = Modifier.size(portraitSize),
+                contentDescription = if (lang == "en") {
+                    if (clinicianTitle == ClinicianTitle.DOCTORA) "Selected female dentist" else "Selected male dentist"
+                } else {
+                    if (clinicianTitle == ClinicianTitle.DOCTORA) "Doctora seleccionada" else "Doctor seleccionado"
+                }
+            )
+            Text(
+                if (lang == "en") {
+                    if (clinicianTitle == ClinicianTitle.DOCTORA) "Your guide: Doctora" else "Your guide: Doctor"
+                } else {
+                    if (clinicianTitle == ClinicianTitle.DOCTORA) "Tu guía: Doctora" else "Tu guía: Doctor"
+                },
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(6.dp))
             Text(
                 tr(lang, "Deja volar tu imaginación y tus conocimientos renacerán", "Let your imagination take flight and your knowledge be reborn"),
                 style = MaterialTheme.typography.bodyLarge,
@@ -165,7 +189,7 @@ private fun CoverV19(lang: String, onOpen: () -> Unit) {
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.secondary
             )
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(if (compact) 10.dp else 16.dp))
             Button(onClick = onOpen, modifier = Modifier.fillMaxWidth()) {
                 Text("📖 ${tr(lang, "Abrir guía", "Open guide")}", fontWeight = FontWeight.Black)
             }
