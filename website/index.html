@@ -10,11 +10,12 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="v07.css">
 <link rel="stylesheet" href="v013.css">
+<link rel="stylesheet" href="v026.css">
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="#inicio"><img src="assets/ysm-logo.png" alt="YSM" width="48" height="48"><span>El expediente del dentista</span></a>
-  <nav><a href="#expediente">Expediente</a><a href="#odontograma">Odontograma</a><a href="#guias">IPC / IHOS</a><a href="#manual">Manual</a><a href="#descargar">Descargar</a><a href="privacy.html">Privacidad</a></nav>
+  <nav><a href="#expediente">Expediente</a><a href="#signos-sintomas">Signos y síntomas</a><a href="#calculadoras">Calculadoras</a><a href="#odontograma">Odontograma</a><a href="#guias">IPC / IHOS</a><a href="#manual">Manual</a><a href="#descargar">Descargar</a><a href="privacy.html">Privacidad</a></nav>
 </header>
 <main>
 <section id="inicio" class="hero">
@@ -42,6 +43,8 @@
       <aside class="side-tabs left-tabs" aria-label="Secciones generales">
         <button data-sheet="identificacion"><b>▤</b><span>Ficha</span></button>
         <button data-sheet="historia"><b>●</b><span>Anamnesis</span></button>
+        <button data-sheet="sintomas"><b>🩹</b><span>Signos / síntomas</span></button>
+        <button data-sheet="calculadoras"><b>🧮</b><span>Cálculos</span></button>
         <button data-sheet="ingreso" class="active"><b>✚</b><span>Ingreso</span></button>
         <button data-sheet="mucosas"><b>◡</b><span>Mucosas</span></button>
         <button data-sheet="oclusion"><b>◇</b><span>Oclusión</span></button>
@@ -84,6 +87,63 @@
   </div>
 </section>
 
+<section id="signos-sintomas" class="section soft-section">
+  <div class="section-heading"><p class="eyebrow">Acceso rápido</p><h2>Signos y síntomas</h2><p>Registro breve del cuadro actual. Sirve como atajo y no sustituye la historia clínica completa. Los datos escritos aquí permanecen sólo en esta página mientras la usas y no se envían al servidor del proyecto.</p></div>
+  <div class="odontogram-card">
+    <form id="quick-symptom-form" class="quick-symptom-form" onsubmit="return false">
+      <label>Localización<input id="qs-location" autocomplete="off" placeholder="Zona, lado u órgano dentario"></label>
+      <label>Inicio<input id="qs-onset" autocomplete="off" placeholder="Desde cuándo / forma de inicio"></label>
+      <label>Evolución<input id="qs-evolution" autocomplete="off" placeholder="Estable, progresiva, intermitente…"></label>
+      <label>Intensidad 0–10<input id="qs-intensity" type="number" min="0" max="10" step="0.1" inputmode="decimal"></label>
+      <label>Carácter<input id="qs-character" autocomplete="off" placeholder="Pulsátil, punzante, ardor, presión…"></label>
+      <label>Qué lo provoca o alivia<input id="qs-trigger" autocomplete="off" placeholder="Frío, calor, masticación, posición…"></label>
+      <label>Aumento de volumen<select><option>No valorado</option><option>No</option><option>Sí</option></select></label>
+      <label>Sangrado<select><option>No valorado</option><option>No</option><option>Sí</option></select></label>
+      <label>Fiebre<select><option>No valorado</option><option>No</option><option>Sí</option></select></label>
+      <label>Limitación de apertura<select><option>No valorado</option><option>No</option><option>Sí</option></select></label>
+      <label>Alteración sensitiva / parestesia<select><option>No valorado</option><option>No</option><option>Sí</option></select></label>
+      <label>Disfagia<select><option>No valorado</option><option>No</option><option>Sí</option></select></label>
+      <label class="full">Otros signos, síntomas o contexto<textarea id="qs-notes" placeholder="Describe datos relevantes"></textarea></label>
+    </form>
+    <div class="calc-result"><strong>Redacción rápida</strong><span id="quick-symptom-summary">Completa los campos para generar un resumen breve.</span></div>
+    <div class="calc-warning">Disnea, disfagia progresiva, aumento de volumen rápidamente progresivo o datos de compromiso de vía aérea requieren valoración urgente; este registro educativo no debe retrasarla.</div>
+  </div>
+</section>
+
+<section id="calculadoras" class="section">
+  <div class="section-heading"><p class="eyebrow">Herramientas educativas</p><h2>Calculadoras clínicas</h2><p>Los cálculos se realizan localmente en tu navegador. No eligen un medicamento, no prescriben una dosis y no sustituyen la ficha técnica ni el juicio clínico.</p></div>
+  <div class="clinical-tools-grid">
+    <article class="calculator-card">
+      <h3>🧒 Dosis pediátrica</h3>
+      <p>Introduce una dosis en mg/kg obtenida de una prescripción, protocolo o referencia farmacológica verificada. La calculadora sólo hace la aritmética.</p>
+      <div class="calculator-fields">
+        <label>Peso (kg)<input id="ped-weight" type="number" min="0" step="0.1" inputmode="decimal"></label>
+        <label>Dosis indicada (mg/kg)<input id="ped-mgkg" type="number" min="0" step="0.01" inputmode="decimal"></label>
+        <label>La dosis está expresada como<select id="ped-basis"><option value="dose">mg/kg por dosis</option><option value="day">mg/kg por día</option></select></label>
+        <label>Dosis al día<input id="ped-frequency" type="number" min="1" step="1" inputmode="numeric"></label>
+        <label class="full">Concentración (mg/mL)<input id="ped-concentration" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ej. 20 para 100 mg/5 mL"></label>
+      </div>
+      <div id="ped-result" class="calc-result"></div>
+      <div class="calc-warning">Antes de utilizar el resultado, compara la dosis por toma y la dosis diaria con el máximo de ese medicamento para la edad, indicación y condiciones clínicas de la persona.</div>
+    </article>
+
+    <article class="calculator-card">
+      <h3>💉 Anestésicos locales</h3>
+      <p>Calcula mg por cartucho y un máximo teórico conservador por peso. Confirma siempre la concentración y el volumen impresos en el producto real.</p>
+      <div class="calculator-fields">
+        <label class="full">Anestésico<select id="la-drug"></select></label>
+        <label>Peso (kg)<input id="la-weight" type="number" min="0" step="0.1" inputmode="decimal"></label>
+        <label>Edad (años)<input id="la-age" type="number" min="0" step="1" inputmode="numeric"></label>
+        <label>Volumen real del cartucho (mL)<input id="la-cartridge" type="number" min="0" step="0.1" value="1.8" inputmode="decimal"></label>
+        <label id="la-ratio-wrap">Epinefrina<select id="la-ratio"></select></label>
+      </div>
+      <div id="la-result" class="calc-result"></div>
+      <div id="la-note" class="calc-warning"></div>
+      <div class="calc-warning"><strong>Importante:</strong> el número de cartuchos mostrado NO es una indicación de cuántos aplicar. El vasoconstrictor, edad, enfermedades cardiovasculares, embarazo, otros fármacos, función hepática, técnica y ficha técnica pueden imponer un límite menor. Utiliza la menor dosis eficaz.</div>
+    </article>
+  </div>
+</section>
+
 <section id="odontograma" class="section soft-section">
   <div class="section-heading"><p class="eyebrow">Módulo visual</p><h2>Odontograma por cuadrantes</h2><p>La selección evita una sola tira horizontal. Los cuatro cuadrantes permanecen visibles y cada diente puede seleccionarse directamente.</p></div>
   <div class="odontogram-card">
@@ -104,7 +164,7 @@
 
 <section class="section design-strip"><div class="section-heading"><p class="eyebrow">Referencia visual integrada</p><h2>Una sola identidad visual</h2><p>Lavanda y lila para apartados generales; púrpura medio para análisis; púrpura profundo y metal para tratamiento.</p></div><div class="design-grid"><img src="assets/folder-open.jpg" alt="Concepto de folder abierto"><img src="assets/odontogram-quadrants.jpg" alt="Concepto de odontograma por cuadrantes"></div></section>
 
-<section id="manual" class="section"><div class="section-heading"><p class="eyebrow">Manual de uso</p><h2>Uso rápido durante clínica</h2><p>Abre la app offline junto al expediente físico. La animación de cambio de hoja indica visualmente que pasaste a otro apartado.</p></div><div class="module-grid"><article class="module-card"><span>1️⃣</span><h3>Abre el folder</h3><p>La portada YSM muestra el título, “Carpeta de aprendizaje” y el botón “Abrir expediente”.</p></article><article class="module-card"><span>2️⃣</span><h3>Dos hojas</h3><p>Registro de actividades a la izquierda y Nota de ingreso a la derecha.</p></article><article class="module-card"><span>3️⃣</span><h3>Pestañas laterales</h3><p>Lavanda/lila = generales; púrpura = análisis; púrpura profundo + metal = tratamiento.</p></article><article class="module-card"><span>4️⃣</span><h3>Cambio de hoja</h3><p>Al seleccionar una sección, la hoja gira como una página física antes de mostrar el siguiente contenido.</p></article><article class="module-card"><span>Ⅵ</span><h3>IPC por sextantes</h3><p>Selecciona cada sextante, registra 0–4/X y obtén el resumen S1–S6.</p></article><article class="module-card"><span>▥</span><h3>IHOS interactivo</h3><p>Selecciona los seis dientes índice, asigna detritos/cálculo y obtén ID-S, IC-S e IHOS.</p></article><article class="module-card"><span>⌒</span><h3>Prótesis interactiva</h3><p>Practica Kennedy-Applegate, diseña PPR con descansos y retenedores, compara materiales y terminaciones de prótesis fija, y repasa el protocolo de prótesis total.</p></article><article class="module-card"><span>🔒</span><h3>Offline</h3><p>La APK no necesita Internet para consultar los módulos educativos.</p></article></div></section>
+<section id="manual" class="section"><div class="section-heading"><p class="eyebrow">Manual de uso</p><h2>Uso rápido durante clínica</h2><p>Abre la app offline junto al expediente físico. La animación de cambio de hoja indica visualmente que pasaste a otro apartado.</p></div><div class="module-grid"><article class="module-card"><span>1️⃣</span><h3>Abre el folder</h3><p>La portada YSM muestra el título, “Carpeta de aprendizaje” y el botón “Abrir expediente”.</p></article><article class="module-card"><span>🩹</span><h3>Signos y síntomas</h3><p>Acceso rápido al cuadro actual sin recorrer toda la historia clínica.</p></article><article class="module-card"><span>🧮</span><h3>Calculadoras</h3><p>Dosis pediátrica y anestésicos locales con advertencias y cálculo local.</p></article><article class="module-card"><span>4️⃣</span><h3>Cambio de hoja</h3><p>Al seleccionar una sección, la hoja gira como una página física antes de mostrar el siguiente contenido.</p></article><article class="module-card"><span>Ⅵ</span><h3>IPC por sextantes</h3><p>Selecciona cada sextante, registra 0–4/X y obtén el resumen S1–S6.</p></article><article class="module-card"><span>▥</span><h3>IHOS interactivo</h3><p>Selecciona los seis dientes índice, asigna detritos/cálculo y obtén ID-S, IC-S e IHOS.</p></article><article class="module-card"><span>⌒</span><h3>Prótesis interactiva</h3><p>Practica Kennedy-Applegate, diseña PPR con descansos y retenedores, compara materiales y terminaciones de prótesis fija, y repasa el protocolo de prótesis total.</p></article><article class="module-card"><span>🔒</span><h3>Offline</h3><p>La APK no necesita Internet para consultar los módulos educativos.</p></article></div></section>
 
 <section id="descargar" class="section"><div class="download-card"><div><p class="eyebrow">Android</p><h2>Descargar la compilación más reciente</h2><p>Cuando se actualiza <code>main</code>, GitHub vuelve a compilar la APK y publica esta web automáticamente.</p><p class="small-note">Compilación debug para evaluación educativa.</p></div><div class="download-actions"><a class="primary-button" href="downloads/El-expediente-del-dentista.apk" download>⬇ Descargar APK</a><a class="secondary-button" href="https://github.com/yomismtz/El-expediente-del-dentista">Ver GitHub</a><span id="build-details" class="build-details">Preparando información…</span></div></div></section>
 </main>
@@ -112,5 +172,6 @@
 <script src="app.js"></script>
 <script src="v07.js"></script>
 <script src="v013.js"></script>
+<script src="v026.js"></script>
 </body>
 </html>

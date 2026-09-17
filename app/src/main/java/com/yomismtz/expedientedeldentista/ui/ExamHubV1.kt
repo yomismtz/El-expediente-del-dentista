@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 
 internal enum class V7Overlay {
     NONE, INTAKE, HUB,
-    IDENTIFICATION, HISTORY, VITALS, ATM, OCCLUSION, MUCOSA, AUXILIARIES,
+    IDENTIFICATION, HISTORY, GENERAL_INSPECTION, HEAD_NECK, VITALS, ATM, OCCLUSION, MUCOSA, AUXILIARIES,
     ODONTOGRAM, ICDAS, CPOD, OLEARY, IPC, IHOS, PERIODONTAL, POSTURE,
     PULPAL_APICAL, ENDO, PROSTHETIC, SURGICAL, CONSENT, EVOLUTION
 }
@@ -31,10 +31,12 @@ internal fun ExamHubV1Screen(lang: String, onOpen: (V7Overlay) -> Unit, onBack: 
     val general = listOf(
         HubExam("👤", "Identificación", "Identification", V7Overlay.IDENTIFICATION),
         HubExam("🩺", "Anamnesis / ASA", "History / ASA", V7Overlay.HISTORY),
+        HubExam("👁", "IX.2 Exploración general", "IX.2 General inspection", V7Overlay.GENERAL_INSPECTION),
+        HubExam("🧑", "IX.3 Cabeza y cuello", "IX.3 Head and neck", V7Overlay.HEAD_NECK),
         HubExam("❤️", "Signos vitales", "Vital signs", V7Overlay.VITALS),
-        HubExam("◉", "ATM y músculos", "TMJ and muscles", V7Overlay.ATM),
+        HubExam("◉", "ATM", "TMJ", V7Overlay.ATM),
         HubExam("↔", "Oclusión", "Occlusion", V7Overlay.OCCLUSION),
-        HubExam("👄", "Mucosas", "Mucosa", V7Overlay.MUCOSA),
+        HubExam("👄", "Mucosas orales", "Oral mucosa", V7Overlay.MUCOSA),
         HubExam("🧪", "Auxiliares", "Auxiliaries", V7Overlay.AUXILIARIES),
         HubExam("🧍", "Postura", "Posture", V7Overlay.POSTURE)
     )
@@ -59,17 +61,17 @@ internal fun ExamHubV1Screen(lang: String, onOpen: (V7Overlay) -> Unit, onBack: 
     ResponsiveScreenV17(
         tr(lang, "Exámenes interactivos", "Interactive examinations"),
         tr(lang,
-            "La cuadrícula cambia automáticamente según el ancho de pantalla y el tamaño de letra de Android.",
-            "The grid changes automatically according to screen width and Android text size."),
+            "La exploración clínica sigue ahora la secuencia del expediente: inspección general → cabeza y cuello → exploración intraoral y análisis.",
+            "The clinical examination now follows the record sequence: general inspection → head and neck → intraoral examination and analyses."),
         onBack
     ) { profile ->
-        HubGroupV17(tr(lang, "Generales", "General"), general, lang, onOpen, profile)
+        HubGroupV17(tr(lang, "Exploración clínica", "Clinical examination"), general, lang, onOpen, profile)
         HubGroupV17(tr(lang, "Análisis", "Analyses"), analyses, lang, onOpen, profile)
         HubGroupV17(tr(lang, "Tratamiento y documentación", "Treatment and documentation"), treatment, lang, onOpen, profile)
         ResponsiveSectionV17(tr(lang, "Regla de cierre", "Closing rule")) {
             Text(tr(lang,
-                "Cada examen termina con: resultado → interpretación → hallazgos que lo apoyan → qué falta → ejemplo de redacción para el expediente físico.",
-                "Every examination ends with: result → interpretation → supporting findings → missing information → a writing example for the physical record."))
+                "Cada examen termina con: observación/resultado → interpretación prudente → hallazgos que lo apoyan → qué falta → ejemplo de redacción para el expediente físico.",
+                "Every examination ends with: observation/result → cautious interpretation → supporting findings → missing information → a writing example for the physical record."))
         }
     }
 }
