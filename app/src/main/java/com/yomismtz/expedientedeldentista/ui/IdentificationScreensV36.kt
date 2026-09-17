@@ -117,6 +117,79 @@ private val patientIdentificationItemsV36 = listOf(
     )
 )
 
+
+private fun identificationExampleV48(item: IdentificationItemV36, lang: String): String {
+    val es = when (item.es) {
+        "Nombre" -> "Ejemplo ficticio: García López Ana."
+        "Sexo / género" -> "Ejemplo: sexo registrado femenino; género referido mujer, si el formato institucional separa ambos datos."
+        "Edad" -> "Ejemplo: 10 años cumplidos al momento de la valoración."
+        "Fecha de nacimiento" -> "Ejemplo ficticio: 14/03/2016."
+        "Lugar de nacimiento" -> "Ejemplo: Ciudad de México, México, según lo referido."
+        "Dirección / domicilio" -> "Ejemplo de estructura: calle, número, colonia, alcaldía/municipio y código postal."
+        "Teléfono" -> "Ejemplo de estructura: número de contacto verificado según el formato institucional."
+        "Ocupación anterior y actual" -> "Ejemplo: ocupación actual: estudiante; ocupación previa: no aplica."
+        "Religión" -> "Ejemplo: refiere ninguna / especificar únicamente si la persona desea declararla y el formato la solicita."
+        "Número de miembros en la familia" -> "Ejemplo: cuatro integrantes en el hogar, según lo referido."
+        "Estado civil" -> "Ejemplo: soltero(a), según lo referido."
+        "Escolaridad" -> "Ejemplo: secundaria en curso."
+        "Servicio de salud" -> "Ejemplo: IMSS / ISSSTE / servicio privado / ninguno, según lo referido."
+        else -> "Ejemplo: registra el dato exactamente como lo solicita el formato institucional."
+    }
+    val en = when (item.es) {
+        "Nombre" -> "Fictional example: Ana García López."
+        "Sexo / género" -> "Example: recorded sex female; reported gender woman, if the institutional form separates both fields."
+        "Edad" -> "Example: 10 completed years at the time of assessment."
+        "Fecha de nacimiento" -> "Fictional example: 14/03/2016."
+        "Lugar de nacimiento" -> "Example: Mexico City, Mexico, as reported."
+        "Dirección / domicilio" -> "Example structure: street, number, district, municipality and postal code."
+        "Teléfono" -> "Example structure: verified contact number according to the institutional form."
+        "Ocupación anterior y actual" -> "Example: current occupation: student; previous occupation: not applicable."
+        "Religión" -> "Example: reports none / specify only if the person wishes to disclose it and the form requests it."
+        "Número de miembros en la familia" -> "Example: four household members, as reported."
+        "Estado civil" -> "Example: single, as reported."
+        "Escolaridad" -> "Example: currently attending secondary school."
+        "Servicio de salud" -> "Example: public service / private service / none, as reported."
+        else -> "Example: record the information exactly as requested by the institutional form."
+    }
+    return if (lang == "en") en else es
+}
+
+private fun identificationErrorV48(item: IdentificationItemV36, lang: String): String {
+    val es = when (item.es) {
+        "Nombre" -> "Usar apodos, abreviaturas no institucionales o cambiar el orden sin seguir el formato."
+        "Sexo / género" -> "Suponer el dato por apariencia o mezclar sexo y género cuando el formato los solicita por separado."
+        "Edad" -> "Estimar la edad visualmente o no corroborarla cuando existe fecha de nacimiento."
+        "Fecha de nacimiento" -> "Copiar una fecha que no coincide con la edad y no verificar la discrepancia."
+        "Lugar de nacimiento" -> "Inferir etnia, riesgo o diagnóstico a partir del lugar de nacimiento."
+        "Dirección / domicilio" -> "Capturar datos reales dentro de esta guía educativa o dejar incompleto el domicilio en el expediente institucional."
+        "Teléfono" -> "Registrar un número no verificado o asumir que pertenece al paciente."
+        "Ocupación anterior y actual" -> "Anotar sólo la ocupación actual cuando el formato pide también antecedentes laborales relevantes."
+        "Religión" -> "Asumir que una creencia implica rechazo de un procedimiento sin preguntarlo de forma respetuosa."
+        "Número de miembros en la familia" -> "Interpretar el número por sí solo como hacinamiento, apoyo o riesgo clínico."
+        "Estado civil" -> "Usarlo como sustituto de la red real de apoyo o hacer inferencias clínicas no justificadas."
+        "Escolaridad" -> "Confundir nivel escolar con comprensión, capacidad de decisión o adherencia."
+        "Servicio de salud" -> "Confundir institución, aseguradora y lugar de atención o asumir cobertura no confirmada."
+        else -> "Completar con suposiciones en lugar de registrar lo referido y verificable."
+    }
+    val en = when (item.es) {
+        "Nombre" -> "Using nicknames, nonstandard abbreviations or changing the order without following the form."
+        "Sexo / género" -> "Assuming the information from appearance or mixing sex and gender when the form requests them separately."
+        "Edad" -> "Estimating age visually or failing to verify it when a birth date is available."
+        "Fecha de nacimiento" -> "Copying a date that does not match the stated age without checking the discrepancy."
+        "Lugar de nacimiento" -> "Inferring ethnicity, risk or diagnosis from place of birth."
+        "Dirección / domicilio" -> "Entering real personal data into this educational guide or leaving the institutional record incomplete."
+        "Teléfono" -> "Recording an unverified number or assuming who it belongs to."
+        "Ocupación anterior y actual" -> "Recording only current occupation when relevant prior occupational history is requested."
+        "Religión" -> "Assuming a belief means refusal of a procedure without respectful clarification."
+        "Número de miembros en la familia" -> "Interpreting the number alone as crowding, support or clinical risk."
+        "Estado civil" -> "Using marital status as a substitute for the actual support network or making unsupported clinical inferences."
+        "Escolaridad" -> "Equating education level with comprehension, decision-making capacity or adherence."
+        "Servicio de salud" -> "Confusing the institution, insurer and site of care or assuming unconfirmed coverage."
+        else -> "Filling gaps with assumptions instead of reporting verified information."
+    }
+    return if (lang == "en") en else es
+}
+
 private val asaOptionsV37 = listOf(
     "ASA I · sano",
     "ASA II · enfermedad sistémica leve",
@@ -398,6 +471,7 @@ fun PatientIdentificationV36Screen(lang: String, onBack: () -> Unit) {
                 "This section ends with Health service. “Chief complaint” and “Present illness” follow as separate sections of the clinical history."
             )
         )
+        PracticeSaveControlsV48(lang, "history_patient_identification_v48")
         patientIdentificationItemsV36.forEachIndexed { index, item ->
             val isOpen = opened == index
             Card(
@@ -415,7 +489,14 @@ fun PatientIdentificationV36Screen(lang: String, onBack: () -> Unit) {
                 ) {
                     Text(if (lang == "en") item.en else item.es, fontWeight = FontWeight.Black)
                     if (isOpen) {
-                        Text("💡 ${if (lang == "en") item.helpEn else item.helpEs}")
+                        Text("🔎 ${tr(lang, "Qué va aquí", "What belongs here")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                        Text(if (lang == "en") item.helpEn else item.helpEs)
+                        Text("✍️ ${tr(lang, "Cómo se escribe", "How to write it")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                        Text(tr(lang, "Regístralo tal como lo refiere la persona o como lo documenta la fuente institucional correspondiente; usa redacción breve y objetiva.", "Record it as reported by the person or documented by the relevant institutional source; use brief, objective wording."))
+                        Text("🧾 ${tr(lang, "Ejemplo", "Example")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                        Text(identificationExampleV48(item, lang))
+                        Text("⚠️ ${tr(lang, "Error común", "Common mistake")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.error)
+                        Text(identificationErrorV48(item, lang))
                     } else {
                         Text(
                             tr(lang, "Toca para ver su utilidad", "Tap to see its purpose"),
@@ -425,5 +506,6 @@ fun PatientIdentificationV36Screen(lang: String, onBack: () -> Unit) {
                 }
             }
         }
+        PracticeSaveControlsV48(lang, "history_patient_identification_v48")
     }
 }
