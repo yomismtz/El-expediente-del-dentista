@@ -92,7 +92,7 @@ fun HistoryHubV40Screen(lang:String,onVitals:()->Unit,onBack:()->Unit){
         HistoryV40.COMPLAINT->{ChiefComplaintV40Screen(lang){section=null};return}
         HistoryV40.FAMILY->{FamilyHistoryV37Screen(lang){section=null};return}
         HistoryV40.NONPATH->{NonPathologicalV40Screen(lang){section=null};return}
-        HistoryV40.PATH->{PathologicalV40Screen(lang){section=null};return}
+        HistoryV40.PATH->{PathologicalV43Screen(lang){section=null};return}
         HistoryV40.SURGICAL->{SurgicalTraumaHistoryV40Screen(lang){section=null};return}
         HistoryV40.PHYSICAL->{PhysicalExamHubV40Screen(lang,onVitals){section=null};return}
         HistoryV40.ORTHO->{OrthodonticHistoryV33Screen(lang){section=null};return}
