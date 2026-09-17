@@ -25,12 +25,14 @@ data class EndoTeachingResultV40(
 object TeachingStateV40 {
     val toothPlans = mutableStateMapOf<Int, ToothTeachingPlanV40>()
     val moduleSummaries = mutableStateMapOf<String, String>()
+    val savedPracticeSections = mutableStateMapOf<String, Boolean>()
     val ceosSurfaces = mutableStateMapOf<Int, Map<Surface, SurfaceMark>>()
     val endoResult = mutableStateOf<EndoTeachingResultV40?>(null)
 
     fun clear() {
         toothPlans.clear()
         moduleSummaries.clear()
+        savedPracticeSections.clear()
         ceosSurfaces.clear()
         endoResult.value = null
     }
