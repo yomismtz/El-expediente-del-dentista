@@ -180,8 +180,8 @@ private fun FloatingActions19(lang:String,onWriting:()->Unit,onIntake:()->Unit,m
             }
         } else {
             Row(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
-                OutlinedButton(onClick=onWriting){Text("✍️ ${tr(lang,"Qué escribir","What to write")}")
-                OutlinedButton(onClick=onIntake){Text("↩ ${tr(lang,"Ingreso","Intake")}")
+                OutlinedButton(onClick=onWriting){Text("✍️ ${tr(lang,"Qué escribir","What to write")}")}
+                OutlinedButton(onClick=onIntake){Text("↩ ${tr(lang,"Ingreso","Intake")}")}
             }
         }
     }
