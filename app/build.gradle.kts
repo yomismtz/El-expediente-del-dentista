@@ -4,6 +4,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+val uploadKeystorePath = System.getenv("YSM_KEYSTORE_PATH")
+
 android {
     namespace = "com.yomismtz.expedientedeldentista"
     compileSdk = 36
@@ -13,10 +15,21 @@ android {
         applicationId = "com.yomismtz.expedientedeldentista"
         minSdk = 26
         targetSdk = 36
-        versionCode = 31
-        versionName = "0.36-debug"
+        versionCode = 46
+        versionName = "0.46"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        if (!uploadKeystorePath.isNullOrBlank()) {
+            create("releaseUpload") {
+                storeFile = file(uploadKeystorePath)
+                storePassword = System.getenv("YSM_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("YSM_KEY_ALIAS")
+                keyPassword = System.getenv("YSM_KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
@@ -28,7 +41,11 @@ android {
         }
 
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            if (!uploadKeystorePath.isNullOrBlank()) {
+                signingConfig = signingConfigs.getByName("releaseUpload")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
