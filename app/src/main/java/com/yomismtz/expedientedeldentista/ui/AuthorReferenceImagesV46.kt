@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.R
@@ -76,6 +77,37 @@ fun AuthorReferenceImageV46(
             }
             Text(reference.source, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
             Text("La referencia se muestra completa, sin recorte; sirve como apoyo educativo y no sustituye la exploración clínica.", style = MaterialTheme.typography.bodySmall)
+        }
+    }
+}
+
+@Composable
+fun DownloadedReferenceImageV46(
+    resourceName: String,
+    title: String,
+    source: String,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val imageId = remember(resourceName) { context.resources.getIdentifier(resourceName, "drawable", context.packageName) }
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(title, fontWeight = FontWeight.Black)
+            if (imageId != 0) {
+                Image(
+                    painter = painterResource(imageId),
+                    contentDescription = title,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 520.dp),
+                    contentScale = ContentScale.Fit
+                )
+            } else {
+                Text("Referencia visual no disponible en esta compilación.", color = MaterialTheme.colorScheme.error)
+            }
+            Text(source, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
         }
     }
 }
