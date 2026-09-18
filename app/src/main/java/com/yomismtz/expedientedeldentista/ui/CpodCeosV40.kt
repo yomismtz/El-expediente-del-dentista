@@ -54,6 +54,11 @@ fun CpodCeosV40Screen(lang:String,session:EducationalSession,onSessionChanged:(E
     if(tooth !in teeth) tooth=teeth.first()
     val record=session.teeth[tooth]?:ToothRecord()
     val surfaceMap=TeachingStateV40.ceosSurfaces[tooth]?:emptyMap()
+    val surfaceLocked=when(mode){
+        IndexModeV40.CPOS->record.status in setOf(ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER)
+        IndexModeV40.CEOS->record.status in setOf(ToothStatus.EXTRACTION_INDICATED,ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER)
+        else->false
+    }
 
     fun setToothStatus(status:ToothStatus){
         val missing=status in setOf(ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER)
@@ -67,7 +72,7 @@ fun CpodCeosV40Screen(lang:String,session:EducationalSession,onSessionChanged:(E
         ))
     }
     fun setSurface(s:Surface){
-        if(s !in eligibleSurfacesV40(tooth)) return
+        if(surfaceLocked || s !in eligibleSurfacesV40(tooth)) return
         // Leer siempre el mapa vivo. Así cada toque parte de lo ya pintado y no reemplaza
         // la cara anterior por un estado capturado en un render previo.
         val map=(TeachingStateV40.ceosSurfaces[tooth]?:emptyMap()).toMutableMap()
@@ -75,6 +80,7 @@ fun CpodCeosV40Screen(lang:String,session:EducationalSession,onSessionChanged:(E
         TeachingStateV40.ceosSurfaces[tooth]=map
     }
     fun markAllSurfaces(){
+        if(surfaceLocked) return
         val map=(TeachingStateV40.ceosSurfaces[tooth]?:emptyMap()).toMutableMap()
         eligibleSurfacesV40(tooth).forEach{map[it]=surfaceMark}
         TeachingStateV40.ceosSurfaces[tooth]=map
@@ -123,8 +129,8 @@ fun CpodCeosV40Screen(lang:String,session:EducationalSession,onSessionChanged:(E
         if(mode==IndexModeV40.CPOD||mode==IndexModeV40.CPOS){
             ResponsiveSectionV17(tr(lang,"Protocolo de dientes permanentes","Permanent-tooth scope")){
                 Text(tr(lang,
-                    "Selecciona el conjunto que exige tu protocolo. La OMS permite calcular DMFT sobre 32 dientes; algunos protocolos docentes/epidemiológicos excluyen terceros molares y trabajan con 28.",
-                    "Select the tooth set required by your protocol. WHO permits DMFT calculation over 32 teeth; some teaching/epidemiologic protocols exclude third molars and use 28."
+                    "Selecciona el conjunto que exige tu protocolo para CPOD/CPOS. La configuración de 32 incluye terceros molares; la de 28 los excluye.",
+                    "Select the tooth set required by your DMFT/DMFS protocol. The 32-tooth setting includes third molars; the 28-tooth setting excludes them."
                 ))
                 AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
                     val include=i==0
@@ -177,28 +183,124 @@ fun CpodCeosV40Screen(lang:String,session:EducationalSession,onSessionChanged:(E
                 }
             }
         } else {
-            ResponsiveSectionV17("Marca una, dos, tres, cuatro o cinco superficies"){
-                Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){
-                    FilterChip(surfaceMark==SurfaceMark.CARIES,{surfaceMark=SurfaceMark.CARIES},{Text("Caries")},Modifier.weight(1f))
-                    FilterChip(surfaceMark==SurfaceMark.RESTORATION,{surfaceMark=SurfaceMark.RESTORATION},{Text("Obturada")},Modifier.weight(1f))
-                    FilterChip(surfaceMark==SurfaceMark.SEALANT,{surfaceMark=SurfaceMark.SEALANT},{Text("Sellador")},Modifier.weight(1f))
+            ResponsiveSectionV17(tr(lang,"Condición del diente para el índice","Tooth condition for the index")){
+                if(mode==IndexModeV40.CPOS){
+                    val missingCaries=record.status==ToothStatus.MISSING_CARIES
+                    val missingOther=record.status==ToothStatus.MISSING_OTHER
+                    AdaptiveGridV17(3,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 3){i->
+                        when(i){
+                            0->FilterChip(
+                                selected=!missingCaries&&!missingOther,
+                                onClick={if(missingCaries||missingOther)setToothStatus(ToothStatus.HEALTHY)},
+                                label={Text(tr(lang,"Presente · registrar superficies","Present · record surfaces"))},
+                                modifier=Modifier.fillMaxWidth()
+                            )
+                            1->FilterChip(
+                                selected=missingCaries,
+                                onClick={
+                                    TeachingStateV40.ceosSurfaces.remove(tooth)
+                                    setToothStatus(ToothStatus.MISSING_CARIES)
+                                },
+                                label={Text(tr(lang,"Perdido por caries · P","Missing due to caries · M"))},
+                                modifier=Modifier.fillMaxWidth()
+                            )
+                            else->FilterChip(
+                                selected=missingOther,
+                                onClick={
+                                    TeachingStateV40.ceosSurfaces.remove(tooth)
+                                    setToothStatus(ToothStatus.MISSING_OTHER)
+                                },
+                                label={Text(tr(lang,"Ausente otra causa · no suma","Missing other reason · no count"))},
+                                modifier=Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                    if(missingCaries){
+                        Text(tr(lang,
+                            "Este OD aporta ${eligibleSurfacesV40(tooth).size} superficies a P y no admite marcas individuales mientras esté ausente.",
+                            "This tooth contributes ${eligibleSurfacesV40(tooth).size} surfaces to M and does not accept individual surface marks while missing."
+                        ),fontWeight=FontWeight.Bold)
+                    }
+                }else{
+                    val extraction=record.status==ToothStatus.EXTRACTION_INDICATED
+                    val absent=record.status in setOf(ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER)
+                    AdaptiveGridV17(3,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 3){i->
+                        when(i){
+                            0->FilterChip(
+                                selected=!extraction&&!absent,
+                                onClick={if(extraction||absent)setToothStatus(ToothStatus.HEALTHY)},
+                                label={Text(tr(lang,"Presente · registrar superficies","Present · record surfaces"))},
+                                modifier=Modifier.fillMaxWidth()
+                            )
+                            1->FilterChip(
+                                selected=extraction,
+                                onClick={
+                                    TeachingStateV40.ceosSurfaces.remove(tooth)
+                                    setToothStatus(ToothStatus.EXTRACTION_INDICATED)
+                                },
+                                label={Text(tr(lang,"Extracción indicada · e","Extraction indicated · e"))},
+                                modifier=Modifier.fillMaxWidth()
+                            )
+                            else->FilterChip(
+                                selected=absent,
+                                onClick={
+                                    TeachingStateV40.ceosSurfaces.remove(tooth)
+                                    setToothStatus(ToothStatus.MISSING_OTHER)
+                                },
+                                label={Text(tr(lang,"Ya ausente/exfoliado · no suma","Already absent/exfoliated · no count"))},
+                                modifier=Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                    if(extraction){
+                        Text(tr(lang,
+                            "Este OD aporta ${eligibleSurfacesV40(tooth).size} superficies a e en la convención docente usada por la app.",
+                            "This tooth contributes ${eligibleSurfacesV40(tooth).size} surfaces to e under the teaching convention used by the app."
+                        ),fontWeight=FontWeight.Bold)
+                    }
                 }
-                DentalSurfaceDiagram(
-                    centerEnabled=posteriorV40(tooth),
-                    surfaceColor={s->when(surfaceMap[s]){
-                        SurfaceMark.CARIES->MaterialTheme.colorScheme.errorContainer
-                        SurfaceMark.RESTORATION->MaterialTheme.colorScheme.primaryContainer
-                        SurfaceMark.SEALANT->MaterialTheme.colorScheme.tertiaryContainer
-                        else->MaterialTheme.colorScheme.surfaceVariant
-                    }},
-                    onSurfaceTap={setSurface(it)},
-                    modifier=Modifier.fillMaxWidth()
-                )
-                val selectedSurfaces=eligibleSurfacesV40(tooth).filter{it in surfaceMap}
-                Text("Caras marcadas en OD $tooth (${selectedSurfaces.size}): "+if(selectedSurfaces.isEmpty())"ninguna" else selectedSurfaces.joinToString{it.name})
-                Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){
-                    Card(onClick={markAllSurfaces()},modifier=Modifier.weight(1f),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){Text("Marcar todas las caras",Modifier.padding(10.dp),fontWeight=FontWeight.Black)}
-                    Card(onClick={TeachingStateV40.ceosSurfaces.remove(tooth)},modifier=Modifier.weight(1f),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){Text("Limpiar diente",Modifier.padding(10.dp),fontWeight=FontWeight.Black)}
+            }
+
+            ResponsiveSectionV17(tr(lang,"Marca superficies individualmente","Mark individual surfaces")){
+                if(surfaceLocked){
+                    NoticeCard(tr(lang,
+                        "Las superficies individuales están bloqueadas porque la condición del diente ya determina su aporte al índice. Cámbialo a Presente para pintar superficies.",
+                        "Individual surfaces are locked because the tooth condition already determines its index contribution. Change it to Present to mark surfaces."
+                    ))
+                }else{
+                    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){
+                        FilterChip(surfaceMark==SurfaceMark.CARIES,{surfaceMark=SurfaceMark.CARIES},{Text(tr(lang,"Caries","Caries"))},Modifier.weight(1f))
+                        FilterChip(surfaceMark==SurfaceMark.RESTORATION,{surfaceMark=SurfaceMark.RESTORATION},{Text(tr(lang,"Obturada","Filled"))},Modifier.weight(1f))
+                        FilterChip(surfaceMark==SurfaceMark.SEALANT,{surfaceMark=SurfaceMark.SEALANT},{Text(tr(lang,"Sellador","Sealant"))},Modifier.weight(1f))
+                    }
+                    DentalSurfaceDiagram(
+                        centerEnabled=posteriorV40(tooth),
+                        surfaceColor={surface->when(surfaceMap[surface]){
+                            SurfaceMark.CARIES->MaterialTheme.colorScheme.errorContainer
+                            SurfaceMark.RESTORATION->MaterialTheme.colorScheme.primaryContainer
+                            SurfaceMark.SEALANT->MaterialTheme.colorScheme.tertiaryContainer
+                            else->MaterialTheme.colorScheme.surfaceVariant
+                        }},
+                        onSurfaceTap={setSurface(it)},
+                        modifier=Modifier.fillMaxWidth()
+                    )
+                    val selectedSurfaces=eligibleSurfacesV40(tooth).filter{it in surfaceMap}
+                    Text(tr(lang,
+                        "Caras marcadas en OD $tooth (${selectedSurfaces.size}): "+if(selectedSurfaces.isEmpty())"ninguna" else selectedSurfaces.joinToString{it.name},
+                        "Marked surfaces on tooth $tooth (${selectedSurfaces.size}): "+if(selectedSurfaces.isEmpty())"none" else selectedSurfaces.joinToString{it.name}
+                    ))
+                    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){
+                        Card(onClick={markAllSurfaces()},modifier=Modifier.weight(1f),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){
+                            Text(tr(lang,"Marcar todas","Mark all"),Modifier.padding(10.dp),fontWeight=FontWeight.Black)
+                        }
+                        Card(onClick={TeachingStateV40.ceosSurfaces.remove(tooth)},modifier=Modifier.weight(1f),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){
+                            Text(tr(lang,"Limpiar diente","Clear tooth"),Modifier.padding(10.dp),fontWeight=FontWeight.Black)
+                        }
+                    }
+                    NoticeCard(tr(lang,
+                        "Un estado por diente no se convierte automáticamente en varias superficies. En CPOS/ceos debes marcar las caras realmente afectadas; así se conservan varias superficies del mismo OD sin reemplazar las anteriores.",
+                        "A whole-tooth status is not automatically expanded into multiple surfaces. In DMFS/defs, mark the surfaces actually affected; multiple surfaces on the same tooth are preserved without replacing previous marks."
+                    ))
                 }
             }
         }
