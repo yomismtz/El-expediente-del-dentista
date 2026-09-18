@@ -33,6 +33,49 @@ commons "86th%20Dental%20Squadron%E2%80%99s%20Maj%20Van%20Hoof%20sees%20the%20pe
 # Doctora: Erik Christensen, CC BY-SA 3.0, odontóloga y asistente en consultorio dental.
 commons "Dentist.2.jpg" "clinician_doctora_photo.jpg" &
 
+# Atlas ICDAS 0–6.
+# Fuente clínica y licencia: Gugnani N, Pandit IK, Srivastava N, Gupta M, Sharma M.
+# International Caries Detection and Assessment System (ICDAS): A New Concept.
+# Int J Clin Pediatr Dent. 2011;4(2):93-100. Fig. 1A-G. CC BY 3.0.
+# https://pmc.ncbi.nlm.nih.gov/articles/PMC5030492/
+# Se intenta primero extraer la página que contiene la figura desde el PDF oficial del editor.
+# Si el runner no dispone de pdftoppm o el editor bloquea la descarga, se usa un espejo visual
+# de la misma secuencia educativa únicamente como respaldo técnico.
+fetch_icdas_atlas() {
+  local pdf="$OUT/.icdas_article.$.$RANDOM.pdf"
+  local prefix="$OUT/.icdas_page.$.$RANDOM"
+  local target="$OUT/icdas_codes_photo.jpg"
+  local official_pdf="https://www.ijcpd.com/doi/pdf/10.5005/jp-journals-10005-1089"
+  local mirror="https://image.slidesharecdn.com/icdascariesppt-200302055140/75/Icdas-caries-ppt-8-2048.jpg"
+
+  echo "Preparando atlas fotográfico ICDAS 0–6"
+  if curl -L --fail --connect-timeout 4 --max-time 25 --retry 1 --retry-delay 1 --retry-max-time 35 \
+    -A "YSM-Expediente-Educational-App/1.0" "$official_pdf" -o "$pdf" >/dev/null 2>&1 \
+    && [ -s "$pdf" ] && command -v pdftoppm >/dev/null 2>&1; then
+    if pdftoppm -f 3 -l 3 -singlefile -jpeg -r 180 "$pdf" "$prefix" >/dev/null 2>&1 \
+      && [ -s "$prefix.jpg" ]; then
+      mv -f "$prefix.jpg" "$target"
+      rm -f "$pdf"
+      echo "OK icdas_codes_photo.jpg · fuente CC BY 3.0"
+      return 0
+    fi
+  fi
+
+  rm -f "$pdf" "$prefix.jpg"
+  if curl -L --fail --connect-timeout 4 --max-time 20 --retry 1 --retry-delay 1 --retry-max-time 30 \
+    -A "YSM-Expediente-Educational-App/1.0" "$mirror" -o "$target" >/dev/null 2>&1 \
+    && [ -s "$target" ]; then
+    echo "OK icdas_codes_photo.jpg · respaldo visual; citar fuente clínica original CC BY 3.0"
+    return 0
+  fi
+
+  rm -f "$target"
+  echo "AVISO: no se pudo preparar el atlas ICDAS; se conservará el recurso local de reserva." >&2
+  return 0
+}
+
+fetch_icdas_atlas &
+
 # Referencias clínicas.
 fetch "https://wwwn.cdc.gov/phil///PHIL_Images/20040908/2d4664936550421d85a71364ed879b68/6121_lores.jpg" "clinical_varicella.jpg" &
 fetch "https://wwwn.cdc.gov/phil/PHIL_Images/10491/10491_lores.jpg" "clinical_smallpox.jpg" &
