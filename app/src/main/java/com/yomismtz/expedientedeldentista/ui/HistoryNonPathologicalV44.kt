@@ -141,9 +141,24 @@ fun GyneObstetricTeachingV44Screen(lang: String, onBack: () -> Unit) {
         tr(lang, "Toca cada rubro para saber qué significa, qué edades son frecuentes y cómo se registra.", "Tap each item to learn what it means, common ages and how it is recorded."),
         onBack
     ) { profile ->
+        PracticeSaveControlsV48(lang, "history_gyne_obstetric_v48")
         NoticeCard(tr(lang,
             "Es material educativo. En una historia real estos datos son sensibles: se preguntan con privacidad, consentimiento, lenguaje neutral y sólo cuando son clínicamente pertinentes.",
             "This is teaching material. In a real history these data are sensitive: ask privately, with consent, neutral language and only when clinically relevant."))
+        ResponsiveSectionV17(tr(lang, "Cómo se registra", "How to chart it")) {
+            Text(tr(lang,
+                "Qué va aquí: únicamente antecedentes pertinentes y referidos voluntariamente. Cómo se escribe: usa lenguaje neutral, registra cantidades/edades aproximadas cuando proceda y diferencia lo referido de lo documentado.",
+                "What belongs here: only clinically relevant information voluntarily reported. How to write it: use neutral language, record counts/approximate ages when applicable, and distinguish reported from documented information."
+            ))
+            Text(tr(lang,
+                "🧾 Ejemplo: “Menarquia referida a los 12 años; ciclos regulares según refiere. Anticoncepción actual: preservativo externo”.",
+                "🧾 Example: “Menarche reported at age 12; regular cycles as reported. Current contraception: external condom”."
+            ))
+            Text(tr(lang,
+                "⚠️ Error común: preguntar datos íntimos sin pertinencia clínica, asumir actividad sexual o embarazo, o usar lenguaje de juicio.",
+                "⚠️ Common mistake: asking intimate information without clinical relevance, assuming sexual activity or pregnancy, or using judgmental language."
+            ), color = MaterialTheme.colorScheme.error)
+        }
 
         gyneItemsV44.forEachIndexed { index, item ->
             Card(
@@ -155,11 +170,11 @@ fun GyneObstetricTeachingV44Screen(lang: String, onBack: () -> Unit) {
                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(item.title, fontWeight = FontWeight.Black)
                     if (open == index) {
-                        Text("¿Qué es?", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
+                        Text(tr(lang, "¿Qué es?", "What is it?"), fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                         Text(item.what)
-                        Text("Edad / momento frecuente", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
+                        Text(tr(lang, "Edad / momento frecuente", "Usual age / timing"), fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                         Text(item.usual)
-                        Text("¿Cómo se registra?", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
+                        Text(tr(lang, "¿Cómo se registra?", "How is it charted?"), fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                         Text(item.howToRecord)
                         AdaptiveGridV17(item.choices.size, if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2) { i ->
                             val choice = item.choices[i]
@@ -190,10 +205,11 @@ fun GyneObstetricTeachingV44Screen(lang: String, onBack: () -> Unit) {
         }
 
         ResponsiveSectionV17(tr(lang, "Resumen del ejercicio", "Exercise summary")) {
-            if (selected.isEmpty()) Text("Aún no hay selecciones.")
+            if (selected.isEmpty()) Text(tr(lang, "Aún no hay selecciones.", "No selections yet."))
             selected.forEach { (k, v) -> Text("• $k: $v") }
         }
 
         NoticeCard("Fuentes clínicas: ACOG · Menstruation in Girls and Adolescents; ACOG/SMFM · Definition of Term Pregnancy; OMS · Embarazo en la adolescencia; CDC · Contraception and Birth Control Methods; NIH/NICHD · Menopause.")
+        PracticeSaveControlsV48(lang, "history_gyne_obstetric_v48")
     }
 }
