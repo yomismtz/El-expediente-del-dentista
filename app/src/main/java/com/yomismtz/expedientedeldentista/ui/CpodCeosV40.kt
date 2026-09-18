@@ -199,13 +199,33 @@ fun CpodCeosV40Screen(lang:String,session:EducationalSession,onSessionChanged:(E
                 }
             }
         }
-        ResponsiveSectionV17("Conteo acumulado"){
-            Text("CPOD = C $cpodC + P $cpodP + O $cpodO = ${cpodC+cpodP+cpodO}",fontWeight=FontWeight.Black)
-            Text("ceod = c $ceodC + e $ceodE + o $ceodO = ${ceodC+ceodE+ceodO}")
+        ResponsiveSectionV17(tr(lang,"Conteo acumulado","Accumulated count")){
+            Text("CPOD = C $cpodC + P $cpodP + O $cpodO = ${cpod.total}",fontWeight=FontWeight.Black)
+            Text("ceod = c $ceodC + e $ceodE + o $ceodO = ${ceod.total}",fontWeight=FontWeight.Black)
             Text("CPOS = C $cposC + P(superficies) $cposP + O $cposO = ${cposC+cposP+cposO}")
-            Text("ceos = c $ceosC + e(superficies) $ceosE + o $ceosO = ${ceosC+ceosE+ceosO}",fontWeight=FontWeight.Black)
-            Card(onClick={TeachingStateV40.moduleSummaries["caries"]="CPOD ${cpodC+cpodP+cpodO} (C$cpodC P$cpodP O$cpodO) · CPOS ${cposC+cposP+cposO} · ceod ${ceodC+ceodE+ceodO} · ceos ${ceosC+ceosE+ceosO} (c$ceosC e$ceosE o$ceosO)"},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline)){Text("Guardar resultados CPOD · ceod · CPOS · ceos",Modifier.padding(12.dp),fontWeight=FontWeight.Black)}
+            Text("ceos = c $ceosC + e(superficies) $ceosE + o $ceosO = ${ceosC+ceosE+ceosO}")
+            if(mode==IndexModeV40.CPOD||mode==IndexModeV40.CEOD){
+                Card(
+                    onClick={
+                        val scope=if(includeThirdMolars)"32" else "28"
+                        TeachingStateV40.moduleSummaries["caries_tooth"]=
+                            "CPOD ${cpod.total} (C$cpodC P$cpodP O$cpodO; $scope dientes) · ceod ${ceod.total} (c$ceodC e$ceodE o$ceodO)"
+                        TeachingStateV40.savedPracticeSections["cpod_ceod_v48"]=true
+                    },
+                    modifier=Modifier.fillMaxWidth(),
+                    colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer),
+                    border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline)
+                ){
+                    Text(tr(lang,"Guardar resultados CPOD · ceod","Save DMFT · deft results"),Modifier.padding(12.dp),fontWeight=FontWeight.Black)
+                }
+            }
         }
-        NoticeCard("En epidemiología, CPOD/ceod y CPOS/ceos deben seguir un protocolo definido. La app separa claramente diente vs superficie para que el estudiante no mezcle unidades.")
+        NoticeCard(tr(lang,
+            "En epidemiología, CPOD/ceod y CPOS/ceos deben seguir un protocolo definido. En 5.2 la app separa el conteo por DIENTE: ausencias por otra causa y selladores no incrementan CPOD/ceod. Los índices por superficie se revisarán en el siguiente paso.",
+            "In epidemiology, DMFT/deft and DMFS/defs must follow a defined protocol. In step 5.2 the app separates TOOTH-level counting: missing for another reason and sealants do not increase DMFT/deft. Surface indices will be reviewed in the next step."
+        ))
+        if(mode==IndexModeV40.CPOD||mode==IndexModeV40.CEOD){
+            PracticeSaveControlsV48(lang,"cpod_ceod_v48")
+        }
     }
 }
