@@ -42,8 +42,8 @@ commons "Dentist.2.jpg" "clinician_doctora_photo.jpg" &
 # Si el runner no dispone de pdftoppm o el editor bloquea la descarga, se usa un espejo visual
 # de la misma secuencia educativa únicamente como respaldo técnico.
 fetch_icdas_atlas() {
-  local pdf="$OUT/.icdas_article.$.$RANDOM.pdf"
-  local prefix="$OUT/.icdas_page.$.$RANDOM"
+  local pdf="$OUT/.icdas_article.$RANDOM.pdf"
+  local prefix="$OUT/.icdas_page.$RANDOM"
   local target="$OUT/icdas_codes_photo.jpg"
   local official_pdf="https://www.ijcpd.com/doi/pdf/10.5005/jp-journals-10005-1089"
   local mirror="https://image.slidesharecdn.com/icdascariesppt-200302055140/75/Icdas-caries-ppt-8-2048.jpg"
