@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.yomismtz.expedientedeldentista.clinical.CariesSurfaceIndexV48
 import com.yomismtz.expedientedeldentista.clinical.CariesToothIndexV48
 import com.yomismtz.expedientedeldentista.clinical.ClinicalContent
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
@@ -47,7 +48,7 @@ fun CpodCeosV40Screen(lang:String,session:EducationalSession,onSessionChanged:(E
     var includeThirdMolars by remember{mutableStateOf(true)}
     val teeth=when(mode){
         IndexModeV40.CPOD->CariesToothIndexV48.permanentTeeth(includeThirdMolars)
-        IndexModeV40.CPOS->ClinicalContent.permanentTeeth
+        IndexModeV40.CPOS->CariesToothIndexV48.permanentTeeth(includeThirdMolars)
         else->ClinicalContent.primaryTeeth
     }
     if(tooth !in teeth) tooth=teeth.first()
@@ -79,18 +80,6 @@ fun CpodCeosV40Screen(lang:String,session:EducationalSession,onSessionChanged:(E
         TeachingStateV40.ceosSurfaces[tooth]=map
     }
 
-    fun surfaceCounts(list:List<Int>):Triple<Int,Int,Int>{
-        var c=0;var m=0;var f=0
-        list.forEach{t->
-            val r=session.teeth[t]
-            if(r?.status==ToothStatus.MISSING_CARIES){m+=eligibleSurfacesV40(t).size}
-            else{
-                val mp=TeachingStateV40.ceosSurfaces[t]?:emptyMap()
-                eligibleSurfacesV40(t).forEach{s->when(mp[s]){SurfaceMark.CARIES->c++;SurfaceMark.RESTORATION->f++;else->Unit}}
-            }
-        }
-        return Triple(c,m,f)
-    }
     val cpod=CariesToothIndexV48.cpod(session.teeth,includeThirdMolars)
     val ceod=CariesToothIndexV48.ceod(session.teeth)
     val cpodC=cpod.carious
@@ -99,8 +88,14 @@ fun CpodCeosV40Screen(lang:String,session:EducationalSession,onSessionChanged:(E
     val ceodC=ceod.carious
     val ceodE=ceod.missing
     val ceodO=ceod.filled
-    val(cposC,cposP,cposO)=surfaceCounts(ClinicalContent.permanentTeeth)
-    val(ceosC,ceosE,ceosO)=surfaceCounts(ClinicalContent.primaryTeeth)
+    val cpos=CariesSurfaceIndexV48.cpos(session.teeth,TeachingStateV40.ceosSurfaces,includeThirdMolars)
+    val ceos=CariesSurfaceIndexV48.ceos(session.teeth,TeachingStateV40.ceosSurfaces)
+    val cposC=cpos.carious
+    val cposP=cpos.missing
+    val cposO=cpos.filled
+    val ceosC=ceos.carious
+    val ceosE=ceos.missing
+    val ceosO=ceos.filled
 
     ResponsiveScreenV17("CPOD · ceod · CPOS · ceos","Por diente y por superficie son unidades distintas. En superficie puedes marcar varias caras del mismo órgano dentario y cada marca se conserva.",onBack){profile->
         AdaptiveGridV17(4,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 4){i->
@@ -116,10 +111,16 @@ fun CpodCeosV40Screen(lang:String,session:EducationalSession,onSessionChanged:(E
                 "ceod (convención docente): c = cariado, e = extracción indicada por caries, o = obturado. Un temporal ya ausente no se suma automáticamente a e porque puede confundirse con exfoliación fisiológica.",
                 "deft (teaching convention): d = decayed, e = extraction indicated due to caries, f = filled. An already absent primary tooth is not automatically counted as e because physiologic exfoliation may be the cause."
             )
-            IndexModeV40.CPOS->"CPOS: superficies permanentes como unidad. Incisivos/caninos usan 4 caras; premolares/molares 5. Puedes pintar 1, 2, 3, 4 o 5 caras y conservarlas simultáneamente."
-            IndexModeV40.CEOS->"ceos: superficies temporales como unidad. Incisivos/caninos usan 4 caras; molares 5. Puedes pintar varias caras del mismo diente sin borrar las anteriores."
+            IndexModeV40.CPOS->tr(lang,
+                "CPOS: cada superficie es una unidad. Anteriores = 4 superficies; posteriores = 5. Las superficies cariadas y obturadas se marcan individualmente. Un permanente perdido por caries aporta todas sus superficies elegibles a P.",
+                "DMFS: each surface is one unit. Anterior teeth = 4 surfaces; posterior teeth = 5. Decayed and filled surfaces are marked individually. A permanent tooth missing due to caries contributes all eligible surfaces to M."
+            )
+            IndexModeV40.CEOS->tr(lang,
+                "ceos (convención docente): cada superficie es una unidad. Las superficies cariadas y obturadas se marcan individualmente; un temporal con extracción indicada por caries aporta sus 4 o 5 superficies a e.",
+                "defs (teaching convention): each surface is one unit. Decayed and filled surfaces are marked individually; a primary tooth indicated for extraction due to caries contributes its 4 or 5 surfaces to e."
+            )
         })
-        if(mode==IndexModeV40.CPOD){
+        if(mode==IndexModeV40.CPOD||mode==IndexModeV40.CPOS){
             ResponsiveSectionV17(tr(lang,"Protocolo de dientes permanentes","Permanent-tooth scope")){
                 Text(tr(lang,
                     "Selecciona el conjunto que exige tu protocolo. La OMS permite calcular DMFT sobre 32 dientes; algunos protocolos docentes/epidemiológicos excluyen terceros molares y trabajan con 28.",
@@ -138,6 +139,8 @@ fun CpodCeosV40Screen(lang:String,session:EducationalSession,onSessionChanged:(E
         }
         if(mode==IndexModeV40.CPOD||mode==IndexModeV40.CEOD){
             PracticeSaveControlsV48(lang,"cpod_ceod_v48")
+        }else{
+            PracticeSaveControlsV48(lang,"cpos_ceos_v48")
         }
         ResponsiveSectionV17(tr(lang,"Órgano dentario","Tooth")){
             DentalArchSelector(teeth,tooth,{tooth=it}){t->(session.teeth[t]?.status!=null&&session.teeth[t]?.status!=ToothStatus.HEALTHY)||(TeachingStateV40.ceosSurfaces[t]?.isNotEmpty()==true)}
