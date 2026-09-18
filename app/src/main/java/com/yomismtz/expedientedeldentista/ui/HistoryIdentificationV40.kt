@@ -65,7 +65,22 @@ fun IdentificationTeachingV40Screen(lang:String,onBack:()->Unit){
     var bloodOpen by remember{mutableStateOf(0)}
     var medOpen by remember{mutableStateOf<Int?>(null)}
     ResponsiveScreenV17("Ficha de identificación · resumen educativo","No captura datos personales. Enseña qué se integra en la ficha-resumen y recupera resultados de otros módulos.",onBack){profile->
+        PracticeSaveControlsV48(lang, "identification_summary_v48")
         NoticeCard("No escribas nombre, domicilio, teléfono, expediente ni datos institucionales. Practica con casos ficticios y revisa cómo se integra la información clínica.")
+        ResponsiveSectionV17(tr(lang, "Cómo usar la ficha-resumen", "How to use the summary sheet")) {
+            Text(tr(lang,
+                "Qué va aquí: información de control y el resumen de hallazgos que ya fueron obtenidos en otros módulos. Cómo se escribe: sintetiza sin inventar datos y conserva términos clínicos específicos sólo cuando estén sustentados.",
+                "What belongs here: control information and summaries of findings already obtained in other modules. How to write it: summarize without inventing data and use specific clinical terms only when supported."
+            ))
+            Text(tr(lang,
+                "🧾 Ejemplo: “Antecedente de hipertensión referido; tratamiento actual documentado por el paciente. Hallazgos odontológicos: consultar odontograma e índices”.",
+                "🧾 Example: “Reported history of hypertension; current treatment documented by the patient. Dental findings: see odontogram and indices”."
+            ))
+            Text(tr(lang,
+                "⚠️ Error común: copiar diagnósticos de memoria, duplicar datos contradictorios o usar la ficha-resumen como sustituto de la historia clínica completa.",
+                "⚠️ Common mistake: copying diagnoses from memory, duplicating contradictory information, or using the summary sheet instead of the complete clinical history."
+            ), color = MaterialTheme.colorScheme.error)
+        }
         ResponsiveSectionV17("Clasificación ASA · toca para ejemplos"){
             asaTeachingV40.forEachIndexed{i,a->
                 Card(onClick={asaOpen=i},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=if(asaOpen==i)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant)){
@@ -108,6 +123,7 @@ fun IdentificationTeachingV40Screen(lang:String,onBack:()->Unit){
                 }
             }
         }
+        PracticeSaveControlsV48(lang, "identification_summary_v48")
     }
 }
 
