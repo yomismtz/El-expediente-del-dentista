@@ -34,6 +34,27 @@ private val relativesV45 = listOf(
     "Tía(s) paterna(s)", "Tío(s) paterno(s)"
 )
 
+private fun relativeDisplayV48(value: String, lang: String): String {
+    if (lang != "en") return value
+    return when (value) {
+        "Madre" -> "Mother"
+        "Padre" -> "Father"
+        "Abuela materna" -> "Maternal grandmother"
+        "Abuelo materno" -> "Maternal grandfather"
+        "Abuela paterna" -> "Paternal grandmother"
+        "Abuelo paterno" -> "Paternal grandfather"
+        "Hermana(s)" -> "Sister(s)"
+        "Hermano(s)" -> "Brother(s)"
+        "Hija(s)" -> "Daughter(s)"
+        "Hijo(s)" -> "Son(s)"
+        "Tía(s) materna(s)" -> "Maternal aunt(s)"
+        "Tío(s) materno(s)" -> "Maternal uncle(s)"
+        "Tía(s) paterna(s)" -> "Paternal aunt(s)"
+        "Tío(s) paterno(s)" -> "Paternal uncle(s)"
+        else -> value
+    }
+}
+
 private val familyGroupsV45 = listOf(
     FamilyGroupV45(
         "Cardiovasculares", "Cardiovascular",
@@ -127,15 +148,26 @@ fun FamilyHistoryV45Screen(lang: String, onBack: () -> Unit) {
         tr(lang, "Toca primero el familiar, después una categoría y finalmente la enfermedad específica. No es necesario escribir nombres de familiares.", "Tap the relative, then a category, then the specific condition. No family member names are needed."),
         onBack
     ) { profile ->
+        PracticeSaveControlsV48(lang, "history_family_v48")
         NoticeCard(tr(lang,
             "Los antecedentes familiares ayudan a reconocer riesgos compartidos por genética, ambiente y hábitos. Registra, cuando se conozca, qué familiar tuvo la enfermedad y la edad aproximada de inicio; no conviertas un antecedente familiar en diagnóstico del paciente.",
             "Family history helps identify risks shared through genetics, environment and behaviors. When known, record which relative had the condition and approximate age at onset; do not convert family history into a diagnosis for the patient."
         ))
+        ResponsiveSectionV17(tr(lang, "Cómo se registra", "How to chart it")) {
+            Text(tr(lang,
+                "Qué va aquí: parentesco, enfermedad referida y, si se conoce, edad aproximada de inicio. Cómo se escribe: “Madre refiere antecedente de hipertensión diagnosticada aproximadamente a los 45 años”.",
+                "What belongs here: relationship, reported condition and, when known, approximate age at onset. How to write it: “Mother with reported history of hypertension diagnosed at approximately age 45”."
+            ))
+            Text(tr(lang,
+                "⚠️ Error común: anotar sólo “familiares con diabetes” sin especificar parentesco, o asumir que el paciente tiene la misma enfermedad.",
+                "⚠️ Common mistake: writing only “family history of diabetes” without specifying the relationship, or assuming the patient has the same condition."
+            ), color = MaterialTheme.colorScheme.error)
+        }
 
         ResponsiveSectionV17(tr(lang, "1 · Familiar", "1 · Relative")) {
             AdaptiveGridV17(relativesV45.size, if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2) { i ->
                 val item = relativesV45[i]
-                FilterChip(relative == item, { relative = item }, { Text(item) }, Modifier.fillMaxWidth())
+                FilterChip(relative == item, { relative = item }, { Text(relativeDisplayV48(item, lang)) }, Modifier.fillMaxWidth())
             }
         }
 
@@ -171,7 +203,7 @@ fun FamilyHistoryV45Screen(lang: String, onBack: () -> Unit) {
                 shape = RoundedCornerShape(14.dp)
             ) {
                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                    Text(relative, fontWeight = FontWeight.Black)
+                    Text(relativeDisplayV48(relative, lang), fontWeight = FontWeight.Black)
                     Text(if (all.isEmpty()) tr(lang, "Sin antecedentes seleccionados todavía.", "No conditions selected yet.") else all.joinToString(" · "))
                 }
             }
@@ -184,6 +216,7 @@ fun FamilyHistoryV45Screen(lang: String, onBack: () -> Unit) {
             ),
             style = MaterialTheme.typography.bodySmall
         )
+        PracticeSaveControlsV48(lang, "history_family_v48")
     }
 }
 
@@ -236,10 +269,21 @@ fun OrthodonticHistoryV45Screen(lang: String, onBack: () -> Unit) {
         tr(lang, "Guía para reconocer si hubo brackets u otros aparatos, para qué se usan y cómo registrar duración e indicación.", "Guide to recognize prior braces or appliances, their purpose, duration and indication."),
         onBack
     ) { profile ->
+        PracticeSaveControlsV48(lang, "history_orthodontic_v48")
         NoticeCard(tr(lang,
             "Los tiempos son orientativos. La indicación y duración real dependen del diagnóstico completo, edad, crecimiento, cooperación, biomecánica y respuesta clínica. Esta pantalla enseña qué preguntar; no prescribe un aparato.",
             "Times are approximate. Actual indication and duration depend on complete diagnosis, age, growth, cooperation, biomechanics and response. This screen teaches what to ask; it does not prescribe an appliance."
         ))
+        ResponsiveSectionV17(tr(lang, "Cómo documentar el antecedente", "How to document the history")) {
+            Text(tr(lang,
+                "Qué va aquí: si recibió tratamiento, tipo de aparato, duración, motivo/diagnóstico referido, edad aproximada y si concluyó o continúa. Cómo se escribe: usa “refiere” cuando la información proviene del paciente y no de documentación clínica.",
+                "What belongs here: whether treatment occurred, appliance type, duration, reported reason/diagnosis, approximate age and whether it was completed or is ongoing. Use “reports” when the information comes from the patient rather than clinical documentation."
+            ))
+            Text(tr(lang,
+                "⚠️ Error común: deducir el diagnóstico original sólo por el aparato usado, o afirmar que un aparato era el indicado sin conocer el diagnóstico completo.",
+                "⚠️ Common mistake: inferring the original diagnosis only from the appliance used, or claiming an appliance was indicated without knowing the complete diagnosis."
+            ), color = MaterialTheme.colorScheme.error)
+        }
 
         ResponsiveSectionV17(tr(lang, "¿Tuvo tratamiento previo?", "Previous treatment?")) {
             listOf("No", "Sí", "No recuerda / no sabe").forEach { option ->
@@ -311,5 +355,6 @@ fun OrthodonticHistoryV45Screen(lang: String, onBack: () -> Unit) {
             ),
             style = MaterialTheme.typography.bodySmall
         )
+        PracticeSaveControlsV48(lang, "history_orthodontic_v48")
     }
 }
