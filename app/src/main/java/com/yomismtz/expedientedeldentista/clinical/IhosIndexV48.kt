@@ -42,6 +42,8 @@ object IhosIndexV48 {
         )
     }
 
+    fun hasMinimumSites(examinedSites: Int): Boolean = examinedSites >= 2
+
     fun interpretationEs(total: Double): String = when {
         total <= 1.2 -> "Buena"
         total <= 3.0 -> "Regular"
