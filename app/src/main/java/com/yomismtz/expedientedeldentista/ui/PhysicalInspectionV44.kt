@@ -177,14 +177,14 @@ fun PhysicalExamHubV44Screen(lang: String, onVitals: () -> Unit, onBack: () -> U
     ) { _ ->
         Card(onClick = onVitals, modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
             Column(Modifier.padding(16.dp)) {
-                Text("❤️ Signos vitales y glucosa capilar", fontWeight = FontWeight.Black)
-                Text("Temperatura · frecuencia cardiaca · frecuencia respiratoria · tensión arterial · glucosa capilar.")
+                Text(tr(lang, "❤️ Signos vitales y glucosa capilar", "❤️ Vital signs and capillary glucose"), fontWeight = FontWeight.Black)
+                Text(tr(lang, "Temperatura · frecuencia cardiaca · frecuencia respiratoria · tensión arterial · glucosa capilar.", "Temperature · heart rate · respiratory rate · blood pressure · capillary glucose."))
             }
         }
         Card(onClick = { general = true }, modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
             Column(Modifier.padding(16.dp)) {
-                Text("👁 Inspección general", fontWeight = FontWeight.Black)
-                Text("Edad aparente · marcha · facies · actitud · constitución · movimientos anormales · conciencia · actitud psicológica · cuidado personal · cooperación.")
+                Text(tr(lang, "👁 Inspección general", "👁 General inspection"), fontWeight = FontWeight.Black)
+                Text(tr(lang, "Edad aparente · marcha · facies · actitud · constitución · movimientos anormales · conciencia · actitud psicológica · cuidado personal · cooperación.", "Apparent age · gait · facies · attitude · constitution · abnormal movements · consciousness · psychological attitude · self-care · cooperation."))
             }
         }
     }
@@ -199,6 +199,21 @@ fun GeneralInspectionV44Screen(lang: String, onBack: () -> Unit) {
         tr(lang, "Rubros, qué se observa, importancia clínica y ejemplos de registro.", "Items, what is observed, clinical relevance and charting examples."),
         onBack
     ) { profile ->
+        PracticeSaveControlsV48(lang, "history_general_inspection_v48")
+        ResponsiveSectionV17(tr(lang, "Cómo registrar la inspección", "How to chart the inspection")) {
+            Text(tr(lang,
+                "Qué va aquí: hallazgos observables de cada rubro. Cómo se escribe: describe lo que ves de forma objetiva, sin convertir una apariencia aislada en diagnóstico.",
+                "What belongs here: observable findings for each item. How to write it: describe what you see objectively without turning an isolated appearance into a diagnosis."
+            ))
+            Text(tr(lang,
+                "🧾 Ejemplo: “Marcha estable y simétrica; facies sin alteraciones aparentes; consciente, alerta y cooperador durante la exploración”.",
+                "🧾 Example: “Stable symmetric gait; no apparent facial abnormalities; conscious, alert and cooperative during examination”."
+            ))
+            Text(tr(lang,
+                "⚠️ Error común: etiquetar ansiedad, obesidad, síndrome, deterioro neurológico o condición social sólo por inspección.",
+                "⚠️ Common mistake: labeling anxiety, obesity, a syndrome, neurologic impairment or social condition based only on inspection."
+            ), color = MaterialTheme.colorScheme.error)
+        }
         ResponsiveSectionV17(tr(lang, "Tabla de referencia", "Reference table")) {
             Image(
                 painter = painterResource(R.drawable.general_inspection_reference),
@@ -219,11 +234,11 @@ fun GeneralInspectionV44Screen(lang: String, onBack: () -> Unit) {
                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(rubric.title, fontWeight = FontWeight.Black)
                     if (open == index) {
-                        Text("¿Qué se observa?", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
+                        Text(tr(lang, "¿Qué se observa?", "What is observed?"), fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                         Text(rubric.observe)
-                        Text("Importancia", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
+                        Text(tr(lang, "Importancia", "Clinical relevance"), fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                         Text(rubric.importance)
-                        Text("Opciones del ejercicio", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
+                        Text(tr(lang, "Opciones del ejercicio", "Exercise options"), fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                         AdaptiveGridV17(rubric.options.size, if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2) { i ->
                             val (label, meaning) = rubric.options[i]
                             FilterChip(
@@ -234,7 +249,7 @@ fun GeneralInspectionV44Screen(lang: String, onBack: () -> Unit) {
                             )
                             if (selections[rubric.title] == label) Text(meaning, style = MaterialTheme.typography.bodySmall)
                         }
-                        Text("Ejemplo de registro", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
+                        Text(tr(lang, "Ejemplo de registro", "Charting example"), fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                         Text(rubric.normalExample)
                     }
                 }
@@ -242,9 +257,10 @@ fun GeneralInspectionV44Screen(lang: String, onBack: () -> Unit) {
         }
 
         ResponsiveSectionV17(tr(lang, "Resumen de inspección", "Inspection summary")) {
-            if (selections.isEmpty()) Text("Aún no hay selecciones.")
+            if (selections.isEmpty()) Text(tr(lang, "Aún no hay selecciones.", "No selections yet."))
             selections.forEach { (rubric, value) -> Text("• $rubric: $value") }
         }
-        NoticeCard("La inspección orienta la exploración y comunicación. Ningún rubro aislado confirma una enfermedad, síndrome, estado psicológico o condición social.")
+        NoticeCard(tr(lang, "La inspección orienta la exploración y comunicación. Ningún rubro aislado confirma una enfermedad, síndrome, estado psicológico o condición social.", "Inspection guides examination and communication. No single item confirms a disease, syndrome, psychological state or social condition."))
+        PracticeSaveControlsV48(lang, "history_general_inspection_v48")
     }
 }
