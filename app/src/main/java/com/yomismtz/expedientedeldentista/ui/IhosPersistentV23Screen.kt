@@ -116,12 +116,17 @@ fun IhosPersistentV23Screen(
         val tooth = selectedToothFor(slot)
         tooth in session.ihosDebris && tooth in session.ihosCalculus
     }
-    val complete = evaluableSlots.isNotEmpty() && completedSlots == evaluableSlots.size
-    val interpretation = if (complete) {
-        if (lang == "en") IhosIndexV48.interpretationEn(result.total)
+    val minimumSitesMet = IhosIndexV48.hasMinimumSites(evaluableSlots.size)
+    val complete = minimumSitesMet && completedSlots == evaluableSlots.size
+    val interpretation = when {
+        !minimumSitesMet -> tr(
+            lang,
+            "No calculable · se requieren al menos 2 superficies evaluables",
+            "Not calculable · at least 2 evaluable surfaces are required"
+        )
+        complete -> if (lang == "en") IhosIndexV48.interpretationEn(result.total)
         else IhosIndexV48.interpretationEs(result.total)
-    } else {
-        tr(lang, "Pendiente · completa todos los sitios evaluables", "Pending · complete every evaluable site")
+        else -> tr(lang, "Pendiente · completa todos los sitios evaluables", "Pending · complete every evaluable site")
     }
 
     fun selectTooth(tooth: Int) {
@@ -392,11 +397,19 @@ fun IhosPersistentV23Screen(
                 }
             } else {
                 NoticeCard(
-                    tr(
-                        lang,
-                        "El resultado mostrado es provisional. Completa detritos y cálculo en cada sitio evaluable antes de guardar la interpretación final.",
-                        "The displayed result is provisional. Complete debris and calculus at every evaluable site before saving the final interpretation."
-                    )
+                    if (!minimumSitesMet) {
+                        tr(
+                            lang,
+                            "El IHOS individual no debe calcularse con menos de 2 de las 6 superficies posibles. Selecciona sustitutos evaluables cuando proceda.",
+                            "An individual OHI-S should not be calculated with fewer than 2 of the 6 possible surfaces. Select evaluable substitutes when appropriate."
+                        )
+                    } else {
+                        tr(
+                            lang,
+                            "El resultado mostrado es provisional. Completa detritos y cálculo en cada sitio evaluable antes de guardar la interpretación final.",
+                            "The displayed result is provisional. Complete debris and calculus at every evaluable site before saving the final interpretation."
+                        )
+                    }
                 )
             }
         }
@@ -422,8 +435,8 @@ fun IhosPersistentV23Screen(
         NoticeCard(
             tr(
                 lang,
-                "Criterio clásico: IHOS = ID-S + IC-S. ID-S e IC-S se calculan dividiendo la suma de sus puntuaciones entre el número de superficies realmente examinadas. Interpretación educativa usada: 0–1.2 buena, 1.3–3.0 regular, 3.1–6.0 mala.",
-                "Classic criterion: OHI-S = DI-S + CI-S. DI-S and CI-S are calculated by dividing their score sums by the number of surfaces actually examined. Educational interpretation used: 0–1.2 good, 1.3–3.0 fair, 3.1–6.0 poor."
+                "Criterio clásico: IHOS = ID-S + IC-S. ID-S e IC-S se calculan dividiendo la suma de sus puntuaciones entre el número de superficies realmente examinadas; se requieren al menos 2 superficies para un puntaje individual. Interpretación educativa usada: 0–1.2 buena, 1.3–3.0 regular, 3.1–6.0 mala.",
+                "Classic criterion: OHI-S = DI-S + CI-S. DI-S and CI-S are calculated by dividing their score sums by the number of surfaces actually examined; at least 2 surfaces are required for an individual score. Educational interpretation used: 0–1.2 good, 1.3–3.0 fair, 3.1–6.0 poor."
             )
         )
 
