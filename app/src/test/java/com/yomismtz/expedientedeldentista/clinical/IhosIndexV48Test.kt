@@ -47,6 +47,14 @@ class IhosIndexV48Test {
     }
 
     @Test
+    fun individualScore_requiresAtLeastTwoExaminedSites() {
+        assertEquals(false, IhosIndexV48.hasMinimumSites(0))
+        assertEquals(false, IhosIndexV48.hasMinimumSites(1))
+        assertEquals(true, IhosIndexV48.hasMinimumSites(2))
+        assertEquals(true, IhosIndexV48.hasMinimumSites(6))
+    }
+
+    @Test
     fun interpretation_usesClassicOhiSThresholds() {
         assertEquals("Buena", IhosIndexV48.interpretationEs(1.2))
         assertEquals("Regular", IhosIndexV48.interpretationEs(1.3))
