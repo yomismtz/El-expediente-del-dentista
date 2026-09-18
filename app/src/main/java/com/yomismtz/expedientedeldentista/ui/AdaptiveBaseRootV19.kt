@@ -90,7 +90,7 @@ fun AdaptiveBaseRootV19(preferences:AppPreferences,onPreferencesChanged:(AppPref
             AppScreen.CPOD->CpodCeosV40Screen(lang,session,onSessionChanged,backPrevious)
             AppScreen.OLEARY->OlearyScreen(lang,session,onSessionChanged,backPrevious)
             AppScreen.IPC->IpcResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
-            AppScreen.IHOS->IhosResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
+            AppScreen.IHOS->IhosPersistentV23Screen(lang,session,onSessionChanged,backPrevious)
             AppScreen.PERIODONTOGRAM->PeriodontalTeachingV40Screen(lang,session,onSessionChanged,backPrevious)
             AppScreen.POSTURE->PostureVisualScreen(lang,backPrevious)
             AppScreen.PULPAL,AppScreen.APICAL->EndodonticTeachingV40Screen(lang,backPrevious)
