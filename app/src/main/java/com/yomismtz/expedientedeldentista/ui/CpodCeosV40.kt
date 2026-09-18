@@ -307,8 +307,8 @@ fun CpodCeosV40Screen(lang:String,session:EducationalSession,onSessionChanged:(E
         ResponsiveSectionV17(tr(lang,"Conteo acumulado","Accumulated count")){
             Text("CPOD = C $cpodC + P $cpodP + O $cpodO = ${cpod.total}",fontWeight=FontWeight.Black)
             Text("ceod = c $ceodC + e $ceodE + o $ceodO = ${ceod.total}",fontWeight=FontWeight.Black)
-            Text("CPOS = C $cposC + P(superficies) $cposP + O $cposO = ${cposC+cposP+cposO}")
-            Text("ceos = c $ceosC + e(superficies) $ceosE + o $ceosO = ${ceosC+ceosE+ceosO}")
+            Text("CPOS = C $cposC + P(superficies) $cposP + O $cposO = ${cpos.total}",fontWeight=if(mode==IndexModeV40.CPOS)FontWeight.Black else FontWeight.Normal)
+            Text("ceos = c $ceosC + e(superficies) $ceosE + o $ceosO = ${ceos.total}",fontWeight=if(mode==IndexModeV40.CEOS)FontWeight.Black else FontWeight.Normal)
             if(mode==IndexModeV40.CPOD||mode==IndexModeV40.CEOD){
                 Card(
                     onClick={
@@ -323,14 +323,30 @@ fun CpodCeosV40Screen(lang:String,session:EducationalSession,onSessionChanged:(E
                 ){
                     Text(tr(lang,"Guardar resultados CPOD · ceod","Save DMFT · deft results"),Modifier.padding(12.dp),fontWeight=FontWeight.Black)
                 }
+            }else{
+                Card(
+                    onClick={
+                        val scope=if(includeThirdMolars)"32" else "28"
+                        TeachingStateV40.moduleSummaries["caries_surface"]=
+                            "CPOS ${cpos.total} (C$cposC P$cposP O$cposO; $scope dientes) · ceos ${ceos.total} (c$ceosC e$ceosE o$ceosO)"
+                        TeachingStateV40.savedPracticeSections["cpos_ceos_v48"]=true
+                    },
+                    modifier=Modifier.fillMaxWidth(),
+                    colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer),
+                    border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline)
+                ){
+                    Text(tr(lang,"Guardar resultados CPOS · ceos","Save DMFS · defs results"),Modifier.padding(12.dp),fontWeight=FontWeight.Black)
+                }
             }
         }
         NoticeCard(tr(lang,
-            "En epidemiología, CPOD/ceod y CPOS/ceos deben seguir un protocolo definido. En 5.2 la app separa el conteo por DIENTE: ausencias por otra causa y selladores no incrementan CPOD/ceod. Los índices por superficie se revisarán en el siguiente paso.",
-            "In epidemiology, DMFT/deft and DMFS/defs must follow a defined protocol. In step 5.2 the app separates TOOTH-level counting: missing for another reason and sealants do not increase DMFT/deft. Surface indices will be reviewed in the next step."
+            "Regla de 5.3: CPOS/ceos cuentan superficies, no dientes. Un anterior aporta hasta 4 superficies y un posterior hasta 5. Selladores no incrementan el índice. CPOS cuenta como P todas las superficies de un permanente perdido por caries; ceos usa e para las superficies de un temporal con extracción indicada, según la convención docente seleccionada.",
+            "Step 5.3 rule: DMFS/defs count surfaces, not teeth. An anterior tooth contributes up to 4 surfaces and a posterior tooth up to 5. Sealants do not increase the index. DMFS assigns all surfaces of a permanent tooth missing due to caries to M; defs uses e for the surfaces of a primary tooth indicated for extraction, under the selected teaching convention."
         ))
         if(mode==IndexModeV40.CPOD||mode==IndexModeV40.CEOD){
             PracticeSaveControlsV48(lang,"cpod_ceod_v48")
+        }else{
+            PracticeSaveControlsV48(lang,"cpos_ceos_v48")
         }
     }
 }
