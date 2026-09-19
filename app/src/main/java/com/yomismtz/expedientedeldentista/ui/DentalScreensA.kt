@@ -447,15 +447,14 @@ fun IcdasScreen(
                 ),
                 credit = "Gugnani N, Pandit IK, Srivastava N, Gupta M, Sharma M. Int J Clin Pediatr Dent. 2011;4(2):93–100. Fig. 1A–G. CC BY 3.0 · DOI 10.5005/jp-journals-10005-1089 · https://pmc.ncbi.nlm.nih.gov/articles/PMC5030492/"
             ) {
-                Image(
-                    painter = painterResource(R.drawable.icdas_codes_photo),
+                OfflineClinicalImageV50(
+                    drawable = R.drawable.icdas_codes_photo,
                     contentDescription = tr(
                         lang,
                         "Fotografías clínicas A a G correspondientes a ICDAS 0 a 6",
                         "Clinical photographs A through G corresponding to ICDAS 0 through 6"
                     ),
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 220.dp, max = 480.dp),
-                    contentScale = ContentScale.Fit
+                    maxHeight = 480.dp
                 )
             }
         }
