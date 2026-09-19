@@ -10,7 +10,7 @@ fetch() {
   local tmp="$OUT/.${file}.download.$$.$RANDOM"
   echo "Descargando $file"
   if curl -L --fail --connect-timeout 6 --max-time 45 --retry 3 --retry-delay 2 --retry-max-time 140 \
-    -A "YSM-Expediente-Educational-App/1.0 (educational Android build; contact via repository)" \
+    -A "YSM-Expediente-Educational-App/1.0 (https://github.com/yomismtz/El-expediente-del-dentista)" \
     "$url" -o "$tmp" >/dev/null 2>&1 && [ -s "$tmp" ]; then
     mv -f "$tmp" "$OUT/$file"
     echo "OK $file"
@@ -24,12 +24,12 @@ fetch() {
 commons() {
   local encoded_name="$1"
   local file="$2"
-  local api="https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&prop=imageinfo&iiprop=url&titles=File%3A${encoded_name}"
+  local api="https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&prop=imageinfo&iiprop=url&iiurlwidth=1600&titles=File%3A${encoded_name}"
   local json direct
 
   echo "Resolviendo Wikimedia Commons: $file"
   if ! json="$(curl -L --fail --connect-timeout 6 --max-time 30 --retry 3 --retry-delay 2 \
-      -A "YSM-Expediente-Educational-App/1.0 (educational Android build; contact via repository)" \
+      -A "YSM-Expediente-Educational-App/1.0 (https://github.com/yomismtz/El-expediente-del-dentista)" \
       "$api" 2>/dev/null)"; then
     echo "AVISO: no se pudo resolver la ficha de Commons para $file." >&2
     return 0
@@ -40,7 +40,8 @@ import json, sys
 try:
     data=json.load(sys.stdin)
     page=data["query"]["pages"][0]
-    print(page["imageinfo"][0]["url"])
+    info=page["imageinfo"][0]
+    print(info.get("thumburl") or info["url"])
 except Exception:
     pass
 ')" || true
@@ -50,6 +51,7 @@ except Exception:
     return 0
   fi
   fetch "$direct" "$file"
+  sleep 0.35
 }
 
 # Retratos principales. Se empaquetan en drawable-nodpi para conservar la fotografía completa.
