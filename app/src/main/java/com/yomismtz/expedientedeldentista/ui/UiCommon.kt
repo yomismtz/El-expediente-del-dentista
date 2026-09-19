@@ -1,5 +1,6 @@
 package com.yomismtz.expedientedeldentista.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,18 +25,18 @@ fun tr(lang: String, es: String, en: String): String = if (lang == "en") en else
 
 @Composable
 fun ScreenHeader(title: String, onBack: () -> Unit, subtitle: String? = null) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.sm)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedButton(onClick = onBack) { Text("📁") }
+            OutlinedButton(onClick = onBack, shape = MaterialTheme.shapes.small) { Text("‹") }
             Text(
                 text = title,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.weight(1f).padding(horizontal = 12.dp)
+                modifier = Modifier.weight(1f).padding(horizontal = VisualSpacingV49.md)
             )
         }
         if (!subtitle.isNullOrBlank()) {
@@ -48,11 +49,14 @@ fun ScreenHeader(title: String, onBack: () -> Unit, subtitle: String? = null) {
 fun SectionCard(title: String, content: @Composable () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            modifier = Modifier.padding(VisualSpacingV49.lg),
+            verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.md)
         ) {
             Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             content()
@@ -64,9 +68,16 @@ fun SectionCard(title: String, content: @Composable () -> Unit) {
 fun NoticeCard(text: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
-        Text(text, modifier = Modifier.padding(14.dp), style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text,
+            modifier = Modifier.padding(VisualSpacingV49.md),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
+        )
     }
 }
 
@@ -90,7 +101,7 @@ fun ChipChoices(
     labels.chunked(columns).forEachIndexed { rowIndex, row ->
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(VisualSpacingV49.sm)
         ) {
             row.forEachIndexed { colIndex, item ->
                 val index = rowIndex * columns + colIndex
@@ -116,7 +127,7 @@ fun PracticeSaveControlsV48(
     val saved = TeachingStateV40.savedPracticeSections[sectionKey] == true
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.xs)
     ) {
         Button(
             onClick = { TeachingStateV40.savedPracticeSections[sectionKey] = true },
