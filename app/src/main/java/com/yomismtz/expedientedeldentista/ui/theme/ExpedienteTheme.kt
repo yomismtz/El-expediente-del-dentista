@@ -1,12 +1,20 @@
 package com.yomismtz.expedientedeldentista.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yomismtz.expedientedeldentista.settings.BirdPaletteStyle
 import com.yomismtz.expedientedeldentista.settings.FontStyle
@@ -152,6 +160,63 @@ private fun familyFor(style: FontStyle): FontFamily = when (style) {
 
 private fun scaledSp(base: Float, textSizeStyle: TextSizeStyle) = (base * textSizeStyle.multiplier).sp
 
+private fun contrastOn(color: Color): Color =
+    if (color.luminance() > 0.48f) Color(0xFF181319) else Color.White
+
+private fun lightScheme(p: BirdPalette) = lightColorScheme(
+    primary = p.primary,
+    onPrimary = contrastOn(p.primary),
+    secondary = p.secondary,
+    onSecondary = contrastOn(p.secondary),
+    tertiary = p.tertiary,
+    onTertiary = contrastOn(p.tertiary),
+    background = p.background,
+    onBackground = p.onSurface,
+    surface = p.surface,
+    onSurface = p.onSurface,
+    surfaceVariant = lerp(p.primaryContainer, p.surface, 0.42f),
+    onSurfaceVariant = p.onSurface.copy(alpha = 0.84f),
+    primaryContainer = p.primaryContainer,
+    onPrimaryContainer = p.onSurface,
+    secondaryContainer = p.secondaryContainer,
+    onSecondaryContainer = p.onSurface,
+    tertiaryContainer = lerp(p.tertiary, p.surface, 0.80f),
+    onTertiaryContainer = p.onSurface,
+    outline = p.outline,
+    outlineVariant = p.outline.copy(alpha = 0.52f)
+)
+
+private fun darkScheme(p: BirdPalette) = darkColorScheme(
+    primary = lerp(p.primary, Color.White, 0.34f),
+    onPrimary = Color(0xFF120F13),
+    secondary = lerp(p.secondary, Color.White, 0.22f),
+    onSecondary = Color(0xFF120F13),
+    tertiary = lerp(p.tertiary, Color.White, 0.22f),
+    onTertiary = Color(0xFF120F13),
+    background = lerp(p.onSurface, Color.Black, 0.76f),
+    onBackground = Color(0xFFF3EEF4),
+    surface = lerp(p.onSurface, Color.Black, 0.66f),
+    onSurface = Color(0xFFF3EEF4),
+    surfaceVariant = lerp(p.primary, Color.Black, 0.69f),
+    onSurfaceVariant = Color(0xFFD8D0DA),
+    primaryContainer = lerp(p.primary, Color.Black, 0.44f),
+    onPrimaryContainer = Color(0xFFF7F1F8),
+    secondaryContainer = lerp(p.secondary, Color.Black, 0.56f),
+    onSecondaryContainer = Color(0xFFF7F1F8),
+    tertiaryContainer = lerp(p.tertiary, Color.Black, 0.56f),
+    onTertiaryContainer = Color(0xFFF7F1F8),
+    outline = lerp(p.outline, Color.White, 0.28f),
+    outlineVariant = lerp(p.outline, Color.Black, 0.34f)
+)
+
+private val ExpedienteShapesV49 = Shapes(
+    extraSmall = RoundedCornerShape(8.dp),
+    small = RoundedCornerShape(12.dp),
+    medium = RoundedCornerShape(16.dp),
+    large = RoundedCornerShape(20.dp),
+    extraLarge = RoundedCornerShape(28.dp)
+)
+
 @Composable
 fun ExpedienteTheme(
     paletteStyle: BirdPaletteStyle,
@@ -161,34 +226,59 @@ fun ExpedienteTheme(
 ) {
     val p = birdPalette(paletteStyle)
     val family = familyFor(fontStyle)
-    val colors = lightColorScheme(
-        primary = p.primary,
-        onPrimary = p.onPrimary,
-        secondary = p.secondary,
-        tertiary = p.tertiary,
-        background = p.background,
-        surface = p.surface,
-        onSurface = p.onSurface,
-        primaryContainer = p.primaryContainer,
-        onPrimaryContainer = p.onSurface,
-        secondaryContainer = p.secondaryContainer,
-        onSecondaryContainer = p.onSurface,
-        tertiaryContainer = p.tertiary.copy(alpha = 0.18f),
-        onTertiaryContainer = p.onSurface,
-        outline = p.outline,
-        surfaceVariant = p.primaryContainer.copy(alpha = 0.58f),
-        onSurfaceVariant = p.onSurface.copy(alpha = 0.82f)
-    )
+    val colors = if (isSystemInDarkTheme()) darkScheme(p) else lightScheme(p)
 
     val typography = Typography(
-        displaySmall = TextStyle(fontFamily = family, fontSize = scaledSp(32f, textSizeStyle)),
-        headlineMedium = TextStyle(fontFamily = family, fontSize = scaledSp(26f, textSizeStyle)),
-        titleLarge = TextStyle(fontFamily = family, fontSize = scaledSp(22f, textSizeStyle)),
-        titleMedium = TextStyle(fontFamily = family, fontSize = scaledSp(18f, textSizeStyle)),
-        bodyLarge = TextStyle(fontFamily = family, fontSize = scaledSp(17f, textSizeStyle)),
-        bodyMedium = TextStyle(fontFamily = family, fontSize = scaledSp(15f, textSizeStyle)),
-        labelLarge = TextStyle(fontFamily = family, fontSize = scaledSp(14f, textSizeStyle))
+        displaySmall = TextStyle(
+            fontFamily = family,
+            fontSize = scaledSp(32f, textSizeStyle),
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = scaledSp(38f, textSizeStyle)
+        ),
+        headlineMedium = TextStyle(
+            fontFamily = family,
+            fontSize = scaledSp(26f, textSizeStyle),
+            fontWeight = FontWeight.Bold,
+            lineHeight = scaledSp(32f, textSizeStyle)
+        ),
+        titleLarge = TextStyle(
+            fontFamily = family,
+            fontSize = scaledSp(22f, textSizeStyle),
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = scaledSp(28f, textSizeStyle)
+        ),
+        titleMedium = TextStyle(
+            fontFamily = family,
+            fontSize = scaledSp(18f, textSizeStyle),
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = scaledSp(24f, textSizeStyle)
+        ),
+        bodyLarge = TextStyle(
+            fontFamily = family,
+            fontSize = scaledSp(17f, textSizeStyle),
+            lineHeight = scaledSp(24f, textSizeStyle)
+        ),
+        bodyMedium = TextStyle(
+            fontFamily = family,
+            fontSize = scaledSp(15f, textSizeStyle),
+            lineHeight = scaledSp(21f, textSizeStyle)
+        ),
+        bodySmall = TextStyle(
+            fontFamily = family,
+            fontSize = scaledSp(13f, textSizeStyle),
+            lineHeight = scaledSp(18f, textSizeStyle)
+        ),
+        labelLarge = TextStyle(
+            fontFamily = family,
+            fontSize = scaledSp(14f, textSizeStyle),
+            fontWeight = FontWeight.SemiBold
+        )
     )
 
-    MaterialTheme(colorScheme = colors, typography = typography, content = content)
+    MaterialTheme(
+        colorScheme = colors,
+        typography = typography,
+        shapes = ExpedienteShapesV49,
+        content = content
+    )
 }

@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -320,7 +319,7 @@ private fun FolderSpreadV3(lang: String, onNavigate: (AppScreen) -> Unit, onClos
         Row(Modifier.fillMaxSize().weight(1f).padding(horizontal = 5.dp, vertical = 4.dp)) {
             SideTabsV3(lang, leftTabsV3(), onNavigate, Modifier.width(58.dp).fillMaxHeight())
             Spacer(Modifier.width(4.dp))
-            BoxWithConstraints(Modifier.weight(1f).fillMaxHeight()) {
+            Box(Modifier.weight(1f).fillMaxHeight()) {
                 Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                     ActivitySheetV3(lang, onNavigate, Modifier.weight(1f))
                     IntakeSheetV3(lang, onNavigate, Modifier.weight(1f))

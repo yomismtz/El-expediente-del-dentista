@@ -31,59 +31,335 @@ import com.yomismtz.expedientedeldentista.R
 import com.yomismtz.expedientedeldentista.clinical.ClinicalContent
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEngines
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
+import com.yomismtz.expedientedeldentista.clinical.OlearyIndexV48
 import com.yomismtz.expedientedeldentista.clinical.Surface
+import com.yomismtz.expedientedeldentista.clinical.ToothStatus
 
 @Composable
-fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (EducationalSession) -> Unit, onBack: () -> Unit) {
+fun OlearyScreen(
+    lang: String,
+    session: EducationalSession,
+    onSessionChanged: (EducationalSession) -> Unit,
+    onBack: () -> Unit
+) {
     var primary by remember { mutableStateOf(false) }
-    val shown = if (primary) ClinicalContent.primaryTeeth else ClinicalContent.permanentTeeth
+    var includeThirdMolars by remember { mutableStateOf(false) }
+
+    val shown = if (primary) {
+        ClinicalContent.primaryTeeth
+    } else {
+        OlearyIndexV48.permanentTeeth(includeThirdMolars)
+    }
+    val shownSet = shown.toSet()
+
     var selectedTooth by remember { mutableStateOf(shown.first()) }
     if (selectedTooth !in shown) selectedTooth = shown.first()
-    val surfaces = listOf(Surface.VESTIBULAR, Surface.LINGUAL_PALATAL, Surface.MESIAL, Surface.DISTAL)
-    val present = if (session.presentTeeth.intersect(shown.toSet()).isEmpty()) shown.toSet() else session.presentTeeth.intersect(shown.toSet())
-    val selectedSurfaces = (session.oleary[selectedTooth] ?: emptySet()).intersect(surfaces.toSet())
-    val plaqueFaces = present.sumOf { tooth -> (session.oleary[tooth] ?: emptySet()).count { it in surfaces } }
-    val totalFaces = present.size * 4
-    val percentage = if (totalFaces == 0) 0.0 else ClinicalEngines.round1(plaqueFaces * 100.0 / totalFaces)
 
-    fun setMarks(newSet: Set<Surface>) {
-        val map = session.oleary.toMutableMap().apply { put(selectedTooth, newSet) }
-        onSessionChanged(session.copy(oleary = map, presentTeeth = present + selectedTooth))
+    val surfaces = OlearyIndexV48.surfaces
+    val initialized = if (primary) {
+        session.olearyPrimaryInitialized
+    } else {
+        session.olearyPermanentInitialized
     }
 
-    LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { ScreenHeader("O’Leary", onBack,
-            tr(lang, "Marca una, varias o las cuatro caras. O’Leary usa vestibular, lingual/palatina, mesial y distal; no incluye oclusal.", "Mark one, several or all four surfaces. O’Leary uses buccal, lingual/palatal, mesial and distal; occlusal is not included.")) }
-        item { Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(!primary,{primary=false},{Text(tr(lang,"Permanentes","Permanent"))}); FilterChip(primary,{primary=true},{Text(tr(lang,"Temporales","Primary"))})
-        } }
-        item { SectionCard(tr(lang,"Arcada y dientes evaluables","Arch and evaluable teeth")) {
-            DentalArchSelector(shown,selectedTooth,{selectedTooth=it}) { tooth -> session.oleary[tooth]?.any{it in surfaces}==true }
-            Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                FilterChip(selectedTooth in present,{onSessionChanged(session.copy(presentTeeth=present+selectedTooth))},{Text(tr(lang,"Presente","Present"))})
-                FilterChip(selectedTooth !in present,{
-                    val p=present-selectedTooth; val map=session.oleary.toMutableMap().apply{remove(selectedTooth)}
-                    onSessionChanged(session.copy(presentTeeth=p,oleary=map))
-                },{Text(tr(lang,"Ausente / excluir","Missing / exclude"))})
+    val odontogramPresent = shownSet.filter { tooth ->
+        session.teeth[tooth]?.status !in setOf(ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER)
+    }.toSet()
+
+    val present = if (initialized) {
+        session.olearyPresentTeeth.intersect(shownSet)
+    } else {
+        odontogramPresent
+    }
+
+    val otherDentitionPresent = session.olearyPresentTeeth - shownSet
+    val selectedSurfaces = session.oleary[selectedTooth].orEmpty().intersect(surfaces)
+    val result = OlearyIndexV48.calculate(
+        teethInScope = shown,
+        presentTeeth = present,
+        plaqueByTooth = session.oleary
+    )
+
+    fun saveState(
+        currentDentitionPresent: Set<Int>,
+        map: Map<Int, Set<Surface>> = session.oleary
+    ) {
+        onSessionChanged(
+            session.copy(
+                oleary = map,
+                olearyPresentTeeth = otherDentitionPresent + currentDentitionPresent,
+                olearyPermanentInitialized = session.olearyPermanentInitialized || !primary,
+                olearyPrimaryInitialized = session.olearyPrimaryInitialized || primary
+            )
+        )
+    }
+
+    fun setMarks(newSet: Set<Surface>) {
+        val cleanSet = newSet.intersect(surfaces)
+        val map = session.oleary.toMutableMap().apply {
+            if (cleanSet.isEmpty()) remove(selectedTooth) else put(selectedTooth, cleanSet)
+        }
+        saveState(present + selectedTooth, map)
+    }
+
+    fun toggleSurface(surface: Surface) {
+        if (surface !in surfaces || selectedTooth !in present) return
+        val updated = selectedSurfaces.toMutableSet()
+        if (!updated.add(surface)) updated.remove(surface)
+        setMarks(updated)
+    }
+
+    ResponsiveScreenV17(
+        "O’Leary",
+        tr(
+            lang,
+            "Registro binario de placa en cuatro superficies por diente evaluable: vestibular, lingual/palatina, mesial y distal. La superficie oclusal no participa.",
+            "Binary plaque record on four surfaces per evaluable tooth: buccal, lingual/palatal, mesial and distal. Occlusal surfaces are not included."
+        ),
+        onBack
+    ) { profile ->
+        PracticeSaveControlsV48(lang, "oleary_v48")
+
+        ResponsiveSectionV17(tr(lang, "1 · Dentición", "1 · Dentition")) {
+            AdaptiveGridV17(
+                2,
+                if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2
+            ) { index ->
+                val targetPrimary = index == 1
+                FilterChip(
+                    selected = primary == targetPrimary,
+                    onClick = { primary = targetPrimary },
+                    label = {
+                        Text(
+                            if (targetPrimary) {
+                                tr(lang, "Temporal", "Primary")
+                            } else {
+                                tr(lang, "Permanente", "Permanent")
+                            }
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
-        } }
-        item { SectionCard("OD $selectedTooth") {
-            if(selectedTooth !in present) Text(tr(lang,"Diente excluido del denominador.","Tooth excluded from denominator.")) else {
-                DentalSurfaceDiagram(centerEnabled=false,surfaceColor={s->if(s in selectedSurfaces)Color(0xFFD64545) else MaterialTheme.colorScheme.surfaceVariant},onSurfaceTap={s->
-                    if(s in surfaces){val set=selectedSurfaces.toMutableSet();if(!set.add(s))set.remove(s);setMarks(set)}
-                },modifier=Modifier.fillMaxWidth())
-                Row(horizontalArrangement=Arrangement.spacedBy(8.dp),modifier=Modifier.fillMaxWidth()) {
-                    OutlinedButton(onClick={setMarks(surfaces.toSet())},modifier=Modifier.weight(1f)){Text(tr(lang,"Marcar 4 caras","Mark all 4"))}
-                    OutlinedButton(onClick={setMarks(emptySet())},modifier=Modifier.weight(1f)){Text(tr(lang,"Limpiar","Clear"))}
+        }
+
+        if (!primary) {
+            ResponsiveSectionV17(tr(lang, "2 · Alcance permanente", "2 · Permanent scope")) {
+                Text(
+                    tr(
+                        lang,
+                        "Elige el alcance que exige tu protocolo. La opción de 28 excluye terceros molares; la de 32 los incluye.",
+                        "Choose the scope required by your protocol. The 28-tooth option excludes third molars; the 32-tooth option includes them."
+                    )
+                )
+                AdaptiveGridV17(
+                    2,
+                    if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2
+                ) { index ->
+                    val include = index == 1
+                    FilterChip(
+                        selected = includeThirdMolars == include,
+                        onClick = { includeThirdMolars = include },
+                        label = {
+                            Text(
+                                if (include) {
+                                    tr(lang, "32 · incluir terceros molares", "32 · include third molars")
+                                } else {
+                                    tr(lang, "28 · excluir terceros molares", "28 · exclude third molars")
+                                }
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
-                Text(tr(lang,"Rojo = placa dentobacteriana. Puedes marcar tantas caras como correspondan.","Red = plaque. Mark as many surfaces as needed."),color=Color(0xFFD64545),fontWeight=FontWeight.Bold)
             }
-        } }
-        item { SectionCard(tr(lang,"Cálculo automático","Automatic calculation")) {
-            Text("$plaqueFaces / $totalFaces × 100",style=MaterialTheme.typography.titleMedium)
-            Text("$percentage %",style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold)
-            Text(tr(lang,"Caras evaluables = dientes presentes × 4. Los dientes ausentes quedan fuera del denominador.","Evaluable surfaces = present teeth × 4. Missing teeth are excluded from the denominator."))
-        } }
+        }
+
+        ResponsiveSectionV17(
+            tr(lang, "3 · Diente evaluable", "3 · Evaluable tooth"),
+            tr(
+                lang,
+                "El denominador se calcula únicamente con dientes marcados como presentes/evaluables.",
+                "The denominator uses only teeth marked present/evaluable."
+            )
+        ) {
+            DentalArchSelector(
+                shown,
+                selectedTooth,
+                { selectedTooth = it }
+            ) { tooth ->
+                session.oleary[tooth].orEmpty().any { it in surfaces }
+            }
+
+            AdaptiveGridV17(
+                2,
+                if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2
+            ) { index ->
+                if (index == 0) {
+                    FilterChip(
+                        selected = selectedTooth in present,
+                        onClick = { saveState(present + selectedTooth) },
+                        label = { Text(tr(lang, "Presente / evaluable", "Present / evaluable")) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
+                    FilterChip(
+                        selected = selectedTooth !in present,
+                        onClick = {
+                            val newPresent = present - selectedTooth
+                            val map = session.oleary.toMutableMap().apply { remove(selectedTooth) }
+                            saveState(newPresent, map)
+                        },
+                        label = { Text(tr(lang, "Ausente / excluir", "Missing / exclude")) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        }
+
+        ResponsiveSectionV17(
+            tr(lang, "4 · Superficies OD $selectedTooth", "4 · Surfaces tooth $selectedTooth")
+        ) {
+            if (selectedTooth !in present) {
+                NoticeCard(
+                    tr(
+                        lang,
+                        "Este diente está excluido del denominador. Márcalo como presente para registrar placa.",
+                        "This tooth is excluded from the denominator. Mark it present to record plaque."
+                    )
+                )
+            } else {
+                val surfaceList = listOf(
+                    Surface.VESTIBULAR,
+                    Surface.LINGUAL_PALATAL,
+                    Surface.MESIAL,
+                    Surface.DISTAL
+                )
+                AdaptiveGridV17(
+                    surfaceList.size,
+                    if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 2 else 4
+                ) { index ->
+                    val surface = surfaceList[index]
+                    val label = when (surface) {
+                        Surface.VESTIBULAR -> tr(lang, "V · Vestibular", "B · Buccal")
+                        Surface.LINGUAL_PALATAL -> tr(lang, "L/P · Lingual/palatina", "L/P · Lingual/palatal")
+                        Surface.MESIAL -> tr(lang, "M · Mesial", "M · Mesial")
+                        Surface.DISTAL -> tr(lang, "D · Distal", "D · Distal")
+                        Surface.OCCLUSAL -> ""
+                    }
+                    FilterChip(
+                        selected = surface in selectedSurfaces,
+                        onClick = { toggleSurface(surface) },
+                        label = { Text(label) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                DentalSurfaceDiagram(
+                    centerEnabled = false,
+                    surfaceColor = { surface ->
+                        if (surface in selectedSurfaces) {
+                            MaterialTheme.colorScheme.errorContainer
+                        } else {
+                            MaterialTheme.colorScheme.surfaceVariant
+                        }
+                    },
+                    onSurfaceTap = { toggleSurface(it) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                AdaptiveGridV17(
+                    2,
+                    if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2
+                ) { index ->
+                    OutlinedButton(
+                        onClick = {
+                            if (index == 0) setMarks(surfaces) else setMarks(emptySet())
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            if (index == 0) {
+                                tr(lang, "Marcar las 4 caras", "Mark all 4 surfaces")
+                            } else {
+                                tr(lang, "Limpiar OD $selectedTooth", "Clear tooth $selectedTooth")
+                            }
+                        )
+                    }
+                }
+
+                Text(
+                    tr(
+                        lang,
+                        "Superficies con placa en este OD: ${selectedSurfaces.size}/4. Cada cara es independiente; tocar una no borra las demás.",
+                        "Plaque-positive surfaces on this tooth: ${selectedSurfaces.size}/4. Each surface is independent; tapping one does not clear the others."
+                    ),
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+
+        ResponsiveSectionV17(tr(lang, "5 · Cálculo automático", "5 · Automatic calculation")) {
+            Text(
+                "${result.plaqueSurfaces} / ${result.examinedSurfaces} × 100",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                "${result.percentage} %",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Black,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                tr(
+                    lang,
+                    "Dientes evaluables: ${result.examinedSurfaces / 4}. Superficies con placa: ${result.plaqueSurfaces}. Superficies examinadas: ${result.examinedSurfaces}.",
+                    "Evaluable teeth: ${result.examinedSurfaces / 4}. Plaque-positive surfaces: ${result.plaqueSurfaces}. Examined surfaces: ${result.examinedSurfaces}."
+                )
+            )
+            Text(
+                tr(
+                    lang,
+                    "Un porcentaje menor representa menos superficies con placa. La app no impone un punto de corte universal; usa el objetivo definido por tu protocolo docente o clínico.",
+                    "A lower percentage represents fewer plaque-positive surfaces. The app does not impose a universal cutoff; use the goal defined by your teaching or clinical protocol."
+                ),
+                style = MaterialTheme.typography.bodySmall
+            )
+
+            Card(
+                onClick = {
+                    val scope = if (primary) {
+                        tr(lang, "dentición temporal", "primary dentition")
+                    } else if (includeThirdMolars) {
+                        tr(lang, "permanente 32 dientes", "permanent 32 teeth")
+                    } else {
+                        tr(lang, "permanente 28 dientes", "permanent 28 teeth")
+                    }
+                    TeachingStateV40.moduleSummaries["oleary"] =
+                        "O’Leary ${result.percentage}% · ${result.plaqueSurfaces}/${result.examinedSurfaces} superficies · $scope"
+                    TeachingStateV40.savedPracticeSections["oleary_v48"] = true
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+            ) {
+                Text(
+                    tr(lang, "Guardar resultado de O’Leary", "Save O’Leary result"),
+                    modifier = Modifier.fillMaxWidth().padding(12.dp),
+                    fontWeight = FontWeight.Black
+                )
+            }
+        }
+
+        NoticeCard(
+            tr(
+                lang,
+                "Fórmula: superficies con placa ÷ superficies examinadas × 100. Se valoran cuatro superficies por diente evaluable: vestibular, lingual/palatina, mesial y distal; no oclusal.",
+                "Formula: plaque-positive surfaces ÷ examined surfaces × 100. Four surfaces are assessed per evaluable tooth: buccal, lingual/palatal, mesial and distal; not occlusal."
+            )
+        )
+
+        PracticeSaveControlsV48(lang, "oleary_v48")
     }
 }
 

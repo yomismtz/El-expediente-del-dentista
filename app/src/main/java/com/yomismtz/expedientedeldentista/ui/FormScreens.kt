@@ -22,7 +22,18 @@ import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.ClinicalContent
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 
-data class TeachingField(val titleEs: String, val titleEn: String, val helpEs: String, val helpEn: String, val exampleEs: String, val exampleEn: String)
+data class TeachingField(
+    val titleEs: String,
+    val titleEn: String,
+    val helpEs: String,
+    val helpEn: String,
+    val exampleEs: String,
+    val exampleEn: String,
+    val writingEs: String = "Redacta de forma breve, objetiva y verificable. Separa lo referido por la persona de lo observado o medido durante la exploración.",
+    val writingEn: String = "Write briefly, objectively and verifiably. Separate what the person reports from what is observed or measured during the examination.",
+    val errorEs: String = "Error común: completar con suposiciones, omitir la fuente del dato o convertir un hallazgo aislado en un diagnóstico.",
+    val errorEn: String = "Common mistake: filling gaps with assumptions, omitting the source of the information, or turning an isolated finding into a diagnosis."
+)
 
 @Composable
 fun IdentificationScreen(
@@ -68,8 +79,14 @@ fun IdentificationScreen(
                 Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
                     Text(if (lang == "en") field.titleEn else field.titleEs, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                     if (opened == index) {
-                        Text("💡 ${if (lang == "en") field.helpEn else field.helpEs}")
-                        Text("✍️ ${if (lang == "en") field.exampleEn else field.exampleEs}", color = MaterialTheme.colorScheme.primary)
+                        Text("🔎 ${tr(lang, "Qué va aquí", "What belongs here")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                        Text(if (lang == "en") field.helpEn else field.helpEs)
+                        Text("✍️ ${tr(lang, "Cómo se escribe", "How to write it")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                        Text(if (lang == "en") field.writingEn else field.writingEs)
+                        Text("🧾 ${tr(lang, "Ejemplo", "Example")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                        Text(if (lang == "en") field.exampleEn else field.exampleEs)
+                        Text("⚠️ ${tr(lang, "Error común", "Common mistake")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.error)
+                        Text(if (lang == "en") field.errorEn else field.errorEs)
                     } else {
                         Text(tr(lang, "Toca para ver cómo se llena", "Tap to see how it is completed"), style = MaterialTheme.typography.bodyMedium)
                     }
@@ -268,6 +285,7 @@ fun IntakeNoteScreen(lang: String, session: EducationalSession, onBack: () -> Un
                 "La estructura sigue la hoja de Nota de ingreso del material docente y la amplía con signos vitales, auxiliares, tratamiento/pronóstico como guía de aprendizaje. No introduzcas datos reales del paciente en la app.",
                 "The structure follows the teaching intake-note sheet and expands it with vital signs, diagnostic aids and treatment/prognosis as a learning guide. Do not enter real patient data in the app."))
         }
+        item { PracticeSaveControlsV48(lang, "intake_note_v48") }
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -292,14 +310,19 @@ fun IntakeNoteScreen(lang: String, session: EducationalSession, onBack: () -> Un
                     if (open) {
                         Text("🔎 ${tr(lang, "Qué va aquí / cómo se obtiene", "What belongs here / how to obtain it")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
                         Text(if (lang == "en") field.helpEn else field.helpEs)
-                        Text("✍️ ${tr(lang, "Cómo puede redactarse", "How it may be written")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                        Text("✍️ ${tr(lang, "Cómo se escribe", "How to write it")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                        Text(if (lang == "en") field.writingEn else field.writingEs)
+                        Text("🧾 ${tr(lang, "Ejemplo", "Example")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
                         Text(if (lang == "en") field.exampleEn else field.exampleEs)
+                        Text("⚠️ ${tr(lang, "Error común", "Common mistake")}", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.error)
+                        Text(if (lang == "en") field.errorEn else field.errorEs)
                     } else {
                         Text(tr(lang, "Toca para abrir la guía", "Tap to open the guide"))
                     }
                 }
             }
         }
+        item { PracticeSaveControlsV48(lang, "intake_note_v48") }
         item {
             SectionCard(tr(lang, "Regla de uso", "Use rule")) {
                 Text(tr(lang,

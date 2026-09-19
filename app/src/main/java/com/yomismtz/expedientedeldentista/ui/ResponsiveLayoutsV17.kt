@@ -1,6 +1,7 @@
 package com.yomismtz.expedientedeldentista.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -42,7 +43,7 @@ internal fun ResponsiveScreenV17(
     onBack: (() -> Unit)? = null,
     content: @Composable (ScreenProfileV17) -> Unit
 ) {
-    BoxWithConstraints(Modifier.fillMaxSize()) {
+    BoxWithConstraints(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         val systemFontScale = LocalDensity.current.fontScale
         val widthClass = when {
             maxWidth < 360.dp -> ScreenWidthV17.COMPACT
@@ -56,9 +57,9 @@ internal fun ResponsiveScreenV17(
             else -> 3
         }
         val padding = when (widthClass) {
-            ScreenWidthV17.COMPACT -> 10.dp
-            ScreenWidthV17.MEDIUM -> 14.dp
-            ScreenWidthV17.EXPANDED -> 22.dp
+            ScreenWidthV17.COMPACT -> VisualSpacingV49.md
+            ScreenWidthV17.MEDIUM -> VisualSpacingV49.lg
+            ScreenWidthV17.EXPANDED -> VisualSpacingV49.xxl
         }
         val profile = ScreenProfileV17(widthClass, largeText, columns, padding)
 
@@ -68,21 +69,21 @@ internal fun ResponsiveScreenV17(
                 .safeDrawingPadding()
                 .navigationBarsPadding()
                 .verticalScroll(rememberScrollState())
-                .padding(start = padding, end = padding, top = 12.dp, bottom = 112.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(start = padding, end = padding, top = VisualSpacingV49.md, bottom = 112.dp),
+            verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.md)
         ) {
             Row(
                 Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(VisualSpacingV49.md)
             ) {
                 if (onBack != null) {
-                    OutlinedButton(onClick = onBack) { Text("‹") }
+                    OutlinedButton(onClick = onBack, shape = MaterialTheme.shapes.small) { Text("‹") }
                 }
                 Column(Modifier.weight(1f)) {
                     Text(title, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
                     if (!subtitle.isNullOrBlank()) {
-                        Text(subtitle, style = MaterialTheme.typography.bodyMedium)
+                        Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
@@ -99,9 +100,9 @@ internal fun AdaptiveGridV17(
     content: @Composable (Int) -> Unit
 ) {
     val safeColumns = columns.coerceAtLeast(1)
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.sm)) {
         (0 until itemCount).toList().chunked(safeColumns).forEach { rowItems ->
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(VisualSpacingV49.sm)) {
                 rowItems.forEach { index ->
                     Column(Modifier.weight(1f)) { content(index) }
                 }
@@ -120,12 +121,13 @@ internal fun ResponsiveSectionV17(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.38f)),
-        shape = RoundedCornerShape(18.dp)
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        shape = MaterialTheme.shapes.large,
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(
-            Modifier.fillMaxWidth().padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            Modifier.fillMaxWidth().padding(VisualSpacingV49.lg),
+            verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.md)
         ) {
             Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
             if (!subtitle.isNullOrBlank()) Text(subtitle, style = MaterialTheme.typography.bodyMedium)
