@@ -61,9 +61,9 @@ private fun surfaceName(surface: Surface, lang: String) = when (surface) {
 
 private fun markName(mark: SurfaceMark, lang: String) = when (mark) {
     SurfaceMark.HEALTHY -> tr(lang, "Borrar / sano", "Clear / sound")
-    SurfaceMark.CARIES -> tr(lang, "Caries · rojo", "Caries · red")
-    SurfaceMark.RESTORATION -> tr(lang, "Restauración · azul", "Restoration · blue")
-    SurfaceMark.SEALANT -> tr(lang, "Sellador · verde", "Sealant · green")
+    SurfaceMark.CARIES -> tr(lang, "Caries", "Caries")
+    SurfaceMark.RESTORATION -> tr(lang, "Restauración", "Restoration")
+    SurfaceMark.SEALANT -> tr(lang, "Sellador", "Sealant")
 }
 
 @Composable
@@ -127,10 +127,10 @@ fun OdontogramScreen(lang: String, session: EducationalSession, onSessionChanged
             DentalSurfaceDiagram(
                 centerEnabled=true,
                 surfaceColor={ surface -> when(marks[surface]) {
-                    SurfaceMark.CARIES -> Color(0xFFD64545)
-                    SurfaceMark.RESTORATION -> Color(0xFF3C74C9)
-                    SurfaceMark.SEALANT -> Color(0xFF62A56A)
-                    else -> MaterialTheme.colorScheme.surfaceVariant
+                    SurfaceMark.CARIES -> clinicalCariesColorV49()
+                    SurfaceMark.RESTORATION -> clinicalRestorationColorV49()
+                    SurfaceMark.SEALANT -> clinicalSealantColorV49()
+                    else -> clinicalHealthySurfaceV49()
                 }},
                 onSurfaceTap={saveSurface(it)}, modifier=Modifier.fillMaxWidth()
             )
@@ -152,7 +152,7 @@ fun OdontogramScreen(lang: String, session: EducationalSession, onSessionChanged
                     "CPOD" -> tr(lang,"CPOD/ceod usa el diente como unidad. Si un mismo diente está restaurado y además tiene caries activa, se clasifica como cariado para el índice.","DMFT/dmft uses the tooth as the unit. If a tooth is restored and also has active caries, it is counted as decayed for the index.")
                     "IHOS" -> tr(lang,"IHOS no usa todos los dientes: guía 16V, 11V, 26V, 36L, 31V y 46L, con códigos de detritos y cálculo.","OHI-S uses index surfaces: 16B, 11B, 26B, 36L, 31B and 46L, with debris/calculus codes.")
                     "IPC" -> tr(lang,"IPC se registra por sextantes y conserva únicamente el hallazgo de mayor código del sextante; no es un código por cara dental.","CPI is recorded by sextants and keeps the highest-code finding in the sextant; it is not a tooth-surface code.")
-                    else -> tr(lang,"Rojo = caries · azul = restauración · verde = sellador · X/ausencia = diente completo. Las superficies pueden combinarse.","Red = caries · blue = restoration · green = sealant · X/missing = whole tooth. Surface markings can be combined.")
+                    else -> tr(lang,"Caries, restauración y sellador usan colores semánticos del tema; X/ausencia afecta al diente completo. Las superficies pueden combinarse.","Caries, restoration and sealant use theme-aware semantic colors; X/missing affects the whole tooth. Surface markings can be combined.")
                 }
                 Text(text)
             }
@@ -438,33 +438,26 @@ fun IcdasScreen(
         ResponsiveSectionV17(
             tr(lang, "3 · Atlas fotográfico clínico ICDAS 0–6", "3 · ICDAS 0–6 clinical photo atlas")
         ) {
-            Image(
-                painter = painterResource(R.drawable.icdas_codes_photo),
-                contentDescription = tr(
-                    lang,
-                    "Fotografías clínicas A a G correspondientes a ICDAS 0 a 6",
-                    "Clinical photographs A through G corresponding to ICDAS 0 through 6"
-                ),
-                modifier = Modifier.fillMaxWidth().heightIn(min = 220.dp, max = 480.dp),
-                contentScale = ContentScale.Fit
-            )
-            Text(
-                tr(
+            EducationalVisualFrameV49(
+                title = tr(lang, "ICDAS 0–6 · referencia clínica", "ICDAS 0–6 · clinical reference"),
+                caption = tr(
                     lang,
                     "Mapa de la figura: A=0 · B=1 · C=2 · D=3 · E=4 · F=5 · G=6.",
                     "Figure map: A=0 · B=1 · C=2 · D=3 · E=4 · F=5 · G=6."
                 ),
-                fontWeight = FontWeight.Black
-            )
-            Text(
-                "Gugnani N, Pandit IK, Srivastava N, Gupta M, Sharma M. International Caries Detection and Assessment System (ICDAS): A New Concept. Int J Clin Pediatr Dent. 2011;4(2):93–100. Fig. 1A–G. CC BY 3.0. DOI: 10.5005/jp-journals-10005-1089",
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                "Fuente: https://pmc.ncbi.nlm.nih.gov/articles/PMC5030492/",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary
-            )
+                credit = "Gugnani N, Pandit IK, Srivastava N, Gupta M, Sharma M. Int J Clin Pediatr Dent. 2011;4(2):93–100. Fig. 1A–G. CC BY 3.0 · DOI 10.5005/jp-journals-10005-1089 · https://pmc.ncbi.nlm.nih.gov/articles/PMC5030492/"
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.icdas_codes_photo),
+                    contentDescription = tr(
+                        lang,
+                        "Fotografías clínicas A a G correspondientes a ICDAS 0 a 6",
+                        "Clinical photographs A through G corresponding to ICDAS 0 through 6"
+                    ),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 220.dp, max = 480.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
         }
 
         ResponsiveSectionV17(tr(lang, "4 · Selecciona el código que quieres estudiar", "4 · Select the code to study")) {
