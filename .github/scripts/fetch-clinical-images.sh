@@ -81,8 +81,8 @@ fetch "https://wwwn.cdc.gov/phil///PHIL_Images/20040908/2d4664936550421d85a71364
 fetch "https://wwwn.cdc.gov/phil/PHIL_Images/10491/10491_lores.jpg" "clinical_smallpox.jpg" &
 fetch "https://wwwn.cdc.gov/phil/PHIL_Images/4497/4497_lores.jpg" "clinical_measles.jpg" &
 fetch "https://wwwn.cdc.gov/phil/PHIL_Images/712/712_lores.jpg" "clinical_rubella.jpg" &
-commons "Atopic_dermatitis.png" "clinical_eczema.png" &
-commons "Psoriasis.jpg" "clinical_psoriasis.jpg" &
+commons "Atopic%20dermatitis%20close%20up%20ac.jpeg" "clinical_eczema.jpg" &
+commons "2803%20Psoriasis.jpg" "clinical_psoriasis.jpg" &
 commons "Hairline.jpg" "hairline_reference.jpg" &
 commons "Head_diameter_measurement.jpg" "head_circumference_reference.jpg" &
 commons "Temporomandibular%20joint.png" "ref_tmj_anatomy.png" &
@@ -98,16 +98,12 @@ commons "Anterior%20open%20bite%20malocclusion.jpg" "ref_open_bite.jpg" &
 commons "Deep%20bite.jpg" "ref_deep_bite.jpg" &
 commons "Canted%20occlusal%20plane.jpg" "ref_midline.jpg" &
 commons "Anterior%20crossbite.jpg" "ref_crossbite_anterior.jpg" &
-commons "Crossbite.jpg" "ref_crossbite_posterior.jpg" &
 commons "Brian%20diastema.png" "ref_diastema.png" &
 commons "Sever%20Crowding%20of%20teeth.jpg" "ref_crowding.jpg" &
 commons "HIPODONCIA%20DENTAL.jpg" "ref_hypodontia.jpg" &
 commons "Supernumerary%20teeth.jpg" "ref_supernumerary.jpg" &
-commons "Axenfeld%20syndrome.jpg" "ref_microdontia.jpg" &
-commons "Kbg.jpg" "ref_macrodontia.jpg" &
 commons "DentalFusion.jpg" "ref_fusion.jpg" &
 commons "Dens%20invaginatus%20-%20Typen%20nach%20Oehlers%201957.png" "ref_dens_invaginatus.png" &
-commons "Dens%20evaginatus.jpg" "ref_dens_evaginatus.jpg" &
 commons "Taurodontism.jpg" "ref_taurodontism.jpg" &
 commons "Teeth%20displaying%20Enamel%20hypoplasia%20lines.jpg" "ref_enamel_hypoplasia.jpg" &
 commons "Hipomineralizaci%C3%B3n%20en%20Incisivos.jpg" "ref_hypomineralization.jpg" &
@@ -128,4 +124,10 @@ commons "Angular%20Cheilitis.JPG" "ref_angular_cheilitis.jpg" &
 
 wait || true
 
-echo "Referencias clínicas y retratos odontológicos procesados. Las descargas válidas se empaquetan dentro del APK; las fallidas conservan el recurso local de reserva."
+# A build must never silently ship without a clinical image required by the UI.
+# This validates local presence, basic file signatures and minimum useful dimensions
+# before Android resources are compiled. It runs at BUILD time; the installed app
+# does not fetch any image from the network.
+python3 .github/scripts/verify-clinical-images.py "$OUT"
+
+echo "Referencias clínicas y retratos odontológicos verificados y empaquetados para uso sin conexión."
