@@ -9,14 +9,14 @@ fetch() {
   local file="$2"
   local tmp="$OUT/.${file}.download.$$.$RANDOM"
   echo "Descargando $file"
-  if curl -L --fail --connect-timeout 5 --max-time 30 --retry 2 --retry-delay 1 --retry-max-time 75 \
-    -A "YSM-Expediente-Educational-App/1.0" \
+  if curl -L --fail --connect-timeout 6 --max-time 45 --retry 3 --retry-delay 2 --retry-max-time 140 \
+    -A "YSM-Expediente-Educational-App/1.0 (educational Android build; contact via repository)" \
     "$url" -o "$tmp" >/dev/null 2>&1 && [ -s "$tmp" ]; then
     mv -f "$tmp" "$OUT/$file"
     echo "OK $file"
   else
     rm -f "$tmp"
-    echo "AVISO: no se pudo descargar $file; se conserva el recurso local de reserva." >&2
+    echo "AVISO: no se pudo obtener $file; la validación obligatoria impedirá publicar un recurso faltante." >&2
   fi
   return 0
 }
@@ -24,7 +24,32 @@ fetch() {
 commons() {
   local encoded_name="$1"
   local file="$2"
-  fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/${encoded_name}" "$file"
+  local api="https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&prop=imageinfo&iiprop=url&titles=File%3A${encoded_name}"
+  local json direct
+
+  echo "Resolviendo Wikimedia Commons: $file"
+  if ! json="$(curl -L --fail --connect-timeout 6 --max-time 30 --retry 3 --retry-delay 2 \
+      -A "YSM-Expediente-Educational-App/1.0 (educational Android build; contact via repository)" \
+      "$api" 2>/dev/null)"; then
+    echo "AVISO: no se pudo resolver la ficha de Commons para $file." >&2
+    return 0
+  fi
+
+  direct="$(printf '%s' "$json" | python3 -c '
+import json, sys
+try:
+    data=json.load(sys.stdin)
+    page=data["query"]["pages"][0]
+    print(page["imageinfo"][0]["url"])
+except Exception:
+    pass
+')" || true
+
+  if [ -z "$direct" ]; then
+    echo "AVISO: Commons no devolvió URL original para $file." >&2
+    return 0
+  fi
+  fetch "$direct" "$file"
 }
 
 # Retratos principales. Se empaquetan en drawable-nodpi para conservar la fotografía completa.
@@ -45,8 +70,7 @@ fetch_icdas_atlas() {
   local pdf="$OUT/.icdas_article.$RANDOM.pdf"
   local prefix="$OUT/.icdas_page.$RANDOM"
   local target="$OUT/icdas_codes_photo.jpg"
-  local official_pdf="https://www.ijcpd.com/doi/pdf/10.5005/jp-journals-10005-1089"
-  local mirror="https://image.slidesharecdn.com/icdascariesppt-200302055140/75/Icdas-caries-ppt-8-2048.jpg"
+  local official_pdf="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5030492/pdf/ijcpd-04-093.pdf"
 
   echo "Preparando atlas fotográfico ICDAS 0–6"
   if curl -L --fail --connect-timeout 6 --max-time 45 --retry 2 --retry-delay 2 --retry-max-time 110 \
@@ -61,16 +85,8 @@ fetch_icdas_atlas() {
     fi
   fi
 
-  rm -f "$pdf" "$prefix.jpg"
-  if curl -L --fail --connect-timeout 6 --max-time 45 --retry 2 --retry-delay 2 --retry-max-time 110 \
-    -A "YSM-Expediente-Educational-App/1.0" "$mirror" -o "$target" >/dev/null 2>&1 \
-    && [ -s "$target" ]; then
-    echo "OK icdas_codes_photo.jpg · respaldo visual; citar fuente clínica original CC BY 3.0"
-    return 0
-  fi
-
-  rm -f "$target"
-  echo "AVISO: no se pudo preparar el atlas ICDAS; se conservará el recurso local de reserva." >&2
+  rm -f "$pdf" "$prefix.jpg" "$target"
+  echo "AVISO: no se pudo preparar el atlas ICDAS desde el PDF CC BY 3.0 de PMC; la compilación se detendrá en la validación." >&2
   return 0
 }
 
