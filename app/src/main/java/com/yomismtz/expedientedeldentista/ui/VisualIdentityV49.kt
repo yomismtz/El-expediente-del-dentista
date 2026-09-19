@@ -1,20 +1,29 @@
 package com.yomismtz.expedientedeldentista.ui
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -40,6 +49,44 @@ fun clinicalSealantColorV49(): Color = MaterialTheme.colorScheme.tertiary
 
 @Composable
 fun clinicalHealthySurfaceV49(): Color = MaterialTheme.colorScheme.surfaceVariant
+
+
+/**
+ * Displays an APK-bundled raster image without cropping, stretching or enlarging it
+ * beyond its intrinsic width. This is deliberately conservative for clinical media:
+ * a small source remains small instead of becoming a blurry full-width image.
+ */
+@Composable
+fun OfflineClinicalImageV50(
+    @DrawableRes drawable: Int,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    maxHeight: Dp = 480.dp
+) {
+    val painter = painterResource(drawable)
+    val density = LocalDensity.current
+    BoxWithConstraints(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        val intrinsicWidthDp = with(density) { painter.intrinsicSize.width.toDp() }
+        val targetWidth = if (
+            intrinsicWidthDp.value.isFinite() &&
+            intrinsicWidthDp > 0.dp
+        ) {
+            minOf(maxWidth, intrinsicWidthDp)
+        } else {
+            maxWidth
+        }
+
+        Image(
+            painter = painter,
+            contentDescription = contentDescription,
+            modifier = Modifier.width(targetWidth).heightIn(max = maxHeight),
+            contentScale = ContentScale.Fit
+        )
+    }
+}
 
 /**
  * Shared frame for clinical photos, radiographs and educational anatomical illustrations.
