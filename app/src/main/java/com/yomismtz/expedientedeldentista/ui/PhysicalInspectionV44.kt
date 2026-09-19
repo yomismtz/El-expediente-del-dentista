@@ -215,11 +215,10 @@ fun GeneralInspectionV44Screen(lang: String, onBack: () -> Unit) {
             ), color = MaterialTheme.colorScheme.error)
         }
         ResponsiveSectionV17(tr(lang, "Tabla de referencia", "Reference table")) {
-            Image(
-                painter = painterResource(R.drawable.general_inspection_reference),
+            OfflineClinicalImageV50(
+                drawable = R.drawable.general_inspection_reference,
                 contentDescription = tr(lang, "Tabla de inspección general proporcionada por la autora", "General inspection table provided by the author"),
-                modifier = Modifier.fillMaxWidth().height(390.dp),
-                contentScale = ContentScale.Fit
+                maxHeight = 390.dp
             )
             Text(tr(lang, "Imagen proporcionada por la autora; se muestra completa, sin recortes ni rediseño.", "Image provided by the author; shown complete without cropping or redesign."), style = MaterialTheme.typography.bodySmall)
         }
