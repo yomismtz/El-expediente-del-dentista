@@ -59,18 +59,18 @@ fun OnboardingV40Screen(preferences: AppPreferences, onPreferencesChanged: (AppP
 
     Column(
         Modifier.fillMaxSize()
-            .background(Brush.verticalGradient(listOf(cs.primary, cs.primaryContainer, cs.background)))
+            .background(Brush.verticalGradient(listOf(cs.background, cs.primaryContainer.copy(alpha = .72f), cs.background)))
             .safeDrawingPadding()
             .navigationBarsPadding()
             .padding(horizontal = if (configuration.screenWidthDp >= 600) 28.dp else 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp), horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.md), horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("YSM Expediente", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black, color = cs.onPrimary, textAlign = TextAlign.Center)
-        Text(if (lang == "en") "Interactive guide to the dentist's clinical record" else "Guía interactiva del expediente clínico odontológico", color = cs.onPrimary, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-        Text(if (lang == "en") "Step ${page + 1} of ${ONBOARDING_LAST_PAGE + 1}" else "Paso ${page + 1} de ${ONBOARDING_LAST_PAGE + 1}", style = MaterialTheme.typography.labelLarge, color = cs.onPrimary)
+        Text("YSM Expediente", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = cs.onSurface, textAlign = TextAlign.Center)
+        Text(if (lang == "en") "Interactive guide to the dentist's clinical record" else "Guía interactiva del expediente clínico odontológico", color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+        Text(if (lang == "en") "Step ${page + 1} of ${ONBOARDING_LAST_PAGE + 1}" else "Paso ${page + 1} de ${ONBOARDING_LAST_PAGE + 1}", style = MaterialTheme.typography.labelLarge, color = cs.primary)
 
-        Card(Modifier.weight(1f).fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = cs.surface.copy(alpha = .97f)), shape = RoundedCornerShape(20.dp)) {
-            Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(if (configuration.screenWidthDp >= 600) 22.dp else 14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Card(Modifier.weight(1f).fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = cs.surface), shape = MaterialTheme.shapes.extraLarge, border = BorderStroke(1.dp, cs.outlineVariant), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+            Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(if (configuration.screenWidthDp >= 600) VisualSpacingV49.xl else VisualSpacingV49.lg), verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.md)) {
                 when (page) {
                     0 -> WelcomePageV47(lang)
                     1 -> ClinicianPageV47(preferences, onPreferencesChanged, lang, fontScale, landscape)
@@ -113,11 +113,11 @@ fun OnboardingV40Screen(preferences: AppPreferences, onPreferencesChanged: (AppP
 
 @Composable private fun ClinicianCardV47(title: ClinicianTitle, preferences: AppPreferences, onPreferencesChanged: (AppPreferences) -> Unit, lang: String, modifier: Modifier) {
     val selected = preferences.clinicianTitle == title
-    Card(onClick = { onPreferencesChanged(preferences.copy(clinicianTitle = title)) }, modifier = modifier, colors = CardDefaults.cardColors(containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface), border = BorderStroke(if (selected) 3.dp else 1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline), shape = RoundedCornerShape(18.dp)) {
+    Card(onClick = { onPreferencesChanged(preferences.copy(clinicianTitle = title)) }, modifier = modifier, colors = CardDefaults.cardColors(containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface), border = BorderStroke(if (selected) 3.dp else 1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline), shape = MaterialTheme.shapes.large) {
         Column(Modifier.fillMaxWidth().padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(7.dp)) {
             Box(Modifier.fillMaxWidth().heightIn(min = 190.dp, max = 270.dp)) {
                 ClinicianPortraitV47(title, Modifier.fillMaxSize(), if (lang == "en") if (title == ClinicianTitle.DOCTORA) "Female dentist" else "Male dentist" else if (title == ClinicianTitle.DOCTORA) "Doctora" else "Doctor")
-                PaletteBirdBadgeV40(preferences.birdPaletteStyle, Modifier.align(Alignment.TopEnd).padding(6.dp).size(68.dp))
+                PaletteBirdBadgeV40(preferences.birdPaletteStyle, Modifier.align(Alignment.TopEnd).padding(VisualSpacingV49.sm).size(68.dp))
             }
             Text(if (title == ClinicianTitle.DOCTORA) "Doctora" else "Doctor", fontWeight = FontWeight.Black, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)
             if (selected) Text(if (lang == "en") "Selected ✓" else "Seleccionado ✓", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
@@ -144,14 +144,36 @@ fun OnboardingV40Screen(preferences: AppPreferences, onPreferencesChanged: (AppP
 
 @Composable private fun PaletteBirdBadgeV40(style: BirdPaletteStyle, modifier: Modifier = Modifier) {
     val sw = paletteSwatches(style)
-    Card(modifier, shape = RoundedCornerShape(50), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("🐦", style = MaterialTheme.typography.headlineMedium); Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().heightIn(min = 8.dp).background(sw.first())) }
+    Card(
+        modifier,
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(
+            Modifier.fillMaxSize().padding(VisualSpacingV49.xs),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                paletteDisplayName(style, "es").take(2).uppercase(),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                sw.take(3).forEach { color ->
+                    Box(Modifier.size(10.dp).background(color, MaterialTheme.shapes.extraSmall))
+                }
+            }
+        }
     }
 }
 
 @Composable private fun PaletteCardV40(style: BirdPaletteStyle, lang: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val sw = paletteSwatches(style)
-    Card(onClick = onClick, modifier = modifier.heightIn(min = 74.dp), colors = CardDefaults.cardColors(containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface), border = BorderStroke(if (selected) 2.dp else 1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline), shape = RoundedCornerShape(14.dp)) {
+    Card(onClick = onClick, modifier = modifier.heightIn(min = 74.dp), colors = CardDefaults.cardColors(containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface), border = BorderStroke(if (selected) 2.dp else 1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline), shape = MaterialTheme.shapes.medium) {
         Column(Modifier.fillMaxWidth().padding(9.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(paletteDisplayName(style, lang), fontWeight = FontWeight.Black, textAlign = TextAlign.Center)
             Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) { sw.forEach { color -> Box(Modifier.size(width = 25.dp, height = 18.dp).background(color, RoundedCornerShape(6.dp))) } }
