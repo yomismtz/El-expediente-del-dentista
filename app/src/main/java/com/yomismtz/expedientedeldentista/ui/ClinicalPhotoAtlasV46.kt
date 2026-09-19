@@ -38,11 +38,10 @@ private fun ClinicalPhotoCardV46(photo: ClinicalPhotoV46) {
         caption = photo.caption,
         credit = photo.credit
     ) {
-        Image(
-            painter = painterResource(photo.drawable),
+        OfflineClinicalImageV50(
+            drawable = photo.drawable,
             contentDescription = photo.caption,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 360.dp),
-            contentScale = ContentScale.Fit
+            maxHeight = 360.dp
         )
     }
 }
@@ -64,7 +63,6 @@ private val occlusionPhotoOptionsV46 = listOf(
     PhotoOptionV46("Overbite / relación vertical", "Mordida abierta anterior", "Se observa un espacio vertical anterior al cerrar. Registra magnitud y distribución.", ClinicalPhotoV46(R.drawable.ref_open_bite, "Mordida abierta anterior", "Fotografía clínica de mordida abierta anterior.", "Wikimedia Commons · Challiyan · CC BY-SA 4.0")),
     PhotoOptionV46("Líneas medias", "Desviación / plano oclusal", "Compara líneas interincisivas con referencias faciales y entre arcadas; registra lado y milímetros.", ClinicalPhotoV46(R.drawable.ref_midline, "Referencia frontal", "Fotografía clínica con inclinación del plano oclusal útil para observar referencias faciales y dentales.", "Wikimedia Commons · Challiyan · CC BY-SA 4.0")),
     PhotoOptionV46("Mordida cruzada", "Anterior", "Uno o más dientes anteriores superiores ocluyen por lingual de sus antagonistas inferiores; diferencia componente dentario, funcional y esquelético.", ClinicalPhotoV46(R.drawable.ref_crossbite_anterior, "Mordida cruzada anterior", "Fotografía clínica de mordida cruzada anterior.", "Wikimedia Commons · Challiyan · CC BY-SA 4.0")),
-    PhotoOptionV46("Mordida cruzada", "Posterior unilateral", "Valora ambos lados y la trayectoria de cierre para detectar desplazamiento funcional.", ClinicalPhotoV46(R.drawable.ref_crossbite_posterior, "Mordida cruzada posterior", "Fotografía clínica de mordida cruzada posterior unilateral.", "Wikimedia Commons · Giorgio Fiorelli · dominio público")),
     PhotoOptionV46("Espacios y alineación", "Diastema", "Describe localización, tamaño y distribución; la causa no se determina sólo por la fotografía.", ClinicalPhotoV46(R.drawable.ref_diastema, "Diastema", "Fotografía clínica de diastema maxilar medio.", "Wikimedia Commons · Ian Furst · CC BY-SA 4.0")),
     PhotoOptionV46("Espacios y alineación", "Apiñamiento", "Observa rotaciones, solapamientos y falta de espacio; el análisis de discrepancia arco-diente requiere medición.", ClinicalPhotoV46(R.drawable.ref_crowding, "Apiñamiento", "Fotografía clínica de apiñamiento dental severo.", "Wikimedia Commons · Challiyan · CC BY-SA 4.0"))
 )
@@ -96,7 +94,7 @@ fun OcclusionPhotoAtlasV46Screen(lang: String, onBack: () -> Unit) {
 private val tmjPhotosV46 = listOf(
     ClinicalPhotoV46(R.drawable.ref_tmj_anatomy, "Anatomía de la ATM", "Referencia anatómica del cóndilo, disco, fosa/eminencia y tejidos articulares.", "Wikimedia Commons · Frank Gaillard · CC BY-SA 3.0/GFDL"),
     ClinicalPhotoV46(R.drawable.ref_tmj_mri, "ATM en resonancia magnética", "Imagen real de resonancia magnética de la articulación temporomandibular.", "Wikimedia Commons · ARTICULATIONMAN · CC BY-SA 4.0"),
-    ClinicalPhotoV46(R.drawable.ref_tmj_movements, "Movimientos mandibulares", "Referencia del movimiento mandibular y posiciones límite; correlaciona con apertura, protrusión y trayectorias.", "Wikimedia Commons · Rjmedink · licencia indicada en la ficha original"),
+    ClinicalPhotoV46(R.drawable.ref_tmj_movements, "Movimientos mandibulares · diagrama", "Diagrama educativo del sobre de movimiento mandibular (Posselt); correlaciona rotación, traslación, apertura y posiciones límite.", "Wikimedia Commons · Rjmedink · CC BY-SA 4.0 · File:TMJ movements.jpg"),
     ClinicalPhotoV46(R.drawable.ref_tmj_panorama, "Cóndilo y fosa en imagen radiográfica", "Panorámica enfocada a la región de cóndilo y fosa articular; no sustituye estudios indicados para patología específica.", "Wikimedia Commons · ANUG · CC BY-SA" )
 )
 
@@ -106,7 +104,7 @@ fun TmjPhotoAtlasV46Screen(lang: String, onBack: () -> Unit) {
     var opening by remember { mutableStateOf("40–50 mm aprox.") }
     val findings = remember { mutableStateListOf<String>() }
     val checklist = listOf("Dolor al abrir/cerrar", "Chasquido", "Crepitación", "Desviación", "Deflexión", "Bloqueo", "Limitación funcional", "Dolor muscular", "Sin alteraciones aparentes")
-    ResponsiveScreenV17("Exploración de ATM y TTM · imágenes reales", "Anatomía e imagenología real, movimientos, apertura y hallazgos.", onBack) { profile ->
+    ResponsiveScreenV17("Exploración de ATM y TTM · referencias visuales", "Fotografía/imagenología real cuando corresponde y diagrama educativo identificado como tal.", onBack) { profile ->
         ClinicalPhotoCardV46(tmjPhotosV46[photo])
         ResponsiveSectionV17("Referencias visuales") {
             AdaptiveGridV17(tmjPhotosV46.size, if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2) { i ->
@@ -128,11 +126,8 @@ fun TmjPhotoAtlasV46Screen(lang: String, onBack: () -> Unit) {
 private val dentalAnomalyOptionsV46 = listOf(
     PhotoOptionV46("Número", "Agenesia / hipodoncia", "Ausencia congénita de uno o más dientes; confirmar con historia, etapa de desarrollo e imagen.", ClinicalPhotoV46(R.drawable.ref_hypodontia, "Hipodoncia", "Radiografía panorámica con ausencia congénita de varios elementos dentarios.", "Wikimedia Commons · Ramirotomasi · CC BY-SA 4.0")),
     PhotoOptionV46("Número", "Supernumerario / mesiodens", "Diente adicional a la fórmula normal; registra localización y relación con dientes vecinos.", ClinicalPhotoV46(R.drawable.ref_supernumerary, "Dientes supernumerarios", "Radiografía de dos dientes supernumerarios en premaxila.", "Wikimedia Commons · Albert · dominio público")),
-    PhotoOptionV46("Tamaño", "Microdoncia", "Tamaño dentario menor al esperado; distingue microdoncia localizada de discrepancia relativa diente-arco.", ClinicalPhotoV46(R.drawable.ref_microdontia, "Microdoncia e hipodoncia", "Ejemplo clínico publicado con microdoncia e hipodoncia; no implica el síndrome en otros pacientes.", "Wikimedia Commons · artículo de caso · CC BY 2.0")),
-    PhotoOptionV46("Tamaño", "Macrodoncia", "Tamaño dentario mayor al esperado; compara con homólogo y proporción de la arcada.", ClinicalPhotoV46(R.drawable.ref_macrodontia, "Macrodoncia de incisivos centrales", "Ejemplo clínico de macrodoncia de incisivos centrales en un caso publicado; la imagen no debe usarse para atribuir un síndrome.", "Wikimedia Commons · fuente clínica citada en la ficha original")),
     PhotoOptionV46("Forma", "Fusión / diente doble", "La fusión implica unión de gérmenes; el aspecto clínico debe diferenciarse de geminación y confirmarse con conteo e imagen.", ClinicalPhotoV46(R.drawable.ref_fusion, "Posible fusión dental", "Fotografía clínica descrita por el autor como posible fusión; sin radiografía no se presenta como diagnóstico definitivo.", "Wikimedia Commons · Roquex · CC0")),
     PhotoOptionV46("Forma", "Dens invaginatus", "Invaginación del órgano dentario; la extensión se determina con imagen y puede tener relevancia pulpar.", ClinicalPhotoV46(R.drawable.ref_dens_invaginatus, "Dens invaginatus", "Esquema de tipos de Oehlers derivado de un caso/revisión de acceso abierto.", "Wikimedia Commons · Meghana/Thejokrishna/Hellerhoff · CC BY 3.0")),
-    PhotoOptionV46("Forma", "Dens evaginatus", "Cúspide o tubérculo accesorio; revisa desgaste/fractura y posible extensión pulpar.", ClinicalPhotoV46(R.drawable.ref_dens_evaginatus, "Dens evaginatus", "Fotografía clínica de anomalía del desarrollo tipo cúspide accesoria.", "Wikimedia Commons · Veeresh likhitha · CC BY-SA 4.0")),
     PhotoOptionV46("Raíz / cámara", "Taurodontismo", "Cámara pulpar alargada con desplazamiento apical del piso/furcación; se reconoce radiográficamente.", ClinicalPhotoV46(R.drawable.ref_taurodontism, "Taurodontismo", "Radiografía de un diente con morfología taurodóntica y tratamiento endodóntico.", "Wikimedia Commons · Challiyan · CC BY-SA 4.0")),
     PhotoOptionV46("Estructura", "Hipoplasia del esmalte", "Defecto cuantitativo del esmalte. Describe distribución, profundidad y cronología probable sin asumir etiología por aspecto.", ClinicalPhotoV46(R.drawable.ref_enamel_hypoplasia, "Hipoplasia del esmalte", "Fotografía de líneas de hipoplasia del esmalte.", "Wikimedia Commons · Otis Historical Archives/NMHM · CC BY 2.0")),
     PhotoOptionV46("Estructura", "Hipomineralización", "Defecto cualitativo con opacidad demarcada; diferencia de caries, fluorosis e hipoplasia mediante historia y examen.", ClinicalPhotoV46(R.drawable.ref_hypomineralization, "Hipomineralización", "Fotografía clínica de opacidad demarcada en incisivo.", "Wikimedia Commons · Federico Morales Corona · CC BY-SA 4.0"))
