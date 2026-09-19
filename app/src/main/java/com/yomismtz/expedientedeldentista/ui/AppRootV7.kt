@@ -116,7 +116,7 @@ fun AppRootV7(
                         V7Overlay.ICDAS -> IcdasScreen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.CPOD -> CpodInteractiveV19Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.OLEARY -> OlearyScreen(lang,session,onSessionChanged,backPrevious)
-                        V7Overlay.IPC -> IpcPersistentV22Screen(lang,session,onSessionChanged,backPrevious)
+                        V7Overlay.IPC -> CpiModifiedV48Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.IHOS -> IhosPersistentV23Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.PERIODONTAL -> PeriodontogramScreen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.POSTURE -> PostureVisualScreen(lang,backPrevious)
@@ -141,7 +141,7 @@ fun AppRootV7(
 
                 if(overlay==V7Overlay.INTAKE) {
                     OutlinedButton(onClick={openOverlay(V7Overlay.HUB)},modifier=Modifier.align(Alignment.BottomStart).safeDrawingPadding().padding(12.dp)) {
-                        Text("🧭 ${tr(lang,"Todos los exámenes","All examinations")}")
+                        Text(tr(lang,"Todos los exámenes","All examinations"))
                     }
                 }
 
@@ -151,8 +151,8 @@ fun AppRootV7(
 
                 if(writingHelp) {
                     Box(Modifier.fillMaxSize(),contentAlignment=Alignment.BottomCenter) {
-                        Card(modifier=Modifier.safeDrawingPadding().padding(16.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),border=BorderStroke(1.dp,MaterialTheme.colorScheme.secondary)) {
-                            Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                        Card(modifier=Modifier.safeDrawingPadding().padding(VisualSpacingV49.lg),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outlineVariant),shape=MaterialTheme.shapes.large,elevation=CardDefaults.cardElevation(defaultElevation=2.dp)) {
+                            Column(Modifier.padding(VisualSpacingV49.lg),verticalArrangement=Arrangement.spacedBy(VisualSpacingV49.sm)) {
                                 Text(tr(lang,"¿Qué escribo al final en el expediente?","What do I write in the record?"),fontWeight=FontWeight.Black)
                                 Text(finalWriting19(overlay,lang))
                                 Button(onClick={writingHelp=false}){Text(tr(lang,"Cerrar","Close"))}
@@ -175,13 +175,13 @@ private fun FloatingActions19(lang:String,onWriting:()->Unit,onIntake:()->Unit,m
         val compact=maxWidth<330.dp || LocalDensity.current.fontScale>=1.25f
         if(compact) {
             Column(horizontalAlignment=Alignment.End) {
-                OutlinedButton(onClick=onWriting){Text("✍️")}
-                OutlinedButton(onClick=onIntake){Text("↩ 📋")}
+                OutlinedButton(onClick=onWriting,shape=MaterialTheme.shapes.small){Text(tr(lang,"Qué escribir","What to write"))}
+                OutlinedButton(onClick=onIntake,shape=MaterialTheme.shapes.small){Text(tr(lang,"Ingreso","Intake"))}
             }
         } else {
-            Row(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
-                OutlinedButton(onClick=onWriting){Text("✍️ ${tr(lang,"Qué escribir","What to write")}")}
-                OutlinedButton(onClick=onIntake){Text("↩ ${tr(lang,"Ingreso","Intake")}")}
+            Row(horizontalArrangement=Arrangement.spacedBy(VisualSpacingV49.xs)) {
+                OutlinedButton(onClick=onWriting,shape=MaterialTheme.shapes.small){Text(tr(lang,"Qué escribir","What to write"))}
+                OutlinedButton(onClick=onIntake,shape=MaterialTheme.shapes.small){Text(tr(lang,"Ingreso","Intake"))}
             }
         }
     }
@@ -193,7 +193,7 @@ private fun finalWriting19(screen:V7Overlay,lang:String):String {
         V7Overlay.HEAD_NECK -> "Head and neck: cranium ___; face/profile/symmetry/skin color ___; facial muscle function ___; masticatory muscles ___; neck ___; lymph-node chains ___; describe palpable nodes by side, size, tenderness, consistency and mobility."
         V7Overlay.ATM -> "TMJ: maximum opening ___ mm; opening path ___; right/left laterality ___/___ mm; protrusion ___ mm; joint sounds ___; pain/tenderness ___; locking ___; OVD ___ mm; RVD ___ mm. Interpret findings in clinical context."
         V7Overlay.PULPAL_APICAL -> "Tooth ___: pulpal diagnosis most compatible with ___; apical diagnosis most compatible with ___; supported by ___. State missing tests."
-        V7Overlay.IPC -> "CPI: S1=__ · S2=__ · S3=__ · S4=__ · S5=__ · S6=__. Add relevant periodontal findings."
+        V7Overlay.IPC -> "Modified CPI: bleeding-positive teeth ___/___; pockets 4–5 mm ___; pockets ≥6 mm ___. State excluded teeth and age protocol."
         V7Overlay.IHOS -> "OHI-S = ___ (DI-S ___ + CI-S ___). Add the interpretation."
         V7Overlay.OLEARY -> "O'Leary = ___%. Record final percentage and plaque-positive surfaces."
         V7Overlay.ICDAS -> "Record ICDAS by surface; if one value per tooth is required, use the highest surface code."
@@ -210,7 +210,7 @@ private fun finalWriting19(screen:V7Overlay,lang:String):String {
         V7Overlay.HEAD_NECK -> "Cabeza y cuello: cráneo ___; cara/perfil/simetría/coloración ___; función de músculos faciales ___; músculos masticatorios ___; cuello ___; cadenas ganglionares ___; si hay ganglio palpable, describe lado, tamaño, dolor, consistencia y movilidad."
         V7Overlay.ATM -> "ATM: apertura máxima ___ mm; trayectoria ___; lateralidad derecha/izquierda ___/___ mm; protrusión ___ mm; ruidos articulares ___; dolor a movimiento/palpación ___; bloqueo ___; DVO ___ mm; DVR ___ mm. Interpreta en contexto clínico."
         V7Overlay.PULPAL_APICAL -> "OD ___: diagnóstico pulpar más compatible con ___; diagnóstico periapical más compatible con ___; sustentado por ___. Indica pruebas faltantes."
-        V7Overlay.IPC -> "IPC: S1=__ · S2=__ · S3=__ · S4=__ · S5=__ · S6=__. Añade hallazgos periodontales relevantes."
+        V7Overlay.IPC -> "CPI modificado: dientes con sangrado ___/___; bolsas 4–5 mm ___; bolsas ≥6 mm ___. Indica dientes excluidos y protocolo por edad."
         V7Overlay.IHOS -> "IHOS = ___ (ID-S ___ + IC-S ___). Añade la interpretación obtenida."
         V7Overlay.OLEARY -> "O'Leary = ___%. Registra porcentaje final y superficies con placa."
         V7Overlay.ICDAS -> "Registra ICDAS por superficie; si el formato pide un valor por diente, usa el mayor código entre sus caras."
