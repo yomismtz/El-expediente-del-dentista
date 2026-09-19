@@ -89,11 +89,11 @@ private fun SettingsV19Screen(
         val compact = maxWidth < 380.dp || systemScale >= 1.20f
         val paletteColumns = if (compact) 1 else if (maxWidth < 650.dp) 2 else 3
         Column(
-            Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(VisualSpacingV49.lg),
+            verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.lg)
         ) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedButton(onClick = onBack) { Text("‹") }
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(VisualSpacingV49.md)) {
+                OutlinedButton(onClick = onBack, shape = MaterialTheme.shapes.small) { Text("‹") }
                 Column(Modifier.weight(1f)) {
                     Text(tr(lang,"Apariencia, accesibilidad e información","Appearance, accessibility & information"),style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black)
                     Text(tr(lang,"Los cambios se guardan automáticamente y permanecen al cerrar la app.","Changes save automatically and remain after closing the app."),style=MaterialTheme.typography.bodyMedium)
@@ -113,7 +113,7 @@ private fun SettingsV19Screen(
 
             SettingCardV19(tr(lang,"Paleta de colores inspirada en aves","Bird-inspired color palette")) {
                 BirdPaletteChoices.chunked(paletteColumns).forEach { group ->
-                    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(VisualSpacingV49.sm)) {
                         group.forEach { style ->
                             PaletteCardV19(style,lang,preferences.birdPaletteStyle==style,{onPreferencesChanged(preferences.copy(birdPaletteStyle=style))},Modifier.weight(1f))
                         }
@@ -132,8 +132,8 @@ private fun SettingsV19Screen(
                 TextSizeStyle.entries.forEach { style ->
                     FilterChip(preferences.textSizeStyle==style,{onPreferencesChanged(preferences.copy(textSizeStyle=style))},{Text(textSizeDisplayName(style,lang))},modifier=Modifier.fillMaxWidth())
                 }
-                Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer),modifier=Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(5.dp)) {
+                Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer),modifier=Modifier.fillMaxWidth(),shape=MaterialTheme.shapes.medium,border=BorderStroke(1.dp,MaterialTheme.colorScheme.outlineVariant)) {
+                    Column(Modifier.padding(VisualSpacingV49.md),verticalArrangement=Arrangement.spacedBy(VisualSpacingV49.xs)) {
                         Text(tr(lang,"Vista previa","Preview"),fontWeight=FontWeight.Black)
                         Text(tr(lang,"Exploración odontológica · OD 36 · Hallazgos clínicos","Dental examination · Tooth 36 · Clinical findings"),style=MaterialTheme.typography.bodyLarge)
                         Text(tr(lang,"También respeta la escala de letra configurada en Android.","Android system font scaling is also respected."),style=MaterialTheme.typography.bodyMedium)
@@ -142,8 +142,8 @@ private fun SettingsV19Screen(
             }
 
             SettingCardV19(tr(lang,"Adaptación a pantalla","Screen adaptation")) {
-                Text("📱 ${tr(lang,"Ancho disponible","Available width")}: $widthDp dp")
-                Text("🔤 ${tr(lang,"Escala Android","Android scale")}: ${"%.0f".format(systemScale*100)}%")
+                Text("${tr(lang,"Ancho disponible","Available width")}: $widthDp dp")
+                Text("${tr(lang,"Escala Android","Android scale")}: ${"%.0f".format(systemScale*100)}%")
                 Text(if(compact)tr(lang,"Modo compacto activo: se prioriza una columna para evitar recortes.","Compact mode active: one column is prioritized to prevent clipping.") else tr(lang,"Modo estándar/ampliado: se aprovecha el ancho disponible.","Standard/expanded mode: available width is used."))
             }
 
@@ -187,9 +187,9 @@ private fun SettingsV19Screen(
 
 @Composable
 private fun SettingCardV19(title:String,content:@Composable ()->Unit) {
-    Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.4f)),shape=RoundedCornerShape(18.dp)) {
-        Column(Modifier.fillMaxWidth().padding(14.dp),verticalArrangement=Arrangement.spacedBy(9.dp)) {
-            Text(title,fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
+    Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outlineVariant),shape=MaterialTheme.shapes.large,elevation=CardDefaults.cardElevation(defaultElevation=1.dp)) {
+        Column(Modifier.fillMaxWidth().padding(VisualSpacingV49.lg),verticalArrangement=Arrangement.spacedBy(VisualSpacingV49.sm)) {
+            Text(title,fontWeight=FontWeight.SemiBold,style=MaterialTheme.typography.titleMedium)
             content()
         }
     }
@@ -197,8 +197,8 @@ private fun SettingCardV19(title:String,content:@Composable ()->Unit) {
 
 @Composable
 private fun PaletteCardV19(style:BirdPaletteStyle,lang:String,selected:Boolean,onClick:()->Unit,modifier:Modifier=Modifier) {
-    Card(onClick=onClick,modifier=modifier,colors=CardDefaults.cardColors(containerColor=if(selected)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface),border=BorderStroke(if(selected)2.dp else 1.dp,if(selected)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha=.4f)),shape=RoundedCornerShape(14.dp)) {
-        Column(Modifier.fillMaxWidth().padding(9.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(6.dp)) {
+    Card(onClick=onClick,modifier=modifier,colors=CardDefaults.cardColors(containerColor=if(selected)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface),border=BorderStroke(if(selected)2.dp else 1.dp,if(selected)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant),shape=MaterialTheme.shapes.medium,elevation=CardDefaults.cardElevation(defaultElevation=if(selected)2.dp else 1.dp)) {
+        Column(Modifier.fillMaxWidth().padding(VisualSpacingV49.sm),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(VisualSpacingV49.xs)) {
             Text(paletteDisplayName(style,lang),fontWeight=if(selected)FontWeight.Black else FontWeight.Medium,textAlign=TextAlign.Center)
             Row(horizontalArrangement=Arrangement.spacedBy(4.dp)) { paletteSwatches(style).forEach { c -> Box(Modifier.size(16.dp).background(c,CircleShape)) } }
             if(style==BirdPaletteStyle.AGAPORNI) Text(tr(lang,"Predeterminada","Default"),style=MaterialTheme.typography.labelSmall)
