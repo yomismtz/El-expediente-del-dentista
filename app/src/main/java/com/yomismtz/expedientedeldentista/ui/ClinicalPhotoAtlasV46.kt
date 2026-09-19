@@ -33,21 +33,17 @@ private data class ClinicalPhotoV46(
 
 @Composable
 private fun ClinicalPhotoCardV46(photo: ClinicalPhotoV46) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    EducationalVisualFrameV49(
+        title = photo.title,
+        caption = photo.caption,
+        credit = photo.credit
     ) {
-        Column(Modifier.fillMaxWidth().padding(10.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
-            Image(
-                painter = painterResource(photo.drawable),
-                contentDescription = photo.caption,
-                modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 360.dp),
-                contentScale = ContentScale.Fit
-            )
-            Text(photo.title, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
-            Text(photo.caption)
-            Text(photo.credit, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
-        }
+        Image(
+            painter = painterResource(photo.drawable),
+            contentDescription = photo.caption,
+            modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 360.dp),
+            contentScale = ContentScale.Fit
+        )
     }
 }
 
