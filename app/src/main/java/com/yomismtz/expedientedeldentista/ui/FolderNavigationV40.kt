@@ -68,17 +68,17 @@ internal fun FolderMenuV40Screen(lang:String,onNavigate:(AppScreen)->Unit,onExtr
             val detail=if(i==0) tr(lang,"Comienza el recorrido clínico educativo","Start the educational clinical workflow") else tr(lang,"Idioma, profesional, paleta y accesibilidad","Language, clinician, palette and accessibility")
             val icon=if(i==0)"📋" else "⚙"
             val color=if(i==0)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
-            Card(onClick=if(i==0)onIntake else onSettings,modifier=Modifier.fillMaxWidth().heightIn(min=72.dp),colors=CardDefaults.cardColors(containerColor=color),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline),shape=RoundedCornerShape(16.dp)){
-                Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
-                    Text("$icon $title",Modifier.fillMaxWidth(),textAlign=TextAlign.Center,fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
-                    Text(detail,Modifier.fillMaxWidth(),textAlign=TextAlign.Center,style=MaterialTheme.typography.bodySmall)
+            Card(onClick=if(i==0)onIntake else onSettings,modifier=Modifier.fillMaxWidth().heightIn(min=72.dp),colors=CardDefaults.cardColors(containerColor=color),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outlineVariant),shape=MaterialTheme.shapes.large,elevation=CardDefaults.cardElevation(defaultElevation=1.dp)){
+                Column(Modifier.fillMaxWidth().padding(VisualSpacingV49.lg),verticalArrangement=Arrangement.spacedBy(VisualSpacingV49.xs)){
+                    Text(title,Modifier.fillMaxWidth(),textAlign=TextAlign.Center,fontWeight=FontWeight.SemiBold,style=MaterialTheme.typography.titleMedium)
+                    Text(detail,Modifier.fillMaxWidth(),textAlign=TextAlign.Center,style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
         Text(tr(lang,"Apartados del expediente","Clinical record sections"),style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black,modifier=Modifier.padding(top=4.dp))
         val stack=profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT
         if(stack){MenuColumnV40(leftV40,lang,MaterialTheme.colorScheme.tertiaryContainer,onNavigate,onExtra);MenuColumnV40(rightV40,lang,MaterialTheme.colorScheme.secondaryContainer,onNavigate,onExtra)}
-        else Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(12.dp)){
+        else Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(VisualSpacingV49.md)){
             Column(Modifier.weight(1f)){MenuColumnV40(leftV40,lang,MaterialTheme.colorScheme.tertiaryContainer,onNavigate,onExtra)}
             Column(Modifier.weight(1f)){MenuColumnV40(rightV40,lang,MaterialTheme.colorScheme.secondaryContainer,onNavigate,onExtra)}
         }
@@ -86,9 +86,9 @@ internal fun FolderMenuV40Screen(lang:String,onNavigate:(AppScreen)->Unit,onExtr
 }
 
 @Composable private fun MenuColumnV40(items:List<MenuV40>,lang:String,color:androidx.compose.ui.graphics.Color,onNavigate:(AppScreen)->Unit,onExtra:(FolderExtraV33)->Unit){
-    Column(verticalArrangement=Arrangement.spacedBy(8.dp)){items.forEach{item->
-        Card(onClick={item.extra?.let(onExtra)?:item.screen?.let(onNavigate)},modifier=Modifier.fillMaxWidth().heightIn(min=58.dp),colors=CardDefaults.cardColors(containerColor=color),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.65f)),shape=RoundedCornerShape(14.dp)){
-            Text("${item.icon} ${if(lang=="en")item.en else item.es}",Modifier.fillMaxWidth().padding(horizontal=12.dp,vertical=14.dp),textAlign=TextAlign.Center,fontWeight=FontWeight.Bold,style=MaterialTheme.typography.bodyLarge)
+    Column(verticalArrangement=Arrangement.spacedBy(VisualSpacingV49.sm)){items.forEach{item->
+        Card(onClick={item.extra?.let(onExtra)?:item.screen?.let(onNavigate)},modifier=Modifier.fillMaxWidth().heightIn(min=58.dp),colors=CardDefaults.cardColors(containerColor=color),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outlineVariant),shape=MaterialTheme.shapes.medium,elevation=CardDefaults.cardElevation(defaultElevation=1.dp)){
+            Text(if(lang=="en")item.en else item.es,Modifier.fillMaxWidth().padding(horizontal=VisualSpacingV49.md,vertical=VisualSpacingV49.md),textAlign=TextAlign.Center,fontWeight=FontWeight.SemiBold,style=MaterialTheme.typography.bodyLarge)
         }
     }}
 }
@@ -120,6 +120,6 @@ private val historyCardsV40=listOf(
         null->Unit
     }
     ResponsiveScreenV17("Historia clínica","ATM y oclusión se dejaron únicamente en el menú principal para evitar duplicados.",onBack){profile->
-        AdaptiveGridV17(historyCardsV40.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->val x=historyCardsV40[i];Card(onClick={section=x.section},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline)){Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){Text(x.title,fontWeight=FontWeight.Black);Text(x.detail,style=MaterialTheme.typography.bodySmall)}}}
+        AdaptiveGridV17(historyCardsV40.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->val x=historyCardsV40[i];Card(onClick={section=x.section},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outlineVariant),shape=MaterialTheme.shapes.large,elevation=CardDefaults.cardElevation(defaultElevation=1.dp)){Column(Modifier.padding(VisualSpacingV49.lg),verticalArrangement=Arrangement.spacedBy(VisualSpacingV49.xs)){Text(x.title,fontWeight=FontWeight.SemiBold);Text(x.detail,style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSecondaryContainer)}}}
     }
 }
