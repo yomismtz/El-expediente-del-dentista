@@ -48,7 +48,7 @@ private val exanthemsV43 = listOf(
     ClinicalVisualV43(
         title = "Viruela (smallpox) · histórica/erradicada",
         imageName = "clinical_smallpox",
-        imageSource = "CDC PHIL, ID 10491 · https://phil.cdc.gov/Details.aspx?pid=10491",
+        imageSource = "CDC PHIL, ID 10491 · lesiones maculopapulares tempranas en la lengua de un paciente con viruela · https://phil.cdc.gov/Details.aspx?pid=10491",
         imageLicense = "Dominio público (CDC PHIL).",
         keyFeatures = "Pródromo febril intenso. Las lesiones clásicas son profundas, firmes, redondas y bien delimitadas; en una misma zona tienden a estar en la MISMA etapa de desarrollo.",
         distribution = "Patrón centrífugo: orofaringe, cara y extremidades, con afectación de palmas y plantas más característica que en varicela.",
@@ -81,8 +81,8 @@ private val inflammatorySkinV43 = listOf(
     ClinicalVisualV43(
         title = "Eczema / dermatitis atópica",
         imageName = "clinical_eczema",
-        imageSource = "Wikimedia Commons · File:Atopic dermatitis.png · autor jaro.p · https://commons.wikimedia.org/wiki/File:Atopic_dermatitis.png",
-        imageLicense = "CC BY-SA 3.0 / GFDL; conservar atribución.",
+        imageSource = "Wikimedia Commons · File:Atopic dermatitis close up ac.jpeg · autor Assianir · https://commons.wikimedia.org/wiki/File:Atopic_dermatitis_close_up_ac.jpeg",
+        imageLicense = "CC BY-SA 3.0; copia de alta resolución empaquetada en la app.",
         keyFeatures = "Inflamación cutánea con prurito, xerosis y áreas eritematosas/descamativas. En fases agudas puede haber exudado o costras.",
         distribution = "La localización cambia con la edad; en niños son frecuentes cara y pliegues, y en mayores predominan con frecuencia superficies flexurales.",
         oralClues = "No tiene una lesión oral diagnóstica específica. Importa por antecedentes atópicos, prurito, alergias y tratamientos sistémicos/tópicos.",
@@ -91,8 +91,8 @@ private val inflammatorySkinV43 = listOf(
     ClinicalVisualV43(
         title = "Psoriasis",
         imageName = "clinical_psoriasis",
-        imageSource = "Wikimedia Commons · File:Psoriasis.jpg · autor Marnanel · https://commons.wikimedia.org/wiki/File:Psoriasis.jpg",
-        imageLicense = "CC BY-SA 3.0 / GFDL; conservar atribución.",
+        imageSource = "Wikimedia Commons · File:2803 Psoriasis.jpg · Dr. Gandikota Raghurama Rao · https://commons.wikimedia.org/wiki/File:2803_Psoriasis.jpg",
+        imageLicense = "CC BY 4.0; copia de 1139×749 px empaquetada en la app.",
         keyFeatures = "Enfermedad inflamatoria inmunomediada. Son típicas las placas bien delimitadas, engrosadas, eritematosas, con escama blanquecina/plateada.",
         distribution = "Frecuente en cuero cabelludo, codos, rodillas y región lumbosacra; puede afectar uñas y articulaciones.",
         oralClues = "No debe diagnosticarse por una lesión oral aislada. Preguntar por diagnóstico dermatológico, artritis, medicamentos e inmunomoduladores.",
@@ -164,19 +164,27 @@ private fun ClinicalVisualCardV43(item: ClinicalVisualV43) {
         colors = CardDefaults.cardColors(containerColor = if (open) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant),
         shape = RoundedCornerShape(16.dp)
     ) {
-        Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
-            Text(item.title, fontWeight = FontWeight.Black)
+        Column(Modifier.padding(VisualSpacingV49.md), verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.sm)) {
             if (imageId != 0) {
-                Image(
-                    painter = painterResource(imageId),
-                    contentDescription = item.title,
-                    modifier = Modifier.fillMaxWidth().height(210.dp),
-                    contentScale = ContentScale.Fit
-                )
+                EducationalVisualFrameV49(
+                    title = item.title,
+                    caption = item.imageSource,
+                    credit = item.imageLicense
+                ) {
+                    OfflineClinicalImageV50(
+                        drawable = imageId,
+                        contentDescription = item.title,
+                        maxHeight = 320.dp
+                    )
+                }
             } else {
+                Text(item.title, fontWeight = FontWeight.Black)
                 Text("Imagen no disponible en esta compilación.", color = MaterialTheme.colorScheme.error)
             }
-            Text(if (open) "Toca para cerrar detalles" else "Toca para ver diferencias, claves y fuentes", style = MaterialTheme.typography.bodySmall)
+            Text(
+                if (open) "Toca para cerrar detalles" else "Toca para ver diferencias y claves clínicas",
+                style = MaterialTheme.typography.bodySmall
+            )
             if (open) {
                 Text("Claves clínicas", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                 Text(item.keyFeatures)
@@ -184,9 +192,6 @@ private fun ClinicalVisualCardV43(item: ClinicalVisualV43) {
                 Text(item.distribution)
                 Text("Relevancia oral / interrogatorio", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                 Text(item.oralClues)
-                Text("Fuente de imagen", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
-                Text(item.imageSource, style = MaterialTheme.typography.bodySmall)
-                Text(item.imageLicense, style = MaterialTheme.typography.bodySmall)
                 Text("Fuente clínica", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
                 Text(item.clinicalSource, style = MaterialTheme.typography.bodySmall)
             }
