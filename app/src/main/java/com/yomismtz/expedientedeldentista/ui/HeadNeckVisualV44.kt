@@ -1,10 +1,8 @@
 package com.yomismtz.expedientedeldentista.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -16,8 +14,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.R
@@ -36,16 +32,17 @@ fun HeadNeckTeachingV44Screen(lang: String, onBack: () -> Unit) {
         onBack
     ) { _ ->
         ResponsiveSectionV17(tr(lang, "Forma del cráneo", "Cranial shape")) {
-            Image(
-                painter = painterResource(R.drawable.cranial_shape_reference),
-                contentDescription = tr(lang, "Referencia visual de formas craneales proporcionada por la autora", "Visual cranial-shape reference provided by the author"),
-                modifier = Modifier.fillMaxWidth().height(310.dp),
-                contentScale = ContentScale.Fit
-            )
-            Text(
-                tr(lang, "Imagen proporcionada por la autora. Se conserva con el mismo contenido visual, sin recorte ni rediseño.", "Image provided by the author. Its visual content is preserved without cropping or redesign."),
-                style = MaterialTheme.typography.bodySmall
-            )
+            EducationalVisualFrameV49(
+                title = tr(lang, "Formas craneales · referencia de la autora", "Cranial shapes · author reference"),
+                caption = tr(lang, "Imagen proporcionada por la autora. Se conserva completa, sin recorte ni rediseño.", "Image provided by the author. It is preserved complete without cropping or redesign."),
+                credit = tr(lang, "Fuente: material proporcionado por la autora.", "Source: material provided by the author.")
+            ) {
+                OfflineClinicalImageV50(
+                    drawable = R.drawable.cranial_shape_reference,
+                    contentDescription = tr(lang, "Referencia visual de formas craneales proporcionada por la autora", "Visual cranial-shape reference provided by the author"),
+                    maxHeight = 310.dp
+                )
+            }
             NoticeCard(tr(lang,
                 "La forma craneal se describe por inspección desde distintos planos. La apariencia aislada no permite atribuir un síndrome o enfermedad; cualquier asimetría o deformidad debe correlacionarse con edad, crecimiento, antecedentes y exploración.",
                 "Cranial shape is described by inspection from different planes. Appearance alone does not establish a syndrome or disease; asymmetry or deformity must be correlated with age, growth, history and examination."))
@@ -56,13 +53,17 @@ fun HeadNeckTeachingV44Screen(lang: String, onBack: () -> Unit) {
                 "Para determinar si un paciente pediátrico presenta microcefalia, macrocefalia o un perímetro cefálico dentro del rango esperado se utiliza principalmente el perímetro cefálico (PC), interpretado con tablas apropiadas para edad y sexo.",
                 "To assess whether a pediatric patient has microcephaly, macrocephaly or a head circumference within the expected range, head circumference is measured and interpreted using age- and sex-appropriate charts."),
                 fontWeight = FontWeight.SemiBold)
-            Image(
-                painter = painterResource(R.drawable.head_circumference_reference),
-                contentDescription = tr(lang, "Fotografía de medición del perímetro cefálico", "Photograph of head circumference measurement"),
-                modifier = Modifier.fillMaxWidth().height(245.dp),
-                contentScale = ContentScale.Fit
-            )
-            Text("Imagen: U.S. Air Force / Airman 1st Class Anania Tekurio, vía Wikimedia Commons, dominio público · File:Head diameter measurement.jpg.", style = MaterialTheme.typography.bodySmall)
+            EducationalVisualFrameV49(
+                title = tr(lang, "Medición del perímetro cefálico", "Head-circumference measurement"),
+                caption = tr(lang, "Fotografía demostrativa de medición cefálica; no representa por sí sola microcefalia o macrocefalia.", "Demonstration photograph of head measurement; it does not by itself represent microcephaly or macrocephaly."),
+                credit = "U.S. Air Force / Airman 1st Class Anania Tekurio · dominio público · Wikimedia Commons · File:Head diameter measurement.jpg"
+            ) {
+                OfflineClinicalImageV50(
+                    drawable = R.drawable.head_circumference_reference,
+                    contentDescription = tr(lang, "Fotografía de medición del perímetro cefálico", "Photograph of head circumference measurement"),
+                    maxHeight = 245.dp
+                )
+            }
             Text("Cómo medir el perímetro cefálico", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
             Text("1. Utiliza una cinta métrica flexible y no extensible.")
             Text("2. Rodea la cabeza pasando por la parte más prominente de la frente (glabela/región frontal) y la parte más prominente del occipital.")
@@ -75,13 +76,17 @@ fun HeadNeckTeachingV44Screen(lang: String, onBack: () -> Unit) {
         }
 
         ResponsiveSectionV17(tr(lang, "Implantación del cabello", "Hairline")) {
-            Image(
-                painter = painterResource(R.drawable.hairline_reference),
-                contentDescription = tr(lang, "Fotografía real de línea de implantación del cabello", "Real photograph of a hairline"),
-                modifier = Modifier.fillMaxWidth().height(230.dp),
-                contentScale = ContentScale.Fit
-            )
-            Text("Referencia fotográfica: Wikimedia Commons · File:Hairline.jpg · Acr319 · dominio público.", style = MaterialTheme.typography.bodySmall)
+            EducationalVisualFrameV49(
+                title = tr(lang, "Línea de implantación del cabello · referencia general", "Hairline · general reference"),
+                caption = tr(lang, "Fotografía general de una línea de implantación. No se usa como ejemplo específico de implantación alta, baja o recesión.", "General photograph of a hairline. It is not used as a specific example of high, low or receding hairline."),
+                credit = "Wikimedia Commons · File:Hairline.jpg · Acr319 · dominio público"
+            ) {
+                OfflineClinicalImageV50(
+                    drawable = R.drawable.hairline_reference,
+                    contentDescription = tr(lang, "Fotografía real de línea de implantación del cabello", "Real photograph of a hairline"),
+                    maxHeight = 230.dp
+                )
+            }
             val items = listOf(
                 "Implantación habitual" to "Describir altura, simetría y contorno sin asignar significado patológico por sí solos.",
                 "Implantación baja" to "La línea de cabello se observa relativamente cercana a la frente inferior; interpretar con proporciones faciales y antecedentes.",
