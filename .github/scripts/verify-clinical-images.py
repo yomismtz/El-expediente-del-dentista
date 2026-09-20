@@ -59,7 +59,13 @@ REQUIRED = [
     "ref_geographic_tongue.jpg",
     "ref_fissured_tongue.jpg",
     "ref_angular_cheilitis.jpg",
-    "icdas_codes_photo.jpg",
+    "icdas_code_0.jpg",
+    "icdas_code_1.jpg",
+    "icdas_code_2.jpg",
+    "icdas_code_3.jpg",
+    "icdas_code_4.jpg",
+    "icdas_code_5.jpg",
+    "icdas_code_6.jpg",
 ]
 
 MIN_SHORT_SIDE = 300
