@@ -41,6 +41,9 @@ jobs:
       - name: Fetch cited clinical images into APK resources
         run: bash .github/scripts/fetch-clinical-images.sh
 
+      - name: Verify clinical image UI policy
+        run: python3 .github/scripts/verify-clinical-image-ui.py
+
       - name: Run preview unit tests
         run: gradle :app:testPreviewUnitTest --stacktrace
 
