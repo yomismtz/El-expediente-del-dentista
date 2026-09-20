@@ -38,6 +38,11 @@ jobs:
       - name: Reserve drawable resources for author images
         run: bash .github/scripts/prepare-author-image-slots.sh
 
+      - name: Install clinical image audit tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+
       - name: Fetch cited clinical images into APK resources
         run: bash .github/scripts/fetch-clinical-images.sh
 
