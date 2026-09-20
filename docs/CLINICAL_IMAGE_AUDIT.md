@@ -80,6 +80,13 @@ La aplicación instalada **no descarga imágenes clínicas durante el uso normal
 
 Los conceptos retirados del **atlas fotográfico** siguen pudiendo enseñarse en texto/razonamiento. No se reintroducirá una imagen hasta contar con una fuente directa, licencia compatible y resolución suficiente.
 
+## Dependencia de red en tiempo de ejecución
+
+- Las rutas clínicas activas usan recursos empaquetados en el APK.
+- El antiguo `OcclusionPhotoAtlasV42Screen`, que todavía contenía `AsyncImage` y URLs de Wikimedia, fue convertido en un wrapper de compatibilidad hacia el atlas offline V46.
+- Las URLs visibles en pies/créditos son texto de atribución y no se usan para cargar la imagen durante el uso normal.
+- CI ejecuta `.github/scripts/verify-clinical-image-ui.py` y falla si las pantallas auditadas reintroducen `AsyncImage`, `ContentScale.Crop` o `ContentScale.FillBounds`.
+
 ## Control automático del empaquetado
 
 `.github/scripts/verify-clinical-images.py` comprueba durante CI:
