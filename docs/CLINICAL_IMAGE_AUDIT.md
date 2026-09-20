@@ -12,7 +12,7 @@ Una imagen se conserva sólo cuando:
 5. el recurso supera la validación automática de formato y tamaño mínimo;
 6. la interfaz usa `ContentScale.Fit` y no amplía el raster por encima de su ancho intrínseco.
 
-La aplicación instalada **no descarga imágenes clínicas durante el uso normal**. Las referencias externas se obtienen durante la compilación y se empaquetan como recursos Android.
+La aplicación instalada **no descarga imágenes clínicas durante el uso normal**. Las referencias externas se obtienen durante la compilación y se empaquetan como recursos Android. Las pantallas clínicas activas usan `OfflineClinicalImageV50`, que mantiene `ContentScale.Fit`, centra el recurso y evita ampliar un raster más allá de su ancho intrínseco.
 
 ## Auditoría vigente
 
@@ -27,20 +27,20 @@ La aplicación instalada **no descarga imágenes clínicas durante el uso normal
 | clinical_rubella.jpg | Rubéola | CDC PHIL 712, dominio público | CONSERVAR |
 | clinical_eczema.jpg | Dermatitis atópica | Wikimedia, Assianir, CC BY-SA 3.0 | SUSTITUYE a Atopic_dermatitis.png. Nueva referencia 2448×3264 px. |
 | clinical_psoriasis.jpg | Psoriasis | Wikimedia, Dr. Gandikota Raghurama Rao, CC BY 4.0 | SUSTITUYE a Psoriasis.jpg. Nueva referencia 1139×749 px. |
-| hairline_reference.jpg | Línea de implantación del cabello | Wikimedia, dominio público | CONSERVAR como referencia descriptiva |
-| head_circumference_reference.jpg | Medición cefálica | U.S. Air Force/Wikimedia, dominio público | CONSERVAR |
+| hairline_reference.jpg | Línea de implantación del cabello | Wikimedia, Acr319, dominio público | CONSERVAR como referencia general. La app aclara que no representa por sí sola implantación alta/baja ni recesión. |
+| head_circumference_reference.jpg | Técnica de medición cefálica | U.S. Air Force / A1C Anania Tekurio vía Wikimedia, dominio público | CONSERVAR. Se presenta como demostración de medición, no como ejemplo de microcefalia o macrocefalia. |
 | ref_tmj_anatomy.png | Anatomía normal de ATM | Frank Gaillard/Radiopaedia vía Wikimedia, CC BY-SA 3.0/GFDL | CONSERVAR. Es ilustración médica, no fotografía. |
 | ref_tmj_mri.jpg | RM de ATM | ARTICULATIONMAN/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
 | ref_tmj_movements.jpg | Sobre de movimientos mandibulares | Rjmedink/Wikimedia, CC BY-SA 4.0 | CONSERVAR. Identificada explícitamente como diagrama educativo. |
-| ref_tmj_panorama.jpg | Cóndilo y fosa articular | ANUG/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
-| ref_deciduous_teeth.jpg | Dentición temporal | David Shankbone/Wikimedia, CC BY-SA 3.0/GFDL | CONSERVAR |
+| ref_tmj_panorama.jpg | Cóndilo y fosa articular | ANUG/Wikimedia, CC BY-SA 4.0 | CONSERVAR como referencia anatómica radiográfica; no se presenta como diagnóstico de TTM. |
+| ref_deciduous_teeth.jpg | Dentición temporal | David Shankbone/Wikimedia, CC BY-SA 3.0/GFDL | CONSERVAR como referencia anatómica. Se retiró la insinuación de que la foto demuestra un plano terminal específico. |
 | ref_angle_i.jpg | Angle Clase I | Challiyan/Wikimedia, CC BY-SA 4.0 | CONSERVAR; el pie aclara que Clase I no equivale a oclusión globalmente normal. |
 | ref_angle_ii.jpg | Angle Clase II/1 | Georg Risse/Wikimedia, CC BY-SA/GFDL | CONSERVAR |
 | ref_angle_iii.jpg | Angle Clase III | Georg Risse/Wikimedia, CC BY-SA/GFDL | CONSERVAR |
 | ref_overjet.jpg | Overjet | Rama2k1/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
 | ref_open_bite.jpg | Mordida abierta anterior | Challiyan/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
 | ref_deep_bite.jpg | Mordida profunda | Challiyan/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
-| ref_midline.jpg | Plano oclusal inclinado / referencia frontal | Challiyan/Wikimedia, CC BY-SA 4.0 | CONSERVAR sólo como referencia frontal/plano oclusal; no presentarla como prueba aislada de desviación de línea media. |
+| ref_midline.jpg | Desviación de línea media dental | DRosenbach/Wikimedia, dominio público · File:Deviated midline 2.JPG | **SUSTITUIDA**. Se retiró Canted occlusal plane.jpg porque no era una referencia específica de línea media. La nueva foto documenta discrepancia de línea media y además muestra desgaste por bruxismo, dato que se declara en el pie. |
 | ref_crossbite_anterior.jpg | Mordida cruzada anterior | Challiyan/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
 | ref_diastema.png | Diastema maxilar medio | Ian Furst/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
 | ref_crowding.jpg | Apiñamiento severo | Challiyan/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
@@ -53,7 +53,7 @@ La aplicación instalada **no descarga imágenes clínicas durante el uso normal
 | ref_hypomineralization.jpg | Hipomineralización de incisivo | Federico Morales Corona/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
 | ref_impacted_canine.jpg | Canino impactado | DRosenbach/Wikimedia, CC BY-SA 3.0 | CONSERVAR, sin ampliar por encima del tamaño nativo. |
 | ref_impacted_second_molar.png | Segundo molar impactado | Coronation Dental Specialty Group/Wikimedia, CC BY-SA 3.0 | CONSERVAR, sin ampliar por encima del tamaño nativo. |
-| ref_impacted_panorama.jpg | Panorámica con dientes impactados | Coronation Dental Specialty Group/Wikimedia, CC BY 3.0 | CONSERVAR |
+| ref_impacted_panorama.jpg | Panorámica con dientes impactados / desarrollo y posición | Coronation Dental Specialty Group/Wikimedia, CC BY 3.0 | CONSERVAR. Se retiró su uso como ejemplo específico de “retraso/asimetría eruptiva”; ahora sólo enseña lectura de desarrollo, posición y retención. |
 | ref_infant_teeth.jpg | Dientes temporales en lactante | Chrisbwah/Wikimedia, CC BY-SA 3.0 | CONSERVAR; el pie aclara que no es un ejemplo de diente natal/neonatal. |
 | ref_aphthous.jpg | Úlcera aftosa | Genppy/Wikimedia, licencia libre indicada en ficha | CONSERVAR |
 | ref_leukoplakia.jpg | Leucoplasia oral | Klaus D. Peter/Wikimedia, CC BY 3.0 DE | CONSERVAR; pie aclara contexto histopatológico del caso fuente. |
