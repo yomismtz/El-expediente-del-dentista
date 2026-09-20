@@ -72,23 +72,35 @@ fetch_icdas_atlas() {
   local pdf="$OUT/.icdas_article.$RANDOM.pdf"
   local prefix="$OUT/.icdas_page.$RANDOM"
   local target="$OUT/icdas_codes_photo.jpg"
-  local official_pdf="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5030492/pdf/ijcpd-04-093.pdf"
+  local sources=(
+    "https://www.ijcpd.com/doi/pdf/10.5005/jp-journals-10005-1089"
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5030492/pdf/ijcpd-04-093.pdf"
+    "https://pdfs.semanticscholar.org/1469/4c5e7c824e1178eba66e533777f725f0512d.pdf"
+  )
 
   echo "Preparando atlas fotográfico ICDAS 0–6"
-  if curl -L --fail --connect-timeout 6 --max-time 45 --retry 2 --retry-delay 2 --retry-max-time 110 \
-    -A "YSM-Expediente-Educational-App/1.0" "$official_pdf" -o "$pdf" >/dev/null 2>&1 \
-    && [ -s "$pdf" ] && command -v pdftoppm >/dev/null 2>&1; then
-    if pdftoppm -f 3 -l 3 -singlefile -jpeg -r 180 "$pdf" "$prefix" >/dev/null 2>&1 \
+  if ! command -v pdftoppm >/dev/null 2>&1; then
+    echo "AVISO: pdftoppm no está disponible; no se puede preparar la figura ICDAS." >&2
+    return 0
+  fi
+
+  local source
+  for source in "${sources[@]}"; do
+    rm -f "$pdf" "$prefix.jpg"
+    if curl -L --fail --connect-timeout 6 --max-time 45 --retry 2 --retry-delay 2 --retry-max-time 110 \
+      -A "YSM-Expediente-Educational-App/1.0" "$source" -o "$pdf" >/dev/null 2>&1 \
+      && [ -s "$pdf" ] \
+      && pdftoppm -f 3 -l 3 -singlefile -jpeg -r 180 "$pdf" "$prefix" >/dev/null 2>&1 \
       && [ -s "$prefix.jpg" ]; then
       mv -f "$prefix.jpg" "$target"
       rm -f "$pdf"
-      echo "OK icdas_codes_photo.jpg · fuente CC BY 3.0"
+      echo "OK icdas_codes_photo.jpg · Gugnani et al. Fig. 1A–G · CC BY 3.0"
       return 0
     fi
-  fi
+  done
 
   rm -f "$pdf" "$prefix.jpg" "$target"
-  echo "AVISO: no se pudo preparar el atlas ICDAS desde el PDF CC BY 3.0 de PMC; la compilación se detendrá en la validación." >&2
+  echo "AVISO: no se pudo preparar el atlas ICDAS desde ninguna copia académica del artículo CC BY 3.0; la compilación se detendrá en la validación." >&2
   return 0
 }
 
