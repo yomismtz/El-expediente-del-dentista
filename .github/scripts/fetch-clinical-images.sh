@@ -93,8 +93,34 @@ fetch_icdas_atlas() {
       && pdftoppm -f 3 -l 3 -singlefile -jpeg -r 180 "$pdf" "$prefix" >/dev/null 2>&1 \
       && [ -s "$prefix.jpg" ]; then
       mv -f "$prefix.jpg" "$target"
+
+      # Recorta cada fotografía A–G como recurso independiente. Las coordenadas
+      # corresponden a la página 95 renderizada a 180 dpi por pdftoppm.
+      local specs=(
+        "0 280 220 530 430"
+        "1 280 650 530 460"
+        "2 280 1110 530 440"
+        "3 280 1580 530 420"
+        "4 810 220 535 430"
+        "5 810 650 535 460"
+        "6 810 1110 535 440"
+      )
+      local spec code x y w h
+      for spec in "${specs[@]}"; do
+        read -r code x y w h <<< "$spec"
+        rm -f "$OUT/icdas_code_${code}.jpg"
+        if ! pdftoppm -f 3 -l 3 -singlefile -jpeg -r 180 \
+          -x "$x" -y "$y" -W "$w" -H "$h" \
+          "$pdf" "$OUT/icdas_code_${code}" >/dev/null 2>&1 \
+          || [ ! -s "$OUT/icdas_code_${code}.jpg" ]; then
+          rm -f "$pdf" "$target" "$OUT"/icdas_code_*.jpg
+          echo "AVISO: no se pudo recortar ICDAS $code desde la figura original." >&2
+          return 0
+        fi
+      done
+
       rm -f "$pdf"
-      echo "OK icdas_codes_photo.jpg · Gugnani et al. Fig. 1A–G · CC BY 3.0"
+      echo "OK ICDAS 0–6 · siete fotografías individuales · Gugnani et al. Fig. 1A–G · CC BY 3.0"
       return 0
     fi
   done
@@ -121,8 +147,8 @@ commons "TMJ%20movements.jpg" "ref_tmj_movements.jpg"
 commons "TMJ%20panorama.jpg" "ref_tmj_panorama.jpg"
 commons "Deciduous%20teeth%20by%20David%20Shankbone%20new.jpg" "ref_deciduous_teeth.jpg"
 commons "Class%201%20bimaxillary%20protrusion.jpg" "ref_angle_i.jpg"
-commons "Zahnfehlstellung%20Angle-Klasse%20II-1.jpg" "ref_angle_ii.jpg"
-commons "Zahnfehlstellung%20Angle-Klasse%20III.jpg" "ref_angle_iii.jpg"
+commons "Class2division1malocclusion.jpg" "ref_angle_ii.jpg"
+commons "Class%203%20Malocclusion.jpg" "ref_angle_iii.jpg"
 commons "Overjet.jpg" "ref_overjet.jpg"
 commons "Anterior%20open%20bite%20malocclusion.jpg" "ref_open_bite.jpg"
 commons "Deep%20bite.jpg" "ref_deep_bite.jpg"
@@ -146,7 +172,7 @@ commons "Orale%20Leukoplakie.jpg" "ref_leukoplakia.jpg"
 commons "Lichen%20planus.jpg" "ref_lichen_planus.jpg"
 commons "Herpes%20labialis.jpg" "ref_herpes.jpg"
 commons "Human%20tongue%20infected%20with%20oral%20candidiasis.jpg" "ref_candidiasis.jpg"
-commons "Mucocele%20of%20Lower%20Lip%20%2849425670122%29.jpg" "ref_mucocele.jpg"
+commons "Mucocele02-17-06cropped.jpg" "ref_mucocele.jpg"
 commons "Ranula%20human%2009.jpg" "ref_ranula.jpg"
 commons "Geographic%20tongue.JPG" "ref_geographic_tongue.jpg"
 commons "Fissured%20geographic%20tongue.jpg" "ref_fissured_tongue.jpg"
