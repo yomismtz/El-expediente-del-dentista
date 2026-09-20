@@ -238,6 +238,16 @@ private val icdasTeachingV48 = listOf(
     )
 )
 
+private fun icdasPhotoDrawableV50(code: Int): Int = when (code.coerceIn(0, 6)) {
+    0 -> R.drawable.icdas_code_0
+    1 -> R.drawable.icdas_code_1
+    2 -> R.drawable.icdas_code_2
+    3 -> R.drawable.icdas_code_3
+    4 -> R.drawable.icdas_code_4
+    5 -> R.drawable.icdas_code_5
+    else -> R.drawable.icdas_code_6
+}
+
 private fun icdasActivityTextV48(code: Int, lang: String): String = when (code) {
     0 -> tr(
         lang,
@@ -436,25 +446,29 @@ fun IcdasScreen(
         }
 
         ResponsiveSectionV17(
-            tr(lang, "3 · Atlas fotográfico clínico ICDAS 0–6", "3 · ICDAS 0–6 clinical photo atlas")
+            tr(lang, "3 · Fotografía clínica ICDAS $guideCode", "3 · ICDAS $guideCode clinical photograph")
         ) {
             EducationalVisualFrameV49(
-                title = tr(lang, "ICDAS 0–6 · referencia clínica", "ICDAS 0–6 · clinical reference"),
+                title = tr(
+                    lang,
+                    "ICDAS $guideCode · ${selectedGuide.stageEs}",
+                    "ICDAS $guideCode · ${selectedGuide.stageEn}"
+                ),
                 caption = tr(
                     lang,
-                    "Mapa de la figura: A=0 · B=1 · C=2 · D=3 · E=4 · F=5 · G=6.",
-                    "Figure map: A=0 · B=1 · C=2 · D=3 · E=4 · F=5 · G=6."
+                    "Recorte de la fotografía correspondiente al código $guideCode en la Fig. 1A–G. Se conserva sin estirar ni recortar dentro de la interfaz.",
+                    "Crop of the photograph corresponding to code $guideCode in Fig. 1A–G. It is shown without stretching or interface cropping."
                 ),
                 credit = "Gugnani N, Pandit IK, Srivastava N, Gupta M, Sharma M. Int J Clin Pediatr Dent. 2011;4(2):93–100. Fig. 1A–G. CC BY 3.0 · DOI 10.5005/jp-journals-10005-1089 · https://pmc.ncbi.nlm.nih.gov/articles/PMC5030492/"
             ) {
                 OfflineClinicalImageV50(
-                    drawable = R.drawable.icdas_codes_photo,
+                    drawable = icdasPhotoDrawableV50(guideCode),
                     contentDescription = tr(
                         lang,
-                        "Fotografías clínicas A a G correspondientes a ICDAS 0 a 6",
-                        "Clinical photographs A through G corresponding to ICDAS 0 through 6"
+                        "Fotografía clínica representativa de ICDAS $guideCode",
+                        "Clinical photograph representing ICDAS $guideCode"
                     ),
-                    maxHeight = 480.dp
+                    maxHeight = 360.dp
                 )
             }
         }
