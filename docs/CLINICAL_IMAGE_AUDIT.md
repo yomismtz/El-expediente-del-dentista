@@ -1,6 +1,6 @@
 # Auditoría de imágenes clínicas y educativas
 
-Última revisión: 2026-09-19
+Última revisión: 2026-09-20
 
 ## Criterios
 
@@ -20,7 +20,7 @@ La aplicación instalada **no descarga imágenes clínicas durante el uso normal
 |---|---|---|---|
 | clinician_doctor_photo.jpg | Retrato Doctor | Wikimedia/DVIDS, dominio público | CONSERVAR |
 | clinician_doctora_photo.jpg | Retrato Doctora | Wikimedia, Erik Christensen, CC BY-SA 3.0 | CONSERVAR |
-| icdas_codes_photo.jpg | ICDAS 0–6 | Gugnani et al., Fig. 1A–G, CC BY 3.0 | CONSERVAR. Pie bibliográfico visible. |
+| icdas_code_0.jpg … icdas_code_6.jpg | ICDAS 0–6 | Gugnani et al., Fig. 1A–G, CC BY 3.0 | **SUSTITUCIÓN DE PRESENTACIÓN**: la página completa se recorta en siete fotografías independientes A–G para que cada código se vea con tamaño útil y sin deformación. |
 | clinical_varicella.jpg | Varicela | CDC PHIL 6121, dominio público | CONSERVAR |
 | clinical_smallpox.jpg | Viruela | CDC PHIL 10491, dominio público | CONSERVAR con identificación corregida: muestra lesiones tempranas en lengua, no distribución cutánea general. |
 | clinical_measles.jpg | Sarampión | CDC PHIL 4497, dominio público | CONSERVAR |
@@ -32,11 +32,11 @@ La aplicación instalada **no descarga imágenes clínicas durante el uso normal
 | ref_tmj_anatomy.png | Anatomía normal de ATM | Frank Gaillard/Radiopaedia vía Wikimedia, CC BY-SA 3.0/GFDL | CONSERVAR. Es ilustración médica, no fotografía. |
 | ref_tmj_mri.jpg | RM de ATM | ARTICULATIONMAN/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
 | ref_tmj_movements.jpg | Sobre de movimientos mandibulares | Rjmedink/Wikimedia, CC BY-SA 4.0 | CONSERVAR. Identificada explícitamente como diagrama educativo. |
-| ref_tmj_panorama.jpg | Cóndilo y fosa articular | ANUG/Wikimedia, CC BY-SA 4.0 | CONSERVAR como referencia anatómica radiográfica; no se presenta como diagnóstico de TTM. |
+| ref_tmj_panorama.jpg | Cóndilo y fosa articular | ANUG/Wikimedia, CC BY-SA 4.0 | CONSERVAR, pero el pie se corrige: es un montaje/serie de proyecciones de la región condilar obtenidas con equipo panorámico, no una ortopantomografía dental completa. |
 | ref_deciduous_teeth.jpg | Dentición temporal | David Shankbone/Wikimedia, CC BY-SA 3.0/GFDL | CONSERVAR como referencia anatómica. Se retiró la insinuación de que la foto demuestra un plano terminal específico. |
 | ref_angle_i.jpg | Angle Clase I | Challiyan/Wikimedia, CC BY-SA 4.0 | CONSERVAR; el pie aclara que Clase I no equivale a oclusión globalmente normal. |
-| ref_angle_ii.jpg | Angle Clase II/1 | Georg Risse/Wikimedia, CC BY-SA/GFDL | CONSERVAR |
-| ref_angle_iii.jpg | Angle Clase III | Georg Risse/Wikimedia, CC BY-SA/GFDL | CONSERVAR |
+| ref_angle_ii.jpg | Angle Clase II/1 | Challiyan/Wikimedia, CC BY-SA 4.0 · File:Class2division1malocclusion.jpg | **SUSTITUIDA**. El recurso anterior era un diagrama pese a estar descrito como fotografía clínica; ahora se usa una fotografía clínica real. |
+| ref_angle_iii.jpg | Angle Clase III | Challiyan/Wikimedia, CC BY-SA 4.0 · File:Class 3 Malocclusion.jpg | **SUSTITUIDA**. El recurso anterior era un diagrama pese a estar descrito como fotografía clínica; ahora se usa una fotografía clínica real. |
 | ref_overjet.jpg | Overjet | Rama2k1/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
 | ref_open_bite.jpg | Mordida abierta anterior | Challiyan/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
 | ref_deep_bite.jpg | Mordida profunda | Challiyan/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
@@ -60,10 +60,10 @@ La aplicación instalada **no descarga imágenes clínicas durante el uso normal
 | ref_lichen_planus.jpg | Liquen plano oral reticular | Ian Furst/Wikimedia, CC BY-SA 4.0 | CONSERVAR |
 | ref_herpes.jpg | Herpes labial | Metju12/Wikimedia, dominio público | CONSERVAR |
 | ref_candidiasis.jpg | Candidiasis oral | James Heilman, MD/Wikimedia, CC BY-SA 3.0/GFDL | CONSERVAR |
-| ref_mucocele.jpg | Mucocele de labio inferior | Ed Uthman/Wikimedia, licencia Creative Commons | CONSERVAR |
+| ref_mucocele.jpg | Mucocele de labio inferior | Dozenist/Wikimedia, CC BY-SA 3.0/GFDL · File:Mucocele02-17-06cropped.jpg | **SUSTITUIDA**. La imagen anterior resultó ser histopatología aunque la app la describía como fotografía clínica; ahora se usa una fotografía clínica real del labio inferior. |
 | ref_ranula.jpg | Ránula | Ph0t0happy/Wikimedia, CC BY-SA 3.0/GFDL | CONSERVAR |
 | ref_geographic_tongue.jpg | Lengua geográfica | Martanopue/Wikimedia, CC BY-SA 3.0 | CONSERVAR |
-| ref_fissured_tongue.jpg | Lengua fisurada/geográfica | Kozlovsk/Wikimedia, licencia indicada en ficha | CONSERVAR |
+| ref_fissured_tongue.jpg | Lengua fisurada/geográfica | Kozlovsk/Wikimedia, CC BY-SA 3.0/GFDL | CONSERVAR; la imagen muestra ambas condiciones y la app evita repetir afirmaciones etiológicas no sustentadas. |
 | ref_angular_cheilitis.jpg | Queilitis angular | James Heilman, MD/Wikimedia, CC BY-SA 3.0 | CONSERVAR |
 | general_inspection_reference | Tabla de inspección general | Imagen proporcionada por la autora | CONSERVAR exacta, completa y sin recorte/rediseño |
 
@@ -96,3 +96,12 @@ Los conceptos retirados del **atlas fotográfico** siguen pudiendo enseñarse en
 - que supere un umbral mínimo de 400 px en el lado largo y 300 px en el corto.
 
 Si una imagen necesaria no cumple, la compilación falla antes de generar el APK. Esto evita depender de una URL durante el uso normal y evita publicar una compilación con recursos clínicos ausentes o corruptos.
+
+## Correcciones añadidas el 2026-09-20
+
+- Auditoría visual realizada directamente sobre el APK preview generado por CI, no sólo sobre nombres de archivo.
+- Se verificó que `OfflineClinicalImageV50` usa `ContentScale.Fit`, conserva proporciones y limita el ancho al raster intrínseco.
+- Se sustituyeron Angle II/1 y Angle III por fotografías clínicas reales de alta resolución.
+- Se sustituyó la histología de mucocele por una fotografía clínica de mucocele en labio inferior.
+- La referencia radiográfica de ATM fue reetiquetada para describir exactamente el montaje mostrado.
+- ICDAS 0–6 ahora exige siete recursos individuales empaquetados y validados por CI.
