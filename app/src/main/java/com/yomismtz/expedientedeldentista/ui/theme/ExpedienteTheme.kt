@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.yomismtz.expedientedeldentista.settings.BirdPaletteStyle
 import com.yomismtz.expedientedeldentista.settings.FontStyle
 import com.yomismtz.expedientedeldentista.settings.TextSizeStyle
+import com.yomismtz.expedientedeldentista.settings.ThemeMode
 
 data class BirdPalette(
     val primary: Color,
@@ -226,7 +227,7 @@ fun ExpedienteTheme(
 ) {
     val p = birdPalette(paletteStyle)
     val family = familyFor(fontStyle)
-    val colors = if (isSystemInDarkTheme()) darkScheme(p) else lightScheme(p)
+    val colors = if (themeMode == ThemeMode.DARK) darkScheme(p) else lightScheme(p)
 
     val typography = Typography(
         displaySmall = TextStyle(
