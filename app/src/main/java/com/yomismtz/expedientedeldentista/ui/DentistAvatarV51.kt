@@ -1,46 +1,51 @@
 package com.yomismtz.expedientedeldentista.ui
-import androidx.compose.foundation.Canvas
+
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.yomismtz.expedientedeldentista.R
 import com.yomismtz.expedientedeldentista.settings.*
 
-private fun skinColor(v:SkinTone)=when(v){SkinTone.LIGHT->Color(0xFFFFDFC4);SkinTone.PEACH->Color(0xFFF4B184);SkinTone.TAN->Color(0xFFD58B5B);SkinTone.BROWN->Color(0xFFA96643);SkinTone.DEEP->Color(0xFF68402F)}
-private fun eyeColor(v:EyeColor)=when(v){EyeColor.BROWN->Color(0xFF5B3825);EyeColor.HAZEL->Color(0xFF8A6B32);EyeColor.GREEN->Color(0xFF527A55);EyeColor.BLUE->Color(0xFF4B79A8);EyeColor.GRAY->Color(0xFF737B83)}
-private fun scrubColor(v:ScrubColor)=when(v){ScrubColor.TURQUOISE->Color(0xFF27A7A2);ScrubColor.BLUE->Color(0xFF477FD1);ScrubColor.NAVY->Color(0xFF263B67);ScrubColor.PURPLE->Color(0xFF7350B5);ScrubColor.LILAC->Color(0xFFA986D4);ScrubColor.PINK->Color(0xFFE989A6);ScrubColor.BLACK->Color(0xFF27272B);ScrubColor.WHITE->Color(0xFFF4F4F6);ScrubColor.MINT->Color(0xFF77CDB9);ScrubColor.WINE->Color(0xFF8B334C)}
-private fun lipColor(v:LipColor)=when(v){LipColor.NATURAL->Color(0xFFC97870);LipColor.ROSE->Color(0xFFD85E78);LipColor.CORAL->Color(0xFFE76F61);LipColor.RED->Color(0xFFB93643);LipColor.WINE->Color(0xFF7C3048)}
-private fun mascotEmoji(v:MascotStyle)=when(v){MascotStyle.TOUCAN->"🦜";MascotStyle.LOVEBIRD_GREEN->"🦜";MascotStyle.LOVEBIRD_PASTEL->"🦜";MascotStyle.PUG->"🐶";MascotStyle.POMERANIAN->"🐕";MascotStyle.CLOWNFISH->"🐠";MascotStyle.SHARK->"🦈";MascotStyle.RAVEN->"🐦‍⬛";MascotStyle.MANDARIN_DUCK->"🦆";MascotStyle.FLAMINGO->"🦩";MascotStyle.MACAW->"🦜";MascotStyle.PERSIAN_CAT->"🐱";MascotStyle.WHITE_YELLOW_CAT->"🐈";MascotStyle.ELEPHANT->"🐘";MascotStyle.TURTLE->"🐢";MascotStyle.WHITE_RABBIT->"🐇";MascotStyle.IGUANA->"🦎"}
+@DrawableRes private fun baseRes(p: AppPreferences) = if (p.clinicianTitle == ClinicianTitle.DOCTORA) R.drawable.avatar_base_female else R.drawable.avatar_base_male
+@DrawableRes private fun skinRes(v: SkinTone) = when(v){SkinTone.LIGHT->R.drawable.avatar_skin_1;SkinTone.PEACH->R.drawable.avatar_skin_2;SkinTone.TAN->R.drawable.avatar_skin_3;SkinTone.BROWN->R.drawable.avatar_skin_4;SkinTone.DEEP->R.drawable.avatar_skin_5}
+@DrawableRes private fun hairRes(p: AppPreferences): Int { val n=p.hairStyle.ordinal+1; return if(p.clinicianTitle==ClinicianTitle.DOCTORA) when(n){1->R.drawable.avatar_hair_f_1;2->R.drawable.avatar_hair_f_2;3->R.drawable.avatar_hair_f_3;4->R.drawable.avatar_hair_f_4;5->R.drawable.avatar_hair_f_5;else->R.drawable.avatar_hair_f_6} else when(n){1->R.drawable.avatar_hair_m_1;2->R.drawable.avatar_hair_m_2;3->R.drawable.avatar_hair_m_3;4->R.drawable.avatar_hair_m_4;5->R.drawable.avatar_hair_m_5;else->R.drawable.avatar_hair_m_6}}
+@DrawableRes private fun eyeRes(p: AppPreferences)=when((p.eyeShape.ordinal*2+p.eyeColor.ordinal)%6){0->R.drawable.avatar_eye_1;1->R.drawable.avatar_eye_2;2->R.drawable.avatar_eye_3;3->R.drawable.avatar_eye_4;4->R.drawable.avatar_eye_5;else->R.drawable.avatar_eye_6}
+@DrawableRes private fun mouthRes(p: AppPreferences)=when((p.mouthStyle.ordinal*3+p.lipColor.ordinal)%8){0->R.drawable.avatar_mouth_1;1->R.drawable.avatar_mouth_2;2->R.drawable.avatar_mouth_3;3->R.drawable.avatar_mouth_4;4->R.drawable.avatar_mouth_5;5->R.drawable.avatar_mouth_6;6->R.drawable.avatar_mouth_7;else->R.drawable.avatar_mouth_8}
+@DrawableRes private fun scrubRes(v:ScrubColor)=when(v){ScrubColor.TURQUOISE->R.drawable.avatar_scrub_1;ScrubColor.BLUE->R.drawable.avatar_scrub_2;ScrubColor.NAVY->R.drawable.avatar_scrub_3;ScrubColor.PURPLE->R.drawable.avatar_scrub_4;ScrubColor.LILAC->R.drawable.avatar_scrub_5;ScrubColor.PINK->R.drawable.avatar_scrub_6;ScrubColor.BLACK->R.drawable.avatar_scrub_7;ScrubColor.WHITE->R.drawable.avatar_scrub_8;ScrubColor.MINT->R.drawable.avatar_scrub_9;ScrubColor.WINE->R.drawable.avatar_scrub_10}
+@DrawableRes private fun mascotRes(v:MascotStyle)=when(v){MascotStyle.TOUCAN->R.drawable.mascot_toucan;MascotStyle.LOVEBIRD_GREEN->R.drawable.mascot_lovebird_green;MascotStyle.LOVEBIRD_PASTEL->R.drawable.mascot_lovebird_pastel;MascotStyle.PUG->R.drawable.mascot_pug;MascotStyle.POMERANIAN->R.drawable.mascot_pomeranian;MascotStyle.CLOWNFISH->R.drawable.mascot_clownfish;MascotStyle.SHARK->R.drawable.mascot_shark;MascotStyle.RAVEN->R.drawable.mascot_raven;MascotStyle.MANDARIN_DUCK->R.drawable.mascot_mandarin_duck;MascotStyle.FLAMINGO->R.drawable.mascot_flamingo;MascotStyle.MACAW->R.drawable.mascot_macaw;MascotStyle.PERSIAN_CAT->R.drawable.mascot_persian_cat;MascotStyle.WHITE_YELLOW_CAT->R.drawable.mascot_white_yellow_cat;MascotStyle.ELEPHANT->R.drawable.mascot_elephant;MascotStyle.TURTLE->R.drawable.mascot_turtle;MascotStyle.WHITE_RABBIT->R.drawable.mascot_white_rabbit;MascotStyle.IGUANA->R.drawable.mascot_iguana}
+
+@Composable private fun Layer(@DrawableRes id:Int,modifier:Modifier=Modifier){Image(painterResource(id),null,modifier,contentScale=ContentScale.Fit)}
 
 @Composable fun DentistAvatarPreviewV51(p:AppPreferences,modifier:Modifier=Modifier){
  Card(modifier=modifier,shape=RoundedCornerShape(24.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){
-  Box(Modifier.fillMaxWidth().height(280.dp).padding(12.dp),contentAlignment=Alignment.Center){
-   Canvas(Modifier.fillMaxSize()){
-    val cx=size.width/2f; val face=skinColor(p.skinTone); val hair=Color(0xFF4A2C22); val uniform=scrubColor(p.scrubColor)
-    drawOval(uniform,Offset(cx-size.width*.22f,size.height*.60f),Size(size.width*.44f,size.height*.42f))
-    when(p.hairStyle){HairStyle.SHORT->drawArc(hair,180f,180f,true,Offset(cx-size.width*.15f,size.height*.13f),Size(size.width*.30f,size.height*.24f));HairStyle.BUN->{drawCircle(hair,size.width*.07f,Offset(cx,size.height*.12f));drawOval(hair,Offset(cx-size.width*.16f,size.height*.13f),Size(size.width*.32f,size.height*.28f))};HairStyle.LONG->drawOval(hair,Offset(cx-size.width*.18f,size.height*.12f),Size(size.width*.36f,size.height*.49f));else->drawOval(hair,Offset(cx-size.width*.17f,size.height*.12f),Size(size.width*.34f,size.height*.35f))}
-    drawOval(face,Offset(cx-size.width*.135f,size.height*.19f),Size(size.width*.27f,size.height*.37f))
-    val ey=size.height*.34f;val sep=size.width*.055f;val er=if(p.eyeShape==EyeShape.ROUND)size.width*.025f else size.width*.022f
-    drawCircle(Color.White,er*1.7f,Offset(cx-sep,ey));drawCircle(Color.White,er*1.7f,Offset(cx+sep,ey));drawCircle(eyeColor(p.eyeColor),er,Offset(cx-sep,ey));drawCircle(eyeColor(p.eyeColor),er,Offset(cx+sep,ey));drawCircle(Color.Black,er*.45f,Offset(cx-sep,ey));drawCircle(Color.Black,er*.45f,Offset(cx+sep,ey))
-    drawArc(lipColor(p.lipColor),0f,180f,false,Offset(cx-size.width*.045f,size.height*.44f),Size(size.width*.09f,size.height*.055f),strokeWidth=if(p.mouthStyle==MouthStyle.FULL)8f else 5f)
-    val neck=Path().apply{moveTo(cx-size.width*.055f,size.height*.55f);lineTo(cx+size.width*.055f,size.height*.55f);lineTo(cx+size.width*.09f,size.height*.66f);lineTo(cx-size.width*.09f,size.height*.66f);close()};drawPath(neck,face)
-    drawLine(Color(0xFF444A54),Offset(cx-size.width*.08f,size.height*.63f),Offset(cx-size.width*.025f,size.height*.78f),5f);drawLine(Color(0xFF444A54),Offset(cx+size.width*.08f,size.height*.63f),Offset(cx+size.width*.025f,size.height*.78f),5f)
+  Box(Modifier.fillMaxWidth().height(320.dp).padding(8.dp),contentAlignment=Alignment.Center){
+   Box(Modifier.fillMaxHeight().aspectRatio(1f),contentAlignment=Alignment.Center){
+    Layer(baseRes(p),Modifier.fillMaxSize())
+    Layer(scrubRes(p.scrubColor),Modifier.fillMaxSize())
+    Layer(skinRes(p.skinTone),Modifier.fillMaxSize())
+    Layer(hairRes(p),Modifier.fillMaxSize())
+    Layer(eyeRes(p),Modifier.fillMaxSize())
+    Layer(mouthRes(p),Modifier.fillMaxSize())
    }
-   Text(mascotEmoji(p.mascotStyle),style=MaterialTheme.typography.displayMedium,modifier=Modifier.align(Alignment.CenterEnd).padding(end=20.dp))
+   Layer(mascotRes(p.mascotStyle),Modifier.align(Alignment.BottomEnd).size(112.dp))
   }
  }
 }
+private fun mascotName(v:MascotStyle)=v.name.lowercase().replace('_',' ').replaceFirstChar(Char::uppercase)
+
 @Composable fun DentistAvatarCustomizerV51(p:AppPreferences,onChange:(AppPreferences)->Unit,lang:String){
- Text(tr(lang,"Crea tu dentista","Create your dentist"),style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black);DentistAvatarPreviewV51(p,Modifier.fillMaxWidth())
+ Text(tr(lang,"Crea tu dentista","Create your dentist"),style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black)
+ DentistAvatarPreviewV51(p,Modifier.fillMaxWidth())
  AvatarChoiceV51(tr(lang,"1. Sexo / personaje base","1. Sex / base character"),ClinicianTitle.entries,p.clinicianTitle,{onChange(p.copy(clinicianTitle=it))}){if(it==ClinicianTitle.DOCTORA)tr(lang,"Mujer","Woman") else tr(lang,"Hombre","Man")}
  AvatarChoiceV51(tr(lang,"2. Color de piel","2. Skin tone"),SkinTone.entries,p.skinTone,{onChange(p.copy(skinTone=it))}){it.name.lowercase().replaceFirstChar(Char::uppercase)}
  AvatarChoiceV51(tr(lang,"3. Estilo de cabello","3. Hair style"),HairStyle.entries,p.hairStyle,{onChange(p.copy(hairStyle=it))}){it.name.lowercase().replace('_',' ').replaceFirstChar(Char::uppercase)}
@@ -49,7 +54,7 @@ private fun mascotEmoji(v:MascotStyle)=when(v){MascotStyle.TOUCAN->"🦜";Mascot
  AvatarChoiceV51(tr(lang,"5. Boca","5. Mouth"),MouthStyle.entries,p.mouthStyle,{onChange(p.copy(mouthStyle=it))}){it.name.lowercase().replaceFirstChar(Char::uppercase)}
  AvatarChoiceV51(tr(lang,"Color de labios","Lip color"),LipColor.entries,p.lipColor,{onChange(p.copy(lipColor=it))}){it.name.lowercase().replaceFirstChar(Char::uppercase)}
  AvatarChoiceV51(tr(lang,"6. Color del quirúrgico","6. Scrub color"),ScrubColor.entries,p.scrubColor,{onChange(p.copy(scrubColor=it))}){it.name.lowercase().replaceFirstChar(Char::uppercase)}
- AvatarChoiceV51(tr(lang,"7. Mascota · define la paleta de la app","7. Pet · sets the app palette"),MascotStyle.entries,p.mascotStyle,{onChange(p.copy(mascotStyle=it, birdPaletteStyle=paletteForMascot(it)))}){mascotEmoji(it)+" "+it.name.lowercase().replace('_',' ').replaceFirstChar(Char::uppercase)}
- NoticeCard(tr(lang,"Tu personaje y mascota se guardan en este dispositivo. La mascota seleccionada también aplica automáticamente una paleta inspirada en sus colores a toda la app. Es un avatar educativo y no representa a un profesional real.","Your character and pet are saved on this device. The selected pet also automatically applies a palette inspired by its colors across the app. It is an educational avatar and does not represent a real professional."))
+ AvatarChoiceV51(tr(lang,"7. Mascota · define la paleta de la app","7. Pet · sets the app palette"),MascotStyle.entries,p.mascotStyle,{onChange(p.copy(mascotStyle=it,birdPaletteStyle=paletteForMascot(it)))}){mascotName(it)}
+ NoticeCard(tr(lang,"Tu personaje y mascota se guardan en este dispositivo. La mascota seleccionada aplica automáticamente una paleta inspirada en sus colores a toda la app.","Your character and pet are saved on this device. The selected pet automatically applies a palette inspired by its colors across the app."))
 }
 @Composable private fun <T> AvatarChoiceV51(title:String,values:List<T>,selected:T,onSelect:(T)->Unit,label:(T)->String){Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(6.dp)){Text(title,fontWeight=FontWeight.Bold);values.chunked(3).forEach{row->Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){row.forEach{v->FilterChip(selected==v,{onSelect(v)},{Text(label(v),textAlign=TextAlign.Center)},Modifier.weight(1f))};repeat(3-row.size){Spacer(Modifier.weight(1f))}}}}}
