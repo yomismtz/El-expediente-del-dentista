@@ -37,7 +37,15 @@ import com.yomismtz.expedientedeldentista.settings.*
 @Composable fun DentistAvatarPreviewV51(p:AppPreferences,modifier:Modifier=Modifier){
  Card(modifier=modifier,shape=RoundedCornerShape(24.dp),colors=CardDefaults.cardColors(containerColor=Color.White)){
   Column(Modifier.fillMaxWidth().padding(12.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(8.dp)){
-   Canvas(Modifier.fillMaxWidth().height(300.dp)){ drawDentistV52(p) }
+   Box(Modifier.fillMaxWidth().height(300.dp)){
+    Canvas(Modifier.fillMaxSize()){ drawDentistV52(p) }
+    Image(
+     painter=painterResource(mascotRes(p.mascotStyle)),
+     contentDescription=mascotNameV52(p.mascotStyle,p.languageTag),
+     modifier=Modifier.align(Alignment.BottomEnd).size(118.dp).padding(4.dp),
+     contentScale=ContentScale.Fit
+    )
+   }
    Card(colors=CardDefaults.cardColors(containerColor=Color(0xFFF8F4FF))){
     Column(Modifier.fillMaxWidth().padding(10.dp),horizontalAlignment=Alignment.CenterHorizontally){
      Text(tr(p.languageTag,"Tu personaje","Your character"),fontWeight=FontWeight.Bold,color=Color(0xFF20133A))
