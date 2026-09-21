@@ -84,4 +84,4 @@ private fun mascotNameV52(v:MascotStyle,lang:String)=when(v){
  }
 }
 
-@Composable private fun <T> AvatarChoiceV51(title:String,values:List<T>,selected:T,onSelect:(T)->Unit,label:(T)->String){Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(6.dp)){Text(title,fontWeight=FontWeight.Bold);values.chunked(3).forEach{row->Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){row.forEach{v->FilterChip(selected==v,{onSelect(v)},{Text(label(v),textAlign=TextAlign.Center)},Modifier.weight(1f))};repeat(3-row.size){Spacer(Modifier.weight(1f))}}}}}
+
