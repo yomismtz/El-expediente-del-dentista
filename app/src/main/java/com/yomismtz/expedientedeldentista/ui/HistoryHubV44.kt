@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-private enum class HistorySectionV44 { IDENTIFICATION, COMPLAINT, FAMILY, NONPATH, PATH, SURGICAL, PHYSICAL, ORTHO }
+private enum class HistorySectionV44 { IDENTIFICATION, COMPLAINT, FAMILY, NONPATH, GYNECO, PATH, SURGICAL, PHYSICAL, OCCLUSION, ORTHO, DENTAL_ANOMALIES, HABITS, MUCOSA, PERIODONTAL, RADIOGRAPHIC, AUXILIARIES, ODONTOGRAM }
 private data class HistoryCardV44(
     val section: HistorySectionV44,
     val titleEs: String,
@@ -31,11 +31,20 @@ private val historyCardsV44 = listOf(
     HistoryCardV44(HistorySectionV44.IDENTIFICATION, "Identificación del paciente", "Patient identification", "Qué datos suelen ir en el expediente real, cómo se redactan y qué errores evitar; aquí no se capturan datos personales.", "Which data belong in the real record, how to write them and which mistakes to avoid; no personal data are collected here."),
     HistoryCardV44(HistorySectionV44.COMPLAINT, "Motivo de consulta y padecimiento actual", "Chief complaint and present illness", "Motivo literal, evolución del problema e hipótesis educativas que deben verificarse.", "Literal complaint, course of the problem and educational hypotheses that must be verified."),
     HistoryCardV44(HistorySectionV44.FAMILY, "Antecedentes heredo-familiares", "Family history", "Familiar → categoría → enfermedades frecuentes y qué ampliar cuando el antecedente es positivo.", "Relative → category → common conditions and what to expand when history is positive."),
-    HistoryCardV44(HistorySectionV44.NONPATH, "Antecedentes personales no patológicos", "Non-pathological personal history", "Vivienda, higiene, alimentación, hábitos y antecedentes gineco-obstétricos.", "Housing, hygiene, diet, habits and gynecologic-obstetric history."),
+    HistoryCardV44(HistorySectionV44.NONPATH, "V. Antecedentes personales no patológicos", "V. Non-pathological personal history", "V.1 Habitación · V.2 Hábitos higiénicos · V.3 Hábitos alimenticios · V.4 Inmunizaciones · V.5 Hábitos y toxicomanías.", "V.1 Housing · V.2 Hygiene · V.3 Diet · V.4 Immunizations · V.5 Habits and substance use."),
+    HistoryCardV44(HistorySectionV44.GYNECO, "VI. Antecedentes gineco-obstétricos", "VI. Gynecologic-obstetric history", "Apartado independiente del formato de referencia; contenido educativo y anónimo.", "Independent section in the reference form; educational and anonymous content."),
     HistoryCardV44(HistorySectionV44.PATH, "Antecedentes personales patológicos", "Pathological personal history", "Vacunación, enfermedades, medicamentos y atlas visual de apoyo.", "Vaccination, diseases, medications and a supporting visual atlas."),
     HistoryCardV44(HistorySectionV44.SURGICAL, "Antecedentes quirúrgicos y traumáticos", "Surgical and trauma history", "Cirugías, hospitalizaciones, transfusiones, fracturas/luxaciones y resumen.", "Surgeries, hospitalizations, transfusions, fractures/dislocations and summary."),
-    HistoryCardV44(HistorySectionV44.PHYSICAL, "Exploración física", "Physical examination", "Signos vitales/glucosa e inspección general con los rubros clínicos.", "Vital signs/glucose and general inspection using the clinical sections."),
-    HistoryCardV44(HistorySectionV44.ORTHO, "Antecedentes ortodónticos y ortopédicos", "Orthodontic and orthopedic history", "Brackets, aparatos de ortopedia, finalidad, duración orientativa y motivo/diagnóstico referido.", "Braces and orthopedic appliances, purpose, approximate duration and reported reason/diagnosis.")
+    HistoryCardV44(HistorySectionV44.PHYSICAL, "IX. Exploración física", "IX. Physical examination", "IX.1 Signos vitales · IX.2 Inspección general · IX.3 Cabeza y cuello: cráneo, cara, músculos, cuello, cadenas ganglionares y ATM.", "IX.1 Vital signs · IX.2 General inspection · IX.3 Head and neck: cranium, face, muscles, neck, lymph nodes and TMJ."),
+    HistoryCardV44(HistorySectionV44.OCCLUSION, "X. Examen de oclusión", "X. Occlusion examination", "Dentición/erupción, plano terminal, Angle, caninos, líneas medias, overjet/overbite y mordidas.", "Dentition/eruption, terminal plane, Angle, canine relation, midlines, overjet/overbite and bite relationships."),
+    HistoryCardV44(HistorySectionV44.ORTHO, "XI. Antecedentes de tratamientos ortodónticos", "XI. Orthodontic treatment history", "Tratamientos previos, aparatología, finalidad y duración referida.", "Previous treatment, appliances, purpose and reported duration."),
+    HistoryCardV44(HistorySectionV44.DENTAL_ANOMALIES, "XII. Alteraciones de órganos dentarios", "XII. Dental anomalies", "Alteraciones de forma, número y estructura.", "Anomalies of form, number and structure."),
+    HistoryCardV44(HistorySectionV44.HABITS, "XIII. Hábitos y parafunciones", "XIII. Habits and parafunctions", "Presencia, duración/frecuencia y manifestaciones clínicas.", "Presence, duration/frequency and clinical manifestations."),
+    HistoryCardV44(HistorySectionV44.MUCOSA, "XIV. Examen peribucal e intrabucal", "XIV. Perioral and intraoral examination", "Piel/mucosas, labios, comisuras, carrillos, paladar, orofaringe, lengua y piso de boca.", "Skin/mucosa, lips, commissures, cheeks, palate, oropharynx, tongue and floor of mouth."),
+    HistoryCardV44(HistorySectionV44.PERIODONTAL, "XV. Examen periodontal", "XV. Periodontal examination", "IPC, IHOS y observaciones gingivales/periodontales.", "CPI, OHI-S and gingival/periodontal observations."),
+    HistoryCardV44(HistorySectionV44.RADIOGRAPHIC, "XVI. Estudios radiográficos", "XVI. Radiographic studies", "Periapical/dentoalveolar, aleta mordible, oclusal y estudios extraorales.", "Periapical, bitewing, occlusal and extraoral studies."),
+    HistoryCardV44(HistorySectionV44.AUXILIARIES, "XVII. Auxiliares de diagnóstico", "XVII. Diagnostic aids", "Histopatología, microbiología, análisis clínicos, modelos, cefalometría y fotografías.", "Histopathology, microbiology, laboratory tests, models, cephalometrics and photographs."),
+    HistoryCardV44(HistorySectionV44.ODONTOGRAM, "XVIII. Odontograma · CPOD/ceod", "XVIII. Odontogram · DMFT/dmft", "Odontograma e índices de experiencia de caries.", "Odontogram and caries-experience indices.")
 )
 
 @Composable
@@ -51,16 +60,25 @@ fun HistoryHubV44Screen(lang: String, onVitals: () -> Unit, onBack: () -> Unit) 
         HistorySectionV44.COMPLAINT -> { ChiefComplaintV40Screen(lang) { section = null }; return }
         HistorySectionV44.FAMILY -> { FamilyHistoryV45Screen(lang) { section = null }; return }
         HistorySectionV44.NONPATH -> { NonPathologicalHubV44Screen(lang) { section = null }; return }
+        HistorySectionV44.GYNECO -> { GynecoObstetricGuideV52Screen(lang) { section = null }; return }
         HistorySectionV44.PATH -> { PathologicalV43Screen(lang) { section = null }; return }
         HistorySectionV44.SURGICAL -> { SurgicalTraumaHistoryV40Screen(lang) { section = null }; return }
         HistorySectionV44.PHYSICAL -> { PhysicalExamHubV44Screen(lang, onVitals) { section = null }; return }
+        HistorySectionV44.OCCLUSION -> { OcclusionPhotoAtlasV46Screen(lang) { section = null }; return }
         HistorySectionV44.ORTHO -> { OrthodonticHistoryV45Screen(lang) { section = null }; return }
+        HistorySectionV44.DENTAL_ANOMALIES -> { DentalAnomaliesPhotoV46Screen(lang) { section = null }; return }
+        HistorySectionV44.HABITS -> { HabitsTeachingV40Screen(lang) { section = null }; return }
+        HistorySectionV44.MUCOSA -> { MucosaPhotoAtlasV46Screen(lang) { section = null }; return }
+        HistorySectionV44.PERIODONTAL -> { HistoryPeriodontalHubV52Screen(lang) { section = null }; return }
+        HistorySectionV44.RADIOGRAPHIC -> { RadiographicStudiesV52Screen(lang) { section = null }; return }
+        HistorySectionV44.AUXILIARIES -> { AuxiliariesV20Screen(lang) { section = null }; return }
+        HistorySectionV44.ODONTOGRAM -> { HistoryOdontogramGuideV52Screen(lang) { section = null }; return }
         null -> Unit
     }
 
     ResponsiveScreenV17(
         tr(lang, "Historia clínica", "Clinical history"),
-        tr(lang, "ATM y oclusión permanecen únicamente en el menú principal para evitar duplicados.", "TMJ and occlusion remain only in the main menu to avoid duplicates."),
+        tr(lang, "Índice educativo anónimo organizado como la historia clínica de referencia. No identifica ni enlaza a una escuela, clínica o institución.", "Anonymous teaching index organized like the reference clinical history. It does not identify or link to a school, clinic or institution."),
         onBack
     ) { profile ->
         AdaptiveGridV17(historyCardsV44.size, if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2) { i ->
