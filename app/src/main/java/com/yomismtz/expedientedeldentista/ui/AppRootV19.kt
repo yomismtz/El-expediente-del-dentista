@@ -101,14 +101,10 @@ private fun SettingsV19Screen(
                 }
             }
 
-            SettingCardV19(tr(lang,"Idioma y tratamiento","Language and title")) {
+            SettingCardV19(tr(lang,"Idioma","Language")) {
                 AdaptiveGridV17(2,if(compact)1 else 2) { i ->
                     val tag=if(i==0)"es" else "en"
                     FilterChip(preferences.languageTag==tag,{onPreferencesChanged(preferences.copy(languageTag=tag))},{Text(if(i==0)"Español" else "English")},modifier=Modifier.fillMaxWidth())
-                }
-                AdaptiveGridV17(2,if(compact)1 else 2) { i ->
-                    val title=if(i==0)ClinicianTitle.DOCTOR else ClinicianTitle.DOCTORA
-                    FilterChip(preferences.clinicianTitle==title,{onPreferencesChanged(preferences.copy(clinicianTitle=title))},{Text(if(i==0)"Doctor" else "Doctora")},modifier=Modifier.fillMaxWidth())
                 }
             }
 
@@ -125,15 +121,9 @@ private fun SettingsV19Screen(
                 Text(tr(lang,"El modo claro es el predeterminado. Tu elección queda guardada en este dispositivo.","Light mode is the default. Your choice is saved on this device."),style=MaterialTheme.typography.bodySmall)
             }
 
-            SettingCardV19(tr(lang,"Paleta de colores inspirada en aves","Bird-inspired color palette")) {
-                BirdPaletteChoices.chunked(paletteColumns).forEach { group ->
-                    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(VisualSpacingV49.sm)) {
-                        group.forEach { style ->
-                            PaletteCardV19(style,lang,preferences.birdPaletteStyle==style,{onPreferencesChanged(preferences.copy(birdPaletteStyle=style))},Modifier.weight(1f))
-                        }
-                        repeat(paletteColumns-group.size){Spacer(Modifier.weight(1f))}
-                    }
-                }
+            SettingCardV19(tr(lang,"Tu mascota y paleta","Your pet & palette")) {
+                Text(tr(lang,"Selecciona una de las 17 mascotas. Su paleta de colores se aplica automáticamente a toda la aplicación.","Choose one of the 17 pets. Its color palette is applied automatically throughout the app."),style=MaterialTheme.typography.bodyMedium)
+                MascotPickerV53(preferences,onPreferencesChanged,lang)
             }
 
             SettingCardV19(tr(lang,"Tipo de letra","Typeface")) {
