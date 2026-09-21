@@ -43,6 +43,7 @@ import com.yomismtz.expedientedeldentista.settings.BirdPaletteStyle
 import com.yomismtz.expedientedeldentista.settings.ClinicianTitle
 import com.yomismtz.expedientedeldentista.settings.FontStyle
 import com.yomismtz.expedientedeldentista.settings.TextSizeStyle
+import com.yomismtz.expedientedeldentista.settings.ThemeMode
 import com.yomismtz.expedientedeldentista.ui.theme.BirdPaletteChoices
 import com.yomismtz.expedientedeldentista.ui.theme.fontDisplayName
 import com.yomismtz.expedientedeldentista.ui.theme.paletteDisplayName
@@ -109,6 +110,19 @@ private fun SettingsV19Screen(
                     val title=if(i==0)ClinicianTitle.DOCTOR else ClinicianTitle.DOCTORA
                     FilterChip(preferences.clinicianTitle==title,{onPreferencesChanged(preferences.copy(clinicianTitle=title))},{Text(if(i==0)"Doctor" else "Doctora")},modifier=Modifier.fillMaxWidth())
                 }
+            }
+
+            SettingCardV19(tr(lang,"Tema de la aplicación","App theme")) {
+                AdaptiveGridV17(2,if(compact)1 else 2) { i ->
+                    val mode=if(i==0)ThemeMode.LIGHT else ThemeMode.DARK
+                    FilterChip(
+                        selected=preferences.themeMode==mode,
+                        onClick={onPreferencesChanged(preferences.copy(themeMode=mode))},
+                        label={Text(if(i==0)tr(lang,"☀ Claro","☀ Light") else tr(lang,"☾ Oscuro","☾ Dark"))},
+                        modifier=Modifier.fillMaxWidth()
+                    )
+                }
+                Text(tr(lang,"El modo claro es el predeterminado. Tu elección queda guardada en este dispositivo.","Light mode is the default. Your choice is saved on this device."),style=MaterialTheme.typography.bodySmall)
             }
 
             SettingCardV19(tr(lang,"Paleta de colores inspirada en aves","Bird-inspired color palette")) {
