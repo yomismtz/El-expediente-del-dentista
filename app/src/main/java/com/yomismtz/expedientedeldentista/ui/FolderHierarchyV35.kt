@@ -200,8 +200,8 @@ internal fun PhysicalExamMenuV35Screen(lang: String, onNavigate: (AppScreen) -> 
 @Composable
 internal fun OdontogramHubV35Screen(lang: String, onNavigate: (AppScreen) -> Unit, onBack: () -> Unit) {
     ResponsiveScreenV17(
-        tr(lang, "Odontograma · exámenes de diagnóstico", "Odontogram · diagnostic examinations"),
-        tr(lang, "Desde aquí abre el odontograma y los índices dentales solicitados.", "Open the odontogram and requested dental indices from here."),
+        tr(lang, "Análisis del odontograma", "Odontogram analyses"),
+        tr(lang, "Todos los análisis dentales se conservan juntos en este menú.", "All dental analyses are kept together in this menu."),
         onBack
     ) { profile ->
         val items = listOf(
@@ -210,7 +210,8 @@ internal fun OdontogramHubV35Screen(lang: String, onNavigate: (AppScreen) -> Uni
             FolderItemV35("ceod · dentición temporal", "dmft · primary dentition", "➕", AppScreen.CPOD),
             FolderItemV35("ICDAS", "ICDAS", "🔎", AppScreen.ICDAS),
             FolderItemV35("IHOS", "OHI-S", "🪥", AppScreen.IHOS),
-            FolderItemV35("IPC", "CPI", "6️⃣", AppScreen.IPC)
+            FolderItemV35("IPC", "CPI", "6️⃣", AppScreen.IPC),
+            FolderItemV35("O’Leary", "O’Leary plaque index", "🔴", AppScreen.OLEARY)
         )
         AdaptiveGridV17(items.size, if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2) { index ->
             val item = items[index]
