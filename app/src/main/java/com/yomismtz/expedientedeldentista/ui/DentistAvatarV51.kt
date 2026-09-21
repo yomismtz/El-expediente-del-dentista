@@ -3,8 +3,6 @@ package com.yomismtz.expedientedeldentista.ui
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.graphics.Color
@@ -53,27 +51,35 @@ private fun DrawScope.drawDentistV52(p:AppPreferences){
  val skin=when(p.skinTone){SkinTone.LIGHT->Color(0xFFFFD9C5);SkinTone.PEACH->Color(0xFFF2B48F);SkinTone.TAN->Color(0xFFD68B62);SkinTone.BROWN->Color(0xFFA96348);SkinTone.DEEP->Color(0xFF704333)}
  val shadow=Color.Black.copy(alpha=.10f); val highlight=Color.White.copy(alpha=.22f)
  val scrub=when(p.scrubColor){ScrubColor.TURQUOISE->Color(0xFF27AAA1);ScrubColor.BLUE->Color(0xFF3E7FC7);ScrubColor.NAVY->Color(0xFF31406F);ScrubColor.PURPLE->Color(0xFF7A56B5);ScrubColor.LILAC->Color(0xFFA98AD4);ScrubColor.PINK->Color(0xFFE37CA7);ScrubColor.BLACK->Color(0xFF302E34);ScrubColor.WHITE->Color(0xFFECECF0);ScrubColor.MINT->Color(0xFF7CCCB4);ScrubColor.WINE->Color(0xFF843D59)}
- val hair=if(p.clinicianTitle==ClinicianTitle.DOCTORA) Color(0xFF5B392B) else Color(0xFF493127)
+ val isWoman=p.clinicianTitle==ClinicianTitle.DOCTORA
+ val hair=if(isWoman) Color(0xFF5B392B) else Color(0xFF493127)
  val eye=when(p.eyeColor){EyeColor.BROWN->Color(0xFF5A3426);EyeColor.HAZEL->Color(0xFF8A6A35);EyeColor.GREEN->Color(0xFF4C7A58);EyeColor.BLUE->Color(0xFF4779A8);EyeColor.GRAY->Color(0xFF747982)}
  // sombra suave y cuerpo tipo figura 3D
  drawOval(shadow,Offset(cx-w*.19f,h*.91f),Size(w*.38f,h*.055f))
- drawRoundRect(scrub,Offset(cx-w*.19f,h*.50f),Size(w*.38f,h*.36f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.075f))
- drawRoundRect(highlight,Offset(cx-w*.145f,h*.525f),Size(w*.055f,h*.26f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f))
+ val torsoHalf=if(isWoman) w*.165f else w*.205f
+ drawRoundRect(scrub,Offset(cx-torsoHalf,h*.50f),Size(torsoHalf*2f,h*.36f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(if(isWoman) w*.095f else w*.065f))
+ drawRoundRect(highlight,Offset(cx-torsoHalf+w*.04f,h*.525f),Size(w*.05f,h*.26f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f))
  drawRoundRect(scrub,Offset(cx-w*.135f,h*.81f),Size(w*.105f,h*.14f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f));drawRoundRect(scrub,Offset(cx+w*.03f,h*.81f),Size(w*.105f,h*.14f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f))
  drawRoundRect(Color(0xFFF4F4F6),Offset(cx-w*.135f,h*.935f),Size(w*.105f,h*.025f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.02f));drawRoundRect(Color(0xFFF4F4F6),Offset(cx+w*.03f,h*.935f),Size(w*.105f,h*.025f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.02f))
  drawRoundRect(skin,Offset(cx-w*.045f,h*.405f),Size(w*.09f,h*.12f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f))
  // cabeza y orejas
- drawCircle(skin,w*.032f,Offset(cx-w*.143f,h*.285f));drawCircle(skin,w*.032f,Offset(cx+w*.143f,h*.285f));drawOval(skin,Offset(cx-w*.145f,h*.115f),Size(w*.29f,h*.35f))
- drawOval(highlight,Offset(cx-w*.10f,h*.14f),Size(w*.065f,h*.18f))
+ val faceHalf=if(isWoman) w*.128f else w*.15f
+ drawCircle(skin,w*.032f,Offset(cx-faceHalf,h*.285f));drawCircle(skin,w*.032f,Offset(cx+faceHalf,h*.285f))
+ drawOval(skin,Offset(cx-faceHalf,h*.115f),Size(faceHalf*2f,if(isWoman) h*.36f else h*.34f))
+ drawOval(highlight,Offset(cx-faceHalf*.68f,h*.14f),Size(w*.06f,h*.18f))
  // cabello, con siluetas distintas
  val top=when(p.hairStyle){HairStyle.SHORT->h*.095f;HairStyle.WAVY->h*.06f;HairStyle.CURLY->h*.045f;HairStyle.LONG->h*.055f;HairStyle.BOB->h*.065f;HairStyle.BUN->h*.035f}
- drawOval(hair,Offset(cx-w*.155f,top),Size(w*.31f,h*.17f))
+ val hairHalf=if(isWoman) w*.16f else w*.155f
+ drawOval(hair,Offset(cx-hairHalf,top),Size(hairHalf*2f,if(p.hairStyle==HairStyle.SHORT) h*.135f else h*.17f))
+ if(p.hairStyle==HairStyle.SHORT){drawRoundRect(hair,Offset(cx-hairHalf,h*.13f),Size(w*.035f,h*.10f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.018f));drawRoundRect(hair,Offset(cx+hairHalf-w*.035f,h*.13f),Size(w*.035f,h*.10f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.018f))}
+ if(p.hairStyle==HairStyle.WAVY){for(i in -3..3) drawCircle(hair,w*.033f,Offset(cx+i*w*.045f,h*.115f+(kotlin.math.abs(i)%2)*h*.025f));drawCircle(hair,w*.038f,Offset(cx-w*.145f,h*.22f));drawCircle(hair,w*.038f,Offset(cx+w*.145f,h*.22f))}
  if(p.hairStyle==HairStyle.LONG){drawRoundRect(hair,Offset(cx-w*.175f,h*.13f),Size(w*.06f,h*.34f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f));drawRoundRect(hair,Offset(cx+w*.115f,h*.13f),Size(w*.06f,h*.34f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f))}
  if(p.hairStyle==HairStyle.BOB){drawRoundRect(hair,Offset(cx-w*.17f,h*.14f),Size(w*.055f,h*.22f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f));drawRoundRect(hair,Offset(cx+w*.115f,h*.14f),Size(w*.055f,h*.22f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f))}
  if(p.hairStyle==HairStyle.BUN) drawCircle(hair,w*.062f,Offset(cx,h*.065f))
  if(p.hairStyle==HairStyle.CURLY){for(i in -3..3) drawCircle(hair,w*.036f,Offset(cx+i*w*.04f,h*.11f+(kotlin.math.abs(i)%2)*h*.014f))}
- // cejas
- drawRoundRect(hair,Offset(cx-w*.095f,h*.225f),Size(w*.07f,h*.009f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.01f));drawRoundRect(hair,Offset(cx+w*.025f,h*.225f),Size(w*.07f,h*.009f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.01f))
+ // cejas y pequeños rasgos diferenciadores del personaje base
+ val browH=if(isWoman) h*.006f else h*.010f
+ drawRoundRect(hair,Offset(cx-w*.095f,h*.225f),Size(w*.07f,browH),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.01f));drawRoundRect(hair,Offset(cx+w*.025f,h*.225f),Size(w*.07f,browH),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.01f))
  // ojos
  val erx=when(p.eyeShape){EyeShape.ROUND->w*.027f;EyeShape.ALMOND->w*.034f;EyeShape.SOFT->w*.030f}; val ery=when(p.eyeShape){EyeShape.ROUND->w*.027f;EyeShape.ALMOND->w*.018f;EyeShape.SOFT->w*.021f}
  listOf(cx-w*.06f,cx+w*.06f).forEach{x->drawOval(Color.White,Offset(x-erx,h*.267f-ery),Size(erx*2,ery*2));drawCircle(eye,ery*.64f,Offset(x,h*.267f));drawCircle(Color.Black,ery*.30f,Offset(x,h*.267f));drawCircle(Color.White,ery*.11f,Offset(x-ery*.15f,h*.262f))}
@@ -112,8 +118,11 @@ private fun mascotNameV52(v:MascotStyle,lang:String)=when(v){
 @Composable private fun <T> AvatarChoiceV52(title:String,values:List<T>,selected:T,onSelect:(T)->Unit,label:(T)->String){
  Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(6.dp)){
   Text(title,fontWeight=FontWeight.Bold)
-  Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)){
-   values.forEach{v->FilterChip(selected==v,{onSelect(v)},{Text(label(v),textAlign=TextAlign.Center)},Modifier.widthIn(min=96.dp))}
+  values.chunked(2).forEach { pair ->
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+    pair.forEach{v->FilterChip(selected==v,{onSelect(v)},{Text(label(v),textAlign=TextAlign.Center)},Modifier.weight(1f))}
+    if(pair.size==1) Spacer(Modifier.weight(1f))
+   }
   }
  }
 }
