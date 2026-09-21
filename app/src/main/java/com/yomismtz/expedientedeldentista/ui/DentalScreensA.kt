@@ -238,16 +238,6 @@ private val icdasTeachingV48 = listOf(
     )
 )
 
-private fun icdasPhotoDrawableV50(code: Int): Int = when (code.coerceIn(0, 6)) {
-    0 -> R.drawable.icdas_code_0
-    1 -> R.drawable.icdas_code_1
-    2 -> R.drawable.icdas_code_2
-    3 -> R.drawable.icdas_code_3
-    4 -> R.drawable.icdas_code_4
-    5 -> R.drawable.icdas_code_5
-    else -> R.drawable.icdas_code_6
-}
-
 private fun icdasActivityTextV48(code: Int, lang: String): String = when (code) {
     0 -> tr(
         lang,
@@ -446,31 +436,15 @@ fun IcdasScreen(
         }
 
         ResponsiveSectionV17(
-            tr(lang, "3 · Fotografía clínica ICDAS $guideCode", "3 · ICDAS $guideCode clinical photograph")
+            tr(lang, "3 · Referencia visual ICDAS", "3 · ICDAS visual reference")
         ) {
-            EducationalVisualFrameV49(
-                title = tr(
+            NoticeCard(
+                tr(
                     lang,
-                    "ICDAS $guideCode · ${selectedGuide.stageEs}",
-                    "ICDAS $guideCode · ${selectedGuide.stageEn}"
-                ),
-                caption = tr(
-                    lang,
-                    "Recorte de la fotografía correspondiente al código $guideCode en la Fig. 1A–G. Se conserva sin estirar ni recortar dentro de la interfaz.",
-                    "Crop of the photograph corresponding to code $guideCode in Fig. 1A–G. It is shown without stretching or interface cropping."
-                ),
-                credit = "Gugnani N, Pandit IK, Srivastava N, Gupta M, Sharma M. Int J Clin Pediatr Dent. 2011;4(2):93–100. Fig. 1A–G. CC BY 3.0 · DOI 10.5005/jp-journals-10005-1089 · https://pmc.ncbi.nlm.nih.gov/articles/PMC5030492/"
-            ) {
-                OfflineClinicalImageV50(
-                    drawable = icdasPhotoDrawableV50(guideCode),
-                    contentDescription = tr(
-                        lang,
-                        "Fotografía clínica representativa de ICDAS $guideCode",
-                        "Clinical photograph representing ICDAS $guideCode"
-                    ),
-                    maxHeight = 360.dp
+                    "La guía fotográfica por código está temporalmente omitida: las imágenes disponibles no permiten asignar de forma inequívoca una fotografía independiente a cada código 0–6. Conservamos los criterios clínicos escritos para evitar enseñar una clasificación visual incorrecta.",
+                    "The code-by-code photo guide is temporarily omitted: the available images do not allow an unambiguous independent photograph to be assigned to every code 0–6. Written clinical criteria are retained to avoid teaching an incorrect visual classification."
                 )
-            }
+            )
         }
 
         ResponsiveSectionV17(tr(lang, "4 · Selecciona el código que quieres estudiar", "4 · Select the code to study")) {
