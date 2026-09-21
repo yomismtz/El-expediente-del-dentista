@@ -146,6 +146,11 @@ commons "ARTICULACION%20TEMPOROMANDIBULAR.jpg" "ref_tmj_mri.jpg"
 commons "TMJ%20movements.jpg" "ref_tmj_movements.jpg"
 commons "TMJ%20panorama.jpg" "ref_tmj_panorama.jpg"
 commons "Deciduous%20teeth%20by%20David%20Shankbone%20new.jpg" "ref_deciduous_teeth.jpg"
+# Tres etapas de dentición para el atlas de oclusión.
+# Mixta: Roquex, CC0, niño de aproximadamente 8 años y medio.
+commons "MixedDentition.jpg" "ref_mixed_dentition.jpg"
+# Permanente: Roquex, CC0, paciente de casi 19 años.
+commons "PermanentTeeth.jpg" "ref_permanent_dentition.jpg"
 commons "Class%201%20bimaxillary%20protrusion.jpg" "ref_angle_i.jpg"
 commons "Class2division1malocclusion.jpg" "ref_angle_ii.jpg"
 commons "Class%203%20Malocclusion.jpg" "ref_angle_iii.jpg"
