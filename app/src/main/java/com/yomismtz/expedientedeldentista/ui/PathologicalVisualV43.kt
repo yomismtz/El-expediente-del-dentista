@@ -77,6 +77,21 @@ private val exanthemsV43 = listOf(
     )
 )
 
+private data class SystemAtlasV53(val titleEs:String,val titleEn:String,val examplesEs:String,val examplesEn:String,val visualEs:String,val visualEn:String,val oralEs:String,val oralEn:String)
+
+private val multisystemAtlasV53 = listOf(
+ SystemAtlasV53("Gastrointestinales / hepáticas","Gastrointestinal / hepatic","ERGE, enfermedad celíaca, Crohn, colitis ulcerosa, hepatitis, cirrosis.","GERD, celiac disease, Crohn disease, ulcerative colitis, hepatitis, cirrhosis.","Usa fotografías sólo cuando exista un signo visible; para procesos internos muestra anatomía/órgano y signos externos pertinentes.","Use photographs only for visible signs; for internal disease show anatomy/organ and relevant external signs.","Busca erosión dental por reflujo, úlceras, cambios de mucosa, xerostomía e implicaciones de enfermedad hepática.","Look for reflux-related erosion, ulcers, mucosal changes, xerostomia and implications of liver disease."),
+ SystemAtlasV53("Reumatológicas / autoinmunes","Rheumatologic / autoimmune","Artritis reumatoide, lupus, Sjögren, esclerodermia, espondiloartritis.","Rheumatoid arthritis, lupus, Sjögren disease, scleroderma, spondyloarthritis.","Prioriza signos cutáneos, articulares, faciales y de mucosas que sean realmente observables.","Prioritize genuinely observable skin, joint, facial and mucosal signs.","Xerostomía, úlceras, limitación de apertura/ATM y medicamentos inmunomoduladores son especialmente relevantes.","Xerostomia, ulcers, limited opening/TMJ and immunomodulatory medicines are especially relevant."),
+ SystemAtlasV53("Cardiovasculares","Cardiovascular","Hipertensión, cardiopatía isquémica, insuficiencia cardiaca, valvulopatías, arritmias.","Hypertension, ischemic heart disease, heart failure, valvular disease, arrhythmias.","No inventar una apariencia externa para hipertensión o arritmia; usar diagramas y signos visibles sólo cuando correspondan.","Do not invent an external appearance for hypertension or arrhythmia; use diagrams and visible signs only when appropriate.","Relaciona anticoagulantes/antiagregantes, presión arterial, tolerancia al procedimiento y antecedentes cardiacos relevantes.","Relate anticoagulants/antiplatelets, blood pressure, procedure tolerance and relevant cardiac history."),
+ SystemAtlasV53("Endocrinas / metabólicas","Endocrine / metabolic","Diabetes, hipo/hipertiroidismo, trastornos suprarrenales, obesidad/dislipidemia.","Diabetes, hypo/hyperthyroidism, adrenal disorders, obesity/dyslipidemia.","Combina diagramas endocrinos con signos clínicos verificables cuando existan; evita estereotipos corporales.","Combine endocrine diagrams with verifiable clinical signs when present; avoid body stereotypes.","Diabetes: cicatrización, infección y periodonto; tiroides/suprarrenal: estado de control y medicación.","Diabetes: healing, infection and periodontium; thyroid/adrenal: control status and medication."),
+ SystemAtlasV53("Respiratorias","Respiratory","Asma, EPOC, tuberculosis, apnea obstructiva del sueño, fibrosis pulmonar.","Asthma, COPD, tuberculosis, obstructive sleep apnea, pulmonary fibrosis.","Muestra signos/estudios o anatomía pertinentes; una foto facial aislada rara vez identifica la enfermedad.","Show relevant signs/studies or anatomy; an isolated facial photo rarely identifies the disease.","Inhaladores, xerostomía, candidiasis, respiración oral y tolerancia a la posición dental.","Inhalers, xerostomia, candidiasis, mouth breathing and tolerance of dental positioning."),
+ SystemAtlasV53("Renales / urinarias","Renal / urinary","Enfermedad renal crónica, diálisis, trasplante renal, litiasis.","Chronic kidney disease, dialysis, kidney transplant, nephrolithiasis.","Usa anatomía renal y signos clínicos reales; no atribuyas un aspecto específico a toda persona con enfermedad renal.","Use kidney anatomy and real clinical signs; do not assign a specific appearance to everyone with kidney disease.","Considera sangrado, anemia, fármacos, diálisis/trasplante y ajuste médico cuando corresponda.","Consider bleeding, anemia, medicines, dialysis/transplant and medical adjustment when relevant."),
+ SystemAtlasV53("Hematológicas","Hematologic","Anemias, hemofilia, von Willebrand, trastornos plaquetarios, leucemias.","Anemias, hemophilia, von Willebrand disease, platelet disorders, leukemias.","Las imágenes deben centrarse en signos documentables como palidez, petequias/equimosis o hallazgos orales, no diagnosticar por fotografía.","Images should focus on documentable signs such as pallor, petechiae/ecchymoses or oral findings, not diagnose from a photograph.","Sangrado, petequias, palidez, infecciones y necesidad de conocer diagnóstico/tratamiento hematológico.","Bleeding, petechiae, pallor, infections and the need to know the hematologic diagnosis/treatment."),
+ SystemAtlasV53("Neurológicas","Neurologic","Epilepsia, Parkinson, EVC, esclerosis múltiple, neuropatías.","Epilepsy, Parkinson disease, stroke, multiple sclerosis, neuropathies.","Evita representar diagnóstico por apariencia; usa esquemas neurológicos y manifestaciones funcionales pertinentes.","Avoid representing diagnosis by appearance; use neurologic diagrams and relevant functional manifestations.","Medicamentos, coordinación/deglución, trauma por crisis, xerostomía e hiperplasia gingival cuando aplique.","Medicines, coordination/swallowing, seizure trauma, xerostomia and gingival enlargement when applicable."),
+ SystemAtlasV53("Dermatológicas","Dermatologic","Dermatitis atópica, psoriasis y otras dermatosis con manifestaciones visibles.","Atopic dermatitis, psoriasis and other dermatoses with visible manifestations.","Aquí sí son especialmente útiles fotografías clínicas reales con distribución y morfología explicadas.","Real clinical photographs are particularly useful here when distribution and morphology are explained.","Correlaciona piel y mucosa sin asumir que una lesión oral aislada establece el diagnóstico sistémico.","Correlate skin and mucosa without assuming an isolated oral lesion establishes systemic diagnosis."),
+ SystemAtlasV53("Infecciosas / exantemáticas","Infectious / exanthematous","Varicela, sarampión, rubéola y otras infecciones relevantes.","Varicella, measles, rubella and other relevant infections.","Compara morfología, etapa de lesión y distribución con fotografías verificadas.","Compare morphology, lesion stage and distribution using verified photographs.","Incluye lesiones orales características cuando existan y contexto de vacunación/exposición.","Include characteristic oral lesions when present and vaccination/exposure context.")
+)
+
 private val inflammatorySkinV43 = listOf(
     ClinicalVisualV43(
         title = "Eczema / dermatitis atópica",
@@ -136,6 +151,30 @@ fun PathologicalV43Screen(lang: String, onBack: () -> Unit) {
             NoticeCard(tr(lang,
                 "Diferencia clave para no confundir varicela y viruela: en varicela suelen coexistir lesiones en distintas etapas y predomina el tronco; en la viruela clásica las lesiones de una zona tienden a estar en la misma etapa, son profundas/firmes y el patrón es más centrífugo. La viruela está erradicada.",
                 "Key distinction between chickenpox and smallpox: chickenpox usually has lesions in different stages with trunk predominance; classic smallpox lesions in one area tend to be in the same stage, deep/firm, with a more centrifugal pattern. Smallpox is eradicated."))
+        }
+
+        ResponsiveSectionV17(tr(lang, "Atlas visual multisistémico", "Multisystem visual atlas")) {
+            NoticeCard(tr(lang,
+                "Cada sistema usa el tipo de imagen que corresponde clínicamente: fotografía real para signos visibles y diagramas anatómicos/educativos para enfermedades internas sin una apariencia externa específica. No se representa un diagnóstico mediante una foto genérica.",
+                "Each system uses the clinically appropriate image type: real photographs for visible signs and anatomical/educational diagrams for internal diseases without a specific external appearance. A diagnosis is not represented by a generic photo."
+            ))
+            AdaptiveGridV17(multisystemAtlasV53.size, if (profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT) 1 else 2) { i ->
+                val item = multisystemAtlasV53[i]
+                Card(Modifier.fillMaxWidth(), colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surfaceVariant), shape=RoundedCornerShape(16.dp)) {
+                    Column(Modifier.padding(VisualSpacingV49.md), verticalArrangement=Arrangement.spacedBy(VisualSpacingV49.sm)) {
+                        Text(if(lang=="en") item.titleEn else item.titleEs, fontWeight=FontWeight.Black)
+                        Text(if(lang=="en") item.examplesEn else item.examplesEs)
+                        Text(tr(lang,"Cómo se ve / qué imagen usar","How it looks / image type"),fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary)
+                        Text(if(lang=="en") item.visualEn else item.visualEs)
+                        Text(tr(lang,"Relevancia odontológica","Dental relevance"),fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary)
+                        Text(if(lang=="en") item.oralEn else item.oralEs)
+                    }
+                }
+            }
+            NoticeCard(tr(lang,
+                "Fuentes visuales previstas: CDC PHIL para fotografías clínicas con estado de derechos comprobado y NIDDK/NIH para material anatómico de sistemas digestivo, endocrino, renal y hepático. La fuente se mostrará de forma compacta en cada recurso.",
+                "Planned visual sources: CDC PHIL for clinical photographs with verified rights status and NIDDK/NIH for digestive, endocrine, kidney and liver anatomical material. Each resource will show a compact source label."
+            ))
         }
 
         ResponsiveSectionV17(tr(lang, "Eczema vs psoriasis · inflamatorias/inmunomediadas", "Eczema vs psoriasis · inflammatory/immune-mediated")) {
