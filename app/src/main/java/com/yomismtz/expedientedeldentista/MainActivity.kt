@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
             var preferences by remember{mutableStateOf(initialPreferences)}
             var session by remember{mutableStateOf(EducationalSession())}
             val savePreferences:(AppPreferences)->Unit={updated->preferences=updated;runCatching{store.save(updated)}}
-            ExpedienteTheme(paletteStyle=preferences.birdPaletteStyle,fontStyle=preferences.fontStyle,textSizeStyle=preferences.textSizeStyle){
+            ExpedienteTheme(paletteStyle=preferences.birdPaletteStyle,fontStyle=preferences.fontStyle,textSizeStyle=preferences.textSizeStyle,themeMode=preferences.themeMode){
                 Surface(Modifier.fillMaxSize()){
                     val swipe=if(preferences.onboardingComplete)Modifier.edgeSwipeBackV21{onBackPressedDispatcher.onBackPressed()} else Modifier
                     Box(Modifier.fillMaxSize().then(swipe)){
