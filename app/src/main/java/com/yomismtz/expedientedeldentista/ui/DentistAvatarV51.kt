@@ -6,6 +6,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,30 +34,49 @@ import com.yomismtz.expedientedeldentista.settings.*
 @Composable private fun Layer(@DrawableRes id:Int,modifier:Modifier=Modifier){Image(painterResource(id),null,modifier,contentScale=ContentScale.Fit)}
 
 @Composable fun DentistAvatarPreviewV51(p:AppPreferences,modifier:Modifier=Modifier){
- Card(modifier=modifier,shape=RoundedCornerShape(24.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){
+ Card(modifier=modifier,shape=RoundedCornerShape(24.dp),colors=CardDefaults.cardColors(containerColor=Color.White)){
   Column(Modifier.fillMaxWidth().padding(12.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(8.dp)){
-   // Los assets actuales no son capas transparentes alineadas. Superponerlos produce una cara corrupta.
-   // Hasta sustituirlos por capas verificadas, mostramos una vista previa limpia y separada.
-   Box(Modifier.fillMaxWidth().height(210.dp),contentAlignment=Alignment.Center){
-    Layer(baseRes(p),Modifier.fillMaxHeight().aspectRatio(1f))
-   }
-   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp),verticalAlignment=Alignment.CenterVertically){
-    Card(Modifier.weight(1f),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface)){
-     Column(Modifier.fillMaxWidth().padding(10.dp),horizontalAlignment=Alignment.CenterHorizontally){
-      Text(tr(p.languageTag,"Vista previa del personaje","Character preview"),fontWeight=FontWeight.Bold)
-      Text(if(p.clinicianTitle==ClinicianTitle.DOCTORA) tr(p.languageTag,"Mujer","Woman") else tr(p.languageTag,"Hombre","Man"))
-     }
-    }
-    Card(Modifier.weight(1f),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface)){
-     Column(Modifier.fillMaxWidth().padding(8.dp),horizontalAlignment=Alignment.CenterHorizontally){
-      Layer(mascotRes(p.mascotStyle),Modifier.size(82.dp))
-      Text(mascotName(p.mascotStyle),style=MaterialTheme.typography.labelMedium,textAlign=TextAlign.Center)
-     }
+   Canvas(Modifier.fillMaxWidth().height(300.dp)){ drawDentistV52(p) }
+   Card(colors=CardDefaults.cardColors(containerColor=Color(0xFFF8F4FF))){
+    Column(Modifier.fillMaxWidth().padding(10.dp),horizontalAlignment=Alignment.CenterHorizontally){
+     Text(tr(p.languageTag,"Tu personaje","Your character"),fontWeight=FontWeight.Bold,color=Color(0xFF20133A))
+     Text(tr(p.languageTag,"La vista previa cambia al seleccionar cada característica.","The preview changes as you select each feature."),color=Color(0xFF51475F),textAlign=TextAlign.Center)
     }
    }
   }
  }
 }
+
+private fun DrawScope.drawDentistV52(p:AppPreferences){
+ val w=size.width; val h=size.height; val cx=w/2f
+ val skin=when(p.skinTone){SkinTone.LIGHT->Color(0xFFFFD6C2);SkinTone.PEACH->Color(0xFFF4B38D);SkinTone.TAN->Color(0xFFD98A5F);SkinTone.BROWN->Color(0xFFA95F43);SkinTone.DEEP->Color(0xFF70402F)}
+ val scrub=when(p.scrubColor){ScrubColor.TURQUOISE->Color(0xFF22A9A0);ScrubColor.BLUE->Color(0xFF397CC5);ScrubColor.NAVY->Color(0xFF283B70);ScrubColor.PURPLE->Color(0xFF7B55B7);ScrubColor.LILAC->Color(0xFFAA87D8);ScrubColor.PINK->Color(0xFFE879A6);ScrubColor.BLACK->Color(0xFF29272D);ScrubColor.WHITE->Color(0xFFF1F1F3);ScrubColor.MINT->Color(0xFF77CDB3);ScrubColor.WINE->Color(0xFF853A58)}
+ val hair=Color(0xFF553322); val eye=when(p.eyeColor){EyeColor.BROWN->Color(0xFF5A3426);EyeColor.HAZEL->Color(0xFF8A6A35);EyeColor.GREEN->Color(0xFF4C7A58);EyeColor.BLUE->Color(0xFF4779A8);EyeColor.GRAY->Color(0xFF747982)}
+ // cuerpo y uniforme
+ drawRoundRect(scrub,Offset(cx-w*.19f,h*.49f),Size(w*.38f,h*.39f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.07f))
+ drawRect(scrub,Offset(cx-w*.13f,h*.82f),Size(w*.11f,h*.16f)); drawRect(scrub,Offset(cx+w*.02f,h*.82f),Size(w*.11f,h*.16f))
+ // cuello y cabeza
+ drawRoundRect(skin,Offset(cx-w*.045f,h*.40f),Size(w*.09f,h*.12f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f))
+ drawOval(skin,Offset(cx-w*.145f,h*.12f),Size(w*.29f,h*.34f))
+ // cabello: silueta cambia con el estilo
+ val hairTop=when(p.hairStyle){HairStyle.SHORT->h*.09f;HairStyle.WAVY->h*.055f;HairStyle.CURLY->h*.035f;HairStyle.LONG->h*.045f;HairStyle.BOB->h*.06f;HairStyle.BUN->h*.02f}
+ drawOval(hair,Offset(cx-w*.155f,hairTop),Size(w*.31f,h*.18f))
+ if(p.hairStyle==HairStyle.LONG||p.hairStyle==HairStyle.BOB) {drawRoundRect(hair,Offset(cx-w*.17f,h*.13f),Size(w*.055f,h*.29f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.025f));drawRoundRect(hair,Offset(cx+w*.115f,h*.13f),Size(w*.055f,h*.29f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.025f))}
+ if(p.hairStyle==HairStyle.BUN) drawCircle(hair,w*.065f,Offset(cx,h*.055f))
+ if(p.hairStyle==HairStyle.CURLY){for(i in -3..3) drawCircle(hair,w*.035f,Offset(cx+i*w*.04f,h*.105f+(kotlin.math.abs(i)%2)*h*.015f))}
+ // ojos: tamaño/forma cambia
+ val eyeRx=when(p.eyeShape){EyeShape.ROUND->w*.026f;EyeShape.ALMOND->w*.032f;EyeShape.SOFT->w*.029f}; val eyeRy=when(p.eyeShape){EyeShape.ROUND->w*.026f;EyeShape.ALMOND->w*.018f;EyeShape.SOFT->w*.021f}
+ listOf(cx-w*.06f,cx+w*.06f).forEach{x->drawOval(Color.White,Offset(x-eyeRx,h*.265f-eyeRy),Size(eyeRx*2,eyeRy*2));drawCircle(eye,eyeRy*.62f,Offset(x,h*.265f));drawCircle(Color.Black,eyeRy*.28f,Offset(x,h*.265f))}
+ // nariz
+ drawCircle(Color(0xFFD98E72),w*.012f,Offset(cx,h*.315f))
+ // boca y labios
+ val lip=when(p.lipColor){LipColor.NATURAL->Color(0xFFC97970);LipColor.ROSE->Color(0xFFD56E82);LipColor.CORAL->Color(0xFFE46F63);LipColor.RED->Color(0xFFC7464C);LipColor.WINE->Color(0xFF873B55)}
+ val mw=when(p.mouthStyle){MouthStyle.NATURAL->w*.07f;MouthStyle.SMILE->w*.09f;MouthStyle.FULL->w*.085f}; val mh=if(p.mouthStyle==MouthStyle.FULL) h*.025f else h*.014f
+ drawOval(lip,Offset(cx-mw/2,h*.355f),Size(mw,mh)); if(p.mouthStyle==MouthStyle.SMILE) drawOval(Color.White,Offset(cx-mw*.34f,h*.356f),Size(mw*.68f,mh*.45f))
+ // insignia dental simple
+ drawCircle(Color.White,w*.022f,Offset(cx+w*.09f,h*.59f))
+}
+
 private fun mascotName(v:MascotStyle)=v.name.lowercase().replace('_',' ').replaceFirstChar(Char::uppercase)
 
 @Composable fun DentistAvatarCustomizerV51(p:AppPreferences,onChange:(AppPreferences)->Unit,lang:String){
