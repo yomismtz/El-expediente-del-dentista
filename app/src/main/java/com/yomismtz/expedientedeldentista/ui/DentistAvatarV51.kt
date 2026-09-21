@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Path
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,39 +50,48 @@ import com.yomismtz.expedientedeldentista.settings.*
 
 private fun DrawScope.drawDentistV52(p:AppPreferences){
  val w=size.width; val h=size.height; val cx=w/2f
- val skin=when(p.skinTone){SkinTone.LIGHT->Color(0xFFFFD6C2);SkinTone.PEACH->Color(0xFFF4B38D);SkinTone.TAN->Color(0xFFD98A5F);SkinTone.BROWN->Color(0xFFA95F43);SkinTone.DEEP->Color(0xFF70402F)}
- val scrub=when(p.scrubColor){ScrubColor.TURQUOISE->Color(0xFF22A9A0);ScrubColor.BLUE->Color(0xFF397CC5);ScrubColor.NAVY->Color(0xFF283B70);ScrubColor.PURPLE->Color(0xFF7B55B7);ScrubColor.LILAC->Color(0xFFAA87D8);ScrubColor.PINK->Color(0xFFE879A6);ScrubColor.BLACK->Color(0xFF29272D);ScrubColor.WHITE->Color(0xFFF1F1F3);ScrubColor.MINT->Color(0xFF77CDB3);ScrubColor.WINE->Color(0xFF853A58)}
- val hair=Color(0xFF553322); val eye=when(p.eyeColor){EyeColor.BROWN->Color(0xFF5A3426);EyeColor.HAZEL->Color(0xFF8A6A35);EyeColor.GREEN->Color(0xFF4C7A58);EyeColor.BLUE->Color(0xFF4779A8);EyeColor.GRAY->Color(0xFF747982)}
- // cuerpo y uniforme
- drawRoundRect(scrub,Offset(cx-w*.19f,h*.49f),Size(w*.38f,h*.39f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.07f))
- drawRect(scrub,Offset(cx-w*.13f,h*.82f),Size(w*.11f,h*.16f)); drawRect(scrub,Offset(cx+w*.02f,h*.82f),Size(w*.11f,h*.16f))
- // cuello y cabeza
- drawRoundRect(skin,Offset(cx-w*.045f,h*.40f),Size(w*.09f,h*.12f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f))
- drawOval(skin,Offset(cx-w*.145f,h*.12f),Size(w*.29f,h*.34f))
- // cabello: silueta cambia con el estilo
- val hairTop=when(p.hairStyle){HairStyle.SHORT->h*.09f;HairStyle.WAVY->h*.055f;HairStyle.CURLY->h*.035f;HairStyle.LONG->h*.045f;HairStyle.BOB->h*.06f;HairStyle.BUN->h*.02f}
- drawOval(hair,Offset(cx-w*.155f,hairTop),Size(w*.31f,h*.18f))
- if(p.hairStyle==HairStyle.LONG||p.hairStyle==HairStyle.BOB) {drawRoundRect(hair,Offset(cx-w*.17f,h*.13f),Size(w*.055f,h*.29f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.025f));drawRoundRect(hair,Offset(cx+w*.115f,h*.13f),Size(w*.055f,h*.29f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.025f))}
- if(p.hairStyle==HairStyle.BUN) drawCircle(hair,w*.065f,Offset(cx,h*.055f))
- if(p.hairStyle==HairStyle.CURLY){for(i in -3..3) drawCircle(hair,w*.035f,Offset(cx+i*w*.04f,h*.105f+(kotlin.math.abs(i)%2)*h*.015f))}
- // ojos: tamaño/forma cambia
- val eyeRx=when(p.eyeShape){EyeShape.ROUND->w*.026f;EyeShape.ALMOND->w*.032f;EyeShape.SOFT->w*.029f}; val eyeRy=when(p.eyeShape){EyeShape.ROUND->w*.026f;EyeShape.ALMOND->w*.018f;EyeShape.SOFT->w*.021f}
- listOf(cx-w*.06f,cx+w*.06f).forEach{x->drawOval(Color.White,Offset(x-eyeRx,h*.265f-eyeRy),Size(eyeRx*2,eyeRy*2));drawCircle(eye,eyeRy*.62f,Offset(x,h*.265f));drawCircle(Color.Black,eyeRy*.28f,Offset(x,h*.265f))}
- // nariz
- drawCircle(Color(0xFFD98E72),w*.012f,Offset(cx,h*.315f))
- // boca y labios
- val lip=when(p.lipColor){LipColor.NATURAL->Color(0xFFC97970);LipColor.ROSE->Color(0xFFD56E82);LipColor.CORAL->Color(0xFFE46F63);LipColor.RED->Color(0xFFC7464C);LipColor.WINE->Color(0xFF873B55)}
- val mw=when(p.mouthStyle){MouthStyle.NATURAL->w*.07f;MouthStyle.SMILE->w*.09f;MouthStyle.FULL->w*.085f}; val mh=if(p.mouthStyle==MouthStyle.FULL) h*.025f else h*.014f
- drawOval(lip,Offset(cx-mw/2,h*.355f),Size(mw,mh)); if(p.mouthStyle==MouthStyle.SMILE) drawOval(Color.White,Offset(cx-mw*.34f,h*.356f),Size(mw*.68f,mh*.45f))
- // insignia dental simple
- drawCircle(Color.White,w*.022f,Offset(cx+w*.09f,h*.59f))
+ val skin=when(p.skinTone){SkinTone.LIGHT->Color(0xFFFFD9C5);SkinTone.PEACH->Color(0xFFF2B48F);SkinTone.TAN->Color(0xFFD68B62);SkinTone.BROWN->Color(0xFFA96348);SkinTone.DEEP->Color(0xFF704333)}
+ val shadow=Color.Black.copy(alpha=.10f); val highlight=Color.White.copy(alpha=.22f)
+ val scrub=when(p.scrubColor){ScrubColor.TURQUOISE->Color(0xFF27AAA1);ScrubColor.BLUE->Color(0xFF3E7FC7);ScrubColor.NAVY->Color(0xFF31406F);ScrubColor.PURPLE->Color(0xFF7A56B5);ScrubColor.LILAC->Color(0xFFA98AD4);ScrubColor.PINK->Color(0xFFE37CA7);ScrubColor.BLACK->Color(0xFF302E34);ScrubColor.WHITE->Color(0xFFECECF0);ScrubColor.MINT->Color(0xFF7CCCB4);ScrubColor.WINE->Color(0xFF843D59)}
+ val hair=if(p.clinicianTitle==ClinicianTitle.DOCTORA) Color(0xFF5B392B) else Color(0xFF493127)
+ val eye=when(p.eyeColor){EyeColor.BROWN->Color(0xFF5A3426);EyeColor.HAZEL->Color(0xFF8A6A35);EyeColor.GREEN->Color(0xFF4C7A58);EyeColor.BLUE->Color(0xFF4779A8);EyeColor.GRAY->Color(0xFF747982)}
+ // sombra suave y cuerpo tipo figura 3D
+ drawOval(shadow,Offset(cx-w*.19f,h*.91f),Size(w*.38f,h*.055f))
+ drawRoundRect(scrub,Offset(cx-w*.19f,h*.50f),Size(w*.38f,h*.36f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.075f))
+ drawRoundRect(highlight,Offset(cx-w*.145f,h*.525f),Size(w*.055f,h*.26f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f))
+ drawRoundRect(scrub,Offset(cx-w*.135f,h*.81f),Size(w*.105f,h*.14f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f));drawRoundRect(scrub,Offset(cx+w*.03f,h*.81f),Size(w*.105f,h*.14f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f))
+ drawRoundRect(Color(0xFFF4F4F6),Offset(cx-w*.135f,h*.935f),Size(w*.105f,h*.025f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.02f));drawRoundRect(Color(0xFFF4F4F6),Offset(cx+w*.03f,h*.935f),Size(w*.105f,h*.025f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.02f))
+ drawRoundRect(skin,Offset(cx-w*.045f,h*.405f),Size(w*.09f,h*.12f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f))
+ // cabeza y orejas
+ drawCircle(skin,w*.032f,Offset(cx-w*.143f,h*.285f));drawCircle(skin,w*.032f,Offset(cx+w*.143f,h*.285f));drawOval(skin,Offset(cx-w*.145f,h*.115f),Size(w*.29f,h*.35f))
+ drawOval(highlight,Offset(cx-w*.10f,h*.14f),Size(w*.065f,h*.18f))
+ // cabello, con siluetas distintas
+ val top=when(p.hairStyle){HairStyle.SHORT->h*.095f;HairStyle.WAVY->h*.06f;HairStyle.CURLY->h*.045f;HairStyle.LONG->h*.055f;HairStyle.BOB->h*.065f;HairStyle.BUN->h*.035f}
+ drawOval(hair,Offset(cx-w*.155f,top),Size(w*.31f,h*.17f))
+ if(p.hairStyle==HairStyle.LONG){drawRoundRect(hair,Offset(cx-w*.175f,h*.13f),Size(w*.06f,h*.34f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f));drawRoundRect(hair,Offset(cx+w*.115f,h*.13f),Size(w*.06f,h*.34f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f))}
+ if(p.hairStyle==HairStyle.BOB){drawRoundRect(hair,Offset(cx-w*.17f,h*.14f),Size(w*.055f,h*.22f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f));drawRoundRect(hair,Offset(cx+w*.115f,h*.14f),Size(w*.055f,h*.22f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.03f))}
+ if(p.hairStyle==HairStyle.BUN) drawCircle(hair,w*.062f,Offset(cx,h*.065f))
+ if(p.hairStyle==HairStyle.CURLY){for(i in -3..3) drawCircle(hair,w*.036f,Offset(cx+i*w*.04f,h*.11f+(kotlin.math.abs(i)%2)*h*.014f))}
+ // cejas
+ drawRoundRect(hair,Offset(cx-w*.095f,h*.225f),Size(w*.07f,h*.009f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.01f));drawRoundRect(hair,Offset(cx+w*.025f,h*.225f),Size(w*.07f,h*.009f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.01f))
+ // ojos
+ val erx=when(p.eyeShape){EyeShape.ROUND->w*.027f;EyeShape.ALMOND->w*.034f;EyeShape.SOFT->w*.030f}; val ery=when(p.eyeShape){EyeShape.ROUND->w*.027f;EyeShape.ALMOND->w*.018f;EyeShape.SOFT->w*.021f}
+ listOf(cx-w*.06f,cx+w*.06f).forEach{x->drawOval(Color.White,Offset(x-erx,h*.267f-ery),Size(erx*2,ery*2));drawCircle(eye,ery*.64f,Offset(x,h*.267f));drawCircle(Color.Black,ery*.30f,Offset(x,h*.267f));drawCircle(Color.White,ery*.11f,Offset(x-ery*.15f,h*.262f))}
+ // nariz y boca
+ drawCircle(Color(0xFFD58B70),w*.012f,Offset(cx,h*.315f))
+ val lip=when(p.lipColor){LipColor.NATURAL->Color(0xFFC77C72);LipColor.ROSE->Color(0xFFD66F86);LipColor.CORAL->Color(0xFFE27165);LipColor.RED->Color(0xFFC7464C);LipColor.WINE->Color(0xFF873B55)}
+ val mw=when(p.mouthStyle){MouthStyle.NATURAL->w*.068f;MouthStyle.SMILE->w*.095f;MouthStyle.FULL->w*.088f}; val mh=if(p.mouthStyle==MouthStyle.FULL) h*.026f else h*.016f
+ drawOval(lip,Offset(cx-mw/2,h*.355f),Size(mw,mh));if(p.mouthStyle==MouthStyle.SMILE)drawOval(Color.White,Offset(cx-mw*.33f,h*.356f),Size(mw*.66f,mh*.48f))
+ // cuello del uniforme, bolsillo e insignia dental
+ val neck=Path().apply{moveTo(cx-w*.075f,h*.51f);lineTo(cx,h*.59f);lineTo(cx+w*.075f,h*.51f);lineTo(cx+w*.035f,h*.50f);lineTo(cx,h*.545f);lineTo(cx-w*.035f,h*.50f);close()};drawPath(neck,Color.White.copy(alpha=.40f))
+ drawRoundRect(Color.Black.copy(alpha=.10f),Offset(cx+w*.045f,h*.62f),Size(w*.09f,h*.075f),cornerRadius=androidx.compose.ui.geometry.CornerRadius(w*.01f));drawCircle(Color.White,w*.018f,Offset(cx+w*.09f,h*.645f))
 }
 
 private fun mascotName(v:MascotStyle)=v.name.lowercase().replace('_',' ').replaceFirstChar(Char::uppercase)
 
 @Composable fun DentistAvatarCustomizerV51(p:AppPreferences,onChange:(AppPreferences)->Unit,lang:String){
  Text(tr(lang,"Crea tu dentista","Create your dentist"),style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black)
- Text(tr(lang,"Personaliza por secciones. La vista previa usa únicamente recursos compatibles para evitar deformaciones.","Customize by sections. The preview uses only compatible resources to avoid distortion."),style=MaterialTheme.typography.bodyMedium)
+ Text(tr(lang,"Elige cada característica y observa el cambio en tu personaje.","Choose each feature and see it change on your character."),style=MaterialTheme.typography.bodyMedium)
  DentistAvatarPreviewV51(p,Modifier.fillMaxWidth())
  AvatarChoiceV52(tr(lang,"1. Sexo / personaje base","1. Sex / base character"),ClinicianTitle.entries,p.clinicianTitle,{onChange(p.copy(clinicianTitle=it))}){if(it==ClinicianTitle.DOCTORA)tr(lang,"Mujer","Woman") else tr(lang,"Hombre","Man")}
  AvatarChoiceV52(tr(lang,"2. Color de piel","2. Skin tone"),SkinTone.entries,p.skinTone,{onChange(p.copy(skinTone=it))}){when(it){SkinTone.LIGHT->tr(lang,"Claro","Light");SkinTone.PEACH->tr(lang,"Durazno","Peach");SkinTone.TAN->tr(lang,"Bronceado","Tan");SkinTone.BROWN->tr(lang,"Moreno","Brown");SkinTone.DEEP->tr(lang,"Profundo","Deep")}}
