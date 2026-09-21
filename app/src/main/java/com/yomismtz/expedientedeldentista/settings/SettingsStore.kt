@@ -46,6 +46,7 @@ enum class BirdPaletteStyle {
 }
 
 enum class FontStyle { MODERN, ROUNDED, ACADEMIC, ACCESSIBLE }
+enum class ThemeMode { LIGHT, DARK }
 
 enum class TextSizeStyle(val multiplier: Float) {
     SMALL(0.90f),
@@ -62,6 +63,7 @@ data class AppPreferences(
     val fontStyle: FontStyle = FontStyle.MODERN,
     val textSizeStyle: TextSizeStyle = TextSizeStyle.NORMAL,
     val languageTag: String = "es",
+    val themeMode: ThemeMode = ThemeMode.LIGHT,
     val skinTone: SkinTone = SkinTone.PEACH,
     val hairStyle: HairStyle = HairStyle.WAVY,
     val eyeShape: EyeShape = EyeShape.ALMOND,
@@ -83,6 +85,7 @@ class SettingsStore(context: Context) {
         fontStyle = enumValueOrDefault(prefs.getString(KEY_FONT, null), FontStyle.MODERN),
         textSizeStyle = enumValueOrDefault(prefs.getString(KEY_TEXT_SIZE, null), TextSizeStyle.NORMAL),
         languageTag = prefs.getString(KEY_LANGUAGE, "es") ?: "es",
+        themeMode = enumValueOrDefault(prefs.getString(KEY_THEME_MODE, null), ThemeMode.LIGHT),
         skinTone = enumValueOrDefault(prefs.getString(KEY_SKIN, null), SkinTone.PEACH),
         hairStyle = enumValueOrDefault(prefs.getString(KEY_HAIR, null), HairStyle.WAVY),
         eyeShape = enumValueOrDefault(prefs.getString(KEY_EYE_SHAPE, null), EyeShape.ALMOND),
@@ -102,6 +105,7 @@ class SettingsStore(context: Context) {
             .putString(KEY_FONT, value.fontStyle.name)
             .putString(KEY_TEXT_SIZE, value.textSizeStyle.name)
             .putString(KEY_LANGUAGE, value.languageTag)
+            .putString(KEY_THEME_MODE, value.themeMode.name)
             .putString(KEY_SKIN, value.skinTone.name)
             .putString(KEY_HAIR, value.hairStyle.name)
             .putString(KEY_EYE_SHAPE, value.eyeShape.name)
@@ -125,6 +129,7 @@ class SettingsStore(context: Context) {
         const val KEY_FONT = "font_style"
         const val KEY_TEXT_SIZE = "text_size_style"
         const val KEY_LANGUAGE = "language_tag"
+        const val KEY_THEME_MODE = "theme_mode"
         const val KEY_SKIN = "avatar_skin"
         const val KEY_HAIR = "avatar_hair"
         const val KEY_EYE_SHAPE = "avatar_eye_shape"
