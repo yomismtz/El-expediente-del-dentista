@@ -40,27 +40,20 @@ private val leftV40=listOf(
 )
 private val rightV40=listOf(
     MenuV40("Ficha de identificación","Identification record","👤",AppScreen.IDENTIFICATION),
-    MenuV40("Historia clínica","Clinical history","🩺",extra=FolderExtraV33.HISTORY_HUB),
-    MenuV40("Examen de mucosas","Oral mucosa examination","👄",AppScreen.MUCOSA),
-    MenuV40("Auxiliares de diagnóstico","Diagnostic aids","🧪",AppScreen.AUXILIARIES),
+    MenuV40("Historia clínica · índice I–XVIII","Clinical history · I–XVIII index","🩺",extra=FolderExtraV33.HISTORY_HUB),
     MenuV40("Odontograma e índices","Odontogram and indices","🦷",extra=FolderExtraV33.ODONTOGRAM_HUB),
+    MenuV40("Auxiliares de diagnóstico","Diagnostic aids","🧪",AppScreen.AUXILIARIES),
     MenuV40("Presupuesto","Budget","$",AppScreen.BUDGET),
     MenuV40("Consentimiento informado","Informed consent","✍",AppScreen.CONSENT),
     MenuV40("Solicitud de tratamiento","Treatment request","📨",AppScreen.REQUEST),
-    MenuV40("Notas de evolución","Progress notes","📄",AppScreen.EVOLUTION),
-    MenuV40("Exploración de cabeza y cuello","Head and neck examination","👤",extra=FolderExtraV33.HEAD_NECK),
-    MenuV40("Exploración de ATM","TMJ examination","◉",AppScreen.ATM),
-    MenuV40("Examen de oclusión","Occlusion examination","↔",AppScreen.OCCLUSION),
-    MenuV40("Anomalías dentales","Dental anomalies","◆",extra=FolderExtraV33.DENTAL_ANOMALIES),
-    MenuV40("Erupción y posición","Eruption and position","↥",extra=FolderExtraV33.ERUPTION_ANOMALIES),
-    MenuV40("Hábitos y parafunciones","Habits and parafunctions","🦷",extra=FolderExtraV33.HABITS)
+    MenuV40("Notas de evolución","Progress notes","📄",AppScreen.EVOLUTION)
 )
 
 @Composable
 internal fun FolderMenuV40Screen(lang:String,onNavigate:(AppScreen)->Unit,onExtra:(FolderExtraV33)->Unit,onIntake:()->Unit,onSettings:()->Unit,onBack:()->Unit){
     ResponsiveScreenV17(
         tr(lang,"Expediente del dentista · guía interactiva","The dentist's record · interactive guide"),
-        tr(lang,"Selecciona un apartado para aprender qué registrar, cómo escribirlo y cómo interpretar el resultado. No sustituye un expediente clínico real.","Choose a section to learn what to record, how to write it and how to interpret the result. It does not replace a real clinical record."),
+        tr(lang,"La Historia clínica sigue un índice educativo I–XVIII basado en el formato de referencia. La app es anónima: no identifica ni enlaza a una escuela, clínica o institución y no sustituye un expediente clínico real.","Clinical history follows an educational I–XVIII index based on the reference form. The app is anonymous: it does not identify or link to a school, clinic or institution and does not replace a real clinical record."),
         onBack
     ){profile->
         AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
