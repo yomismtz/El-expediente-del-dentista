@@ -130,8 +130,8 @@ fun OnboardingV40Screen(preferences: AppPreferences, onPreferencesChanged: (AppP
     Text(if (lang == "en") "The app colors and bird badge will follow this palette." else "Los colores de la app y la insignia del ave seguirán esta paleta.", style = MaterialTheme.typography.bodyLarge)
     BoxWithConstraints(Modifier.fillMaxWidth()) {
         val columns = if (maxWidth >= 600.dp && fontScale < 1.3f) 3 else if (maxWidth >= 360.dp && fontScale < 1.6f) 2 else 1
-        BirdPaletteChoices.chunked(columns).forEachIndexed { rowIndex, row ->
-            Column(Modifier.fillMaxWidth().padding(top = if (rowIndex == 0) 0.dp else 8.dp)) {
+        Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            BirdPaletteChoices.chunked(columns).forEach { row ->
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     row.forEach { style -> PaletteCardV40(style, lang, preferences.birdPaletteStyle == style, { onPreferencesChanged(preferences.copy(birdPaletteStyle = style)) }, Modifier.weight(1f)) }
                     repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
