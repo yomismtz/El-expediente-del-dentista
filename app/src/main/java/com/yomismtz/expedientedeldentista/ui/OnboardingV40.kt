@@ -46,7 +46,7 @@ import com.yomismtz.expedientedeldentista.ui.theme.BirdPaletteChoices
 import com.yomismtz.expedientedeldentista.ui.theme.paletteDisplayName
 import com.yomismtz.expedientedeldentista.ui.theme.paletteSwatches
 
-private const val ONBOARDING_LAST_PAGE = 2
+private const val ONBOARDING_LAST_PAGE = 1
 
 @Composable
 fun OnboardingV40Screen(preferences: AppPreferences, onPreferencesChanged: (AppPreferences) -> Unit, onContinue: (AppPreferences) -> Unit) {
@@ -74,8 +74,7 @@ fun OnboardingV40Screen(preferences: AppPreferences, onPreferencesChanged: (AppP
             Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(if (configuration.screenWidthDp >= 600) VisualSpacingV49.xl else VisualSpacingV49.lg), verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.md)) {
                 when (page) {
                     0 -> WelcomePageV47(lang)
-                    1 -> DentistAvatarCustomizerV51(preferences, onPreferencesChanged, lang)
-                    else -> PalettePageV47(preferences, onPreferencesChanged, lang, fontScale)
+                    else -> DentistAvatarCustomizerV51(preferences, onPreferencesChanged, lang)
                 }
             }
         }
@@ -94,7 +93,7 @@ fun OnboardingV40Screen(preferences: AppPreferences, onPreferencesChanged: (AppP
     Text(if (lang == "en") "Welcome" else "Bienvenida", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
     Text(if (lang == "en") "Learn how to complete and explore a dental clinical record step by step." else "Aprende a llenar y explorar un expediente clínico odontológico paso a paso.", style = MaterialTheme.typography.bodyLarge)
     NoticeCard(if (lang == "en") "This is an educational guide. Do not enter a real patient's name, address, telephone number or record number." else "Esta es una guía educativa. No introduzcas nombre, domicilio, teléfono ni número real de expediente de un paciente.")
-    Text(if (lang == "en") "You can change language, clinician, palette and text preferences later in the app." else "Después podrás cambiar idioma, profesional, paleta y preferencias de texto desde la aplicación.", style = MaterialTheme.typography.bodyMedium)
+    Text(if (lang == "en") "You can change language, pet and text preferences later in the app." else "Después podrás cambiar idioma, mascota y preferencias de texto desde la aplicación.", style = MaterialTheme.typography.bodyMedium)
 }
 
 @Composable private fun ClinicianPageV47(preferences: AppPreferences, onPreferencesChanged: (AppPreferences) -> Unit, lang: String, fontScale: Float, landscape: Boolean) {
