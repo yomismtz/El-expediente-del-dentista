@@ -96,19 +96,57 @@ private fun DrawScope.drawDentistV52(p:AppPreferences){
 private fun mascotName(v:MascotStyle)=v.name.lowercase().replace('_',' ').replaceFirstChar(Char::uppercase)
 
 @Composable fun DentistAvatarCustomizerV51(p:AppPreferences,onChange:(AppPreferences)->Unit,lang:String){
- Text(tr(lang,"Crea tu dentista","Create your dentist"),style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black)
- Text(tr(lang,"Elige cada característica y observa el cambio en tu personaje.","Choose each feature and see it change on your character."),style=MaterialTheme.typography.bodyMedium)
- DentistAvatarPreviewV51(p,Modifier.fillMaxWidth())
- AvatarChoiceV52(tr(lang,"1. Sexo / personaje base","1. Sex / base character"),ClinicianTitle.entries,p.clinicianTitle,{onChange(p.copy(clinicianTitle=it))}){if(it==ClinicianTitle.DOCTORA)tr(lang,"Mujer","Woman") else tr(lang,"Hombre","Man")}
- AvatarChoiceV52(tr(lang,"2. Color de piel","2. Skin tone"),SkinTone.entries,p.skinTone,{onChange(p.copy(skinTone=it))}){when(it){SkinTone.LIGHT->tr(lang,"Claro","Light");SkinTone.PEACH->tr(lang,"Durazno","Peach");SkinTone.TAN->tr(lang,"Bronceado","Tan");SkinTone.BROWN->tr(lang,"Moreno","Brown");SkinTone.DEEP->tr(lang,"Profundo","Deep")}}
- AvatarChoiceV52(tr(lang,"3. Estilo de cabello","3. Hair style"),HairStyle.entries,p.hairStyle,{onChange(p.copy(hairStyle=it))}){when(it){HairStyle.SHORT->tr(lang,"Corto","Short");HairStyle.WAVY->tr(lang,"Ondulado","Wavy");HairStyle.CURLY->tr(lang,"Rizado","Curly");HairStyle.LONG->tr(lang,"Largo","Long");HairStyle.BOB->"Bob";HairStyle.BUN->tr(lang,"Chongo","Bun")}}
- AvatarChoiceV52(tr(lang,"4. Forma de ojos","4. Eye shape"),EyeShape.entries,p.eyeShape,{onChange(p.copy(eyeShape=it))}){when(it){EyeShape.ROUND->tr(lang,"Redondos","Round");EyeShape.ALMOND->tr(lang,"Almendrados","Almond");EyeShape.SOFT->tr(lang,"Suaves","Soft")}}
- AvatarChoiceV52(tr(lang,"Color de ojos","Eye color"),EyeColor.entries,p.eyeColor,{onChange(p.copy(eyeColor=it))}){when(it){EyeColor.BROWN->tr(lang,"Café","Brown");EyeColor.HAZEL->tr(lang,"Avellana","Hazel");EyeColor.GREEN->tr(lang,"Verde","Green");EyeColor.BLUE->tr(lang,"Azul","Blue");EyeColor.GRAY->tr(lang,"Gris","Gray")}}
- AvatarChoiceV52(tr(lang,"5. Boca","5. Mouth"),MouthStyle.entries,p.mouthStyle,{onChange(p.copy(mouthStyle=it))}){when(it){MouthStyle.NATURAL->tr(lang,"Natural","Natural");MouthStyle.SMILE->tr(lang,"Sonrisa","Smile");MouthStyle.FULL->tr(lang,"Labios llenos","Full")}}
- AvatarChoiceV52(tr(lang,"Color de labios","Lip color"),LipColor.entries,p.lipColor,{onChange(p.copy(lipColor=it))}){when(it){LipColor.NATURAL->tr(lang,"Natural","Natural");LipColor.ROSE->tr(lang,"Rosa","Rose");LipColor.CORAL->"Coral";LipColor.RED->tr(lang,"Rojo","Red");LipColor.WINE->tr(lang,"Vino","Wine")}}
- AvatarChoiceV52(tr(lang,"6. Color del quirúrgico","6. Scrub color"),ScrubColor.entries,p.scrubColor,{onChange(p.copy(scrubColor=it))}){when(it){ScrubColor.TURQUOISE->tr(lang,"Turquesa","Turquoise");ScrubColor.BLUE->tr(lang,"Azul","Blue");ScrubColor.NAVY->tr(lang,"Azul marino","Navy");ScrubColor.PURPLE->tr(lang,"Morado","Purple");ScrubColor.LILAC->tr(lang,"Lila","Lilac");ScrubColor.PINK->tr(lang,"Rosa","Pink");ScrubColor.BLACK->tr(lang,"Negro","Black");ScrubColor.WHITE->tr(lang,"Blanco","White");ScrubColor.MINT->tr(lang,"Menta","Mint");ScrubColor.WINE->tr(lang,"Vino","Wine")}}
- AvatarChoiceV52(tr(lang,"7. Mascota · define la paleta","7. Pet · sets palette"),MascotStyle.entries,p.mascotStyle,{onChange(p.copy(mascotStyle=it,birdPaletteStyle=paletteForMascot(it)))}){mascotNameV52(it,lang)}
- NoticeCard(tr(lang,"La mascota cambia automáticamente la paleta de la app. Agaporni es la opción predeterminada.","The pet automatically changes the app palette. Lovebird is the default option."))
+ Text(tr(lang,"Elige tu mascota","Choose your pet"),style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black)
+ Text(tr(lang,"Tu mascota será tu identidad visual. Al seleccionarla, toda la aplicación adopta automáticamente su paleta de colores.","Your pet becomes your visual identity. Selecting it automatically applies its color palette across the app."),style=MaterialTheme.typography.bodyMedium)
+ MascotPickerV53(p, onChange, lang)
+ NoticeCard(tr(lang,"Cada una de las 17 mascotas tiene una identidad propia. Las que comparten colores similares usan un acento diferenciador para que su paleta siga siendo reconocible.","Each of the 17 pets has its own identity. Pets with similar colors use a distinguishing accent so their palettes remain recognizable."))
+}
+
+@Composable
+internal fun MascotPickerV53(p:AppPreferences,onChange:(AppPreferences)->Unit,lang:String){
+ val values=MascotStyle.entries
+ values.chunked(2).forEach { pair ->
+  Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+   pair.forEach { mascot ->
+    val selected=p.mascotStyle==mascot
+    Card(
+     onClick={onChange(p.copy(mascotStyle=mascot,birdPaletteStyle=paletteForMascot(mascot)))},
+     modifier=Modifier.weight(1f),
+     colors=CardDefaults.cardColors(containerColor=if(selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface),
+     border=BorderStroke(if(selected)3.dp else 1.dp,if(selected)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant),
+     shape=MaterialTheme.shapes.large
+    ){
+     Column(Modifier.fillMaxWidth().padding(10.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(6.dp)){
+      Image(painterResource(mascotRes(mascot)),mascotNameV52(mascot,lang),Modifier.fillMaxWidth().height(110.dp),contentScale=ContentScale.Fit)
+      Text(mascotNameV52(mascot,lang),fontWeight=FontWeight.Black,textAlign=TextAlign.Center)
+      Text(mascotAccentV53(mascot,lang),style=MaterialTheme.typography.labelSmall,textAlign=TextAlign.Center,color=MaterialTheme.colorScheme.onSurfaceVariant)
+      if(selected) Text(tr(lang,"Seleccionada ✓","Selected ✓"),color=MaterialTheme.colorScheme.primary,fontWeight=FontWeight.Bold)
+     }
+    }
+   }
+   if(pair.size==1) Spacer(Modifier.weight(1f))
+  }
+ }
+}
+
+private fun mascotAccentV53(v:MascotStyle,lang:String)=when(v){
+ MascotStyle.TOUCAN->tr(lang,"Negro + amarillo","Black + yellow")
+ MascotStyle.LOVEBIRD_GREEN->tr(lang,"Verde + coral","Green + coral")
+ MascotStyle.LOVEBIRD_PASTEL->tr(lang,"Pastel + lavanda","Pastel + lavender")
+ MascotStyle.PUG->tr(lang,"Arena + carbón","Sand + charcoal")
+ MascotStyle.POMERANIAN->tr(lang,"Miel + crema","Honey + cream")
+ MascotStyle.CLOWNFISH->tr(lang,"Naranja + azul marino","Orange + navy")
+ MascotStyle.SHARK->tr(lang,"Azul acero + hielo","Steel blue + ice")
+ MascotStyle.RAVEN->tr(lang,"Carbón + violeta","Charcoal + violet")
+ MascotStyle.MANDARIN_DUCK->tr(lang,"Esmeralda + naranja","Emerald + orange")
+ MascotStyle.FLAMINGO->tr(lang,"Rosa + coral","Pink + coral")
+ MascotStyle.MACAW->tr(lang,"Rojo + azul","Red + blue")
+ MascotStyle.PERSIAN_CAT->tr(lang,"Gris + ciruela","Gray + plum")
+ MascotStyle.WHITE_YELLOW_CAT->tr(lang,"Blanco + amarillo","White + yellow")
+ MascotStyle.ELEPHANT->tr(lang,"Gris + turquesa","Gray + turquoise")
+ MascotStyle.TURTLE->tr(lang,"Oliva + aqua","Olive + aqua")
+ MascotStyle.WHITE_RABBIT->tr(lang,"Blanco + rosa","White + pink")
+ MascotStyle.IGUANA->tr(lang,"Lima + jade","Lime + jade")
 }
 
 private fun mascotNameV52(v:MascotStyle,lang:String)=when(v){
