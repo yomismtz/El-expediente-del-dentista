@@ -73,7 +73,7 @@ fun OnboardingV40Screen(preferences: AppPreferences, onPreferencesChanged: (AppP
             Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(if (configuration.screenWidthDp >= 600) VisualSpacingV49.xl else VisualSpacingV49.lg), verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.md)) {
                 when (page) {
                     0 -> WelcomePageV47(lang)
-                    1 -> ClinicianPageV47(preferences, onPreferencesChanged, lang, fontScale, landscape)
+                    1 -> DentistAvatarCustomizerV51(preferences, onPreferencesChanged, lang)
                     else -> PalettePageV47(preferences, onPreferencesChanged, lang, fontScale)
                 }
             }
