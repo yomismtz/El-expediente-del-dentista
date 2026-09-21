@@ -10,7 +10,7 @@ enum class EyeColor { BROWN, HAZEL, GREEN, BLUE, GRAY }
 enum class MouthStyle { NATURAL, SMILE, FULL }
 enum class LipColor { NATURAL, ROSE, CORAL, RED, WINE }
 enum class ScrubColor { TURQUOISE, BLUE, NAVY, PURPLE, LILAC, PINK, BLACK, WHITE, MINT, WINE }
-enum class MascotStyle { TOUCAN, LOVEBIRD_GREEN, LOVEBIRD_PASTEL, PUG, POMERANIAN, CLOWNFISH, SHARK, RAVEN, MANDARIN_DUCK, FLAMINGO, MACAW, PERSIAN_CAT, WHITE_YELLOW_CAT, ELEPHANT, TURTLE, WHITE_RABBIT, IGUANA }
+enum class MascotStyle { TOUCAN, LOVEBIRD_GREEN, LOVEBIRD_PASTEL, PUG, POMERANIAN, CLOWNFISH, SHARK, RAVEN, MANDARIN_DUCK, FLAMINGO, MACAW, PERSIAN_CAT, WHITE_YELLOW_CAT, ELEPHANT, TURTLE, WHITE_RABBIT, IGUANA }\n\nfun paletteForMascot(m: MascotStyle): BirdPaletteStyle = when (m) {\n    MascotStyle.TOUCAN -> BirdPaletteStyle.TUCAN\n    MascotStyle.LOVEBIRD_GREEN, MascotStyle.LOVEBIRD_PASTEL -> BirdPaletteStyle.AGAPORNI\n    MascotStyle.MANDARIN_DUCK -> BirdPaletteStyle.PATO_MANDARIN\n    MascotStyle.MACAW -> BirdPaletteStyle.GUACAMAYA\n    MascotStyle.RAVEN -> BirdPaletteStyle.CUERVO\n    MascotStyle.CLOWNFISH, MascotStyle.SHARK -> BirdPaletteStyle.MARTIN_PESCADOR\n    MascotStyle.FLAMINGO, MascotStyle.PERSIAN_CAT, MascotStyle.WHITE_YELLOW_CAT -> BirdPaletteStyle.COLIBRI\n    MascotStyle.ELEPHANT -> BirdPaletteStyle.PAVO_REAL\n    MascotStyle.TURTLE, MascotStyle.IGUANA -> BirdPaletteStyle.QUETZAL\n    MascotStyle.PUG, MascotStyle.POMERANIAN, MascotStyle.WHITE_RABBIT -> BirdPaletteStyle.NINFA\n}
 
 /** Compatibilidad con pantallas antiguas. */
 enum class PaletteStyle { WOOD, CLINICAL_GREEN, DENTAL_BLUE, WINE, SAGE, MONO }
