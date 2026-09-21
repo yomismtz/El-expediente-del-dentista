@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
@@ -67,9 +66,13 @@ internal fun ResponsiveScreenV17(
             Modifier
                 .fillMaxSize()
                 .safeDrawingPadding()
-                .navigationBarsPadding()
                 .verticalScroll(rememberScrollState())
-                .padding(start = padding, end = padding, top = VisualSpacingV49.md, bottom = 112.dp),
+                .padding(
+                    start = padding,
+                    end = padding,
+                    top = VisualSpacingV49.md,
+                    bottom = VisualSpacingV49.lg
+                ),
             verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.md)
         ) {
             Row(
