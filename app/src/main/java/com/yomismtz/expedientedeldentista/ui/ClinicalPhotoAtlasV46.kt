@@ -199,10 +199,48 @@ private val mucosaPhotoOptionsV46 = listOf(
     PhotoOptionV46("Comisuras", "Queilitis angular", "Fisura, maceración o eritema en uno o ambos ángulos de la boca; suele ser multifactorial.", ClinicalPhotoV46(R.drawable.ref_angular_cheilitis, "Queilitis angular", "Fotografía clínica de queilitis angular.", "Wikimedia Commons · James Heilman, MD · CC BY-SA 3.0"))
 )
 
-@Composable
-fun MucosaPhotoAtlasV46Screen(lang: String, onBack: () -> Unit) = PhotoOptionAtlasV46(
-    title = "Examen de mucosas · atlas patológico fotográfico",
-    subtitle = "Fotos clínicas reales de hallazgos frecuentes. Primero describe la lesión; después plantea diagnóstico presuntivo/diferencial.",
-    options = mucosaPhotoOptionsV46,
-    onBack = onBack
+private data class PrimaryLesionTermV52(val name: String, val definition: String)
+private val primaryLesionTermsV52 = listOf(
+    PrimaryLesionTermV52("Mácula / mancha", "Cambio circunscrito de color sin elevación ni depresión palpable."),
+    PrimaryLesionTermV52("Pápula", "Lesión sólida, elevada y pequeña; describe tamaño, color, superficie y localización."),
+    PrimaryLesionTermV52("Placa", "Lesión elevada o engrosada, de superficie relativamente amplia; puede formarse por confluencia de pápulas."),
+    PrimaryLesionTermV52("Nódulo", "Lesión sólida palpable, más profunda que una pápula; registra tamaño, consistencia y movilidad."),
+    PrimaryLesionTermV52("Vesícula", "Elevación pequeña con contenido líquido. Si se rompe puede dejar una erosión."),
+    PrimaryLesionTermV52("Ampolla", "Elevación con contenido líquido de mayor tamaño que una vesícula."),
+    PrimaryLesionTermV52("Pústula", "Elevación circunscrita con contenido purulento."),
+    PrimaryLesionTermV52("Erosión", "Pérdida superficial del epitelio; no equivale a una úlcera."),
+    PrimaryLesionTermV52("Úlcera", "Pérdida de epitelio que se extiende al tejido conjuntivo; describe fondo, bordes, tamaño, dolor y duración."),
+    PrimaryLesionTermV52("Fisura", "Hendidura lineal de la superficie epitelial."),
+    PrimaryLesionTermV52("Costra", "Exudado seco sobre una superficie; es más habitual en piel o bermellón que en mucosa húmeda."),
+    PrimaryLesionTermV52("Pigmentación", "Describe color, distribución, bordes, simetría y evolución antes de proponer una etiología.")
 )
+
+@Composable
+fun MucosaPhotoAtlasV46Screen(lang: String, onBack: () -> Unit) {
+    var showTerms by remember { mutableStateOf(true) }
+    if (showTerms) {
+        ResponsiveScreenV17(
+            tr(lang, "Términos para describir lesiones", "Terms for describing lesions"),
+            tr(lang, "Antes del atlas, aprende la morfología básica. Melanoma y melasma son diagnósticos/entidades, no tipos morfológicos equivalentes a pápula, vesícula o úlcera.", "Before the atlas, learn basic morphology. Melanoma and melasma are diagnoses/entities, not morphologic lesion types equivalent to papule, vesicle or ulcer."),
+            onBack
+        ) { profile ->
+            primaryLesionTermsV52.forEach { term ->
+                Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+                    Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(term.name, fontWeight = FontWeight.Black)
+                        Text(term.definition)
+                    }
+                }
+            }
+            NoticeCard(tr(lang, "Melanoma: neoplasia maligna de melanocitos. Melasma: hiperpigmentación adquirida, típicamente cutánea. No deben usarse como términos elementales para describir la morfología de una lesión oral.", "Melanoma: malignant neoplasm of melanocytes. Melasma: acquired hyperpigmentation, typically cutaneous. They should not be used as elementary terms describing oral-lesion morphology."))
+            FilterChip(selected = false, onClick = { showTerms = false }, label = { Text(tr(lang, "Abrir atlas de mucosas", "Open mucosal atlas")) }, modifier = Modifier.fillMaxWidth())
+        }
+    } else {
+        PhotoOptionAtlasV46(
+            title = "Examen de mucosas · atlas patológico fotográfico",
+            subtitle = "Fotos clínicas reales de hallazgos frecuentes. Primero describe la lesión; después plantea diagnóstico presuntivo/diferencial.",
+            options = mucosaPhotoOptionsV46,
+            onBack = { showTerms = true }
+        )
+    }
+}
