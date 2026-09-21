@@ -28,6 +28,8 @@ REQUIRED = [
     "ref_tmj_movements.jpg",
     "ref_tmj_panorama.jpg",
     "ref_deciduous_teeth.jpg",
+    "ref_mixed_dentition.jpg",
+    "ref_permanent_dentition.jpg",
     "ref_angle_i.jpg",
     "ref_angle_ii.jpg",
     "ref_angle_iii.jpg",
