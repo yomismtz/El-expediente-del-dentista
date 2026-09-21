@@ -28,16 +28,26 @@ import com.yomismtz.expedientedeldentista.settings.*
 
 @Composable fun DentistAvatarPreviewV51(p:AppPreferences,modifier:Modifier=Modifier){
  Card(modifier=modifier,shape=RoundedCornerShape(24.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){
-  Box(Modifier.fillMaxWidth().height(320.dp).padding(8.dp),contentAlignment=Alignment.Center){
-   Box(Modifier.fillMaxHeight().aspectRatio(1f),contentAlignment=Alignment.Center){
-    Layer(baseRes(p),Modifier.fillMaxSize())
-    Layer(scrubRes(p.scrubColor),Modifier.fillMaxSize())
-    Layer(skinRes(p.skinTone),Modifier.fillMaxSize())
-    Layer(hairRes(p),Modifier.fillMaxSize())
-    Layer(eyeRes(p),Modifier.fillMaxSize())
-    Layer(mouthRes(p),Modifier.fillMaxSize())
+  Column(Modifier.fillMaxWidth().padding(12.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(8.dp)){
+   // Los assets actuales no son capas transparentes alineadas. Superponerlos produce una cara corrupta.
+   // Hasta sustituirlos por capas verificadas, mostramos una vista previa limpia y separada.
+   Box(Modifier.fillMaxWidth().height(210.dp),contentAlignment=Alignment.Center){
+    Layer(baseRes(p),Modifier.fillMaxHeight().aspectRatio(1f))
    }
-   Layer(mascotRes(p.mascotStyle),Modifier.align(Alignment.BottomEnd).size(112.dp))
+   Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp),verticalAlignment=Alignment.CenterVertically){
+    Card(Modifier.weight(1f),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface)){
+     Column(Modifier.fillMaxWidth().padding(10.dp),horizontalAlignment=Alignment.CenterHorizontally){
+      Text(tr(p.languageTag,"Vista previa del personaje","Character preview"),fontWeight=FontWeight.Bold)
+      Text(if(p.clinicianTitle==ClinicianTitle.DOCTORA) tr(p.languageTag,"Mujer","Woman") else tr(p.languageTag,"Hombre","Man"))
+     }
+    }
+    Card(Modifier.weight(1f),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface)){
+     Column(Modifier.fillMaxWidth().padding(8.dp),horizontalAlignment=Alignment.CenterHorizontally){
+      Layer(mascotRes(p.mascotStyle),Modifier.size(82.dp))
+      Text(mascotName(p.mascotStyle),style=MaterialTheme.typography.labelMedium,textAlign=TextAlign.Center)
+     }
+    }
+   }
   }
  }
 }
