@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -59,17 +60,17 @@ fun OnboardingV40Screen(preferences: AppPreferences, onPreferencesChanged: (AppP
 
     Column(
         Modifier.fillMaxSize()
-            .background(Brush.verticalGradient(listOf(cs.background, cs.primaryContainer.copy(alpha = .72f), cs.background)))
+            .background(Color.White)
             .safeDrawingPadding()
             .navigationBarsPadding()
             .padding(horizontal = if (configuration.screenWidthDp >= 600) 28.dp else 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.md), horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("YSM Expediente", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = cs.onSurface, textAlign = TextAlign.Center)
-        Text(if (lang == "en") "Interactive guide to the dentist's clinical record" else "Guía interactiva del expediente clínico odontológico", color = cs.onSurfaceVariant, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+        Text("YSM Expediente", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = Color(0xFF20133A), textAlign = TextAlign.Center)
+        Text(if (lang == "en") "Interactive guide to the dentist's clinical record" else "Guía interactiva del expediente clínico odontológico", color = Color(0xFF51475F), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
         Text(if (lang == "en") "Step ${page + 1} of ${ONBOARDING_LAST_PAGE + 1}" else "Paso ${page + 1} de ${ONBOARDING_LAST_PAGE + 1}", style = MaterialTheme.typography.labelLarge, color = cs.primary)
 
-        Card(Modifier.weight(1f).fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = cs.surface), shape = MaterialTheme.shapes.extraLarge, border = BorderStroke(1.dp, cs.outlineVariant), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+        Card(Modifier.weight(1f).fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color.White), shape = MaterialTheme.shapes.extraLarge, border = BorderStroke(1.dp, cs.outlineVariant), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
             Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(if (configuration.screenWidthDp >= 600) VisualSpacingV49.xl else VisualSpacingV49.lg), verticalArrangement = Arrangement.spacedBy(VisualSpacingV49.md)) {
                 when (page) {
                     0 -> WelcomePageV47(lang)
