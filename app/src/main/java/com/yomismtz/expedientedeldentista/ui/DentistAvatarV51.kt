@@ -4,7 +4,6 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.graphics.Color
@@ -120,7 +119,11 @@ private fun mascotNameV52(v:MascotStyle,lang:String)=when(v){
 @Composable private fun <T> AvatarChoiceV52(title:String,values:List<T>,selected:T,onSelect:(T)->Unit,label:(T)->String){
  Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(6.dp)){
   Text(title,fontWeight=FontWeight.Bold)
-  Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+  androidx.compose.foundation.layout.FlowRow(
+   modifier=Modifier.fillMaxWidth(),
+   horizontalArrangement=Arrangement.spacedBy(8.dp),
+   verticalArrangement=Arrangement.spacedBy(6.dp)
+  ){
    values.forEach{v->FilterChip(selected==v,{onSelect(v)},{Text(label(v),textAlign=TextAlign.Center)},Modifier.widthIn(min=96.dp))}
   }
  }
