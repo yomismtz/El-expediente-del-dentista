@@ -223,6 +223,7 @@ fun ExpedienteTheme(
     paletteStyle: BirdPaletteStyle,
     fontStyle: FontStyle,
     textSizeStyle: TextSizeStyle = TextSizeStyle.NORMAL,
+    themeMode: ThemeMode = ThemeMode.LIGHT,
     content: @Composable () -> Unit
 ) {
     val p = birdPalette(paletteStyle)
