@@ -61,76 +61,10 @@ commons "86th%20Dental%20Squadron%E2%80%99s%20Maj%20Van%20Hoof%20sees%20the%20pe
 commons "Dentist.2.jpg" "clinician_doctora_photo.jpg"
 
 # Atlas ICDAS 0–6.
-# Fuente clínica y licencia: Gugnani N, Pandit IK, Srivastava N, Gupta M, Sharma M.
-# International Caries Detection and Assessment System (ICDAS): A New Concept.
-# Int J Clin Pediatr Dent. 2011;4(2):93-100. Fig. 1A-G. CC BY 3.0.
-# https://pmc.ncbi.nlm.nih.gov/articles/PMC5030492/
-# Se intenta primero extraer la página que contiene la figura desde el PDF oficial del editor.
-# Si el runner no dispone de pdftoppm o el editor bloquea la descarga, se usa un espejo visual
-# de la misma secuencia educativa únicamente como respaldo técnico.
-fetch_icdas_atlas() {
-  local pdf="$OUT/.icdas_article.$RANDOM.pdf"
-  local prefix="$OUT/.icdas_page.$RANDOM"
-  local target="$OUT/icdas_codes_photo.jpg"
-  local sources=(
-    "https://www.ijcpd.com/doi/pdf/10.5005/jp-journals-10005-1089"
-    "https://pmc.ncbi.nlm.nih.gov/articles/PMC5030492/bin/ijcpd-04-093.pdf"
-    "https://pdfs.semanticscholar.org/1469/4c5e7c824e1178eba66e533777f725f0512d.pdf"
-  )
-
-  echo "Preparando atlas fotográfico ICDAS 0–6"
-  if ! command -v pdftoppm >/dev/null 2>&1; then
-    echo "AVISO: pdftoppm no está disponible; no se puede preparar la figura ICDAS." >&2
-    return 0
-  fi
-
-  local source
-  for source in "${sources[@]}"; do
-    rm -f "$pdf" "$prefix.jpg"
-    if curl -L --fail --connect-timeout 6 --max-time 45 --retry 2 --retry-delay 2 --retry-max-time 110 \
-      -A "YSM-Expediente-Educational-App/1.0" "$source" -o "$pdf" >/dev/null 2>&1 \
-      && [ -s "$pdf" ] \
-      && pdftoppm -f 3 -l 3 -singlefile -jpeg -r 180 "$pdf" "$prefix" >/dev/null 2>&1 \
-      && [ -s "$prefix.jpg" ]; then
-      mv -f "$prefix.jpg" "$target"
-
-      # Recorta cada fotografía A–G como recurso independiente. Las coordenadas
-      # corresponden a la página 95 renderizada a 180 dpi por pdftoppm.
-      local specs=(
-        "0 280 220 530 430"
-        "1 280 650 530 460"
-        "2 280 1110 530 440"
-        "3 280 1580 530 420"
-        "4 810 220 535 430"
-        "5 810 650 535 460"
-        "6 810 1110 535 440"
-      )
-      local spec code x y w h
-      for spec in "${specs[@]}"; do
-        read -r code x y w h <<< "$spec"
-        rm -f "$OUT/icdas_code_${code}.jpg"
-        if ! pdftoppm -f 3 -l 3 -singlefile -jpeg -r 180 \
-          -x "$x" -y "$y" -W "$w" -H "$h" \
-          "$pdf" "$OUT/icdas_code_${code}" >/dev/null 2>&1 \
-          || [ ! -s "$OUT/icdas_code_${code}.jpg" ]; then
-          rm -f "$pdf" "$target" "$OUT"/icdas_code_*.jpg
-          echo "AVISO: no se pudo recortar ICDAS $code desde la figura original." >&2
-          return 0
-        fi
-      done
-
-      rm -f "$pdf"
-      echo "OK ICDAS 0–6 · siete fotografías individuales · Gugnani et al. Fig. 1A–G · CC BY 3.0"
-      return 0
-    fi
-  done
-
-  rm -f "$pdf" "$prefix.jpg" "$target"
-  echo "AVISO: no se pudo preparar el atlas ICDAS desde ninguna copia académica del artículo CC BY 3.0; la compilación se detendrá en la validación." >&2
-  return 0
-}
-
-fetch_icdas_atlas
+# Las fotografías individuales previamente exigidas no se generan automáticamente:
+# la fuente no ofrece siete archivos inequívocos y la auditoría visual no autoriza
+# asignar imágenes ambiguas a códigos 0–6. El módulo ICDAS conserva su contenido
+# educativo textual y no inventa ni recorta fotografías como si fueran diagnósticas.
 
 # Referencias clínicas.
 fetch "https://wwwn.cdc.gov/phil///PHIL_Images/20040908/2d4664936550421d85a71364ed879b68/6121_lores.jpg" "clinical_varicella.jpg"
