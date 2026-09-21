@@ -74,7 +74,7 @@ fetch_icdas_atlas() {
   local target="$OUT/icdas_codes_photo.jpg"
   local sources=(
     "https://www.ijcpd.com/doi/pdf/10.5005/jp-journals-10005-1089"
-    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5030492/pdf/ijcpd-04-093.pdf"
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC5030492/bin/ijcpd-04-093.pdf"
     "https://pdfs.semanticscholar.org/1469/4c5e7c824e1178eba66e533777f725f0512d.pdf"
   )
 
