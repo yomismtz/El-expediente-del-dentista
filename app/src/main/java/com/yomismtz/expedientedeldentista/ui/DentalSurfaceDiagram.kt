@@ -19,6 +19,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -100,6 +102,9 @@ fun DentalSurfaceDiagram(
     val border = MaterialTheme.colorScheme.outline
     val base = MaterialTheme.colorScheme.surfaceVariant
     val colors = Surface.entries.associateWith { surfaceColor(it) }
+    // Mantiene el callback más reciente dentro de pointerInput. Sin esto, el gesto podía
+    // conservar el mapa/diente del primer render y parecía que sólo una cara podía pintarse.
+    val latestOnSurfaceTap by rememberUpdatedState(onSurfaceTap)
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text("V", fontWeight = FontWeight.Black)
@@ -125,7 +130,7 @@ fun DentalSurfaceDiagram(
                                 dy < 0 -> Surface.VESTIBULAR
                                 else -> Surface.LINGUAL_PALATAL
                             }
-                            onSurfaceTap(surface)
+                            latestOnSurfaceTap(surface)
                         }
                     }
             ) {
@@ -134,7 +139,6 @@ fun DentalSurfaceDiagram(
                 val cx = w / 2f
                 val cy = h / 2f
 
-                // Contorno oclusal lobulado: corona vista desde arriba, sin raíces.
                 val crown = Path().apply {
                     moveTo(cx, h * .055f)
                     cubicTo(w * .38f, h * .035f, w * .27f, h * .07f, w * .21f, h * .15f)
@@ -198,12 +202,10 @@ fun DentalSurfaceDiagram(
                     }
                     drawPath(occlusal, colors.getValue(Surface.OCCLUSAL))
                     drawPath(occlusal, border, style = Stroke(2.2f))
-                    // Surcos oclusales didácticos para que la vista se reconozca como corona.
                     drawLine(border.copy(alpha=.65f), Offset(cx, cT + 8f), Offset(cx, cB - 8f), strokeWidth = 2f)
                     drawLine(border.copy(alpha=.55f), Offset(cL + 8f, cy), Offset(cR - 8f, cy), strokeWidth = 2f)
                     drawCircle(border.copy(alpha=.55f), radius = 4f, center = Offset(cx, cy))
                 } else {
-                    // O'Leary: cuatro caras convergen al centro, sin cara oclusal.
                     drawLine(border, Offset(cL, cT), Offset(cx, cy), strokeWidth = 2f)
                     drawLine(border, Offset(cR, cT), Offset(cx, cy), strokeWidth = 2f)
                     drawLine(border, Offset(cL, cB), Offset(cx, cy), strokeWidth = 2f)

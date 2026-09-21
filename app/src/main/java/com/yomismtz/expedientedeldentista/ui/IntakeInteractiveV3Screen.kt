@@ -117,6 +117,8 @@ fun IntakeInteractiveV3Screen(
     lang: String,
     onIdentification: () -> Unit,
     onHistory: () -> Unit,
+    onGeneralInspection: () -> Unit,
+    onHeadNeck: () -> Unit,
     onVitals: () -> Unit,
     onAtm: () -> Unit,
     onOcclusion: () -> Unit,
@@ -246,14 +248,16 @@ fun IntakeInteractiveV3Screen(
         }
 
         item {
-            IntakeSectionCard("4", tr(lang,"Exámenes y análisis relacionados","Related examinations and analyses")) {
+            IntakeSectionCard("4", tr(lang,"Exploración clínica y análisis relacionados","Clinical examination and related analyses")) {
                 Text(tr(lang,
-                    "Toca el examen que estés realizando. Cada módulo debe terminar con una sección “¿Qué escribo al final en el expediente?”.",
-                    "Tap the examination you are performing. Each module should end with a “What do I write in the record?” section."), fontWeight = FontWeight.SemiBold)
+                    "Sigue la secuencia del expediente: exploración general, cabeza y cuello, y después los exámenes intraorales y análisis correspondientes.",
+                    "Follow the record sequence: general inspection, head and neck, then the corresponding intraoral examinations and analyses."), fontWeight = FontWeight.SemiBold)
+                QuickExamButton(tr(lang,"👁 IX.2 Exploración general","👁 IX.2 General inspection"), onGeneralInspection)
+                QuickExamButton(tr(lang,"🧑 IX.3 Cabeza y cuello","🧑 IX.3 Head and neck"), onHeadNeck)
                 QuickExamButton(tr(lang,"♥ Signos vitales","♥ Vital signs"), onVitals)
-                QuickExamButton(tr(lang,"◌ ATM y músculos","◌ TMJ and muscles"), onAtm)
+                QuickExamButton(tr(lang,"◌ ATM","◌ TMJ"), onAtm)
                 QuickExamButton(tr(lang,"◇ Oclusión","◇ Occlusion"), onOcclusion)
-                QuickExamButton(tr(lang,"◡ Mucosas","◡ Mucosa"), onMucosa)
+                QuickExamButton(tr(lang,"◡ Mucosas orales","◡ Oral mucosa"), onMucosa)
                 QuickExamButton(tr(lang,"+ CPOD / ceod","+ DMFT / dmft"), onCpod)
                 QuickExamButton(tr(lang,"⌇ Periodontal","⌇ Periodontal"), onPeriodontal)
                 QuickExamButton(tr(lang,"⚡ Pulpar / periapical","⚡ Pulpal / apical"), onPulpal)
@@ -270,8 +274,8 @@ fun IntakeInteractiveV3Screen(
                 Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(tr(lang,"Regla de la app","App rule"), fontWeight = FontWeight.Black, color = IntakeDeep, style = MaterialTheme.typography.titleMedium)
                     Text(tr(lang,
-                        "Explorar → interpretar → revisar por qué → ver cómo redactarlo → volver a Nota de ingreso.",
-                        "Examine → interpret → review why → see how to write it → return to Intake note."))
+                        "Observar/explorar → describir → interpretar con prudencia → revisar por qué → ver cómo redactarlo → volver a Nota de ingreso.",
+                        "Observe/examine → describe → interpret cautiously → review why → see how to write it → return to Intake note."))
                 }
             }
         }

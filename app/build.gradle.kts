@@ -4,23 +4,48 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+val uploadKeystorePath = System.getenv("YSM_KEYSTORE_PATH")
+
 android {
     namespace = "com.yomismtz.expedientedeldentista"
-    compileSdk = 35
+    compileSdk = 36
+    testBuildType = "preview"
 
     defaultConfig {
         applicationId = "com.yomismtz.expedientedeldentista"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 21
-        versionName = "0.21-debug"
+        targetSdk = 36
+        versionCode = 46
+        versionName = "0.46"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (!uploadKeystorePath.isNullOrBlank()) {
+            create("releaseUpload") {
+                storeFile = file(uploadKeystorePath)
+                storePassword = System.getenv("YSM_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("YSM_KEY_ALIAS")
+                keyPassword = System.getenv("YSM_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
+        create("preview") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".preview"
+            versionNameSuffix = "-preview"
+            matchingFallbacks += listOf("debug")
+        }
+
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            if (!uploadKeystorePath.isNullOrBlank()) {
+                signingConfig = signingConfigs.getByName("releaseUpload")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -51,7 +76,13 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
     testImplementation("junit:junit:4.13.2")
+
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test:core-ktx:1.6.1")
+
     debugImplementation("androidx.compose.ui:ui-tooling")
+    "previewImplementation"("androidx.compose.ui:ui-tooling")
 }
