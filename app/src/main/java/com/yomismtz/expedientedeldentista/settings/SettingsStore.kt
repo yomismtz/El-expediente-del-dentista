@@ -10,7 +10,7 @@ enum class EyeColor { BROWN, HAZEL, GREEN, BLUE, GRAY }
 enum class MouthStyle { NATURAL, SMILE, FULL }
 enum class LipColor { NATURAL, ROSE, CORAL, RED, WINE }
 enum class ScrubColor { TURQUOISE, BLUE, NAVY, PURPLE, LILAC, PINK, BLACK, WHITE, MINT, WINE }
-enum class MascotStyle { TOUCAN, LOVEBIRD_GREEN, LOVEBIRD_PASTEL, PUG, POMERANIAN, CLOWNFISH, SHARK, RAVEN, MANDARIN_DUCK, FLAMINGO, MACAW, PERSIAN_CAT, WHITE_YELLOW_CAT, ELEPHANT, TURTLE, WHITE_RABBIT, IGUANA }
+enum class MascotStyle { TOUCAN, LOVEBIRD_GREEN, LOVEBIRD_PASTEL, PUG, POMERANIAN, CLOWNFISH, SHARK, RAVEN, MANDARIN_DUCK, FLAMINGO, MACAW, PERSIAN_CAT, WHITE_YELLOW_CAT, ELEPHANT, TURTLE, WHITE_RABBIT, IGUANA, COCKATIEL, OWL, BROWN_HORSE, PINTO_HORSE, SPIDER, DOLPHIN, AXOLOTL, PENGUIN, HAMSTER, PHOENIX, FOX, RACCOON, KOALA, CAPYBARA }
 
 fun paletteForMascot(m: MascotStyle): BirdPaletteStyle = when (m) {
     MascotStyle.TOUCAN -> BirdPaletteStyle.TUCAN
@@ -22,7 +22,13 @@ fun paletteForMascot(m: MascotStyle): BirdPaletteStyle = when (m) {
     MascotStyle.FLAMINGO, MascotStyle.PERSIAN_CAT, MascotStyle.WHITE_YELLOW_CAT -> BirdPaletteStyle.COLIBRI
     MascotStyle.ELEPHANT -> BirdPaletteStyle.PAVO_REAL
     MascotStyle.TURTLE, MascotStyle.IGUANA -> BirdPaletteStyle.QUETZAL
-    MascotStyle.PUG, MascotStyle.POMERANIAN, MascotStyle.WHITE_RABBIT -> BirdPaletteStyle.NINFA
+    MascotStyle.PUG, MascotStyle.POMERANIAN, MascotStyle.WHITE_RABBIT, MascotStyle.COCKATIEL -> BirdPaletteStyle.NINFA
+    MascotStyle.OWL, MascotStyle.BROWN_HORSE, MascotStyle.PINTO_HORSE, MascotStyle.HAMSTER, MascotStyle.CAPYBARA -> BirdPaletteStyle.ABEJARUCO
+    MascotStyle.SPIDER, MascotStyle.RACCOON -> BirdPaletteStyle.CUERVO
+    MascotStyle.DOLPHIN, MascotStyle.PENGUIN -> BirdPaletteStyle.PAVO_REAL
+    MascotStyle.AXOLOTL, MascotStyle.KOALA -> BirdPaletteStyle.COLIBRI
+    MascotStyle.PHOENIX -> BirdPaletteStyle.FENIX
+    MascotStyle.FOX -> BirdPaletteStyle.GUACAMAYA
 }
 
 /** Compatibilidad con pantallas antiguas. */
