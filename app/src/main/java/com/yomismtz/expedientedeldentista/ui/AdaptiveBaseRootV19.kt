@@ -116,22 +116,22 @@ fun AdaptiveBaseRootV19(preferences:AppPreferences,onPreferencesChanged:(AppPref
         val availableWidth=maxWidth
         val compact=availableWidth<380.dp||fontScale>=1.30f
         val landscape=config.screenWidthDp>config.screenHeightDp
-        val portraitSize=when{compact->148.dp;landscape->172.dp;availableWidth>=600.dp->230.dp;else->200.dp}
+        val mascotSize=when{compact->150.dp;landscape->170.dp;availableWidth>=600.dp->230.dp;else->200.dp}
         Column(Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(horizontal=if(availableWidth>=600.dp)36.dp else VisualSpacingV49.lg,vertical=VisualSpacingV49.md),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(if(compact)VisualSpacingV49.sm else VisualSpacingV49.md)){
             Image(painterResource(R.drawable.ysm_logo),tr(lang,"Logo YSM con ave y expediente dental","YSM bird and dental record logo"),Modifier.size(if(compact)76.dp else if(availableWidth>=600.dp)116.dp else 94.dp),contentScale=ContentScale.Fit)
             Text("YSM Expediente",style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Black,textAlign=TextAlign.Center)
-            Text(tr(lang,"El expediente del dentista","The dentist's record"),style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.SemiBold,textAlign=TextAlign.Center)
-            Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),shape=MaterialTheme.shapes.extraLarge,modifier=Modifier.fillMaxWidth().heightIn(min=portraitSize+36.dp),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outlineVariant),elevation=CardDefaults.cardElevation(defaultElevation=2.dp)){
+            Text(tr(lang,"Bienvenida Doctor","Welcome Doctor"),style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black,textAlign=TextAlign.Center)
+            Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),shape=MaterialTheme.shapes.extraLarge,modifier=Modifier.fillMaxWidth().heightIn(min=mascotSize+60.dp),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outlineVariant),elevation=CardDefaults.cardElevation(defaultElevation=2.dp)){
                 if(landscape&&availableWidth>=600.dp&&fontScale<1.3f) Row(Modifier.fillMaxWidth().padding(VisualSpacingV49.lg),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(VisualSpacingV49.lg)){
-                    ClinicianPortraitV47(preferences.clinicianTitle,Modifier.size(portraitSize),clinicianDescription(lang,preferences.clinicianTitle))
+                    MascotImageV54(preferences.mascotStyle,lang,Modifier.size(mascotSize))
                     CoverGuideText(preferences,Modifier.weight(1f))
                 } else Column(Modifier.fillMaxWidth().padding(VisualSpacingV49.lg),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(VisualSpacingV49.sm)){
-                    ClinicianPortraitV47(preferences.clinicianTitle,Modifier.size(portraitSize),clinicianDescription(lang,preferences.clinicianTitle))
+                    MascotImageV54(preferences.mascotStyle,lang,Modifier.size(mascotSize))
                     CoverGuideText(preferences,Modifier.fillMaxWidth())
                 }
             }
             Text(tr(lang,"Deja volar tu imaginación y tus conocimientos renacerán","Let your imagination take flight and your knowledge be reborn"),style=MaterialTheme.typography.bodyLarge,fontWeight=FontWeight.SemiBold,textAlign=TextAlign.Center,color=MaterialTheme.colorScheme.secondary)
-            Button(onClick=onOpen,modifier=Modifier.fillMaxWidth().heightIn(min=54.dp),shape=MaterialTheme.shapes.medium){Text(tr(lang,"Abrir guía","Open guide"),fontWeight=FontWeight.SemiBold,style=MaterialTheme.typography.titleMedium)}
+            Button(onClick=onOpen,modifier=Modifier.fillMaxWidth().heightIn(min=54.dp),shape=MaterialTheme.shapes.medium){Text(tr(lang,"Abrir expediente","Open record"),fontWeight=FontWeight.SemiBold,style=MaterialTheme.typography.titleMedium)}
             Spacer(Modifier.height(4.dp))
         }
     }
@@ -140,7 +140,7 @@ fun AdaptiveBaseRootV19(preferences:AppPreferences,onPreferencesChanged:(AppPref
 @Composable private fun CoverGuideText(preferences:AppPreferences,modifier:Modifier=Modifier){
     val lang=preferences.languageTag
     Column(modifier,horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(5.dp)){
-        Text(if(lang=="en"){if(preferences.clinicianTitle==ClinicianTitle.DOCTORA)"Your guide: Doctora" else "Your guide: Doctor"}else{if(preferences.clinicianTitle==ClinicianTitle.DOCTORA)"Tu guía: Doctora" else "Tu guía: Doctor"},style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Black,textAlign=TextAlign.Center)
+        Text(tr(lang,"Tu mascota","Your pet"),style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Black,textAlign=TextAlign.Center)
         Text(paletteDisplayName(preferences.birdPaletteStyle,lang),style=MaterialTheme.typography.labelLarge,fontWeight=FontWeight.SemiBold,textAlign=TextAlign.Center,color=MaterialTheme.colorScheme.primary)
         Text(tr(lang,"Guía educativa interactiva para aprender el llenado del expediente clínico odontológico.","Interactive educational guide for learning how to complete a dental clinical record."),style=MaterialTheme.typography.bodyMedium,textAlign=TextAlign.Center)
     }
