@@ -19,8 +19,25 @@ internal fun GynecoObstetricGuideV52Screen(lang: String, onBack: () -> Unit) {
         tr(lang, "VI. Antecedentes gineco-obstétricos", "VI. Gynecologic-obstetric history"),
         tr(lang, "Guía educativa anónima: enseña qué tipo de información corresponde al apartado sin almacenar datos de pacientes.", "Anonymous teaching guide: shows the type of information that belongs in this section without storing patient data."),
         onBack
-    ) {
+    ) { profile ->
         NoticeCard(tr(lang, "Conserva este apartado separado de los antecedentes personales no patológicos, como en el formato de referencia. Registra únicamente lo que el paciente refiera y lo que el formato clínico solicite.", "Keep this section separate from non-pathological history, as in the reference form. Record only what the patient reports and what the clinical form requests."))
+        val fields = listOf(
+            tr(lang,"Menarca y patrón menstrual","Menarche and menstrual pattern"),
+            tr(lang,"Fecha de última menstruación","Last menstrual period"),
+            tr(lang,"Embarazos, partos, cesáreas y abortos","Pregnancies, births, cesareans and miscarriages"),
+            tr(lang,"Embarazo actual y edad gestacional referida","Current pregnancy and reported gestational age"),
+            tr(lang,"Lactancia","Breastfeeding"),
+            tr(lang,"Anticoncepción y terapia hormonal referida","Reported contraception and hormone therapy"),
+            tr(lang,"Menopausia / climaterio","Menopause / climacteric"),
+            tr(lang,"Complicaciones gineco-obstétricas relevantes","Relevant gynecologic-obstetric complications")
+        )
+        ResponsiveSectionV17(tr(lang, "Campos que debes revisar", "Fields to review")) {
+            AdaptiveGridV17(fields.size, if(profile.largeSystemText || profile.width==ScreenWidthV17.COMPACT) 1 else 2) { i ->
+                Card(Modifier.fillMaxWidth(), colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)) {
+                    Text(fields[i], Modifier.padding(12.dp), fontWeight=FontWeight.SemiBold)
+                }
+            }
+        }
         ResponsiveSectionV17(tr(lang, "Cómo estudiar el apartado", "How to study this section")) {
             Text(tr(lang, "Identifica primero los campos del formato físico; después practica una redacción objetiva, cronológica y sin inferir diagnósticos a partir de antecedentes incompletos.", "First identify the fields on the physical form; then practice objective, chronological wording without inferring diagnoses from incomplete history."))
         }
