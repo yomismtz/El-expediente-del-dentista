@@ -1,4 +1,5 @@
 package com.yomismtz.expedientedeldentista.ui
+import com.yomismtz.expedientedeldentista.clinical.tmjDifferentialV55
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -106,7 +107,7 @@ fun TmjPhotoAtlasV46Screen(lang: String, onBack: () -> Unit) {
     var photo by remember { mutableStateOf(0) }
     var opening by remember { mutableStateOf("40–50 mm aprox.") }
     val findings = remember { mutableStateListOf<String>() }
-    val checklist = listOf("Dolor al abrir/cerrar", "Chasquido", "Crepitación", "Desviación", "Deflexión", "Bloqueo", "Limitación funcional", "Dolor muscular", "Sin alteraciones aparentes")
+    val checklist = listOf("Dolor al abrir/cerrar", "Dolor preauricular", "Dolor al masticar", "Dolor muscular", "Fatiga mandibular", "Chasquido", "Crepitación", "Desviación", "Deflexión", "Bloqueo", "Limitación funcional", "Bruxismo / apretamiento", "Cefalea / dolor de cabeza", "Traumatismo reciente", "Aumento de volumen / inflamación", "Fiebre", "Parestesia / alteración sensitiva", "Sin alteraciones aparentes")
     ResponsiveScreenV17("Exploración de ATM y TTM · referencias visuales", "Fotografía/imagenología real cuando corresponde y diagrama educativo identificado como tal.", onBack) { profile ->
         ClinicalPhotoCardV46(tmjPhotosV46[photo])
         ResponsiveSectionV17("Referencias visuales") {
@@ -121,6 +122,13 @@ fun TmjPhotoAtlasV46Screen(lang: String, onBack: () -> Unit) {
         }
         ResponsiveSectionV17("Hallazgos") {
             checklist.forEach { x -> FilterChip(x in findings, { if (x in findings) findings.remove(x) else findings.add(x) }, { Text(x) }, Modifier.fillMaxWidth()) }
+        }
+        val orientation = tmjDifferentialV55(findings.toSet(), opening)
+        ResponsiveSectionV17("Orientación diagnóstica presuntiva") {
+            Text(orientation.primaryOrientation, fontWeight = FontWeight.Black)
+            orientation.differentials.forEach { Text("• $it") }
+            orientation.redFlags.forEach { Text("⚠ $it", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.SemiBold) }
+            Text(orientation.note, style = MaterialTheme.typography.bodySmall)
         }
         NoticeCard("Dolor, ruidos o una imagen aislada no equivalen automáticamente a desplazamiento discal, osteoartrosis u otro TTM. Integra historia, palpación, movimientos y estudios cuando estén indicados.")
     }
