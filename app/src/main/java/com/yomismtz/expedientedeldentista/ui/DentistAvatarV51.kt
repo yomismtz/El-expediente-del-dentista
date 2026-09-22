@@ -29,7 +29,42 @@ import com.yomismtz.expedientedeldentista.settings.*
 @DrawableRes private fun eyeRes(p: AppPreferences)=when((p.eyeShape.ordinal*2+p.eyeColor.ordinal)%6){0->R.drawable.avatar_eye_1;1->R.drawable.avatar_eye_2;2->R.drawable.avatar_eye_3;3->R.drawable.avatar_eye_4;4->R.drawable.avatar_eye_5;else->R.drawable.avatar_eye_6}
 @DrawableRes private fun mouthRes(p: AppPreferences)=when((p.mouthStyle.ordinal*3+p.lipColor.ordinal)%8){0->R.drawable.avatar_mouth_1;1->R.drawable.avatar_mouth_2;2->R.drawable.avatar_mouth_3;3->R.drawable.avatar_mouth_4;4->R.drawable.avatar_mouth_5;5->R.drawable.avatar_mouth_6;6->R.drawable.avatar_mouth_7;else->R.drawable.avatar_mouth_8}
 @DrawableRes private fun scrubRes(v:ScrubColor)=when(v){ScrubColor.TURQUOISE->R.drawable.avatar_scrub_1;ScrubColor.BLUE->R.drawable.avatar_scrub_2;ScrubColor.NAVY->R.drawable.avatar_scrub_3;ScrubColor.PURPLE->R.drawable.avatar_scrub_4;ScrubColor.LILAC->R.drawable.avatar_scrub_5;ScrubColor.PINK->R.drawable.avatar_scrub_6;ScrubColor.BLACK->R.drawable.avatar_scrub_7;ScrubColor.WHITE->R.drawable.avatar_scrub_8;ScrubColor.MINT->R.drawable.avatar_scrub_9;ScrubColor.WINE->R.drawable.avatar_scrub_10}
-@DrawableRes private fun mascotRes(v:MascotStyle)=when(v){MascotStyle.TOUCAN->R.drawable.mascot_toucan;MascotStyle.LOVEBIRD_GREEN->R.drawable.mascot_lovebird_green;MascotStyle.LOVEBIRD_PASTEL->R.drawable.mascot_lovebird_pastel;MascotStyle.PUG->R.drawable.mascot_pug;MascotStyle.POMERANIAN->R.drawable.mascot_pomeranian;MascotStyle.CLOWNFISH->R.drawable.mascot_clownfish;MascotStyle.SHARK->R.drawable.mascot_shark;MascotStyle.RAVEN->R.drawable.mascot_raven;MascotStyle.MANDARIN_DUCK->R.drawable.mascot_mandarin_duck;MascotStyle.FLAMINGO->R.drawable.mascot_flamingo;MascotStyle.MACAW->R.drawable.mascot_macaw;MascotStyle.PERSIAN_CAT->R.drawable.mascot_persian_cat;MascotStyle.WHITE_YELLOW_CAT->R.drawable.mascot_white_yellow_cat;MascotStyle.ELEPHANT->R.drawable.mascot_elephant;MascotStyle.TURTLE->R.drawable.mascot_turtle;MascotStyle.WHITE_RABBIT->R.drawable.mascot_white_rabbit;MascotStyle.IGUANA->R.drawable.mascot_iguana;MascotStyle.COCKATIEL->R.drawable.mascot_lovebird_pastel;MascotStyle.OWL->R.drawable.mascot_raven;MascotStyle.BROWN_HORSE->R.drawable.mascot_pug;MascotStyle.PINTO_HORSE->R.drawable.mascot_pomeranian;MascotStyle.SPIDER->R.drawable.mascot_raven;MascotStyle.DOLPHIN->R.drawable.mascot_shark;MascotStyle.AXOLOTL->R.drawable.mascot_lovebird_pastel;MascotStyle.PENGUIN->R.drawable.mascot_raven;MascotStyle.HAMSTER->R.drawable.mascot_pomeranian;MascotStyle.PHOENIX->R.drawable.mascot_macaw;MascotStyle.FOX->R.drawable.mascot_pomeranian;MascotStyle.RACCOON->R.drawable.mascot_pug;MascotStyle.KOALA->R.drawable.mascot_elephant;MascotStyle.CAPYBARA->R.drawable.mascot_pug}
+@DrawableRes private fun mascotRes(v:MascotStyle):Int?=when(v){
+ MascotStyle.TOUCAN->R.drawable.mascot_toucan
+ MascotStyle.LOVEBIRD_GREEN->R.drawable.mascot_lovebird_green
+ MascotStyle.LOVEBIRD_PASTEL->R.drawable.mascot_lovebird_pastel
+ MascotStyle.PUG->R.drawable.mascot_pug
+ MascotStyle.POMERANIAN->R.drawable.mascot_pomeranian
+ MascotStyle.CLOWNFISH->R.drawable.mascot_clownfish
+ MascotStyle.SHARK->R.drawable.mascot_shark
+ MascotStyle.RAVEN->R.drawable.mascot_raven
+ MascotStyle.MANDARIN_DUCK->R.drawable.mascot_mandarin_duck
+ MascotStyle.FLAMINGO->R.drawable.mascot_flamingo
+ MascotStyle.MACAW->R.drawable.mascot_macaw
+ MascotStyle.PERSIAN_CAT->R.drawable.mascot_persian_cat
+ MascotStyle.WHITE_YELLOW_CAT->R.drawable.mascot_white_yellow_cat
+ MascotStyle.ELEPHANT->R.drawable.mascot_elephant
+ MascotStyle.TURTLE->R.drawable.mascot_turtle
+ MascotStyle.WHITE_RABBIT->R.drawable.mascot_white_rabbit
+ MascotStyle.IGUANA->R.drawable.mascot_iguana
+ else->null
+}
+
+private fun mascotEmoji(v:MascotStyle)=when(v){
+ MascotStyle.COCKATIEL->"🐦";MascotStyle.OWL->"🦉";MascotStyle.BROWN_HORSE->"🐴";MascotStyle.PINTO_HORSE->"🐎"
+ MascotStyle.SPIDER->"🕷️";MascotStyle.DOLPHIN->"🐬";MascotStyle.AXOLOTL->"🦎";MascotStyle.PENGUIN->"🐧"
+ MascotStyle.HAMSTER->"🐹";MascotStyle.PHOENIX->"🔥";MascotStyle.FOX->"🦊";MascotStyle.RACCOON->"🦝"
+ MascotStyle.KOALA->"🐨";MascotStyle.CAPYBARA->"🦫";else->"🐾"
+}
+
+@Composable
+internal fun MascotImageV54(mascot:MascotStyle,lang:String,modifier:Modifier=Modifier){
+ val res=mascotRes(mascot)
+ Box(modifier,contentAlignment=Alignment.Center){
+  if(res!=null) Image(painterResource(res),mascotNameV52(mascot,lang),Modifier.fillMaxSize().padding(4.dp),contentScale=ContentScale.Fit)
+  else Text(mascotEmoji(mascot),style=MaterialTheme.typography.displayLarge,textAlign=TextAlign.Center)
+ }
+}
 
 @Composable private fun Layer(@DrawableRes id:Int,modifier:Modifier=Modifier){Image(painterResource(id),null,modifier,contentScale=ContentScale.Fit)}
 
@@ -118,7 +153,11 @@ internal fun MascotPickerV53(p:AppPreferences,onChange:(AppPreferences)->Unit,la
      shape=MaterialTheme.shapes.large
     ){
      Column(Modifier.fillMaxWidth().padding(10.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(6.dp)){
-      Image(painterResource(mascotRes(mascot)),mascotNameV52(mascot,lang),Modifier.fillMaxWidth().height(110.dp),contentScale=ContentScale.Fit)
+      Card(
+       colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surfaceVariant.copy(alpha=.35f)),
+       shape=RoundedCornerShape(16.dp),
+       modifier=Modifier.fillMaxWidth().height(132.dp)
+      ){ MascotImageV54(mascot,lang,Modifier.fillMaxSize().padding(6.dp)) }
       Text(mascotNameV52(mascot,lang),fontWeight=FontWeight.Black,textAlign=TextAlign.Center)
       Text(mascotAccentV53(mascot,lang),style=MaterialTheme.typography.labelSmall,textAlign=TextAlign.Center,color=MaterialTheme.colorScheme.onSurfaceVariant)
       if(selected) Text(tr(lang,"Seleccionada ✓","Selected ✓"),color=MaterialTheme.colorScheme.primary,fontWeight=FontWeight.Bold)
