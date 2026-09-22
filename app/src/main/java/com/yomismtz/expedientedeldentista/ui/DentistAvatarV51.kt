@@ -54,7 +54,7 @@ private fun mascotEmoji(v:MascotStyle)=when(v){
  MascotStyle.COCKATIEL->"🐦";MascotStyle.OWL->"🦉";MascotStyle.BROWN_HORSE->"🐴";MascotStyle.PINTO_HORSE->"🐎"
  MascotStyle.SPIDER->"🕷️";MascotStyle.DOLPHIN->"🐬";MascotStyle.AXOLOTL->"🦎";MascotStyle.PENGUIN->"🐧"
  MascotStyle.HAMSTER->"🐹";MascotStyle.PHOENIX->"🔥";MascotStyle.FOX->"🦊";MascotStyle.RACCOON->"🦝"
- MascotStyle.KOALA->"🐨";MascotStyle.CAPYBARA->"🦫";else->"🐾"
+ MascotStyle.KOALA->"🐨";MascotStyle.CAPYBARA->"🦫";MascotStyle.LEOPARD->"🐆";MascotStyle.DRAGON->"🐉";else->"🐾"
 }
 
 @Composable
@@ -135,7 +135,7 @@ private fun mascotName(v:MascotStyle)=v.name.lowercase().replace('_',' ').replac
  Text(tr(lang,"Elige tu mascota","Choose your pet"),style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black)
  Text(tr(lang,"Tu mascota será tu identidad visual. Al seleccionarla, toda la aplicación adopta automáticamente su paleta de colores.","Your pet becomes your visual identity. Selecting it automatically applies its color palette across the app."),style=MaterialTheme.typography.bodyMedium)
  MascotPickerV53(p, onChange, lang)
- NoticeCard(tr(lang,"Cada una de las 30 mascotas tiene una identidad propia. Las que comparten colores similares usan un acento diferenciador para que su paleta siga siendo reconocible.","Each of the 30 pets has its own identity. Pets with similar colors use a distinguishing accent so their palettes remain recognizable."))
+ NoticeCard(tr(lang,"Cada mascota tiene una identidad propia. Las que comparten colores similares usan un acento diferenciador para que su paleta siga siendo reconocible.","Each pet has its own identity. Pets with similar colors use a distinguishing accent so their palettes remain recognizable."))
 }
 
 @Composable
@@ -201,10 +201,12 @@ private fun mascotAccentV53(v:MascotStyle,lang:String)=when(v){
  MascotStyle.RACCOON->tr(lang,"Grafito + plata","Graphite + silver")
  MascotStyle.KOALA->tr(lang,"Gris + lavanda","Gray + lavender")
  MascotStyle.CAPYBARA->tr(lang,"Cacao + menta","Cocoa + mint")
+ MascotStyle.LEOPARD->tr(lang,"Dorado + turquesa","Gold + turquoise")
+ MascotStyle.DRAGON->tr(lang,"Esmeralda + lila","Emerald + lilac")
 }
 
 private fun mascotNameV52(v:MascotStyle,lang:String)=when(v){
- MascotStyle.TOUCAN->tr(lang,"Tucán","Toucan");MascotStyle.LOVEBIRD_GREEN->tr(lang,"Agaporni verde","Green lovebird");MascotStyle.LOVEBIRD_PASTEL->tr(lang,"Agaporni pastel","Pastel lovebird");MascotStyle.PUG->"Pug";MascotStyle.POMERANIAN->tr(lang,"Pomerania","Pomeranian");MascotStyle.CLOWNFISH->tr(lang,"Pez payaso","Clownfish");MascotStyle.SHARK->tr(lang,"Tiburón","Shark");MascotStyle.RAVEN->tr(lang,"Cuervo","Raven");MascotStyle.MANDARIN_DUCK->tr(lang,"Pato mandarín","Mandarin duck");MascotStyle.FLAMINGO->tr(lang,"Flamenco","Flamingo");MascotStyle.MACAW->tr(lang,"Guacamaya","Macaw");MascotStyle.PERSIAN_CAT->tr(lang,"Gato persa","Persian cat");MascotStyle.WHITE_YELLOW_CAT->tr(lang,"Gato blanco y amarillo","White/yellow cat");MascotStyle.ELEPHANT->tr(lang,"Elefante","Elephant");MascotStyle.TURTLE->tr(lang,"Tortuga","Turtle");MascotStyle.WHITE_RABBIT->tr(lang,"Conejo blanco","White rabbit");MascotStyle.IGUANA->"Iguana";MascotStyle.COCKATIEL->tr(lang,"Ninfa","Cockatiel");MascotStyle.OWL->tr(lang,"Búho","Owl");MascotStyle.BROWN_HORSE->tr(lang,"Caballo café","Brown horse");MascotStyle.PINTO_HORSE->tr(lang,"Caballo pinto","Pinto horse");MascotStyle.SPIDER->tr(lang,"Araña","Spider");MascotStyle.DOLPHIN->tr(lang,"Delfín","Dolphin");MascotStyle.AXOLOTL->tr(lang,"Ajolote","Axolotl");MascotStyle.PENGUIN->tr(lang,"Pingüino","Penguin");MascotStyle.HAMSTER->tr(lang,"Hámster","Hamster");MascotStyle.PHOENIX->tr(lang,"Fénix","Phoenix");MascotStyle.FOX->tr(lang,"Zorro","Fox");MascotStyle.RACCOON->tr(lang,"Mapache","Raccoon");MascotStyle.KOALA->"Koala";MascotStyle.CAPYBARA->tr(lang,"Capibara","Capybara")
+ MascotStyle.TOUCAN->tr(lang,"Tucán","Toucan");MascotStyle.LOVEBIRD_GREEN->tr(lang,"Agaporni verde","Green lovebird");MascotStyle.LOVEBIRD_PASTEL->tr(lang,"Agaporni pastel","Pastel lovebird");MascotStyle.PUG->"Pug";MascotStyle.POMERANIAN->tr(lang,"Pomerania","Pomeranian");MascotStyle.CLOWNFISH->tr(lang,"Pez payaso","Clownfish");MascotStyle.SHARK->tr(lang,"Tiburón","Shark");MascotStyle.RAVEN->tr(lang,"Cuervo","Raven");MascotStyle.MANDARIN_DUCK->tr(lang,"Pato mandarín","Mandarin duck");MascotStyle.FLAMINGO->tr(lang,"Flamenco","Flamingo");MascotStyle.MACAW->tr(lang,"Guacamaya","Macaw");MascotStyle.PERSIAN_CAT->tr(lang,"Gato persa","Persian cat");MascotStyle.WHITE_YELLOW_CAT->tr(lang,"Gato blanco y amarillo","White/yellow cat");MascotStyle.ELEPHANT->tr(lang,"Elefante","Elephant");MascotStyle.TURTLE->tr(lang,"Tortuga","Turtle");MascotStyle.WHITE_RABBIT->tr(lang,"Conejo blanco","White rabbit");MascotStyle.IGUANA->"Iguana";MascotStyle.COCKATIEL->tr(lang,"Ninfa","Cockatiel");MascotStyle.OWL->tr(lang,"Búho","Owl");MascotStyle.BROWN_HORSE->tr(lang,"Caballo café","Brown horse");MascotStyle.PINTO_HORSE->tr(lang,"Caballo pinto","Pinto horse");MascotStyle.SPIDER->tr(lang,"Araña","Spider");MascotStyle.DOLPHIN->tr(lang,"Delfín","Dolphin");MascotStyle.AXOLOTL->tr(lang,"Ajolote","Axolotl");MascotStyle.PENGUIN->tr(lang,"Pingüino","Penguin");MascotStyle.HAMSTER->tr(lang,"Hámster","Hamster");MascotStyle.PHOENIX->tr(lang,"Fénix","Phoenix");MascotStyle.FOX->tr(lang,"Zorro","Fox");MascotStyle.RACCOON->tr(lang,"Mapache","Raccoon");MascotStyle.KOALA->"Koala";MascotStyle.CAPYBARA->tr(lang,"Capibara","Capybara");MascotStyle.LEOPARD->tr(lang,"Leopardo","Leopard");MascotStyle.DRAGON->tr(lang,"Dragón","Dragon")
 }
 
 @Composable private fun <T> AvatarChoiceV52(title:String,values:List<T>,selected:T,onSelect:(T)->Unit,label:(T)->String){
