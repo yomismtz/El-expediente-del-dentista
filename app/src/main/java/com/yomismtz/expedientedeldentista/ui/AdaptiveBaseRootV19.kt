@@ -98,7 +98,7 @@ fun AdaptiveBaseRootV19(preferences:AppPreferences,onPreferencesChanged:(AppPref
             AppScreen.TREATMENT->TreatmentPlannerV40Screen(lang,session,onSessionChanged,backPrevious)
             AppScreen.SESSIONS->TreatmentSessionsV40Screen(lang,backPrevious)
             AppScreen.ENDO->EndodonticTeachingV40Screen(lang,backPrevious)
-            AppScreen.PROSTHETIC->ProstheticBridgeV40Screen(lang,backPrevious)
+            AppScreen.PROSTHETIC->ProstheticResponsiveV17Screen(lang,backPrevious)
             AppScreen.SURGICAL->SurgicalTeachingV40Screen(lang,backPrevious)
             AppScreen.CONSENT->ConsentTeachingScreen(lang,backPrevious)
             AppScreen.REQUEST->TreatmentRequestGuideV40Screen(lang,backPrevious)
