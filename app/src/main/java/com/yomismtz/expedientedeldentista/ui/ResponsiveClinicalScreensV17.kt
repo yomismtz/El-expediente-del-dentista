@@ -538,7 +538,7 @@ fun ProstheticResponsiveV17Screen(
     var fullModule by remember { mutableStateOf(false) }
     if (fullModule) {
         BackHandler { fullModule = false }
-        ProstheticInteractiveV2Screen(lang) { fullModule = false }
+        ProstheticInteractiveV2Screen(lang, session, onSessionChanged) { fullModule = false }
         return
     }
     val upperPresent = session.prosthetic.upperPresent
