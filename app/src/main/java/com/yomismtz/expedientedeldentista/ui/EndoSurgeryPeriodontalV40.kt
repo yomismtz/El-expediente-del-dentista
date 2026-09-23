@@ -356,13 +356,9 @@ private fun ThirdMolarDiagramV40(winter: String) {
         tooth(w*.65f, h*.48f, tilt, transverseShift, crownScale)
         drawLine(Color(0xFFD9888F), Offset(w*.12f,h*.52f), Offset(w*.90f,h*.52f), strokeWidth = 7f)
         if (winter == "Bucoangular" || winter == "Linguoangular") {
-            val label = if (winter == "Bucoangular") "B" else "L"
-            drawContext.canvas.nativeCanvas.drawText(label, w*.65f, h*.14f, android.graphics.Paint().apply {
-                textSize = 34f
-                textAlign = android.graphics.Paint.Align.CENTER
-                color = android.graphics.Color.DKGRAY
-                isFakeBoldText = true
-            })
+            val markerX = if (winter == "Bucoangular") w*.57f else w*.73f
+            drawCircle(Color(0xFF806F5A), radius = 6f, center = Offset(markerX, h*.18f))
+            drawLine(Color(0xFF806F5A), Offset(w*.65f,h*.25f), Offset(markerX,h*.18f), strokeWidth = 3f)
         }
     }
 }
