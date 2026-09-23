@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -46,7 +47,8 @@ fun ProstheticBridgeV40Screen(lang:String,onBack:()->Unit){
     var full by remember{mutableStateOf(false)}
     var selected by remember{mutableStateOf(0)}
     var arch by remember{mutableStateOf("Maxilar")}
-    if(full){ProstheticResponsiveV17Screen(lang){full=false};return}
+    var localSession by remember { mutableStateOf(EducationalSession()) }
+    if(full){ProstheticResponsiveV17Screen(lang,localSession,{ localSession=it }){full=false};return}
     ResponsiveScreenV17(
         tr(lang,"Ficha protésica · Clasificación de Kennedy","Prosthetic sheet · Kennedy classification"),
         tr(lang,"Referencia visual e identificación interactiva de las clases I–IV.","Visual reference and interactive identification of Classes I–IV."),
