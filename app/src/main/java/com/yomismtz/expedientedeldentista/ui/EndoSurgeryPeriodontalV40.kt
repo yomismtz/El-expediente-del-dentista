@@ -280,13 +280,13 @@ fun SurgicalTeachingV40Screen(lang: String, onBack: () -> Unit) {
         MultiSelectSectionV40("Anamnesis quirúrgica · historia del dolor", painHistoryV40 + listOf("Edema facial","Fiebre referida","Trismus","Supuración","Sangrado","Trauma reciente"), symptoms, profile)
         ResponsiveSectionV17("Tercer molar · angulación de Winter") {
             val winterPositions = listOf(
-                "Vertical" to "¿Qué es? El eje longitudinal del tercer molar es aproximadamente paralelo al eje longitudinal del segundo molar.",
-                "Mesioangular" to "¿Qué es? La corona del tercer molar está inclinada hacia mesial, en dirección al segundo molar.",
-                "Distoangular" to "¿Qué es? La corona del tercer molar está inclinada hacia distal, alejándose del segundo molar.",
-                "Horizontal" to "¿Qué es? El eje longitudinal del tercer molar se dispone aproximadamente perpendicular al eje del segundo molar.",
-                "Bucoangular" to "¿Qué es? El tercer molar presenta una inclinación transversal hacia vestibular/bucal respecto a su orientación esperada.",
-                "Linguoangular" to "¿Qué es? El tercer molar presenta una inclinación transversal hacia lingual respecto a su orientación esperada.",
-                "Invertido/atípico" to "¿Qué es? El tercer molar presenta una orientación invertida o una angulación que no encaja adecuadamente en las posiciones habituales."
+                "Vertical" to "¿Qué es? El eje longitudinal del tercer molar es aproximadamente paralelo al eje longitudinal del segundo molar. ¿Cómo identificarla? En la imagen radiográfica compara ambos ejes longitudinales: el tercero se observa prácticamente paralelo al segundo.",
+                "Mesioangular" to "¿Qué es? La corona del tercer molar está inclinada hacia mesial, en dirección al segundo molar. ¿Cómo identificarla? Traza mentalmente el eje del tercer molar: su corona apunta hacia el segundo molar y su eje converge mesialmente respecto al eje del segundo.",
+                "Distoangular" to "¿Qué es? La corona del tercer molar está inclinada hacia distal, alejándose del segundo molar. ¿Cómo identificarla? Observa el eje del tercer molar: la corona se dirige distalmente y se separa del segundo molar.",
+                "Horizontal" to "¿Qué es? El eje longitudinal del tercer molar se dispone aproximadamente perpendicular al eje del segundo molar. ¿Cómo identificarla? En la radiografía el tercer molar aparece acostado, con su eje formando aproximadamente un ángulo recto respecto al eje del segundo molar.",
+                "Bucoangular" to "¿Qué es? El tercer molar presenta una inclinación transversal hacia vestibular/bucal respecto a su orientación esperada. ¿Cómo identificarla? Debe valorarse la inclinación en el plano bucolingual; una imagen bidimensional aislada puede ser insuficiente para establecer con seguridad la dirección vestibular.",
+                "Linguoangular" to "¿Qué es? El tercer molar presenta una inclinación transversal hacia lingual respecto a su orientación esperada. ¿Cómo identificarla? Valora el plano bucolingual y determina si la corona se orienta hacia lingual; evita concluirlo únicamente por una proyección bidimensional cuando la localización no sea clara.",
+                "Invertido/atípico" to "¿Qué es? El tercer molar presenta una orientación invertida o una angulación que no encaja adecuadamente en las posiciones habituales. ¿Cómo identificarla? Revisa corona, raíces y eje longitudinal: la corona puede orientarse en sentido opuesto al habitual o la posición no corresponder claramente a las categorías anteriores; documenta la orientación exacta."
             )
             Text("Ilustración individual · $winter", fontWeight = FontWeight.Black)
             ThirdMolarDiagramV40(winter)
