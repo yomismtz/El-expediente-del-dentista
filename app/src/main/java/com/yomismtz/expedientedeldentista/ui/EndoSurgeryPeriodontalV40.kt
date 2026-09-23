@@ -1,5 +1,7 @@
 package com.yomismtz.expedientedeldentista.ui
 
+import coil.compose.AsyncImage
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
@@ -288,8 +290,27 @@ fun SurgicalTeachingV40Screen(lang: String, onBack: () -> Unit) {
                 "Linguoangular" to "¿Qué es? El tercer molar presenta una inclinación transversal hacia lingual respecto a su orientación esperada. ¿Cómo identificarla? Valora el plano bucolingual y determina si la corona se orienta hacia lingual; evita concluirlo únicamente por una proyección bidimensional cuando la localización no sea clara.",
                 "Invertido/atípico" to "¿Qué es? El tercer molar presenta una orientación invertida o una angulación que no encaja adecuadamente en las posiciones habituales. ¿Cómo identificarla? Revisa corona, raíces y eje longitudinal: la corona puede orientarse en sentido opuesto al habitual o la posición no corresponder claramente a las categorías anteriores; documenta la orientación exacta."
             )
+            val winterRadiographs = mapOf(
+                "Vertical" to "https://commons.wikimedia.org/wiki/Special:Redirect/file/Vertical%20impaction%20wisdom%20tooth%20infection.png",
+                "Mesioangular" to "https://commons.wikimedia.org/wiki/Special:Redirect/file/Third%20molar%20impacted%20mesioangular.jpg",
+                "Distoangular" to "https://commons.wikimedia.org/wiki/Special:Redirect/file/Distoangular%20impacted%20wisdom%20tooth.png",
+                "Horizontal" to "https://commons.wikimedia.org/wiki/Special:Redirect/file/Horizontal%20impacted%20wisdom%20tooth%202.png"
+            )
             Text("Ilustración individual · $winter", fontWeight = FontWeight.Black)
             ThirdMolarDiagramV40(winter)
+            winterRadiographs[winter]?.let { photo ->
+                Text("Radiografía clínica de referencia", fontWeight = FontWeight.Black)
+                AsyncImage(
+                    model = photo,
+                    contentDescription = "Radiografía de referencia · $winter",
+                    modifier = Modifier.fillMaxWidth().height(210.dp)
+                )
+                Text(
+                    if (winter == "Mesioangular") "Fuente: Wikimedia Commons · Nizil Shah · CC BY-SA 4.0"
+                    else "Fuente: Wikimedia Commons · Coronation Dental Specialty Group · CC BY-SA 3.0",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            } ?: Text("No se añadió fotografía de red sin una correspondencia radiográfica abierta y suficientemente verificable; se conserva el esquema educativo.", style = MaterialTheme.typography.bodySmall)
             winterPositions.forEach { (item, definition) ->
                 Card(
                     onClick = { winter = item },
