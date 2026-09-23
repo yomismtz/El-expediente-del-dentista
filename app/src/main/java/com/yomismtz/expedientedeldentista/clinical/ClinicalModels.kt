@@ -197,7 +197,14 @@ data class ProstheticState(
     val upperPresent: Set<Int> = setOf(17,16,15,14,13,12,11,21,22,23,24,25,26,27),
     val lowerPresent: Set<Int> = setOf(47,46,45,44,43,42,41,31,32,33,34,35,36,37),
     val upperIgnored: Set<Int> = emptySet(),
-    val lowerIgnored: Set<Int> = emptySet()
+    val lowerIgnored: Set<Int> = emptySet(),
+    val upperDesignMarks: Map<Int, Set<String>> = emptyMap(),
+    val lowerDesignMarks: Map<Int, Set<String>> = emptyMap(),
+    val rpdMaterial: String = "metal-acrylic",
+    val upperMajorConnector: String = "AP palatal",
+    val lowerMajorConnector: String = "lingual bar",
+    val fixedMaterial: String = "zirconia",
+    val ponticType: String = "modified-ridge-lap"
 )
 
 data class EducationalSession(
