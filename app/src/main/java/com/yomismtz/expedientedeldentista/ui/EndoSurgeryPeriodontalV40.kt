@@ -279,11 +279,24 @@ fun SurgicalTeachingV40Screen(lang: String, onBack: () -> Unit) {
     ResponsiveScreenV17("Ficha quirúrgica · guía de pregrado", "Anamnesis, clasificación y protocolos educativos bajo supervisión.", onBack) { profile ->
         MultiSelectSectionV40("Anamnesis quirúrgica · historia del dolor", painHistoryV40 + listOf("Edema facial","Fiebre referida","Trismus","Supuración","Sangrado","Trauma reciente"), symptoms, profile)
         ResponsiveSectionV17("Tercer molar · angulación de Winter") {
+            val winterPositions = listOf("Vertical","Mesioangular","Distoangular","Horizontal","Bucoangular","Linguoangular","Invertido/atípico")
+            Text("Ilustración individual · $winter", fontWeight = FontWeight.Black)
             ThirdMolarDiagramV40(winter)
-            listOf("Vertical","Mesioangular","Distoangular","Horizontal","Bucoangular","Linguoangular","Invertido/atípico").forEach { item ->
-                FilterChip(winter == item, { winter = item }, { Text(item) }, Modifier.fillMaxWidth())
+            winterPositions.forEach { item ->
+                Card(
+                    onClick = { winter = item },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (winter == item) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(item, fontWeight = FontWeight.Black)
+                        ThirdMolarDiagramV40(item)
+                    }
+                }
             }
-            Text("Winter describe la angulación. La dificultad también depende de profundidad, espacio/ramus, raíces y relación con estructuras vecinas.")
+            Text("Cada posición dispone de su propia representación educativa. Winter describe la angulación; la dificultad también depende de profundidad, espacio/ramus, raíces y relación con estructuras vecinas.")
         }
         ResponsiveSectionV17("Tipos de biopsia") {
             listOf(
