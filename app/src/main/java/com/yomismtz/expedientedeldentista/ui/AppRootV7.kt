@@ -131,7 +131,7 @@ fun AppRootV7(
                             backPrevious,
                             backPrevious
                         )
-                        V7Overlay.PROSTHETIC -> ProstheticResponsiveV17Screen(lang,backPrevious)
+                        V7Overlay.PROSTHETIC -> ProstheticResponsiveV17Screen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.SURGICAL -> SurgicalSheetScreen(lang,backPrevious)
                         V7Overlay.CONSENT -> ConsentTeachingScreen(lang,backPrevious)
                         V7Overlay.EVOLUTION -> EvolutionScreen(lang,session,backPrevious)
