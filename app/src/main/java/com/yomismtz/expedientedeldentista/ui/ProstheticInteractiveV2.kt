@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 
 private val ProstLavender = Color(0xFFE9DDF5)
 private val ProstLilac = Color(0xFFD3BCE9)
@@ -111,19 +112,29 @@ private fun kennedyResult(arch: List<Int>, present: Set<Int>, lang: String): Ken
 }
 
 @Composable
-fun ProstheticInteractiveV2Screen(lang: String, onBack: () -> Unit) {
+fun ProstheticInteractiveV2Screen(
+    lang: String,
+    session: EducationalSession,
+    onSessionChanged: (EducationalSession) -> Unit,
+    onBack: () -> Unit
+) {
     var tab by remember { mutableStateOf(ProstTab.DIAGNOSIS) }
-    var upperPresent by remember { mutableStateOf(prostUpper.toSet()) }
-    var lowerPresent by remember { mutableStateOf(prostLower.toSet()) }
-    var designUpper by remember { mutableStateOf<Map<Int, Set<DesignMark>>>(emptyMap()) }
-    var designLower by remember { mutableStateOf<Map<Int, Set<DesignMark>>>(emptyMap()) }
     var upperDesign by remember { mutableStateOf(true) }
     var designTool by remember { mutableStateOf(DesignMark.REST_M) }
-    var rpdMaterial by remember { mutableStateOf("metal-acrylic") }
-    var majorConnector by remember { mutableStateOf("AP palatal") }
-    var fixedMaterial by remember { mutableStateOf("zirconia") }
-    var ponticType by remember { mutableStateOf("modified-ridge-lap") }
     var fixedUpper by remember { mutableStateOf(true) }
+
+    val upperPresent = session.prosthetic.upperPresent
+    val lowerPresent = session.prosthetic.lowerPresent
+    val designUpper = session.prosthetic.upperDesignMarks.mapValues { (_, marks) ->
+        marks.mapNotNull { runCatching { DesignMark.valueOf(it) }.getOrNull() }.toSet()
+    }
+    val designLower = session.prosthetic.lowerDesignMarks.mapValues { (_, marks) ->
+        marks.mapNotNull { runCatching { DesignMark.valueOf(it) }.getOrNull() }.toSet()
+    }
+    val rpdMaterial = session.prosthetic.rpdMaterial
+    val majorConnector = if (upperDesign) session.prosthetic.upperMajorConnector else session.prosthetic.lowerMajorConnector
+    val fixedMaterial = session.prosthetic.fixedMaterial
+    val ponticType = session.prosthetic.ponticType
 
     val upperK = kennedyResult(prostUpper, upperPresent, lang)
     val lowerK = kennedyResult(prostLower, lowerPresent, lang)
@@ -161,13 +172,15 @@ fun ProstheticInteractiveV2Screen(lang: String, onBack: () -> Unit) {
                             "Tap a tooth to toggle present/missing. Third molars are excluded by default in this exercise; apply Applegate rules to the real case."))
                         Text(tr(lang,"MAXILAR","MAXILLA"), fontWeight = FontWeight.Black, color = ProstDeep)
                         ProstArchRow(prostUpper, upperPresent, emptyMap()) { tooth ->
-                            upperPresent = if (tooth in upperPresent) upperPresent - tooth else upperPresent + tooth
+                            val updated = if (tooth in upperPresent) upperPresent - tooth else upperPresent + tooth
+                            onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(upperPresent = updated)))
                         }
                         KennedyResultCard(upperK)
                         Spacer(Modifier.height(6.dp))
                         Text(tr(lang,"MANDÍBULA","MANDIBLE"), fontWeight = FontWeight.Black, color = ProstDeep)
                         ProstArchRow(prostLower, lowerPresent, emptyMap()) { tooth ->
-                            lowerPresent = if (tooth in lowerPresent) lowerPresent - tooth else lowerPresent + tooth
+                            val updated = if (tooth in lowerPresent) lowerPresent - tooth else lowerPresent + tooth
+                            onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(lowerPresent = updated)))
                         }
                         KennedyResultCard(lowerK)
                     }
@@ -212,12 +225,12 @@ fun ProstheticInteractiveV2Screen(lang: String, onBack: () -> Unit) {
                 item {
                     SectionCard(tr(lang,"1 · Tipo de arco y material de base","1 · Arch and base material")) {
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            FilterChip(upperDesign,{upperDesign=true; if(majorConnector.startsWith("lingual")) majorConnector="AP palatal"},{Text(tr(lang,"Maxilar","Maxilla"))},modifier=Modifier.weight(1f))
-                            FilterChip(!upperDesign,{upperDesign=false; if(!majorConnector.startsWith("lingual")) majorConnector="lingual bar"},{Text(tr(lang,"Mandíbula","Mandible"))},modifier=Modifier.weight(1f))
+                            FilterChip(upperDesign,{upperDesign=true},{Text(tr(lang,"Maxilar","Maxilla"))},modifier=Modifier.weight(1f))
+                            FilterChip(!upperDesign,{upperDesign=false},{Text(tr(lang,"Mandíbula","Mandible"))},modifier=Modifier.weight(1f))
                         }
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                             listOf("flexible" to tr(lang,"Flexible","Flexible"), "acrylic" to tr(lang,"Acrílica","Acrylic"), "metal-acrylic" to tr(lang,"Metal-acrílica","Metal-acrylic")).forEach { (id,label) ->
-                                FilterChip(rpdMaterial==id,{rpdMaterial=id},{Text(label)},modifier=Modifier.weight(1f))
+                                FilterChip(rpdMaterial==id,{onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(rpdMaterial = id)))},{Text(label)},modifier=Modifier.weight(1f))
                             }
                         }
                         Text(rpdMaterialNote(rpdMaterial,lang), style = MaterialTheme.typography.bodySmall)
@@ -247,7 +260,10 @@ fun ProstheticInteractiveV2Screen(lang: String, onBack: () -> Unit) {
                         ProstArchRow(teeth,present,marks) { tooth ->
                             val current = marks[tooth].orEmpty()
                             val updated = if (designTool in current) current - designTool else current + designTool
-                            if (upperDesign) designUpper = designUpper + (tooth to updated) else designLower = designLower + (tooth to updated)
+                            val stored = updated.map { it.name }.toSet()
+                            val prosthetic = if (upperDesign) session.prosthetic.copy(upperDesignMarks = session.prosthetic.upperDesignMarks + (tooth to stored))
+                            else session.prosthetic.copy(lowerDesignMarks = session.prosthetic.lowerDesignMarks + (tooth to stored))
+                            onSessionChanged(session.copy(prosthetic = prosthetic))
                         }
                         DesignLegend(lang)
                     }
@@ -263,7 +279,11 @@ fun ProstheticInteractiveV2Screen(lang: String, onBack: () -> Unit) {
                             "lingual plate" to tr(lang,"Placa lingual","Lingual plate")
                         )
                         choices.forEach { (id,label) ->
-                            FilterChip(majorConnector==id,{majorConnector=id},{Text(label)},modifier=Modifier.padding(end=4.dp,bottom=4.dp))
+                            FilterChip(majorConnector==id,{
+                                val prosthetic = if (upperDesign) session.prosthetic.copy(upperMajorConnector = id)
+                                else session.prosthetic.copy(lowerMajorConnector = id)
+                                onSessionChanged(session.copy(prosthetic = prosthetic))
+                            },{Text(label)},modifier=Modifier.padding(end=4.dp,bottom=4.dp))
                         }
                         Text(tr(lang,
                             "El conector se elige por anatomía, soporte periodontal, extensión de la base, espacio disponible, higiene y biomecánica; no solo por la clase de Kennedy.",
@@ -330,7 +350,10 @@ fun ProstheticInteractiveV2Screen(lang: String, onBack: () -> Unit) {
                         ProstArchRow(teeth,present,marks) { tooth ->
                             val current = marks[tooth].orEmpty()
                             val updated = if (designTool in current) current - designTool else current + designTool
-                            if (fixedUpper) designUpper = designUpper + (tooth to updated) else designLower = designLower + (tooth to updated)
+                            val stored = updated.map { it.name }.toSet()
+                            val prosthetic = if (fixedUpper) session.prosthetic.copy(upperDesignMarks = session.prosthetic.upperDesignMarks + (tooth to stored))
+                            else session.prosthetic.copy(lowerDesignMarks = session.prosthetic.lowerDesignMarks + (tooth to stored))
+                            onSessionChanged(session.copy(prosthetic = prosthetic))
                         }
                         Text(tr(lang,"A = pilar · P = póntico. El diseño no valida por sí mismo que el pilar sea biológicamente adecuado.","A = abutment · P = pontic. The design does not by itself validate biologic suitability of an abutment."),style=MaterialTheme.typography.bodySmall)
                     }
@@ -345,7 +368,7 @@ fun ProstheticInteractiveV2Screen(lang: String, onBack: () -> Unit) {
                         )
                         materials.chunked(2).forEach { row ->
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                row.forEach { (id,label) -> FilterChip(fixedMaterial==id,{fixedMaterial=id},{Text(label)},modifier=Modifier.weight(1f)) }
+                                row.forEach { (id,label) -> FilterChip(fixedMaterial==id,{onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(fixedMaterial = id)))},{Text(label)},modifier=Modifier.weight(1f)) }
                             }
                         }
                         FinishLineDiagram(fixedMaterial, lang)
@@ -368,7 +391,7 @@ fun ProstheticInteractiveV2Screen(lang: String, onBack: () -> Unit) {
                         )
                         pontics.chunked(2).forEach { row ->
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                row.forEach { (id,label) -> FilterChip(ponticType==id,{ponticType=id},{Text(label)},modifier=Modifier.weight(1f)) }
+                                row.forEach { (id,label) -> FilterChip(ponticType==id,{onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(ponticType = id)))},{Text(label)},modifier=Modifier.weight(1f)) }
                             }
                         }
                         PonticDiagram(ponticType, lang)
