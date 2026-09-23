@@ -531,6 +531,7 @@ private fun kennedyV17(arch: List<Int>, present: Set<Int>, ignored: Set<Int>, la
 fun ProstheticResponsiveV17Screen(lang: String, onBack: () -> Unit) {
     var fullModule by remember { mutableStateOf(false) }
     if (fullModule) {
+        BackHandler { fullModule = false }
         ProstheticInteractiveV2Screen(lang) { fullModule = false }
         return
     }
