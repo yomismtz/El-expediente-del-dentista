@@ -279,10 +279,18 @@ fun SurgicalTeachingV40Screen(lang: String, onBack: () -> Unit) {
     ResponsiveScreenV17("Ficha quirúrgica · guía de pregrado", "Anamnesis, clasificación y protocolos educativos bajo supervisión.", onBack) { profile ->
         MultiSelectSectionV40("Anamnesis quirúrgica · historia del dolor", painHistoryV40 + listOf("Edema facial","Fiebre referida","Trismus","Supuración","Sangrado","Trauma reciente"), symptoms, profile)
         ResponsiveSectionV17("Tercer molar · angulación de Winter") {
-            val winterPositions = listOf("Vertical","Mesioangular","Distoangular","Horizontal","Bucoangular","Linguoangular","Invertido/atípico")
+            val winterPositions = listOf(
+                "Vertical" to "¿Qué es? El eje longitudinal del tercer molar es aproximadamente paralelo al eje longitudinal del segundo molar.",
+                "Mesioangular" to "¿Qué es? La corona del tercer molar está inclinada hacia mesial, en dirección al segundo molar.",
+                "Distoangular" to "¿Qué es? La corona del tercer molar está inclinada hacia distal, alejándose del segundo molar.",
+                "Horizontal" to "¿Qué es? El eje longitudinal del tercer molar se dispone aproximadamente perpendicular al eje del segundo molar.",
+                "Bucoangular" to "¿Qué es? El tercer molar presenta una inclinación transversal hacia vestibular/bucal respecto a su orientación esperada.",
+                "Linguoangular" to "¿Qué es? El tercer molar presenta una inclinación transversal hacia lingual respecto a su orientación esperada.",
+                "Invertido/atípico" to "¿Qué es? El tercer molar presenta una orientación invertida o una angulación que no encaja adecuadamente en las posiciones habituales."
+            )
             Text("Ilustración individual · $winter", fontWeight = FontWeight.Black)
             ThirdMolarDiagramV40(winter)
-            winterPositions.forEach { item ->
+            winterPositions.forEach { (item, definition) ->
                 Card(
                     onClick = { winter = item },
                     modifier = Modifier.fillMaxWidth(),
@@ -293,6 +301,7 @@ fun SurgicalTeachingV40Screen(lang: String, onBack: () -> Unit) {
                     Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(item, fontWeight = FontWeight.Black)
                         ThirdMolarDiagramV40(item)
+                        Text(definition)
                     }
                 }
             }
