@@ -204,7 +204,9 @@ data class ProstheticState(
     val upperMajorConnector: String = "AP palatal",
     val lowerMajorConnector: String = "lingual bar",
     val fixedMaterial: String = "zirconia",
-    val ponticType: String = "modified-ridge-lap"
+    val ponticType: String = "modified-ridge-lap",
+    val seibertClass: Int = 0,
+    val retainerType: String = "RPI"
 )
 
 data class EducationalSession(
