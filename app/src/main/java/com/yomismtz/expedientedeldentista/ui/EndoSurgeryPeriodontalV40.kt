@@ -320,18 +320,50 @@ fun SurgicalTeachingV40Screen(lang: String, onBack: () -> Unit) {
 
 @Composable
 private fun ThirdMolarDiagramV40(winter: String) {
-    val tilt = when (winter) { "Mesioangular" -> -0.10f; "Distoangular" -> 0.10f; "Horizontal" -> -0.22f; else -> 0f }
+    val tilt = when (winter) {
+        "Mesioangular" -> -0.10f
+        "Distoangular" -> 0.10f
+        "Horizontal" -> -0.22f
+        "Invertido/atípico" -> 0.30f
+        else -> 0f
+    }
+    val transverseShift = when (winter) {
+        "Bucoangular" -> -0.055f
+        "Linguoangular" -> 0.055f
+        else -> 0f
+    }
+    val crownScale = if (winter == "Invertido/atípico") -1f else 1f
     Canvas(Modifier.fillMaxWidth().height(175.dp)) {
         val w = size.width; val h = size.height
-        fun tooth(cx: Float, baseY: Float, lean: Float) {
+        fun tooth(cx: Float, baseY: Float, lean: Float, shift: Float = 0f, invert: Float = 1f) {
+            val y1 = baseY - h*.18f*invert
+            val y2 = baseY - h*.24f*invert
+            val rootY = baseY + h*.25f*invert
             val p = Path().apply {
-                moveTo(cx-w*.055f+lean*w, baseY-h*.18f); quadraticBezierTo(cx+lean*w, baseY-h*.24f, cx+w*.055f+lean*w, baseY-h*.18f)
-                lineTo(cx+w*.04f, baseY); lineTo(cx+w*.02f, baseY+h*.25f); lineTo(cx, baseY+h*.13f); lineTo(cx-w*.02f, baseY+h*.25f); lineTo(cx-w*.04f, baseY); close()
+                moveTo(cx-w*.055f+lean*w+shift*w, y1)
+                quadraticBezierTo(cx+lean*w+shift*w, y2, cx+w*.055f+lean*w+shift*w, y1)
+                lineTo(cx+w*.04f+shift*w, baseY)
+                lineTo(cx+w*.02f+shift*w, rootY)
+                lineTo(cx+shift*w, baseY+h*.13f*invert)
+                lineTo(cx-w*.02f+shift*w, rootY)
+                lineTo(cx-w*.04f+shift*w, baseY)
+                close()
             }
-            drawPath(p, Color(0xFFFFF2D7)); drawPath(p, Color(0xFF806F5A), style = Stroke(2.5f))
+            drawPath(p, Color(0xFFFFF2D7))
+            drawPath(p, Color(0xFF806F5A), style = Stroke(2.5f))
         }
-        tooth(w*.38f, h*.48f, 0f); tooth(w*.65f, h*.48f, tilt)
+        tooth(w*.38f, h*.48f, 0f)
+        tooth(w*.65f, h*.48f, tilt, transverseShift, crownScale)
         drawLine(Color(0xFFD9888F), Offset(w*.12f,h*.52f), Offset(w*.90f,h*.52f), strokeWidth = 7f)
+        if (winter == "Bucoangular" || winter == "Linguoangular") {
+            val label = if (winter == "Bucoangular") "B" else "L"
+            drawContext.canvas.nativeCanvas.drawText(label, w*.65f, h*.14f, android.graphics.Paint().apply {
+                textSize = 34f
+                textAlign = android.graphics.Paint.Align.CENTER
+                color = android.graphics.Color.DKGRAY
+                isFakeBoldText = true
+            })
+        }
     }
 }
 
