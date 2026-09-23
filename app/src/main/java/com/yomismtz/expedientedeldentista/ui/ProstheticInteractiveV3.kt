@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 
 private val P3Paper = Color(0xFFFFFCFF)
 private val P3Lilac = Color(0xFFD7C4EA)
@@ -189,19 +190,24 @@ private fun p3Kennedy(
 }
 
 @Composable
-fun ProstheticInteractiveV3Screen(lang: String, onBack: () -> Unit) {
+fun ProstheticInteractiveV3Screen(
+    lang: String,
+    session: EducationalSession,
+    onSessionChanged: (EducationalSession) -> Unit,
+    onBack: () -> Unit
+) {
     var showFullModule by remember { mutableStateOf(false) }
     if (showFullModule) {
-        ProstheticInteractiveV2Screen(lang) { showFullModule = false }
+        ProstheticInteractiveV2Screen(lang, session, onSessionChanged) { showFullModule = false }
         return
     }
 
-    var upperPresent by remember { mutableStateOf(p3Upper.toSet()) }
-    var lowerPresent by remember { mutableStateOf(p3Lower.toSet()) }
-    var upperIgnored by remember { mutableStateOf<Set<Int>>(emptySet()) }
-    var lowerIgnored by remember { mutableStateOf<Set<Int>>(emptySet()) }
-    var seibert by remember { mutableStateOf(0) }
-    var retainer by remember { mutableStateOf("RPI") }
+    val upperPresent = session.prosthetic.upperPresent
+    val lowerPresent = session.prosthetic.lowerPresent
+    val upperIgnored = session.prosthetic.upperIgnored
+    val lowerIgnored = session.prosthetic.lowerIgnored
+    val seibert = session.prosthetic.seibertClass
+    val retainer = session.prosthetic.retainerType
     var useUpperForRetainer by remember { mutableStateOf(true) }
 
     val upperK = p3Kennedy(p3Upper,upperPresent,upperIgnored,lang)
@@ -229,11 +235,13 @@ fun ProstheticInteractiveV3Screen(lang: String, onBack: () -> Unit) {
                 Text(tr(lang,"MAXILAR","MAXILLA"),fontWeight=FontWeight.Black,color=P3Deep)
                 P3Arch(p3Upper,upperPresent,lang) { tooth ->
                     val becomingPresent = tooth !in upperPresent
-                    upperPresent = if (tooth in upperPresent) upperPresent - tooth else upperPresent + tooth
-                    if (becomingPresent) upperIgnored = upperIgnored - tooth
+                    val present = if (tooth in upperPresent) upperPresent - tooth else upperPresent + tooth
+                    val ignored = if (becomingPresent) upperIgnored - tooth else upperIgnored
+                    onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(upperPresent = present, upperIgnored = ignored)))
                 }
                 P3SecondMolarRule(lang,listOf(17,27),upperPresent,upperIgnored) { tooth ->
-                    upperIgnored = if (tooth in upperIgnored) upperIgnored - tooth else upperIgnored + tooth
+                    val ignored = if (tooth in upperIgnored) upperIgnored - tooth else upperIgnored + tooth
+                    onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(upperIgnored = ignored)))
                 }
                 P3KennedyCard(upperK,lang)
 
@@ -241,11 +249,13 @@ fun ProstheticInteractiveV3Screen(lang: String, onBack: () -> Unit) {
                 Text(tr(lang,"MANDÍBULA","MANDIBLE"),fontWeight=FontWeight.Black,color=P3Deep)
                 P3Arch(p3Lower,lowerPresent,lang) { tooth ->
                     val becomingPresent = tooth !in lowerPresent
-                    lowerPresent = if (tooth in lowerPresent) lowerPresent - tooth else lowerPresent + tooth
-                    if (becomingPresent) lowerIgnored = lowerIgnored - tooth
+                    val present = if (tooth in lowerPresent) lowerPresent - tooth else lowerPresent + tooth
+                    val ignored = if (becomingPresent) lowerIgnored - tooth else lowerIgnored
+                    onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(lowerPresent = present, lowerIgnored = ignored)))
                 }
                 P3SecondMolarRule(lang,listOf(47,37),lowerPresent,lowerIgnored) { tooth ->
-                    lowerIgnored = if (tooth in lowerIgnored) lowerIgnored - tooth else lowerIgnored + tooth
+                    val ignored = if (tooth in lowerIgnored) lowerIgnored - tooth else lowerIgnored + tooth
+                    onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(lowerIgnored = ignored)))
                 }
                 P3KennedyCard(lowerK,lang)
             }
@@ -275,7 +285,7 @@ fun ProstheticInteractiveV3Screen(lang: String, onBack: () -> Unit) {
                     "Seibert complements prosthetic-site analysis; it does not replace Kennedy."))
                 Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
                     listOf(0 to tr(lang,"Sin defecto","No defect"),1 to "I",2 to "II",3 to "III").forEach { (id,label) ->
-                        FilterChip(seibert==id,{seibert=id},{Text(label)},modifier=Modifier.weight(1f))
+                        FilterChip(seibert==id,{onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(seibertClass = id)))},{Text(label)},modifier=Modifier.weight(1f))
                     }
                 }
                 P3SeibertDiagram(seibert)
@@ -300,7 +310,7 @@ fun ProstheticInteractiveV3Screen(lang: String, onBack: () -> Unit) {
                     "I-bar" to tr(lang,"Barra I","I-bar"),
                     "Combination" to tr(lang,"Combinado · alambre forjado","Combination · wrought wire")
                 ).forEach { (id,label) ->
-                    FilterChip(retainer==id,{retainer=id},{Text(label)},modifier=Modifier.fillMaxWidth())
+                    FilterChip(retainer==id,{onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(retainerType = id)))},{Text(label)},modifier=Modifier.fillMaxWidth())
                 }
                 P3RetainerDiagram(retainer)
                 Text(p3RetainerText(retainer,lang),style=MaterialTheme.typography.bodySmall)
