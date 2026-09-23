@@ -193,6 +193,13 @@ data class MucosaFindingState(
     val notes: String = ""
 )
 
+data class ProstheticState(
+    val upperPresent: Set<Int> = setOf(17,16,15,14,13,12,11,21,22,23,24,25,26,27),
+    val lowerPresent: Set<Int> = setOf(47,46,45,44,43,42,41,31,32,33,34,35,36,37),
+    val upperIgnored: Set<Int> = emptySet(),
+    val lowerIgnored: Set<Int> = emptySet()
+)
+
 data class EducationalSession(
     val profile: PatientProfile = PatientProfile(),
     val history: HistoryState = HistoryState(),
@@ -218,7 +225,8 @@ data class EducationalSession(
     val ihosSelections: Map<Int, Int> = emptyMap(),
     val ihosExcludedSlots: Set<Int> = emptySet(),
     val periodontogram: Map<Int, PerioRecord> = emptyMap(),
-    val pulpal: PulpalAssessment = PulpalAssessment()
+    val pulpal: PulpalAssessment = PulpalAssessment(),
+    val prosthetic: ProstheticState = ProstheticState()
 )
 
 data class IndexResult(
