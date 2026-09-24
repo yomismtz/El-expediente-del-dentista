@@ -402,26 +402,63 @@ private data class E(val n:String,val d:String)
 
 @Composable fun HistoryOrthoV38(lang:String,onBack:()->Unit){
  var prior by remember{mutableStateOf<Boolean?>(null)}
- val options=listOf("Brackets metálicos","Brackets estéticos","Alineadores transparentes","Aparato removible","Expansor palatino","Mantenedor de espacio","Aparato funcional/ortopédico","Retenedor fijo","Retenedor removible Hawley","Retenedor transparente","Extracciones asociadas al tratamiento","Cirugía ortognática asociada","Otro")
+ val selected=remember{mutableStateMapOf<String,String>()}
+ val sections=listOf(
+  "Tratamiento previo" to listOf("Sin tratamiento previo","Brackets metálicos","Brackets estéticos","Alineadores transparentes","Aparato removible","Expansor palatino","Mantenedor de espacio","Aparato funcional/ortopédico","Cirugía ortognática asociada"),
+  "Edad al tratamiento" to listOf("<6 años","6–8","9–11","12–14","15–17","18–25",">25","No recuerda"),
+  "Duración" to listOf("<6 meses","6–11 meses","1–2 años","2–3 años",">3 años","En tratamiento","No recuerda"),
+  "Finalización" to listOf("Completado","Suspendido por paciente","Suspendido por profesional","Interrumpido por otra causa","Actualmente activo","No recuerda"),
+  "Retención" to listOf("Sin retención","Retenedor Hawley","Retenedor transparente","Retenedor fijo","Fijo + removible","No recuerda"),
+  "Tiempo de retención" to listOf("<6 meses","6–12 meses","1–2 años","2–5 años",">5 años","Uso actual","No recuerda"),
+  "Resultado referido" to listOf("Estable","Recidiva leve","Recidiva moderada","Recidiva importante","Insatisfecho","No sabe/no recuerda")
+ )
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Antecedentes de tratamientos ortodónticos",onBack,"Primero indica si recibió tratamiento previo; si la respuesta es sí, aparecen opciones de aparatología y retención.")}
-  item{Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(prior==false,{prior=false},{Text("No")});FilterChip(prior==true,{prior=true},{Text("Sí")})}}
-  if(prior==true)items(options.size){i->Card(Modifier.fillMaxWidth()){Text("□ "+options[i],Modifier.padding(13.dp))}}
-  if(prior==true)item{NoticeCard("Además registra edad aproximada al tratamiento, duración, motivo de indicación, si lo terminó, tiempo de retención y resultado referido.")}
+  item{ScreenHeader("Antecedentes ortodónticos y ortopédicos",onBack,"Registro guiado del tratamiento previo, aparatología, duración, retención y resultado referido.")}
+  item{Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(prior==false,{prior=false},{Text("No recibió")});FilterChip(prior==true,{prior=true},{Text("Sí recibió")})}}
+  if(prior==true) sections.forEach{(name,opts)->
+   item{Text(name,fontWeight=FontWeight.Black)}
+   items(opts.size){i->val o=opts[i];FilterChip(selected[name]==o,{selected[name]=o},{Text(o)},modifier=Modifier.fillMaxWidth())}
+  }
+  if(prior==true)item{ClinicalPhotoV38("Aparatología ortodóntica fija · referencia clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Dental_braces.jpg","Fotografía clínica real · Wikimedia Commons · referencia visual de aparatología fija; consultar autor/licencia del archivo.")}
+  item{NoticeCard("El antecedente ortodóntico se registra según lo referido y lo observable. No asumir diagnóstico previo, indicación original ni estabilidad futura sin expediente, exploración y estudios.")}
  }
 }
 
 @Composable fun HistoryDentalAlterationsV38(lang:String,onBack:()->Unit){
- val groups=listOf(
-  E("Número · disminución","Hipodoncia/agenesia, oligodoncia y anodoncia. Registrar órgano(s) dentario(s), localizado/generalizado y confirmar con historia/radiografía cuando corresponda."),
-  E("Número · aumento","Dientes supernumerarios; registrar localización, erupcionado/no erupcionado y relación con dientes vecinos."),
-  E("Tamaño","Microdoncia y macrodoncia; localizada o generalizada. Comparar con anatomía, arco y dientes homólogos."),
-  E("Forma / morfología","Fusión, geminación, concrescencia, dens invaginatus, dens evaginatus, taurodontismo y otras alteraciones morfológicas. No inferir etiología sólo por apariencia."),
-  E("Estructura","Defectos del esmalte, amelogénesis imperfecta, dentinogénesis imperfecta, displasia dentinaria y alteraciones de tejidos dentarios; integrar clínica, antecedentes y radiografía."),
-  E("Color","Cambio intrínseco o extrínseco; registrar distribución, dientes afectados, tonalidad, antecedentes y hallazgos asociados antes de orientar causa."),
-  E("Erupción y posición","Erupción ectópica, transposición, erupción tardía/retardada, erupción precoz/prematura, retención/no erupción más allá de lo esperado, impactación, inclusión intraósea, falla primaria de erupción, diente natal, diente neonatal, anquilosis/diente sumergido, obstáculo local sospechado, asimetría eruptiva y desplazamiento/posición anómala. Retención, inclusión e impactación pueden solaparse entre fuentes: primero describir clínica y radiografía.")
+ var section by remember{mutableStateOf(0)}
+ val selected=remember{mutableStateMapOf<String,String>()}
+ val sections=listOf(
+  "Número · disminución" to listOf("Sin alteración","Hipodoncia/agenesia","Oligodoncia","Anodoncia"),
+  "Número · aumento" to listOf("Sin alteración","Supernumerario","Mesiodens","Paramolar","Distomolar"),
+  "Tamaño" to listOf("Sin alteración","Microdoncia localizada","Microdoncia generalizada","Macrodoncia localizada","Macrodoncia generalizada"),
+  "Forma / morfología" to listOf("Sin alteración","Fusión","Geminación","Concrescencia","Dens invaginatus","Dens evaginatus","Taurodontismo","Perla de esmalte","Dilaceración"),
+  "Estructura" to listOf("Sin alteración","Hipoplasia del esmalte","Hipomineralización","Amelogénesis imperfecta","Dentinogénesis imperfecta","Displasia dentinaria","Fluorosis sospechada"),
+  "Color" to listOf("Sin alteración","Extrínseco localizado","Extrínseco generalizado","Intrínseco localizado","Intrínseco generalizado","Opacidad blanca","Tonalidad amarilla/marrón","Tonalidad gris/azulada"),
+  "Erupción" to listOf("Normal aparente","Erupción precoz","Erupción tardía","Ectópica","Retenido/no erupcionado","Impactado","Incluido intraóseo","Natal","Neonatal","Anquilosis/diente sumergido","Falla primaria sospechada"),
+  "Posición" to listOf("Sin alteración","Rotación","Versión/inclinación","Transposición","Desplazamiento vestibular","Desplazamiento lingual/palatino","Infraoclusión","Supraoclusión")
  )
- explain("Alteraciones de órganos dentarios",groups,onBack)
+ val photos=listOf(
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Hypodontia.jpg",
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Mesiodens.jpg",
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Microdontia.jpg",
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gemination_of_tooth.jpg",
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Amelogenesis_imperfecta.jpg",
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Dental_fluorosis.jpg",
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Impacted_wisdom_tooth.jpg",
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Transposition_of_teeth.jpg"
+ )
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
+  item{ScreenHeader("Alteraciones y anomalías dentales",onBack,"Selecciona el grupo, revisa una referencia visual y registra el hallazgo. Describe primero; confirma con radiografía/estudios cuando corresponda.")}
+  item{LazyRow(horizontalArrangement=Arrangement.spacedBy(6.dp)){items(sections.size){i->FilterChip(section==i,{section=i},{Text(sections[i].first)})}}}
+  item{ClinicalPhotoV38(sections[section].first+" · referencia visual",photos[section],"Imagen clínica/radiográfica real de referencia · Wikimedia Commons. Verificar autor y licencia del archivo; no usar una imagen aislada para establecer diagnóstico.")}
+  item{Text("Hallazgo",fontWeight=FontWeight.Black)}
+  items(sections[section].second.size){i->val o=sections[section].second[i];FilterChip(selected[sections[section].first]==o,{selected[sections[section].first]=o},{Text(o)},modifier=Modifier.fillMaxWidth())}
+  item{Text("Extensión",fontWeight=FontWeight.Black)}
+  items(listOf("Un diente","Varios dientes","Localizado por cuadrante","Generalizado","No valorable").size){i->val o=listOf("Un diente","Varios dientes","Localizado por cuadrante","Generalizado","No valorable")[i];FilterChip(selected["Extensión"]==o,{selected["Extensión"]=o},{Text(o)},modifier=Modifier.fillMaxWidth())}
+  item{Text("Confirmación disponible",fontWeight=FontWeight.Black)}
+  items(listOf("Sólo clínica","Clínica + radiografía","Antecedente documentado","Requiere estudio complementario","No aplica").size){i->val o=listOf("Sólo clínica","Clínica + radiografía","Antecedente documentado","Requiere estudio complementario","No aplica")[i];FilterChip(selected["Confirmación"]==o,{selected["Confirmación"]=o},{Text(o)},modifier=Modifier.fillMaxWidth())}
+  item{NoticeCard("Registrar el órgano dentario específico se completa en el odontograma/análisis dental. Retención, inclusión e impactación pueden solaparse según la fuente; correlacionar clínica y radiografía antes de etiquetar.")}
+ }
 }
 
 @Composable fun HistoryHabitsV38(lang:String,onBack:()->Unit)=explain("Hábitos y parafunciones",listOf(E("Succión digital","Pregunta dedo, frecuencia, duración e intensidad. Extraoral: postura labial/facial. Intraoral: incisivos, overjet, mordida abierta, arco y paladar."),E("Chupón o mamila prolongados","Registra edad y patrón. Extraoral: postura labial. Intraoral: mordida, arco y erupción."),E("Respiración oral","Pregunta respiración y sueño. Extraoral: labios entreabiertos/postura. Intraoral: sequedad, gingivitis y patrón oclusal; la causa respiratoria debe investigarse."),E("Interposición lingual / deglución atípica","Observa deglución, lengua y competencia labial; intraoralmente puede acompañarse de mordida abierta o espacios."),E("Onicofagia / mordisqueo","Extraoral: uñas/labios. Intraoral: desgaste, fracturas pequeñas, trauma mucoso o recesión localizada."),E("Bruxismo y apretamiento","Pregunta sueño/vigilia, fatiga y dolor. Extraoral: músculos. Intraoral: facetas, fracturas, restauraciones dañadas y línea alba; ningún signo aislado confirma el diagnóstico.")),onBack)
