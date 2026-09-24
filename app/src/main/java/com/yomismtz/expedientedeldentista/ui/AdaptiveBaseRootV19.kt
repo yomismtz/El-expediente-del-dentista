@@ -46,36 +46,26 @@ private data class TabV19(val screen:AppScreen,val icon:String,val es:String,val
 private val tabsV19=listOf(
     TabV19(AppScreen.ACTIVITIES,"✍","Autorización de actividades","Activity authorization",0),
     TabV19(AppScreen.TREATMENT,"📝","Diagnóstico y tratamiento","Diagnosis and treatment",0),
-    TabV19(AppScreen.HISTORY,"🩺","Historia clínica","Medical history",0),
     TabV19(AppScreen.SESSIONS,"🗓","Tratamiento por sesiones","Treatment by sessions",0),
-    TabV19(AppScreen.ODONTOGRAM,"🦷","Análisis del odontograma","Odontogram analysis",0),
-    TabV19(AppScreen.ENDO,"⚡","Ficha endodóntica","Endodontic sheet",0),
-    TabV19(AppScreen.AUXILIARIES,"🧪","Auxiliares de diagnóstico","Diagnostic auxiliaries",0),
-    TabV19(AppScreen.PROSTHETIC,"👑","Ficha protésica","Prosthetic sheet",0),
-    TabV19(AppScreen.BUDGET,"💰","Presupuesto","Budget",0),
-    TabV19(AppScreen.PERIODONTOGRAM,"📈","Ficha periodontal / periodontograma","Periodontal sheet / periodontogram",0),
-    TabV19(AppScreen.CONSENT,"✍","Consentimiento informado","Informed consent",0),
-    TabV19(AppScreen.SURGICAL,"✚","Ficha quirúrgica","Surgical sheet",0),
-    TabV19(AppScreen.REQUEST,"📨","Solicitud de tratamiento","Treatment request",0),
-    TabV19(AppScreen.ATM,"◉","Ficha de trastornos temporomandibulares","Temporomandibular disorders",0),
-    TabV19(AppScreen.EVOLUTION,"📄","Notas de evolución","Progress notes",0),
-    TabV19(AppScreen.VITALS,"❤️","Signos vitales y glucosa capilar","Vital signs and capillary glucose",0),
-    TabV19(AppScreen.INTAKE,"📋","Nota de ingreso","Intake note",0),
+    TabV19(AppScreen.OLEARY,"🔴","O’Leary","O’Leary",0),
+    TabV19(AppScreen.AUXILIARIES,"🧮","Calculadoras · anestésico y medicamentos pediátricos","Calculators · anesthetic and pediatric medication",0),
     TabV19(AppScreen.SYSTEMIC_PROTOCOLS,"📚","Protocolos para enfermedades sistémicas","Systemic disease protocols",0),
 
-    TabV19(AppScreen.ICDAS,"🔎","ICDAS","ICDAS",1),
-    TabV19(AppScreen.CPOD,"➕","CPOD / ceod","DMFT / dmft",1),
-    TabV19(AppScreen.OLEARY,"🔴","O’Leary","O’Leary",1),
-    TabV19(AppScreen.IPC,"6️⃣","IPC","CPI",1),
-    TabV19(AppScreen.IHOS,"🪥","IHOS","OHI-S",1),
-    TabV19(AppScreen.POSTURE,"🧍","Postura craneocervical","Craniocervical posture",1),
-    TabV19(AppScreen.OCCLUSION,"↔","Oclusión y clasificación de Angle","Occlusion and Angle classification",1),
-    TabV19(AppScreen.MUCOSA,"👄","Mucosas orales","Oral mucosa",1),
-    TabV19(AppScreen.PULPAL,"⚡","Diagnóstico pulpar y periapical","Pulpal and periapical diagnosis",1),
+    TabV19(AppScreen.IDENTIFICATION,"👤","Ficha de identificación","Identification sheet",1),
+    TabV19(AppScreen.HISTORY,"🩺","Historia clínica","Clinical history",1),
+    TabV19(AppScreen.MUCOSA,"👄","Examen de mucosas","Oral mucosa examination",1),
+    TabV19(AppScreen.AUXILIARIES,"🧪","Auxiliares de diagnóstico","Diagnostic aids",1),
+    TabV19(AppScreen.ODONTOGRAM,"🦷","Odontograma · CPOD/ceod · IPC · IHOS · O’Leary · ICDAS","Odontogram · DMFT/dmft · CPI · OHI-S · O’Leary · ICDAS",1),
+    TabV19(AppScreen.CONSENT,"✍","Consentimiento informado","Informed consent",1),
+    TabV19(AppScreen.REQUEST,"📨","Solicitud de tratamiento","Treatment request",1),
+    TabV19(AppScreen.BUDGET,"💰","Presupuesto","Budget",1),
+    TabV19(AppScreen.EVOLUTION,"📄","Notas de evolución · 80 ejemplos","Progress notes · 80 examples",1),
 
-    TabV19(AppScreen.AUXILIARIES,"🧮","Calculadoras y auxiliares ortodóncicos","Calculators and orthodontic auxiliaries",2),
-    TabV19(AppScreen.PROSTHETIC,"📐","Kennedy / Applegate / Seibert / PPR","Kennedy / Applegate / Seibert / RPD",2),
-    TabV19(AppScreen.ENDO,"🦷","Herramientas endodónticas","Endodontic tools",2)
+    TabV19(AppScreen.ENDO,"⚡","Ficha endodóntica","Endodontic sheet",2),
+    TabV19(AppScreen.PROSTHETIC,"👑","Ficha protésica","Prosthetic sheet",2),
+    TabV19(AppScreen.PERIODONTOGRAM,"📈","Ficha periodontal","Periodontal sheet",2),
+    TabV19(AppScreen.SURGICAL,"✚","Ficha quirúrgica","Surgical sheet",2),
+    TabV19(AppScreen.ATM,"◉","Ficha de diagnóstico de trastornos temporomandibulares","Temporomandibular disorder diagnostic sheet",2)
 )
 
 @Composable
@@ -171,7 +161,7 @@ private fun CoverV19(lang:String,onOpen:()->Unit) {
 private fun FolderV19(lang:String,onNavigate:(AppScreen)->Unit,onClose:()->Unit) {
     var group by remember { mutableStateOf(0) }
     ResponsiveScreenV17("YSM Expediente",tr(lang,"Elige una sección. La barra superior queda reservada y nunca tapa el contenido.","Choose a section. The top bar has reserved space and never covers content."),onClose) { profile ->
-        val names=listOf(tr(lang,"Apartados del expediente","Record sections"),tr(lang,"Exámenes y referencias","Exams and references"),tr(lang,"Calculadoras y herramientas","Calculators and tools"))
+        val names=listOf(tr(lang,"Lado izquierdo · acciones y herramientas","Left · actions and tools"),tr(lang,"Lado derecho · expediente clínico","Right · clinical record"),tr(lang,"Fichas","Sheets"))
         ResponsiveSectionV17(tr(lang,"Secciones del expediente","Record sections")) {
             AdaptiveGridV17(3,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 3) { i ->
                 FilterChip(group==i,{group=i},{Text(names[i])},modifier=Modifier.fillMaxWidth())
