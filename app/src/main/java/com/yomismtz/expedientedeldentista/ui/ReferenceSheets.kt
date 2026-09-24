@@ -160,7 +160,15 @@ fun AtmScreen(lang: String, onBack: () -> Unit) {
         AtmFinding("lockOpen", "Boca abierta que no puede cerrar", "Open mouth that cannot close"),
         AtmFinding("deviation", "Desviación mandibular al abrir", "Mandibular deviation on opening"),
         AtmFinding("headache", "Cefalea relacionada con masticación", "Chewing-related headache"),
-        AtmFinding("tinnitus", "Tinnitus acompañado de dolor mandibular", "Tinnitus with jaw pain")
+        AtmFinding("tinnitus", "Tinnitus acompañado de dolor mandibular", "Tinnitus with jaw pain"),
+        AtmFinding("painOpen", "Dolor al abrir o cerrar", "Pain on opening or closing"),
+        AtmFinding("painChew", "Dolor al masticar o apretar", "Pain with chewing or clenching"),
+        AtmFinding("fatigue", "Fatiga o rigidez de músculos masticatorios", "Masticatory muscle fatigue or stiffness"),
+        AtmFinding("locking", "Bloqueo o atoramiento mandibular referido", "Reported jaw locking/catching"),
+        AtmFinding("sublux", "Sensación de que la mandíbula se sale o hipermovilidad", "Feeling of jaw slipping out or hypermobility"),
+        AtmFinding("ear", "Dolor preauricular/otalgia sin causa ótica confirmada", "Preauricular/ear pain without confirmed otologic cause"),
+        AtmFinding("parafunction", "Bruxismo/apretamiento referido", "Reported bruxism/clenching"),
+        AtmFinding("trauma", "Antecedente de traumatismo mandibular/ATM", "History of mandibular/TMJ trauma")
     )
     val checked = remember { mutableStateMapOf<String, Boolean>() }
     fun on(key: String) = checked[key] == true
@@ -178,7 +186,7 @@ fun AtmScreen(lang: String, onBack: () -> Unit) {
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { ScreenHeader(tr(lang, "ATM y músculos · razonamiento", "TMJ and muscles · reasoning"), onBack,
             tr(lang, "Marca signos y síntomas para obtener la orientación presuntiva más cercana. No es un diagnóstico definitivo.", "Check signs and symptoms to obtain the nearest presumptive orientation. This is not a definitive diagnosis.")) }
-        item { SectionCard(tr(lang, "Referencia anatómica", "Anatomic reference")) { AtmReferenceIllustration(lang) } }
+        item { NoticeCard(tr(lang,"La referencia vectorial anterior fue retirada. La ficha se centra en signos, síntomas, palpación, movimientos y orientación presuntiva; la referencia visual será sustituida por fotografía/imagen anatómica real con fuente.","The previous vector reference was removed. The sheet now focuses on signs, symptoms, palpation, movement and presumptive orientation; visual reference will be replaced by a sourced real clinical/anatomic image.")) }
         items(findings) { finding ->
             Row(Modifier.fillMaxWidth().clickable { checked[finding.key] = !on(finding.key) }, verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
                 Checkbox(on(finding.key), { checked[finding.key] = it })
