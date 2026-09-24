@@ -72,6 +72,14 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
                 DentalSurfaceDiagram(centerEnabled=false,surfaceColor={s->if(s in selectedSurfaces)Color(0xFFD64545) else MaterialTheme.colorScheme.surfaceVariant},onSurfaceTap={s->
                     if(s in surfaces){val set=selectedSurfaces.toMutableSet();if(!set.add(s))set.remove(s);setMarks(set)}
                 },modifier=Modifier.fillMaxWidth())
+                Text(tr(lang,"Selección directa por cara:","Direct surface selection:"),fontWeight=FontWeight.Bold)
+                Row(horizontalArrangement=Arrangement.spacedBy(5.dp),modifier=Modifier.fillMaxWidth()) {
+                    surfaces.forEach { s ->
+                        val label=when(s){Surface.VESTIBULAR->"V";Surface.LINGUAL_PALATAL->"L/P";Surface.MESIAL->"M";Surface.DISTAL->"D";else->""}
+                        FilterChip(s in selectedSurfaces,{val set=selectedSurfaces.toMutableSet();if(!set.add(s))set.remove(s);setMarks(set)},{Text(label)},modifier=Modifier.weight(1f))
+                    }
+                }
+                Text(tr(lang,"Puedes dejar marcada 1, 2, 3 o 4 caras al mismo tiempo.","You can keep 1, 2, 3 or 4 surfaces selected at the same time."))
                 Row(horizontalArrangement=Arrangement.spacedBy(8.dp),modifier=Modifier.fillMaxWidth()) {
                     OutlinedButton(onClick={setMarks(surfaces.toSet())},modifier=Modifier.weight(1f)){Text(tr(lang,"Marcar 4 caras","Mark all 4"))}
                     OutlinedButton(onClick={setMarks(emptySet())},modifier=Modifier.weight(1f)){Text(tr(lang,"Limpiar","Clear"))}
