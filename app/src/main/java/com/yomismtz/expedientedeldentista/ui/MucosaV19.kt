@@ -4,6 +4,9 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -77,6 +80,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
     var duration by remember{mutableStateOf("No referido")}
     var evolution by remember{mutableStateOf("No referida")}
     var lesionHelp by remember{mutableStateOf(false)}
+    var zoomHelpImage by remember{mutableStateOf(false)}
     var count by remember{mutableStateOf("Única")}
     val selected=zones19.first{it.id==selectedId}
     val name=if(lang=="en")selected.en else selected.es
@@ -127,6 +131,18 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
             }
         }
 
+        if(zoomHelpImage){
+            var scale by remember{mutableStateOf(1f)}
+            var offsetX by remember{mutableStateOf(0f)}
+            var offsetY by remember{mutableStateOf(0f)}
+            val transformState=rememberTransformableState{zoomChange,panChange,_->scale=(scale*zoomChange).coerceIn(1f,5f);offsetX+=panChange.x;offsetY+=panChange.y}
+            AlertDialog(onDismissRequest={zoomHelpImage=false},confirmButton={TextButton(onClick={zoomHelpImage=false}){Text("Cerrar")}},title={Text("Lesiones elementales · visor")},text={
+                Column{
+                    Image(painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),contentDescription="Lesiones elementales ampliadas",modifier=Modifier.fillMaxWidth().height(520.dp).graphicsLayer(scaleX=scale,scaleY=scale,translationX=offsetX,translationY=offsetY).transformable(transformState),contentScale=ContentScale.Fit)
+                    Text("Pellizca con dos dedos para ampliar. Arrastra para recorrer la imagen.",style=MaterialTheme.typography.bodySmall)
+                }
+            })
+        }
         if(lesionHelp){
             val elementary=listOf(
                 "Mácula / mancha" to "Cambio circunscrito de color, plano y no palpable.",
@@ -158,7 +174,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
             AlertDialog(onDismissRequest={lesionHelp=false},confirmButton={TextButton(onClick={lesionHelp=false}){Text("Cerrar")}},title={Text("Lesiones elementales · ayuda rápida")},text={
                 Column(Modifier.height(460.dp).verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(8.dp)){
                     Text("Toca esta ayuda cuando necesites recordar qué estás observando. Primero describe la lesión; después se integra el diagnóstico.",fontWeight=FontWeight.Bold)
-                    Image(painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),contentDescription="Ilustración de lesiones elementales de mucosa oral",modifier=Modifier.fillMaxWidth().height(360.dp),contentScale=ContentScale.Fit)
+                    Card(onClick={zoomHelpImage=true},modifier=Modifier.fillMaxWidth()){Column{Image(painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),contentDescription="Ilustración de lesiones elementales de mucosa oral",modifier=Modifier.fillMaxWidth().height(360.dp),contentScale=ContentScale.Fit); Text("🔍 Toca la imagen para ampliar y usar zoom con dos dedos",modifier=Modifier.padding(8.dp),fontWeight=FontWeight.Bold)}}
                     Text("Ilustración educativa de referencia: compara el aspecto general; no sustituye la exploración clínica ni confirma diagnósticos.",style=MaterialTheme.typography.bodySmall)
                     elementary.forEach{(n,d)->Card(Modifier.fillMaxWidth()){Column(Modifier.padding(9.dp)){Text(n,fontWeight=FontWeight.Black);Text(d)}}}
                 }
