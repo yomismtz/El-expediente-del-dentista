@@ -48,10 +48,9 @@ private val tabsV19=listOf(
     TabV19(AppScreen.TREATMENT,"📝","Diagnóstico y tratamiento","Diagnosis and treatment",0),
     TabV19(AppScreen.SESSIONS,"🗓","Tratamiento por sesiones","Treatment by sessions",0),
     TabV19(AppScreen.OLEARY,"🔴","O’Leary","O’Leary",0),
-    TabV19(AppScreen.AUXILIARIES,"🧮","Calculadoras · anestésico y medicamentos pediátricos","Calculators · anesthetic and pediatric medication",0),
+    TabV19(AppScreen.CALCULATORS,"🧮","Calculadoras · anestésico y medicamentos pediátricos","Calculators · anesthetic and pediatric medication",0),
     TabV19(AppScreen.SYSTEMIC_PROTOCOLS,"📚","Protocolos para enfermedades sistémicas","Systemic disease protocols",0),
 
-    TabV19(AppScreen.IDENTIFICATION,"👤","Ficha de identificación","Identification sheet",1),
     TabV19(AppScreen.HISTORY,"🩺","Historia clínica","Clinical history",1),
     TabV19(AppScreen.MUCOSA,"👄","Examen de mucosas","Oral mucosa examination",1),
     TabV19(AppScreen.AUXILIARIES,"🧪","Auxiliares de diagnóstico","Diagnostic aids",1),
@@ -120,6 +119,7 @@ fun AdaptiveBaseRootV19(
         AppScreen.OCCLUSION -> OcclusionInteractiveV19Screen(lang,backPrevious)
         AppScreen.MUCOSA -> MucosaInteractiveV19Screen(lang,backPrevious)
         AppScreen.AUXILIARIES -> AuxiliariesV20Screen(lang,backPrevious)
+        AppScreen.CALCULATORS -> DentalCalculatorsV40Screen(lang,backPrevious)
         AppScreen.ODONTOGRAM -> OdontogramV20Screen(lang,session,onSessionChanged,backPrevious)
         AppScreen.ICDAS -> IcdasScreen(lang,session,onSessionChanged,backPrevious)
         AppScreen.CPOD -> CpodInteractiveV19Screen(lang,session,onSessionChanged,backPrevious)
@@ -161,7 +161,7 @@ private fun CoverV19(lang:String,onOpen:()->Unit) {
 private fun FolderV19(lang:String,onNavigate:(AppScreen)->Unit,onClose:()->Unit) {
     var group by remember { mutableStateOf(0) }
     ResponsiveScreenV17("YSM Expediente",tr(lang,"Elige una sección. La barra superior queda reservada y nunca tapa el contenido.","Choose a section. The top bar has reserved space and never covers content."),onClose) { profile ->
-        val names=listOf(tr(lang,"Lado izquierdo · acciones y herramientas","Left · actions and tools"),tr(lang,"Lado derecho · expediente clínico","Right · clinical record"),tr(lang,"Fichas","Sheets"))
+        val names=listOf(tr(lang,"Acciones y herramientas","Actions and tools"),tr(lang,"Expediente clínico","Clinical record"),tr(lang,"Fichas","Sheets"))
         ResponsiveSectionV17(tr(lang,"Secciones del expediente","Record sections")) {
             AdaptiveGridV17(3,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 3) { i ->
                 FilterChip(group==i,{group=i},{Text(names[i])},modifier=Modifier.fillMaxWidth())
