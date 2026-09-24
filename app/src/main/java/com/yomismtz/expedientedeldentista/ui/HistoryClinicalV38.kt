@@ -23,8 +23,7 @@ private val hItems=listOf(
  HItem(AppScreen.HISTORY_ORTHO,"Antecedentes de tratamientos ortodónticos","Aparatología, duración, finalidad, retención y resultado."),
  HItem(AppScreen.HISTORY_DENTAL_ALTERATIONS,"Alteraciones de órganos dentarios","Número, forma, tamaño, estructura y erupción."),
  HItem(AppScreen.HISTORY_HABITS,"Hábitos y parafunciones","Qué son y cómo se observan extraoral e intraoralmente."),
- HItem(AppScreen.HISTORY_ORAL_EXAM,"Examen peribucal e intrabucal","Labios, carrillos, paladar, orofaringe, lengua y piso de boca."),
- HItem(AppScreen.PERIODONTOGRAM,"Examen periodontal","IPC, IHOS, encía y periodonto.")
+ HItem(AppScreen.HISTORY_ORAL_EXAM,"Examen peribucal e intrabucal / mucosas","Piel peribucal, labios, frenillos, comisuras, carrillos, Stensen, paladares, orofaringe, úvula, pilares, amígdalas, lengua, piso de boca y conductos salivales.")
 )
 
 @Composable fun ClinicalHistoryHubV38(lang:String,onNavigate:(AppScreen)->Unit,onBack:()->Unit){
