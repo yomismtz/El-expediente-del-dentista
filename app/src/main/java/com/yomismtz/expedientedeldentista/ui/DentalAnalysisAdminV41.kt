@@ -87,6 +87,20 @@ private data class ExplainField(val n:String,val why:String,val examples:String)
   item{SectionCard("4 · Laboratorio"){labs.forEach{FilterChip(lab==it,{lab=it},{Text(it)},Modifier.fillMaxWidth())}}}
   item{SectionCard("5 · Estado"){states.forEach{FilterChip(status==it,{status=it},{Text(it)},Modifier.fillMaxWidth())}}}
   item{SectionCard("Resumen"){Text("$qty × $procedure · Costo: $costBand · Laboratorio: $lab · Estado: $status",fontWeight=FontWeight.Bold)}}
-  item{NoticeCard("Presupuesto educativo. El total monetario real debe calcularse con precios institucionales vigentes y conceptos efectivamente autorizados.")}
+  item{SectionCard("6 · Comprobación antes de entregar"){
+    listOf(
+      "El procedimiento coincide con el plan de tratamiento autorizado.",
+      "La cantidad corresponde a las unidades realmente presupuestadas.",
+      "La tarifa proviene del tabulador institucional vigente.",
+      "Los costos de laboratorio están identificados por separado cuando corresponde.",
+      "El presupuesto fue explicado antes de solicitar aceptación.",
+      "Cualquier cambio posterior requiere actualizar el presupuesto."
+    ).forEach{Text("✓ $it")}
+  }}
+  item{SectionCard("7 · Estado administrativo"){
+    Text("Registro generado: $procedure · cantidad $qty · $costBand · laboratorio: $lab · $status.",fontWeight=FontWeight.Bold)
+    Text("La aceptación económica no equivale al consentimiento informado del procedimiento clínico.")
+  }}
+  item{NoticeCard("Presupuesto educativo. El total monetario real debe calcularse con precios institucionales vigentes y conceptos efectivamente autorizados. No se registran cobros ni datos bancarios en este módulo.")}
  }
 }
