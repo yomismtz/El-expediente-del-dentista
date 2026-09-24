@@ -69,19 +69,19 @@ internal fun GynecoObstetricGuideV52Screen(lang: String, onBack: () -> Unit) {
             return@ResponsiveScreenV17
         }
         val fields = listOf(
-            "Menarca" to "Edad de la primera menstruación.",
-            "Patrón menstrual y FUM" to "Regularidad, características relevantes y fecha de última menstruación cuando corresponda.",
-            "Inicio de vida sexual activa" to "Edad referida de inicio; evita juicios o suposiciones.",
-            "Gestas" to "Número total de embarazos referidos.",
-            "Abortos" to "Número total y desglose en espontáneos e inducidos.",
-            "Partos / paras" to "Número de partos referidos; registra además cesáreas cuando corresponda.",
-            "Resultados de los embarazos" to "Nacidos vivos y pérdidas fetales/perinatales referidas, usando la terminología del formato clínico.",
-            "Embarazo actual" to "Si existe embarazo actual y edad gestacional referida.",
-            "Lactancia" to "Si actualmente lacta o si existe un antecedente relevante para el interrogatorio.",
-            "Menopausia / climaterio" to "Si ya inició, edad de inicio referida y síntomas relevantes.",
-            "Medicamentos en menopausia" to "Terapia hormonal u otros medicamentos referidos; registra nombre si la persona lo conoce.",
-            "Anticoncepción" to "Si utiliza algún método, cuál, desde cuándo y el motivo referido.",
-            "Condición sistémica y anticoncepción" to "Pregunta si el método fue indicado o elegido en relación con una enfermedad o condición sistémica. No concluyas por la app si el método es apropiado."
+            tr(lang, "Menarca", "Menarche") to tr(lang, "Edad de la primera menstruación.", "Age at first menstruation."),
+            tr(lang, "Patrón menstrual y FUM", "Menstrual pattern and LMP") to tr(lang, "Regularidad, características relevantes y fecha de última menstruación cuando corresponda.", "Regularity, relevant characteristics, and date of last menstrual period when applicable."),
+            tr(lang, "Inicio de vida sexual activa", "Onset of sexual activity") to tr(lang, "Edad referida de inicio; evita juicios o suposiciones.", "Reported age at onset; avoid judgments or assumptions."),
+            tr(lang, "Gestas", "Pregnancies") to tr(lang, "Número total de embarazos referidos.", "Total number of reported pregnancies."),
+            tr(lang, "Abortos", "Abortions") to tr(lang, "Número total y desglose en espontáneos e inducidos.", "Total number and breakdown into spontaneous and induced abortions."),
+            tr(lang, "Partos / paras", "Deliveries / parity") to tr(lang, "Número de partos referidos; registra además cesáreas cuando corresponda.", "Number of reported deliveries; also record cesarean deliveries when applicable."),
+            tr(lang, "Resultados de los embarazos", "Pregnancy outcomes") to tr(lang, "Nacidos vivos y pérdidas fetales/perinatales referidas, usando la terminología del formato clínico.", "Reported live births and fetal/perinatal losses, using the terminology of the clinical form."),
+            tr(lang, "Embarazo actual", "Current pregnancy") to tr(lang, "Si existe embarazo actual y edad gestacional referida.", "Whether there is a current pregnancy and the reported gestational age."),
+            tr(lang, "Lactancia", "Breastfeeding") to tr(lang, "Si actualmente lacta o si existe un antecedente relevante para el interrogatorio.", "Whether the patient is currently breastfeeding or has a relevant history for the interview."),
+            tr(lang, "Menopausia / climaterio", "Menopause / climacteric") to tr(lang, "Si ya inició, edad de inicio referida y síntomas relevantes.", "Whether it has begun, reported age at onset, and relevant symptoms."),
+            tr(lang, "Medicamentos en menopausia", "Menopause medications") to tr(lang, "Terapia hormonal u otros medicamentos referidos; registra nombre si la persona lo conoce.", "Reported hormone therapy or other medications; record the name if the patient knows it."),
+            tr(lang, "Anticoncepción", "Contraception") to tr(lang, "Si utiliza algún método, cuál, desde cuándo y el motivo referido.", "Whether a method is used, which one, since when, and the reported reason."),
+            tr(lang, "Condición sistémica y anticoncepción", "Systemic condition and contraception") to tr(lang, "Pregunta si el método fue indicado o elegido en relación con una enfermedad o condición sistémica. No concluyas por la app si el método es apropiado.", "Ask whether the method was prescribed or chosen in relation to a disease or systemic condition. Do not use the app to conclude whether the method is appropriate.")
         )
         ResponsiveSectionV17(tr(lang, "Qué debes preguntar", "What to ask")) {
             fields.forEach { (title, detail) ->
