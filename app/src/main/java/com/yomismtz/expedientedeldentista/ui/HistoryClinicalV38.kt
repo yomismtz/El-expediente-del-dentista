@@ -115,17 +115,47 @@ private data class E(val n:String,val d:String)
  }
 }
 
-@Composable fun HistoryNonPathV38(lang:String,onBack:()->Unit)=explain("Antecedentes personales no patológicos",listOf(
- E("Habitación y servicios","Material de vivienda/piso; habitantes y habitaciones; agua potable, drenaje/saneamiento, electricidad, gas, ventilación y recolección de basura. Contextualiza exposición ambiental, higiene y posibilidades de autocuidado."),
- E("Higiene bucal","Cepillado: 0, 1, 2, 3 o más veces al día; técnica, pasta fluorada, hilo/interdental y supervisión en niños. Explica por qué la frecuencia debe correlacionarse con técnica y hallazgos."),
- E("Higiene general","Baño y aseo: frecuencia semanal o diaria según el caso, acceso a agua y condiciones. Es contexto clínico y no debe usarse para juzgar al paciente."),
- E("Alimentación","Frecuencia de carne/proteínas, frutas, verduras, cereales/carbohidratos, azúcares, refrescos/bebidas azucaradas y embutidos. Importa especialmente la frecuencia de exposiciones cariogénicas."),
- E("Inmunizaciones","Vacunas referidas y fecha/dosis cuando se conozca: BCG, hepatitis B, hexavalente/pentavalente según esquema, rotavirus, neumococo, influenza, SRP, DPT/Td/Tdap, VPH, COVID-19 y otras por edad/riesgo. Verificar cartilla cuando se necesite certeza; el esquema depende de país, edad y año."),
- E("Tabaco","Tipo, consumo actual, cantidad/frecuencia, años y exposición pasiva. Importa por mucosa, periodonto, cicatrización y riesgo sistémico."),
- E("Alcohol","Tipo, cantidad y frecuencia. Puede modificar riesgo sistémico, interacciones y seguridad de tratamientos."),
- E("Drogas / otras sustancias","Sustancia, vía, frecuencia, última exposición referida y tratamiento si existe. Importa por interacciones, signos vitales, anestesia y seguridad."),
- E("Perforaciones, piercing y tatuajes","Sitio, antigüedad, complicaciones/infecciones y condiciones de realización. En piercing oral observar trauma dentario/gingival.")
-),onBack)
+@Composable fun HistoryNonPathV38(lang:String,onBack:()->Unit){
+ var section by remember{mutableStateOf("Habitación")}
+ val sections=listOf("Habitación","Higiene","Alimentación","Inmunizaciones","Hábitos y toxicomanías")
+ val selected=remember{mutableStateMapOf<String,Boolean>()}
+ val housing=listOf("Agua","Drenaje","Luz","Internet","Otro servicio")
+ val foodsWeek=listOf("Carne","Huevo","Lácteos","Fruta","Verdura")
+ val foodsDay=listOf("Dulces","Refrescos","Comida chatarra","Leguminosas","Enlatados")
+ val vaccines=listOf("BCG","DPT","Polio","Hepatitis B","Sarampión","Pentavalente","COVID","VPH","Tifoidea","Otra")
+ val habits=listOf("Tabaquismo","Alcoholismo","Drogas","Perforaciones","Tatuajes")
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
+  item{ScreenHeader("Antecedentes personales no patológicos",onBack,"Registra vivienda, higiene, alimentación, inmunizaciones y hábitos/toxicomanías. Cada rubro enseña qué preguntar y cómo documentarlo.")}
+  item{sections.forEach{x->FilterChip(section==x,{section=x},{Text(x)},modifier=Modifier.fillMaxWidth())}}
+  if(section=="Habitación"){
+   item{SectionCard("Número de cuartos"){Text("Registrar cantidad de habitaciones. El material docente lo relaciona con condiciones de vivienda y posible hacinamiento.")}}
+   item{SectionCard("Material de vivienda"){Text("Registrar material referido, por ejemplo: cemento/concreto, madera, lámina, adobe u otro.")}}
+   item{Text("Servicios domiciliarios",fontWeight=FontWeight.Bold)}
+   items(housing.size){i->val x=housing[i];Row{Checkbox(selected["viv|$x"]==true,{selected["viv|$x"]=it});Text(x,Modifier.padding(top=12.dp))}}
+  }
+  if(section=="Higiene"){
+   item{SectionCard("Higiene general"){Text("¿Cuántas veces se baña a la semana? Registrar frecuencia referida.")}}
+   item{SectionCard("Higiene bucal"){Text("¿Cuántas veces se cepilla los dientes al día? Registrar frecuencia. Es un dato de autocuidado que después se correlaciona con la exploración bucal.")}}
+   item{SectionCard("Vestimenta"){Text("¿Cuántos cambios de ropa realiza por semana? Registrar la frecuencia referida.")}}
+  }
+  if(section=="Alimentación"){
+   item{Text("Frecuencia por semana",fontWeight=FontWeight.Bold);Text("Registrar cuántas veces por semana consume cada grupo.")}}
+   items(foodsWeek.size){i->val x=foodsWeek[i];Card(Modifier.fillMaxWidth()){Text("• $x · veces/semana: ____",Modifier.padding(12.dp))}}
+   item{Text("Frecuencia por día",fontWeight=FontWeight.Bold);Text("Registrar cuántas veces al día consume cada grupo.")}}
+   items(foodsDay.size){i->val x=foodsDay[i];Card(Modifier.fillMaxWidth()){Text("• $x · veces/día: ____",Modifier.padding(12.dp))}}
+   item{SectionCard("Número de comidas al día"){Text("Registrar el total referido. En odontología también interesa la frecuencia de exposiciones a alimentos y bebidas azucaradas.")}}
+  }
+  if(section=="Inmunizaciones"){
+   item{NoticeCard("Marca únicamente las inmunizaciones que el paciente/tutor refiere o que puedan verificarse. No asumir esquema completo por edad.")}
+   items(vaccines.size){i->val x=vaccines[i];Card(Modifier.fillMaxWidth()){Row(Modifier.padding(8.dp)){Checkbox(selected["vac|$x"]==true,{selected["vac|$x"]=it});Column(Modifier.padding(top=8.dp)){Text(x,fontWeight=FontWeight.Bold);if(x=="Hepatitis B")Text("Relevante en el antecedente epidemiológico y riesgo biológico.",style=MaterialTheme.typography.bodySmall);if(x=="VPH")Text("El material docente la relaciona con prevención de cáncer orofaríngeo.",style=MaterialTheme.typography.bodySmall)}}}}
+  }
+  if(section=="Hábitos y toxicomanías"){
+   item{NoticeCard("Para cada respuesta positiva registra: qué consume o presenta, desde cuándo, cantidad/frecuencia y descripción. En sustancias, documenta sin juicios y sin convertir el dato en diagnóstico.")}
+   items(habits.size){i->val x=habits[i];val k="hab|$x";Card(Modifier.fillMaxWidth()){Column(Modifier.padding(10.dp)){Row{Checkbox(selected[k]==true,{selected[k]=it});Text(x,Modifier.padding(top=12.dp),fontWeight=FontWeight.Bold)};if(selected[k]==true)Text("¿Cada cuánto? ____ · Desde cuándo: ____ · Describa: __________________",style=MaterialTheme.typography.bodySmall)}}}
+  }
+  item{SectionCard("Resumen didáctico"){Text("Sección actual: $section");val positives=selected.filterValues{it}.keys;if(positives.isNotEmpty())Text("Marcados: "+positives.map{it.substringAfter("|")}.joinToString())}}
+ }
+}
 
 @Composable fun HistoryGynecoV38(lang:String,onBack:()->Unit){
  var sex by remember{mutableStateOf("")};var open by remember{mutableStateOf<Int?>(null)}
