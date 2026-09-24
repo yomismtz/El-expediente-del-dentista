@@ -130,7 +130,7 @@ fun AdaptiveBaseRootV19(
         AppScreen.POSTURE -> PostureVisualScreen(lang,backPrevious)
         AppScreen.PULPAL,AppScreen.APICAL -> PulpalPeriapicalInteractiveV2Screen(lang,session,onSessionChanged,{navigate(AppScreen.ENDO)},backPrevious)
         AppScreen.TREATMENT -> TreatmentScreen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.SESSIONS -> TreatmentBySessionsScreen(lang,backPrevious)
+        AppScreen.SESSIONS -> TreatmentBySessionsScreen(lang,session,backPrevious)
         AppScreen.ENDO -> EndodonticInteractiveV2Screen(lang,session,{navigate(AppScreen.PULPAL)},{navigate(AppScreen.PULPAL)},backPrevious)
         AppScreen.PROSTHETIC -> ProstheticResponsiveV17Screen(lang,backPrevious)
         AppScreen.SURGICAL -> SurgicalSheetScreen(lang,backPrevious)
