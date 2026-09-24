@@ -38,7 +38,8 @@ class MainActivity : AppCompatActivity() {
                 textSizeStyle = preferences.textSizeStyle
             ) {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    // Arranque seguro: el gesto personalizado se habilitará después de validar estabilidad.\n                    Box(Modifier.fillMaxSize()) {
+                    // Arranque seguro: el gesto personalizado se habilitará después de validar estabilidad.
+                    Box(Modifier.fillMaxSize()) {
                         if (!preferences.onboardingComplete) {
                             OnboardingV15Screen(
                                 preferences = preferences,
