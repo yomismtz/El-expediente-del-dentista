@@ -134,8 +134,8 @@ fun AdaptiveBaseRootV19(
         AppScreen.PROSTHETIC -> ProstheticResponsiveV17Screen(lang,backPrevious)
         AppScreen.SURGICAL -> SurgicalSheetScreen(lang,backPrevious)
         AppScreen.CONSENT -> ConsentTeachingScreen(lang,backPrevious)
-        AppScreen.REQUEST -> SimpleEducationalSheet(lang,"Solicitud de tratamiento","Treatment request","Aprende para qué sirve y qué debe identificar claramente.","Learn its purpose and what it should clearly identify.",listOf("Servicio solicitado","Motivo","Área u órgano dentario","Prioridad / referencia","Responsable y supervisión"),listOf("Requested service","Reason","Area or tooth","Priority / referral","Responsible clinician and supervision"),backPrevious)
-        AppScreen.BUDGET -> SimpleEducationalSheet(lang,"Presupuesto","Budget","Aprende su estructura administrativa sin registrar cobros reales.","Learn its administrative structure without recording real payments.",listOf("Procedimiento","Cantidad","Costo unitario","Subtotal","Total","Laboratorio cuando proceda"),listOf("Procedure","Quantity","Unit cost","Subtotal","Total","Laboratory when applicable"),backPrevious)
+        AppScreen.REQUEST -> TreatmentRequestTeachingV41(lang,backPrevious)
+        AppScreen.BUDGET -> BudgetTeachingV41(lang,backPrevious)
         AppScreen.EVOLUTION -> EvolutionScreen(lang,session,backPrevious)
     }
 }
