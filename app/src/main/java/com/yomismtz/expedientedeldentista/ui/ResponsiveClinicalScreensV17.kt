@@ -562,9 +562,23 @@ fun ProstheticResponsiveV17Screen(lang: String, onBack: () -> Unit) {
                 Text(tr(lang,"Abrir diseñador protésico completo","Open complete prosthetic designer"), fontWeight = FontWeight.Black)
             }
         }
+        ResponsiveSectionV17(tr(lang,"Resumen automático de la ficha","Automatic sheet summary")) {
+            val upperSpaces = if (upperResult.spaces.isEmpty()) tr(lang,"sin espacios edéntulos detectados","no edentulous spaces detected") else upperResult.spaces.joinToString(" / ") { s -> s.teeth.joinToString("-") }
+            val lowerSpaces = if (lowerResult.spaces.isEmpty()) tr(lang,"sin espacios edéntulos detectados","no edentulous spaces detected") else lowerResult.spaces.joinToString(" / ") { s -> s.teeth.joinToString("-") }
+            Text(
+                tr(lang,
+                    "Maxilar: ${upperResult.label}; espacios: $upperSpaces. Mandíbula: ${lowerResult.label}; espacios: $lowerSpaces. La clasificación se genera a partir de los dientes seleccionados como presentes o ausentes.",
+                    "Maxilla: ${upperResult.label}; spaces: $upperSpaces. Mandible: ${lowerResult.label}; spaces: $lowerSpaces. Classification is generated from teeth selected as present or missing."
+                ),
+                fontWeight = FontWeight.Bold
+            )
+            Text(tr(lang,
+                "Completar el diseño definitivo tras valorar pilares, periodonto, soporte, oclusión, paralelizado, auxiliares de diagnóstico y supervisión docente.",
+                "Complete definitive design after assessing abutments, periodontium, support, occlusion, surveying, diagnostic aids and faculty supervision."))
+        }
         NoticeCard(tr(lang,
-            "Qué escribir: arco ___; Kennedy ___ mod. ___ cuando aplique; espacios edéntulos ___; pilares candidatos ___; tipo de prótesis ___; diseño ___; etapa clínica ___; indicaciones y seguimiento ___.",
-            "What to write: arch ___; Kennedy ___ mod. ___ when applicable; edentulous areas ___; candidate abutments ___; prosthesis type ___; design ___; clinical stage ___; instructions and follow-up ___."))
+            "No es necesario que el alumno redacte manualmente la clasificación de Kennedy ni los espacios edéntulos: la ficha los genera de las selecciones realizadas.",
+            "The student does not need to manually type the Kennedy classification or edentulous spaces: the sheet generates them from the selections made."))
     }
 }
 
