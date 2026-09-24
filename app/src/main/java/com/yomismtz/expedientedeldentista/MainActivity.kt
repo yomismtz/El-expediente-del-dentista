@@ -16,7 +16,6 @@ import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.SettingsStore
 import com.yomismtz.expedientedeldentista.ui.AppRootV19
 import com.yomismtz.expedientedeldentista.ui.OnboardingV15Screen
-import com.yomismtz.expedientedeldentista.ui.edgeSwipeBackV21
 import com.yomismtz.expedientedeldentista.ui.theme.ExpedienteTheme
 
 class MainActivity : AppCompatActivity() {
@@ -39,12 +38,7 @@ class MainActivity : AppCompatActivity() {
                 textSizeStyle = preferences.textSizeStyle
             ) {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    val swipeBackModifier = if (preferences.onboardingComplete) {
-                        Modifier.edgeSwipeBackV21 { onBackPressedDispatcher.onBackPressed() }
-                    } else {
-                        Modifier
-                    }
-                    Box(Modifier.fillMaxSize().then(swipeBackModifier)) {
+                    // Arranque seguro: el gesto personalizado se habilitará después de validar estabilidad.\n                    Box(Modifier.fillMaxSize()) {
                         if (!preferences.onboardingComplete) {
                             OnboardingV15Screen(
                                 preferences = preferences,
