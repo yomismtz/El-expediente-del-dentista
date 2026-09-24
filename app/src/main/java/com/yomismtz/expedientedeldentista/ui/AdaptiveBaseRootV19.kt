@@ -52,13 +52,12 @@ private val tabsV19=listOf(
     TabV19(AppScreen.SYSTEMIC_PROTOCOLS,"📚","Protocolos para enfermedades sistémicas","Systemic disease protocols",0),
 
     TabV19(AppScreen.HISTORY,"🩺","Historia clínica","Clinical history",1),
-    TabV19(AppScreen.MUCOSA,"👄","Examen de mucosas","Oral mucosa examination",1),
     TabV19(AppScreen.AUXILIARIES,"🧪","Auxiliares de diagnóstico","Diagnostic aids",1),
-    TabV19(AppScreen.ODONTOGRAM,"🦷","Odontograma · CPOD/ceod · IPC · IHOS · O’Leary · ICDAS","Odontogram · DMFT/dmft · CPI · OHI-S · O’Leary · ICDAS",1),
+    TabV19(AppScreen.ODONTOGRAM,"🦷","Análisis dentales","Dental analyses",1),
     TabV19(AppScreen.CONSENT,"✍","Consentimiento informado","Informed consent",1),
     TabV19(AppScreen.REQUEST,"📨","Solicitud de tratamiento","Treatment request",1),
     TabV19(AppScreen.BUDGET,"💰","Presupuesto","Budget",1),
-    TabV19(AppScreen.EVOLUTION,"📄","Notas de evolución · 80 ejemplos","Progress notes · 80 examples",1),
+    TabV19(AppScreen.EVOLUTION,"📄","Notas de evolución","Progress notes",1),
 
     TabV19(AppScreen.ENDO,"⚡","Ficha endodóntica","Endodontic sheet",2),
     TabV19(AppScreen.PROSTHETIC,"👑","Ficha protésica","Prosthetic sheet",2),
@@ -120,7 +119,7 @@ fun AdaptiveBaseRootV19(
         AppScreen.MUCOSA -> MucosaInteractiveV19Screen(lang,backPrevious)
         AppScreen.AUXILIARIES -> AuxiliariesV20Screen(lang,backPrevious)
         AppScreen.CALCULATORS -> DentalCalculatorsV40Screen(lang,backPrevious)
-        AppScreen.ODONTOGRAM -> OdontogramV20Screen(lang,session,onSessionChanged,backPrevious)
+        AppScreen.ODONTOGRAM -> DentalAnalysisHubV41(lang,session,onSessionChanged,backPrevious)
         AppScreen.ICDAS -> IcdasScreen(lang,session,onSessionChanged,backPrevious)
         AppScreen.CPOD -> CpodInteractiveV19Screen(lang,session,onSessionChanged,backPrevious)
         AppScreen.OLEARY -> OlearyScreen(lang,session,onSessionChanged,backPrevious)
