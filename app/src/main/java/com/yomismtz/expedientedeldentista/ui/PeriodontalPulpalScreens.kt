@@ -64,32 +64,31 @@ fun PeriodontogramScreen(
         item {
             SectionCard("OD $selectedTooth · ${tr(lang, "Profundidad de sondaje", "Probing depth")}") {
                 Text(tr(lang,
-                    "Escribe milímetros para practicar la ubicación de los seis sitios. Esta información permanece solo en la sesión didáctica.",
-                    "Enter millimeters to practice the six-site layout. This information remains only in the teaching session."))
-                siteNames.chunked(3).forEachIndexed { rowIndex, row ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                        row.forEachIndexed { colIndex, site ->
-                            val index = rowIndex * 3 + colIndex
-                            OutlinedTextField(
-                                value = record.probingDepths[index].takeIf { it > 0 }?.toString() ?: "",
-                                onValueChange = { raw ->
-                                    val value = raw.toIntOrNull()?.coerceIn(0, 15) ?: 0
+                    "Selecciona los milímetros medidos en cada sitio; no es necesario escribirlos.",
+                    "Select the measured millimeters at each site; no typing is required."))
+                siteNames.forEachIndexed { index, site ->
+                    Text(site, fontWeight = FontWeight.SemiBold)
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
+                        listOf(0,1,2,3,4,5,6,7,8,9,10,12,15).forEach { mm ->
+                            FilterChip(
+                                selected = record.probingDepths[index] == mm,
+                                onClick = {
                                     val values = record.probingDepths.toMutableList()
-                                    values[index] = value
+                                    values[index] = mm
                                     update(record.copy(probingDepths = values))
                                 },
-                                label = { Text(site) },
+                                label = { Text(mm.toString()) },
                                 modifier = Modifier.weight(1f)
                             )
                         }
                     }
                 }
-                OutlinedTextField(
-                    value = record.recessionMm.takeIf { it != 0 }?.toString() ?: "",
-                    onValueChange = { update(record.copy(recessionMm = it.toIntOrNull()?.coerceIn(-10, 15) ?: 0)) },
-                    label = { Text(tr(lang, "Margen/recesión gingival (mm)", "Gingival margin/recession (mm)")) },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Text(tr(lang, "Margen/recesión gingival (mm)", "Gingival margin/recession (mm)"), fontWeight = FontWeight.SemiBold)
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
+                    listOf(-5,-3,-2,-1,0,1,2,3,4,5,7,10,15).forEach { mm ->
+                        FilterChip(record.recessionMm == mm,{ update(record.copy(recessionMm = mm)) },{ Text(mm.toString()) },modifier=Modifier.weight(1f))
+                    }
+                }
                 BooleanRow(tr(lang, "Sangrado al sondaje", "Bleeding on probing"), record.bleeding) { update(record.copy(bleeding = it)) }
                 BooleanRow(tr(lang, "Placa", "Plaque"), record.plaque) { update(record.copy(plaque = it)) }
                 BooleanRow(tr(lang, "Supuración", "Suppuration"), record.suppuration) { update(record.copy(suppuration = it)) }
@@ -105,6 +104,16 @@ fun PeriodontogramScreen(
                         FilterChip(record.furcation == grade, { update(record.copy(furcation = grade)) }, { Text(grade.toString()) }, modifier = Modifier.weight(1f))
                     }
                 }
+            }
+        }
+        item {
+            SectionCard(tr(lang,"Resumen periodontal automático","Automatic periodontal summary")) {
+                val maxPd = record.probingDepths.maxOrNull() ?: 0
+                val bleedingText = if(record.bleeding) tr(lang,"con sangrado al sondaje","with bleeding on probing") else tr(lang,"sin sangrado al sondaje","without bleeding on probing")
+                val plaqueText = if(record.plaque) tr(lang,"placa presente","plaque present") else tr(lang,"sin placa marcada","no plaque marked")
+                Text(tr(lang,
+                    "OD $selectedTooth: profundidad máxima seleccionada $maxPd mm; $bleedingText; $plaqueText; movilidad grado ${record.mobility}; furcación grado ${record.furcation}; margen/recesión ${record.recessionMm} mm.",
+                    "Tooth $selectedTooth: selected maximum probing depth $maxPd mm; $bleedingText; $plaqueText; mobility grade ${record.mobility}; furcation grade ${record.furcation}; gingival margin/recession ${record.recessionMm} mm."),fontWeight=FontWeight.Bold)
             }
         }
         item { NoticeCard(ClinicalEngines.periodontalSummary(session, lang)) }
