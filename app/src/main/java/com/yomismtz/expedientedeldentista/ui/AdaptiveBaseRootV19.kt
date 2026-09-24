@@ -45,7 +45,6 @@ private data class TabV19(val screen:AppScreen,val icon:String,val es:String,val
 
 private val tabsV19=listOf(
     TabV19(AppScreen.ACTIVITIES,"✍","Autorización de actividades","Activity authorization",0),
-    TabV19(AppScreen.IDENTIFICATION,"👤","Ficha de identificación","Identification",0),
     TabV19(AppScreen.TREATMENT,"📝","Diagnóstico y tratamiento","Diagnosis and treatment",0),
     TabV19(AppScreen.HISTORY,"🩺","Historia clínica","Medical history",0),
     TabV19(AppScreen.SESSIONS,"🗓","Tratamiento por sesiones","Treatment by sessions",0),
@@ -110,7 +109,19 @@ fun AdaptiveBaseRootV19(
         AppScreen.FOLDER -> FolderV19(lang,{navigate(it)},backPrevious)
         AppScreen.SETTINGS -> ResponsiveScreenV17(tr(lang,"Configuración","Settings"),tr(lang,"Usa el botón de Configuración de la barra superior.","Use Settings in the top bar."),backPrevious){ }
         AppScreen.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.HISTORY -> PathologicalHistory37Screen(lang,session,onSessionChanged,{navigate(AppScreen.SYSTEMIC_PROTOCOLS)},backPrevious)
+        AppScreen.HISTORY -> ClinicalHistoryHubV38(lang,{navigate(it)},backPrevious)
+        AppScreen.HISTORY_IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
+        AppScreen.HISTORY_REASON -> HistoryReasonV38(lang,backPrevious)
+        AppScreen.HISTORY_HEREDITARY -> HistoryHereditaryV38(lang,backPrevious)
+        AppScreen.HISTORY_NONPATH -> HistoryNonPathV38(lang,backPrevious)
+        AppScreen.HISTORY_GYNECO -> HistoryGynecoV38(lang,backPrevious)
+        AppScreen.HISTORY_PATH -> PathologicalHistory37Screen(lang,session,onSessionChanged,{navigate(AppScreen.SYSTEMIC_PROTOCOLS)},backPrevious)
+        AppScreen.HISTORY_SURGICAL_TRAUMA -> HistorySurgicalTraumaV38(lang,backPrevious)
+        AppScreen.HISTORY_PHYSICAL -> HistoryPhysicalV38(lang,backPrevious)
+        AppScreen.HISTORY_ORTHO -> HistoryOrthoV38(lang,backPrevious)
+        AppScreen.HISTORY_DENTAL_ALTERATIONS -> HistoryDentalAlterationsV38(lang,backPrevious)
+        AppScreen.HISTORY_HABITS -> HistoryHabitsV38(lang,backPrevious)
+        AppScreen.HISTORY_ORAL_EXAM -> HistoryOralExamV38(lang,backPrevious)
         AppScreen.SYSTEMIC_PROTOCOLS -> SystemicProtocols37Screen(lang,backPrevious)
         AppScreen.INTAKE -> IntakeNoteScreen(lang,session,backPrevious)
         AppScreen.ACTIVITIES -> ActivitiesScreen(lang,backPrevious)
