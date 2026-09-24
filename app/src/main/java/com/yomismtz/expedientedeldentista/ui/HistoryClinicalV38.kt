@@ -81,17 +81,76 @@ private data class E(val n:String,val d:String)
 ),onBack)
 
 @Composable fun HistoryGynecoV38(lang:String,onBack:()->Unit){
- var sex by remember{mutableStateOf("")}
- LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
-  item{ScreenHeader("Antecedentes gineco-obstétricos",onBack,"Selecciona sexo para determinar si el apartado aplica.")}
+ var sex by remember{mutableStateOf("")};var open by remember{mutableStateOf<Int?>(null)}
+ val q=listOf(
+  E("Menarca","Primera menstruación. Opciones educativas: aún no presenta / edad 8–9 / 10–11 / 12–13 / 14–15 / 16 o más / no recuerda. Se pregunta para contextualizar maduración y etapa reproductiva; una edad aislada no establece enfermedad."),
+  E("Inicio de vida sexual activa (IVSA)","Opciones: no ha iniciado / edad al inicio por intervalos / prefiere no responder / no recuerda. Es información confidencial y se pregunta sólo con pertinencia clínica, respeto y privacidad."),
+  E("Embarazos (gestas)","Opciones: 0 / 1 / 2 / 3 / 4 / 5 o más. El número de gestas permite organizar después partos, cesáreas, abortos y embarazo actual."),
+  E("Partos vaginales","Opciones: 0 / 1 / 2 / 3 / 4 / 5 o más. Debe ser congruente con el total de gestas."),
+  E("Cesáreas","Opciones: 0 / 1 / 2 / 3 / 4 / 5 o más. Una cesárea también cuenta como antecedente quirúrgico y debe aparecer en ese apartado."),
+  E("Abortos / pérdidas gestacionales","Opciones: 0 / 1 / 2 / 3 o más / prefiere no responder. Registrar sin juicios y ampliar sólo cuando sea clínicamente pertinente."),
+  E("Fecha de última menstruación (FUM)","Opciones: fecha conocida / no recuerda / ciclos irregulares / amenorrea / menopausia. Ayuda a contextualizar posibilidad de embarazo y etapa reproductiva."),
+  E("Embarazo actual","Opciones: no / sí y semanas de gestación / posible-no confirmado / no sabe. Si es positivo, registrar semanas y control prenatal referido."),
+  E("Anticoncepción","Opciones: ninguno / barrera / hormonal oral / inyectable / implante / DIU / esterilización / otro. Registrar método referido, no inferirlo."),
+  E("Lactancia","Opciones: no / sí actualmente / antecedente. Puede ser relevante para selección de medicamentos cuando exista tratamiento."),
+  E("Menopausia","Opciones: no aplica / sí y edad aproximada / no recuerda. Contextualiza etapa hormonal y antecedentes generales.")
+ )
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
+  item{ScreenHeader("Antecedentes gineco-obstétricos",onBack,"El estudiante selecciona opciones predeterminadas y puede abrir cada concepto para aprender qué significa y por qué se pregunta.")}
   item{Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(sex=="H",{sex="H"},{Text("Hombre")});FilterChip(sex=="M",{sex="M"},{Text("Mujer")})}}
-  if(sex=="H")item{Card{Text("No aplica.",Modifier.padding(16.dp),fontWeight=FontWeight.Bold)}}
-  if(sex=="M"){val q=listOf("Menarca","Inicio de vida sexual activa","Número de embarazos","Partos y cesáreas","Abortos y antecedentes relevantes","Fecha de última menstruación / posibilidad de embarazo","Anticonceptivos, lactancia y menopausia cuando correspondan");items(q.size){i->Card(Modifier.fillMaxWidth()){Text(q[i],Modifier.padding(14.dp))}}}
+  if(sex=="H")item{NoticeCard("No aplica este interrogatorio gineco-obstétrico.")}
+  if(sex=="M")items(q.size){i->val x=q[i];Card(onClick={open=if(open==i)null else i},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp)){Text(x.n,fontWeight=FontWeight.Bold);if(open==i)Text(x.d)else Text("Toca para ver significado, opciones y utilidad clínica",style=MaterialTheme.typography.bodySmall)}}}
  }
 }
-@Composable fun HistorySurgicalTraumaV38(lang:String,onBack:()->Unit)=explain("Antecedentes quirúrgicos y traumáticos",listOf(E("Cirugías y hospitalizaciones","Pregunta motivo, fecha, complicaciones y secuelas."),E("Transfusiones","Registra motivo, fecha aproximada y reacciones."),E("Traumatismos, fracturas y luxaciones","Cabeza, cuello y maxilares pueden modificar anatomía, oclusión y ATM.")),onBack)
-@Composable fun HistoryPhysicalV38(lang:String,onBack:()->Unit)=explain("Exploración física",listOf(E("Cráneo","Observa forma, simetría, lesiones, deformidades y dolor."),E("Facies","Evalúa simetría, proporciones, volumen, coloración y movimientos."),E("Músculos","Explora expresión y masticación según técnica clínica."),E("Cuello","Inspecciona y palpa movilidad, masas y dolor."),E("Cadenas ganglionares","Valora localización, tamaño, consistencia, movilidad y dolor."),E("ATM","Explora apertura, trayectoria, dolor y ruidos, correlacionando músculos y oclusión.")),onBack)
-@Composable fun HistoryOrthoV38(lang:String,onBack:()->Unit)=explain("Antecedentes de tratamientos ortodónticos",listOf(E("Tratamiento previo","Pregunta tipo de aparato, edad, duración, extracciones, retención, motivo de suspensión y resultado referido.")),onBack)
-@Composable fun HistoryDentalAlterationsV38(lang:String,onBack:()->Unit)=explain("Alteraciones de órganos dentarios",listOf(E("Número","Ausencias, supernumerarios y alteraciones de erupción."),E("Forma y tamaño","Micro/macrodoncia, fusión, geminación y otras variaciones."),E("Estructura y color","Cambios de esmalte, dentina o coloración requieren diagnóstico diferencial."),E("Erupción","Distingue ectópica/atípica, prematura y retardada según edad y secuencia.")),onBack)
+
+@Composable fun HistorySurgicalTraumaV38(lang:String,onBack:()->Unit){
+ val groups=listOf(
+  E("Cirugías","Opciones frecuentes para el interrogatorio: cesárea, apendicectomía, colecistectomía, hernioplastia, amigdalectomía/adenoidectomía, cirugía ortopédica, cirugía maxilofacial/dental, cirugía ginecológica, otra. Registrar tipo, fecha aproximada, complicaciones y secuelas."),
+  E("Hospitalizaciones","Opciones orientadoras: parto/cesárea, neumonía/infección, accidente/trauma, cirugía programada, enfermedad gastrointestinal, descompensación metabólica/cardiovascular, otra. Registrar motivo, año/edad, duración y complicaciones."),
+  E("Partos y cesáreas","Si hubo cesárea, enlazarla también con antecedentes gineco-obstétricos. Registrar número y fecha aproximada; evitar duplicar información contradictoria."),
+  E("Transfusiones sanguíneas","Opciones: nunca / sí una vez / varias / no recuerda. Si sí: motivo, fecha aproximada, reacciones y producto si se conoce."),
+  E("Donación de sangre","Opciones: nunca / sí / no recuerda; registrar última donación aproximada y reacción si existió."),
+  E("Trasplantes","Opciones: ninguno / renal / hepático / cardiaco / pulmonar / médula o células hematopoyéticas / otro. Registrar fecha, inmunosupresión y seguimiento médico."),
+  E("Traumatismos, fracturas y luxaciones","Opciones por región: cráneo/cara, mandíbula/maxilar, dientes, columna, extremidades u otras. Registrar fecha, tratamiento, secuelas y repercusión en oclusión/ATM cuando corresponda.")
+ )
+ explain("Antecedentes quirúrgicos, hospitalarios y traumáticos",groups,onBack)
+}
+
+@Composable fun HistoryPhysicalV38(lang:String,onBack:()->Unit)=explain("Exploración física",listOf(
+ E("Signos vitales y somatometría","Temperatura, tensión arterial, frecuencia respiratoria, frecuencia cardiaca, peso, talla, IMC y glucosa capilar. El formato fuente incluye estos campos e IMC; los rangos por edad/sexo se mostrarán como referencia separada para no inventarlos a partir del formato."),
+ E("Inspección general","Edad aparente, marcha, facies, actitud, constitución/habitus, movimientos anormales, conciencia, actitud psicológica, cuidado personal y cooperación."),
+ E("Cráneo","Forma, volumen, implantación del cabello, exostosis/abultamientos, hundimientos/depresiones, simetría, lesiones y dolor. Las referencias visuales se incorporarán desde fuentes reales citadas, no como dibujo vectorial."),
+ E("Cara / facies","Perfil, simetría, color de tez, volumen, lesiones y movimientos. La fuente usa ejemplos de normocromía, palidez, ictericia, cianosis y eritema; la imagen será referencia clínica citada."),
+ E("Músculos de la expresión facial","Valorar tono, simetría y función; registrar normotonía, hipotonía o hipertonía cuando corresponda y describir el hallazgo."),
+ E("Músculos de la masticación","Explorar maseteros, temporales y músculos accesibles clínicamente según técnica; valorar dolor, tono, hipertrofia/asimetría y función."),
+ E("Cuello","Inspección y palpación de simetría, movilidad, masas, dolor y otros hallazgos pertinentes."),
+ E("Cadenas ganglionares","Preauriculares, mastoideos, submandibulares, cervicales, submentonianos y claviculares: palpable/no palpable, fijos/móviles, dolorosos/no dolorosos y descripción."),
+ E("ATM","Dolor, chasquido, crepitación, desviación, limitación, apertura/cierre, lateralidades, protrusión/retrusión, apertura máxima y relación con línea media; complementar con DVO/DVR cuando corresponda.")
+),onBack)
+
+@Composable fun HistoryOrthoV38(lang:String,onBack:()->Unit){
+ var prior by remember{mutableStateOf<Boolean?>(null)}
+ val options=listOf("Brackets metálicos","Brackets estéticos","Alineadores transparentes","Aparato removible","Expansor palatino","Mantenedor de espacio","Aparato funcional/ortopédico","Retenedor fijo","Retenedor removible Hawley","Retenedor transparente","Extracciones asociadas al tratamiento","Cirugía ortognática asociada","Otro")
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
+  item{ScreenHeader("Antecedentes de tratamientos ortodónticos",onBack,"Primero indica si recibió tratamiento previo; si la respuesta es sí, aparecen opciones de aparatología y retención.")}
+  item{Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(prior==false,{prior=false},{Text("No")});FilterChip(prior==true,{prior=true},{Text("Sí")})}}
+  if(prior==true)items(options.size){i->Card(Modifier.fillMaxWidth()){Text("□ "+options[i],Modifier.padding(13.dp))}}
+  if(prior==true)item{NoticeCard("Además registra edad aproximada al tratamiento, duración, motivo de indicación, si lo terminó, tiempo de retención y resultado referido.")}
+ }
+}
+
+@Composable fun HistoryDentalAlterationsV38(lang:String,onBack:()->Unit){
+ val groups=listOf(
+  E("Número · disminución","Hipodoncia/agenesia, oligodoncia y anodoncia. Registrar órgano(s) dentario(s), localizado/generalizado y confirmar con historia/radiografía cuando corresponda."),
+  E("Número · aumento","Dientes supernumerarios; registrar localización, erupcionado/no erupcionado y relación con dientes vecinos."),
+  E("Tamaño","Microdoncia y macrodoncia; localizada o generalizada. Comparar con anatomía, arco y dientes homólogos."),
+  E("Forma / morfología","Fusión, geminación, concrescencia, dens invaginatus, dens evaginatus, taurodontismo y otras alteraciones morfológicas. No inferir etiología sólo por apariencia."),
+  E("Estructura","Defectos del esmalte, amelogénesis imperfecta, dentinogénesis imperfecta, displasia dentinaria y alteraciones de tejidos dentarios; integrar clínica, antecedentes y radiografía."),
+  E("Color","Cambio intrínseco o extrínseco; registrar distribución, dientes afectados, tonalidad, antecedentes y hallazgos asociados antes de orientar causa."),
+  E("Erupción y posición","Erupción ectópica, transposición, erupción tardía/retardada, erupción precoz/prematura, retención/no erupción más allá de lo esperado, impactación, inclusión intraósea, falla primaria de erupción, diente natal, diente neonatal, anquilosis/diente sumergido, obstáculo local sospechado, asimetría eruptiva y desplazamiento/posición anómala. Retención, inclusión e impactación pueden solaparse entre fuentes: primero describir clínica y radiografía.")
+ )
+ explain("Alteraciones de órganos dentarios",groups,onBack)
+}
+
 @Composable fun HistoryHabitsV38(lang:String,onBack:()->Unit)=explain("Hábitos y parafunciones",listOf(E("Succión digital","Pregunta dedo, frecuencia, duración e intensidad. Extraoral: postura labial/facial. Intraoral: incisivos, overjet, mordida abierta, arco y paladar."),E("Chupón o mamila prolongados","Registra edad y patrón. Extraoral: postura labial. Intraoral: mordida, arco y erupción."),E("Respiración oral","Pregunta respiración y sueño. Extraoral: labios entreabiertos/postura. Intraoral: sequedad, gingivitis y patrón oclusal; la causa respiratoria debe investigarse."),E("Interposición lingual / deglución atípica","Observa deglución, lengua y competencia labial; intraoralmente puede acompañarse de mordida abierta o espacios."),E("Onicofagia / mordisqueo","Extraoral: uñas/labios. Intraoral: desgaste, fracturas pequeñas, trauma mucoso o recesión localizada."),E("Bruxismo y apretamiento","Pregunta sueño/vigilia, fatiga y dolor. Extraoral: músculos. Intraoral: facetas, fracturas, restauraciones dañadas y línea alba; ningún signo aislado confirma el diagnóstico.")),onBack)
 @Composable fun HistoryOralExamV38(lang:String,onBack:()->Unit)=explain("Examen peribucal e intrabucal",listOf(E("Piel, labios y comisuras","Inspecciona color, hidratación, integridad, lesiones y simetría."),E("Carrillos y mucosa","Inspecciona bilateralmente y describe lesiones por sitio, tamaño, color y superficie."),E("Paladar y orofaringe","Observa paladar duro/blando, úvula y orofaringe."),E("Lengua y piso de boca","Examina dorso, bordes, cara ventral y piso mediante inspección y palpación cuando corresponda.")),onBack)
