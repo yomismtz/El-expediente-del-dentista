@@ -59,10 +59,21 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
     var finding by remember{mutableStateOf("Normal")}
     var sizeMm by remember{mutableStateOf("")}
     var notes by remember{mutableStateOf("")}
+    var color by remember{mutableStateOf("Rosado")}
+    var shape by remember{mutableStateOf("Redonda/oval")}
+    var surface by remember{mutableStateOf("Lisa")}
+    var border by remember{mutableStateOf("Regular/definido")}
+    var base by remember{mutableStateOf("Sésil")}
+    var consistency by remember{mutableStateOf("Blanda")}
+    var mobility by remember{mutableStateOf("Móvil")}
+    var symptoms by remember{mutableStateOf("Asintomática")}
+    var duration by remember{mutableStateOf("No referido")}
+    var evolution by remember{mutableStateOf("No referida")}
+    var count by remember{mutableStateOf("Única")}
     val selected=zones19.first{it.id==selectedId}
     val name=if(lang=="en")selected.en else selected.es
     val example=if(finding=="Normal") "$name: ${if(lang=="en")selected.normalEn else selected.normalEs}"
-    else tr(lang,"$name: $finding; tamaño aproximado ${if(sizeMm.isBlank())"no registrado" else "$sizeMm mm"}${if(notes.isBlank())"" else "; $notes"}. Descripción clínica; correlacionar antes de diagnosticar.","$name: $finding; approximate size ${if(sizeMm.isBlank())"not entered" else "$sizeMm mm"}${if(notes.isBlank())"" else "; $notes"}. Clinical description; correlate before diagnosis.")
+    else tr(lang,"$name: $finding; ${if(count=="Única")"lesión única" else "lesiones múltiples"}; tamaño ${if(sizeMm.isBlank())"no registrado" else "$sizeMm mm"}; color $color; forma $shape; superficie $surface; borde $border; base $base; consistencia $consistency; movilidad $mobility; $symptoms; duración $duration; evolución $evolution${if(notes.isBlank())"" else "; $notes"}. Descripción clínica; correlacionar antes de diagnosticar.","$name: $finding; size ${if(sizeMm.isBlank())"not entered" else "$sizeMm mm"}; color $color; shape $shape; surface $surface; border $border; base $base; consistency $consistency; mobility $mobility; symptoms $symptoms; duration $duration; evolution $evolution. Clinical description; correlate before diagnosis.")
 
     ResponsiveScreenV17(tr(lang,"Mucosas orales interactivas","Interactive oral mucosa"),tr(lang,"Toca una zona en la boca abierta y practica una descripción clínica sistemática.","Tap a region on the open-mouth diagram and practice systematic clinical description."),onBack) { profile ->
         ResponsiveSectionV17(tr(lang,"1 · Boca abierta: toca una zona","1 · Open mouth: tap a region")) {
@@ -85,8 +96,19 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 listOf("Normal","Úlcera","Placa blanca","Placa roja","Eritema","Aumento de volumen","Pigmentación","Vesícula","Fístula","Masa").forEach { f -> FilterChip(finding==f,{finding=f},{Text(f)}) }
             }
             if(finding!="Normal") {
-                OutlinedTextField(sizeMm,{sizeMm=it.filter{c->c.isDigit()||c=='.'}.take(6)},label={Text(tr(lang,"Tamaño aproximado (mm)","Approximate size (mm)"))},modifier=Modifier.fillMaxWidth())
-                OutlinedTextField(notes,{notes=it.take(180)},label={Text(tr(lang,"Color, superficie, bordes, consistencia y síntomas","Color, surface, borders, consistency and symptoms"))},modifier=Modifier.fillMaxWidth())
+                OutlinedTextField(sizeMm,{sizeMm=it.filter{c->c.isDigit()||c=='.'}.take(6)},label={Text(tr(lang,"Tamaño mayor aproximado (mm)","Approximate largest dimension (mm)"))},modifier=Modifier.fillMaxWidth())
+                MucosaPick19("Número",listOf("Única","Múltiples"),count){count=it}
+                MucosaPick19("Color",listOf("Rosado","Rojo","Blanco","Rojo-blanco","Amarillo","Azulado/violáceo","Marrón/negro","Translúcido","Mixto"),color){color=it}
+                MucosaPick19("Forma",listOf("Redonda/oval","Irregular","Lineal","Anular","Lobulada","Difusa/no delimitable"),shape){shape=it}
+                MucosaPick19("Superficie",listOf("Lisa","Rugosa","Papilar/verrugosa","Ulcerada","Erosionada","Costrosa","Vesicular/ampollar","Queratinizada"),surface){surface=it}
+                MucosaPick19("Bordes",listOf("Regular/definido","Irregular","Elevado","Evertido","Indurado","Mal definido"),border){border=it}
+                MucosaPick19("Base",listOf("Sésil","Pediculada","Plana","No aplica/no valorable"),base){base=it}
+                MucosaPick19("Consistencia a palpación",listOf("Blanda","Firme","Indurada","Fluctuante","Compresible","No valorada"),consistency){consistency=it}
+                MucosaPick19("Movilidad",listOf("Móvil","Fija","No valorada/no aplica"),mobility){mobility=it}
+                MucosaPick19("Síntomas",listOf("Asintomática","Dolor","Ardor","Sangrado","Prurito","Parestesia/adormecimiento"),symptoms){symptoms=it}
+                MucosaPick19("Duración referida",listOf("<1 semana","1–2 semanas","2–4 semanas","1–3 meses",">3 meses","Recurrente","No referido"),duration){duration=it}
+                MucosaPick19("Evolución",listOf("Nueva","Estable","En crecimiento","Disminuyendo","Recurrente","No referida"),evolution){evolution=it}
+                OutlinedTextField(notes,{notes=it.take(180)},label={Text(tr(lang,"Observaciones adicionales","Additional observations"))},modifier=Modifier.fillMaxWidth())
             }
         }
         Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)) {
@@ -96,6 +118,14 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
             }
         }
         NoticeCard(tr(lang,"Describe antes de diagnosticar. Lesiones persistentes, induradas, ulceradas sin causa clara, masas o crecimiento requieren supervisión docente/profesional y seguimiento.","Describe before diagnosing. Persistent, indurated, unexplained ulcerated lesions, masses or growth require faculty/professional assessment and follow-up."))
+    }
+}
+
+
+@Composable private fun MucosaPick19(label:String,options:List<String>,selected:String,onSelected:(String)->Unit){
+    Text(label,fontWeight=FontWeight.Bold)
+    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(7.dp)){
+        options.forEach{o->FilterChip(selected==o,{onSelected(o)},{Text(o)})}
     }
 }
 
