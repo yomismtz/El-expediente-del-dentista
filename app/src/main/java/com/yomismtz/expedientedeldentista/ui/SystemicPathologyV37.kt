@@ -38,12 +38,35 @@ private fun asa37(map:Map<String,DiseaseAnswer>):Int{val a=map.values.filter{it.
   else{item{DiseaseEditor37(disease!!,saved[disease!!.id]?:DiseaseAnswer(),{a->val n=saved.toMutableMap();n[disease!!.id]=a;onSessionChanged(session.copy(history=session.history.copy(diseases=n,asaClass=asa37(n))));disease=null},onProtocols){disease=null}}}
  }
 }
+private fun presetTreatments37(d:Disease37):List<String> = when(d.protocol){
+ "diabetes" -> listOf("Metformina referida","SGLT2 referido","GLP-1 / GIP-GLP-1 referido","Insulina basal referida","Insulina basal-bolo referida","Combinación de fármacos referida","Cambios de estilo de vida / educación","Otro esquema indicado por su médico","No toma tratamiento")
+ "hypertension","cardio" -> listOf("IECA referido","ARA-II referido","Calcioantagonista referido","Diurético referido","Betabloqueador referido","Antiagregante/anticoagulante referido cuando corresponda","Combinación referida","Otro","No toma tratamiento")
+ "respiratory" -> listOf("Inhalador de rescate referido","Corticoide inhalado referido","Broncodilatador de acción prolongada referido","Combinación de inhaladores","Oxígeno referido","Otro","No toma tratamiento")
+ "thyroid" -> listOf("Levotiroxina referida","Antitiroideo referido","Yodo/radioyodo antecedente","Otro","No toma tratamiento")
+ "immune" -> listOf("Inmunomodulador/inmunosupresor referido","Corticoide referido","Antirretroviral referido cuando corresponda","Biológico referido","Otro","No toma tratamiento")
+ "bone" -> listOf("Bisfosfonato referido","Denosumab referido","Calcio/vitamina D referidos","Otro tratamiento óseo","No toma tratamiento")
+ "hematologic" -> listOf("Hierro referido","Ácido fólico/B12 referido","Anticoagulante referido","Factor/hemoderivado referido","Otro","No toma tratamiento")
+ "renal" -> listOf("Tratamiento renal referido","Diálisis","Trasplante + inmunosupresión referida","Otro","No toma tratamiento")
+ "liver","gi" -> listOf("Tratamiento gastrointestinal/hepático referido","Antiviral referido cuando corresponda","Protector/antisecretor referido","Otro","No toma tratamiento")
+ "neuro" -> listOf("Anticonvulsivante referido","Otro tratamiento neurológico","No toma tratamiento")
+ "oncology" -> listOf("Quimioterapia actual/previa","Radioterapia actual/previa","Terapia dirigida/inmunoterapia referida","Seguimiento sin tratamiento activo","Otro")
+ "exanthem" -> listOf("Tratamiento sintomático referido","Antiviral referido cuando correspondió","Sin tratamiento / resuelto","Otro")
+ else -> listOf("Tratamiento farmacológico referido","Tratamiento no farmacológico referido","Otro","No toma tratamiento")
+}
 @Composable private fun DiseaseEditor37(d:Disease37,initial:DiseaseAnswer,onSave:(DiseaseAnswer)->Unit,onProtocol:()->Unit,onBack:()->Unit){
  var onset by remember(d.id){mutableStateOf(initial.onset)};var treatment by remember(d.id){mutableStateOf(initial.treatment)};var status by remember(d.id){mutableStateOf(initial.currentStatus)};var complications by remember(d.id){mutableStateOf(initial.complications)}
- Column(verticalArrangement=Arrangement.spacedBy(9.dp)){Button(onClick=onBack){Text("← Enfermedades")};Text(d.name,style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black);Text("💊 Tratamientos que el paciente podría referir (no es prescripción): "+d.meds)
-  if(d.protocol=="exanthem")NoticeCard("Referencia visual: usa material clínico docente validado para diferenciar exantemas. Registra edad al padecerlo, tratamiento recibido y complicaciones; una imagen aislada no confirma diagnóstico.")
-  OutlinedTextField(onset,{onset=it},label={Text("¿Desde cuándo? / edad al padecerlo")},modifier=Modifier.fillMaxWidth());OutlinedTextField(treatment,{treatment=it},label={Text("Tratamiento/medicamento, dosis y frecuencia referidas")},modifier=Modifier.fillMaxWidth());OutlinedTextField(status,{status=it},label={Text("Estado actual y grado de control")},modifier=Modifier.fillMaxWidth());OutlinedTextField(complications,{complications=it},label={Text("Complicaciones / observaciones")},modifier=Modifier.fillMaxWidth())
-  Button(onClick={onSave(DiseaseAnswer(true,onset,treatment,status,complications))},modifier=Modifier.fillMaxWidth()){Text("💾 Guardar antecedente")};Button(onClick=onProtocol,modifier=Modifier.fillMaxWidth()){Text("📚 Consultar protocolo odontológico")}
+ val dates=listOf("Diagnóstico este año","1–2 años","3–5 años","6–10 años","Más de 10 años","Desde la infancia","No recuerda")
+ val states=listOf("Controlado según seguimiento médico referido","En tratamiento, control no conocido","Descontrolado referido","Suspendió/no toma medicamentos","En estudio / diagnóstico reciente","Resuelto / antecedente, cuando aplique")
+ Column(verticalArrangement=Arrangement.spacedBy(9.dp)){
+  Button(onClick=onBack){Text("← Enfermedades")};Text(d.name,style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black)
+  Text("1 · ¿Desde cuándo?",fontWeight=FontWeight.Bold);dates.forEach{x->FilterChip(onset==x,{onset=x},{Text(x)},modifier=Modifier.fillMaxWidth())}
+  Text("2 · Tratamiento referido",fontWeight=FontWeight.Bold);presetTreatments37(d).forEach{x->FilterChip(treatment==x,{treatment=x},{Text(x)},modifier=Modifier.fillMaxWidth())}
+  Text("3 · Estado actual",fontWeight=FontWeight.Bold);states.forEach{x->FilterChip(status==x,{status=x},{Text(x)},modifier=Modifier.fillMaxWidth())}
+  OutlinedTextField(complications,{complications=it},label={Text("Complicaciones / observaciones opcionales")},modifier=Modifier.fillMaxWidth())
+  if(d.protocol=="diabetes")NoticeCard("En diabetes tipo 2 los estándares actuales recomiendan tratamiento individualizado según metas, comorbilidades cardiovasculares/renales, riesgo de hipoglucemia, tolerancia y preferencias. Estas opciones sirven para registrar lo que el paciente ya usa; no son un esquema automático de prescripción.")
+  if(d.protocol=="exanthem")NoticeCard("Registrar edad al padecerla, tratamiento recibido y complicaciones; una imagen aislada no confirma el diagnóstico.")
+  Button(enabled=onset.isNotBlank()&&treatment.isNotBlank()&&status.isNotBlank(),onClick={onSave(DiseaseAnswer(true,onset,treatment,status,complications))},modifier=Modifier.fillMaxWidth()){Text("💾 Guardar antecedente")}
+  Button(onClick=onProtocol,modifier=Modifier.fillMaxWidth()){Text("📚 Consultar protocolo odontológico")}
  }
 }
 @Composable fun SystemicProtocols37Screen(lang:String,onBack:()->Unit){
