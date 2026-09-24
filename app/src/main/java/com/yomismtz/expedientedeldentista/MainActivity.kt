@@ -15,6 +15,7 @@ import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.SettingsStore
 import com.yomismtz.expedientedeldentista.ui.AppRootV19
+import com.yomismtz.expedientedeldentista.ui.OnboardingV15Screen
 import com.yomismtz.expedientedeldentista.ui.theme.ExpedienteTheme
 
 class MainActivity : AppCompatActivity() {
@@ -38,15 +39,21 @@ class MainActivity : AppCompatActivity() {
             ) {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     Box(Modifier.fillMaxSize()) {
-                        AppRootV19(
-                            preferences = preferences,
-                            onPreferencesChanged = savePreferences,
-                            onLanguageChanged = { tag ->
-                                savePreferences(preferences.copy(languageTag = tag))
-                            },
-                            session = session,
-                            onSessionChanged = { session = it }
-                        )
+                        if (!preferences.onboardingComplete) {
+                            OnboardingV15Screen(
+                                preferences = preferences,
+                                onPreferencesChanged = savePreferences,
+                                onContinue = { completed -> savePreferences(completed.copy(onboardingComplete = true)) }
+                            )
+                        } else {
+                            AppRootV19(
+                                preferences = preferences,
+                                onPreferencesChanged = savePreferences,
+                                onLanguageChanged = { tag -> savePreferences(preferences.copy(languageTag = tag)) },
+                                session = session,
+                                onSessionChanged = { session = it }
+                            )
+                        }
                     }
                 }
             }
