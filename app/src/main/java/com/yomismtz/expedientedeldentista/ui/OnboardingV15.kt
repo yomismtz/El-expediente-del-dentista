@@ -180,12 +180,12 @@ fun OnboardingV15Screen(
         ) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
-                    if (lang == "en") "3 · Interface color palette" else "3 · Paleta de colores del interfaz",
+                    if (lang == "en") "3 · Choose your mascot and color palette" else "3 · Elige tu mascota y paleta de color",
                     fontWeight = FontWeight.Black
                 )
                 Text(
-                    if (lang == "en") "Choose a bird-inspired palette. Agaporni is the default YSM palette."
-                    else "Elige una paleta inspirada en aves. Agaporni es la paleta YSM predeterminada.",
+                    if (lang == "en") "Choose among 20 mascots. Each mascot has its own app color palette."
+                    else "Elige entre 20 mascotas. Cada mascota tiene su propia paleta de colores para la app.",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -299,7 +299,7 @@ private fun BirdPaletteCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                paletteDisplayName(style, lang),
+                mascotEmoji(style) + " " + paletteDisplayName(style, lang),
                 fontWeight = if (selected) FontWeight.Black else FontWeight.SemiBold,
                 textAlign = TextAlign.Center
             )
@@ -317,4 +317,27 @@ private fun BirdPaletteCard(
             }
         }
     }
+}
+
+private fun mascotEmoji(style: BirdPaletteStyle): String = when(style) {
+    BirdPaletteStyle.AGAPORNI -> "🐦"
+    BirdPaletteStyle.TUCAN -> "🐧"
+    BirdPaletteStyle.PAVO_REAL -> "🦚"
+    BirdPaletteStyle.FENIX -> "🔥"
+    BirdPaletteStyle.COLIBRI -> "🐦"
+    BirdPaletteStyle.PATO_MANDARIN -> "🦆"
+    BirdPaletteStyle.NINFA -> "🐦"
+    BirdPaletteStyle.MARTIN_PESCADOR -> "🐦"
+    BirdPaletteStyle.GUACAMAYA -> "🦜"
+    BirdPaletteStyle.QUETZAL -> "🐦"
+    BirdPaletteStyle.TRICHOGLOSSUS_MOLUCCANUS -> "🦜"
+    BirdPaletteStyle.CUERVO -> "🐦‍⬛"
+    BirdPaletteStyle.ABEJARUCO -> "🐦"
+    BirdPaletteStyle.PERRO -> "🐕"
+    BirdPaletteStyle.KOALA -> "🐨"
+    BirdPaletteStyle.PUG -> "🐶"
+    BirdPaletteStyle.GATO -> "🐱"
+    BirdPaletteStyle.TORTUGA -> "🐢"
+    BirdPaletteStyle.HAMSTER -> "🐹"
+    BirdPaletteStyle.DRAGON -> "🐉"
 }
