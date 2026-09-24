@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
@@ -17,6 +21,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -26,40 +32,107 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 
 private data class OcclusionTopic19(val es:String,val en:String,val bodyEs:String,val bodyEn:String)
 
 @Composable
 fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
-    var selected by remember{mutableStateOf(0)}
-    val topics=listOf(
-        OcclusionTopic19("Planos terminales","Terminal planes","En dentición temporal compara las caras distales de los segundos molares: plano terminal recto (flush), escalón mesial y escalón distal.","In primary dentition compare distal surfaces of second molars: flush terminal plane, mesial step and distal step."),
-        OcclusionTopic19("Angle molar","Molar Angle class","Relaciona los primeros molares permanentes. Los dibujos son esquemas de referencia para Clase I, II y III.","Relate the permanent first molars. The drawings are reference schematics for Class I, II and III."),
-        OcclusionTopic19("Relación canina","Canine relation","Relaciona la cúspide del canino superior con la región canino-primer premolar inferior; describe Clase I, II o III.","Relate the upper canine cusp to the lower canine-first premolar region; describe Class I, II or III."),
-        OcclusionTopic19("Overjet","Overjet","Distancia horizontal entre incisivos superiores e inferiores. Registra milímetros y si es positivo, borde a borde o invertido.","Horizontal distance between upper and lower incisors. Record millimeters and whether positive, edge-to-edge or reversed."),
-        OcclusionTopic19("Overbite / abierta","Overbite / open bite","Traslape vertical anterior. Registra milímetros o porcentaje y reconoce sobremordida profunda, borde a borde y mordida abierta.","Anterior vertical overlap. Record millimeters or percentage and recognize deep bite, edge-to-edge and open bite."),
-        OcclusionTopic19("Mordida cruzada","Crossbite","Describe si la relación cruzada es anterior o posterior y unilateral o bilateral; valora línea media y posibles desplazamientos funcionales.","Describe anterior/posterior and unilateral/bilateral crossbite; assess midline and possible functional shifts.")
+    val sections=listOf(
+        "Dentición y desarrollo","Planos terminales","Relación molar de Angle","Relación canina","Overjet","Overbite / mordida abierta",
+        "Mordida cruzada","Líneas medias","Alineación y espacios","Forma y simetría de arcadas","Plano vertical","Plano transversal",
+        "Contactos oclusales","Máxima intercuspidación y cierre","Desgaste oclusal","Alteraciones asociadas"
     )
+    var selected by remember{mutableStateOf(0)}
+    var choice by remember{mutableStateOf("")}
+    val options=listOf(
+        listOf("Temporal","Mixta temprana","Mixta tardía","Permanente","No valorable"),
+        listOf("Recto bilateral","Mesial bilateral","Distal bilateral","Asimétrico","No valorable"),
+        listOf("Clase I bilateral","Clase II bilateral","Clase III bilateral","Asimétrica derecha/izquierda","No valorable"),
+        listOf("Clase I bilateral","Clase II bilateral","Clase III bilateral","Asimétrica","No valorable"),
+        listOf("Positivo habitual","Aumentado","Reducido","Borde a borde","Invertido","No medido"),
+        listOf("Traslape habitual","Profunda","Borde a borde","Abierta anterior","Abierta posterior","No valorable"),
+        listOf("Sin mordida cruzada","Anterior","Posterior derecha","Posterior izquierda","Posterior bilateral","Con desplazamiento funcional"),
+        listOf("Coincidentes","Superior desviada derecha","Superior desviada izquierda","Inferior desviada derecha","Inferior desviada izquierda","Discrepancia superior-inferior"),
+        listOf("Sin alteración aparente","Apiñamiento leve","Apiñamiento moderado","Apiñamiento severo","Diastemas/espacios","Rotaciones/inclinaciones"),
+        listOf("Ovoide simétrica","Triangular","Cuadrada/amplia","Estrecha","Asimétrica"),
+        listOf("Curva de Spee discreta","Curva aumentada","Curva plana","Mordida profunda","Mordida abierta"),
+        listOf("Relación transversal habitual","Cruzada unilateral","Cruzada bilateral","Mordida en tijera/Brodie","Asimetría transversal"),
+        listOf("Posteriores bilaterales","Predominio derecho","Predominio izquierdo","Contacto prematuro aparente","Ausencia de contacto posterior"),
+        listOf("Cierre sin desplazamiento","Deslizamiento funcional derecho","Deslizamiento funcional izquierdo","Discrepancia RC/MI aparente","No valorable"),
+        listOf("Sin desgaste aparente","Facetas anteriores","Facetas posteriores","Generalizado","Unilateral","Severo"),
+        listOf("Sin alteración adicional","Protrusión incisiva","Mordida invertida/underbite","Apiñamiento","Espaciamiento","Mordida profunda","Mordida abierta")
+    )
+    val help=listOf(
+        "Identifica la etapa eruptiva antes de interpretar las relaciones oclusales.",
+        "En dentición temporal compara por separado las caras distales de los segundos molares temporales.",
+        "Evalúa derecha e izquierda. La cúspide mesiovestibular del primer molar superior es la referencia clásica de Angle.",
+        "Compara la cúspide del canino superior con la región canino-primer premolar inferior en ambos lados.",
+        "Mide horizontalmente entre incisivos en milímetros; registra también borde a borde o relación invertida.",
+        "Valora el traslape vertical anterior en milímetros o porcentaje y si existe mordida abierta o contacto traumático.",
+        "Determina anterior/posterior, lado y si al cierre aparece desplazamiento funcional mandibular.",
+        "Compara línea media facial, superior e inferior; registra dirección y milímetros de desviación.",
+        "Observa ambas arcadas: apiñamiento, espacios, diastemas, rotaciones, inclinaciones y desplazamientos.",
+        "Describe cada arcada por separado y compara simetría derecha-izquierda.",
+        "Valora curva de Spee, profundidad de mordida, apertura anterior/posterior y contactos verticales.",
+        "Evalúa anchura relativa de las arcadas, cruzada posterior y mordida en tijera.",
+        "Observa simultaneidad y distribución de contactos; un hallazgo visual no demuestra por sí solo una interferencia funcional.",
+        "Observa la trayectoria desde apertura hasta máxima intercuspidación y cualquier desplazamiento mandibular.",
+        "Registra localización y extensión de facetas; no diagnostiques bruxismo únicamente por desgaste.",
+        "Resume las alteraciones oclusales visibles sin sustituir el diagnóstico ortodóncico completo."
+    )
+    val photos=listOf(
+        Pair("Dentición temporal · referencia real","https://commons.wikimedia.org/wiki/Special:Redirect/file/DentalSeperators.jpg"),
+        Pair("Plano terminal · apoyo esquemático",""),
+        Pair("Angle Clase I · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Angle_KL_1.JPG"),
+        Pair("Angle Clase II · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Class2division1malocclusion.jpg"),
+        Pair("Overjet y overbite · técnica de medición","https://commons.wikimedia.org/wiki/Special:Redirect/file/Overjet-overbite.png"),
+        Pair("Mordida abierta anterior · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Anterior_open_bite_malocclusion.jpg"),
+        Pair("Mordida cruzada · referencia clínica","https://commons.wikimedia.org/wiki/Special:Redirect/file/Patient_with_Apert_syndrome.jpg"),
+        Pair("Plano oclusal y asimetría · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Canted_occlusal_plane.jpg"),
+        Pair("Apiñamiento severo · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Sever_Crowding_of_teeth.jpg"),
+        Pair("Arcadas · valorar forma y simetría","https://commons.wikimedia.org/wiki/Special:Redirect/file/Sever_Crowding_of_teeth.jpg"),
+        Pair("Mordida profunda · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Moderate_crowding_with_deep_bite.jpg"),
+        Pair("Relación transversal · referencia clínica","https://commons.wikimedia.org/wiki/Special:Redirect/file/Patient_with_Apert_syndrome.jpg"),
+        Pair("Contactos oclusales · referencia clínica","https://commons.wikimedia.org/wiki/Special:Redirect/file/Angle_KL_1.JPG"),
+        Pair("Máxima intercuspidación · referencia clínica","https://commons.wikimedia.org/wiki/Special:Redirect/file/Angle_KL_1.JPG"),
+        Pair("Desgaste: inspección clínica","https://commons.wikimedia.org/wiki/Special:Redirect/file/Moderate_crowding_with_deep_bite.jpg"),
+        Pair("Diastema · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Brian_diastema.png")
+    )
+    ResponsiveScreenV17(tr(lang,"Examen clínico de oclusión","Clinical occlusal examination"),tr(lang,"Exploración por subapartados con registro seleccionable y apoyo visual.","Sectioned examination with selectable findings and visual support."),onBack) {
+        ResponsiveSectionV17("Subapartados") {
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(6.dp)){
+                sections.forEachIndexed{i,s->FilterChip(selected==i,{selected=i;choice=""},{Text(s)})}
+            }
+        }
+        ResponsiveSectionV17(sections[selected]) {
+            Text(help[selected],fontWeight=FontWeight.SemiBold)
+            val ph=photos[selected]
+            if(ph.second.isNotBlank()) OcclusionPhoto19(ph.first,ph.second)
+            else TerminalPlanes19(lang)
+            Text("Registro clínico",fontWeight=FontWeight.Black)
+            options[selected].forEach{o->FilterChip(choice==o,{choice=o},{Text(o)},modifier=Modifier.fillMaxWidth())}
+            when(selected){
+                1->TerminalPlanes19(lang)
+                2->AngleMolar19()
+                3->Canine19(lang)
+                4->Overjet19(lang)
+                5->Overbite19(lang)
+                6->Crossbite19(lang)
+            }
+        }
+        NoticeCard("Las fotografías son referencias educativas de archivos con licencia abierta en Wikimedia Commons; se conserva atribución. Los esquemas de medición se identifican como esquemas y no como fotografías clínicas. Registrar hallazgos no equivale a emitir automáticamente un diagnóstico.")
+    }
+}
 
-    ResponsiveScreenV17(tr(lang,"Examen de oclusión","Occlusal examination"),tr(lang,"Selecciona un concepto para ver una lámina esquemática propia y su significado.","Select a concept to see an original schematic and its meaning."),onBack) { profile ->
-        ResponsiveSectionV17(tr(lang,"Conceptos","Concepts")) {
-            AdaptiveGridV17(topics.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 3) { i ->
-                FilterChip(selected==i,{selected=i},{Text(if(lang=="en")topics[i].en else topics[i].es)},modifier=Modifier.fillMaxWidth())
-            }
+@Composable private fun OcclusionPhoto19(title:String,url:String){
+    Card(Modifier.fillMaxWidth(),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.35f))){
+        Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+            Text(title,fontWeight=FontWeight.Black)
+            AsyncImage(model=url,contentDescription=title,modifier=Modifier.fillMaxWidth().heightIn(min=180.dp,max=300.dp),contentScale=ContentScale.Fit)
+            Text("Fuente visual: Wikimedia Commons · archivo de licencia abierta. Consultar atribución/licencia del archivo.",style=MaterialTheme.typography.bodySmall)
         }
-        val t=topics[selected]
-        ResponsiveSectionV17(if(lang=="en")t.en else t.es) {
-            when(selected) {
-                0 -> TerminalPlanes19(lang)
-                1 -> AngleMolar19()
-                2 -> Canine19(lang)
-                3 -> Overjet19(lang)
-                4 -> Overbite19(lang)
-                else -> Crossbite19(lang)
-            }
-            Text(if(lang=="en")t.bodyEn else t.bodyEs,fontWeight=FontWeight.SemiBold)
-        }
-        NoticeCard(tr(lang,"Dibujos originales de YSM Expediente. Base conceptual: Columbia University para planos terminales y definiciones ortodóncicas convencionales para Angle, overjet, overbite y mordida cruzada. Correlaciona con el examen clínico y criterios docentes.","Original YSM Expediente drawings. Conceptual basis: Columbia University for terminal planes and conventional orthodontic definitions for Angle, overjet, overbite and crossbite. Correlate with clinical examination and faculty criteria."))
     }
 }
 
