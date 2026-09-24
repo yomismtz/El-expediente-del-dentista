@@ -241,16 +241,56 @@ private data class E(val n:String,val d:String)
 }
 
 @Composable fun HistorySurgicalTraumaV38(lang:String,onBack:()->Unit){
- val groups=listOf(
-  E("Cirugías","Opciones frecuentes para el interrogatorio: cesárea, apendicectomía, colecistectomía, hernioplastia, amigdalectomía/adenoidectomía, cirugía ortopédica, cirugía maxilofacial/dental, cirugía ginecológica, otra. Registrar tipo, fecha aproximada, complicaciones y secuelas."),
-  E("Hospitalizaciones","Opciones orientadoras: parto/cesárea, neumonía/infección, accidente/trauma, cirugía programada, enfermedad gastrointestinal, descompensación metabólica/cardiovascular, otra. Registrar motivo, año/edad, duración y complicaciones."),
-  E("Partos y cesáreas","Si hubo cesárea, enlazarla también con antecedentes gineco-obstétricos. Registrar número y fecha aproximada; evitar duplicar información contradictoria."),
-  E("Transfusiones sanguíneas","Opciones: nunca / sí una vez / varias / no recuerda. Si sí: motivo, fecha aproximada, reacciones y producto si se conoce."),
-  E("Donación de sangre","Opciones: nunca / sí / no recuerda; registrar última donación aproximada y reacción si existió."),
-  E("Trasplantes","Opciones: ninguno / renal / hepático / cardiaco / pulmonar / médula o células hematopoyéticas / otro. Registrar fecha, inmunosupresión y seguimiento médico."),
-  E("Traumatismos, fracturas y luxaciones","Opciones por región: cráneo/cara, mandíbula/maxilar, dientes, columna, extremidades u otras. Registrar fecha, tratamiento, secuelas y repercusión en oclusión/ATM cuando corresponda.")
- )
- explain("Antecedentes quirúrgicos, hospitalarios y traumáticos",groups,onBack)
+ var section by remember{mutableStateOf("Cirugías")}
+ val chosen=remember{mutableStateMapOf<String,String>()}
+ val sections=listOf("Cirugías","Hospitalizaciones","Transfusiones","Donación de sangre","Trasplantes","Traumatismos")
+ @Composable fun OptionsCard(title:String,options:List<String>,note:String=""){
+  SectionCard(title){options.forEach{x->FilterChip(chosen[title]==x,{chosen[title]=x},{Text(x)},modifier=Modifier.fillMaxWidth())};if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)}
+ }
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
+  item{ScreenHeader("Antecedentes quirúrgicos, hospitalarios y traumáticos",onBack,"Selecciona opciones predeterminadas. El objetivo es registrar antecedentes, antigüedad, complicaciones y secuelas sin inventar información.")}
+  item{sections.forEach{x->FilterChip(section==x,{section=x},{Text(x)},modifier=Modifier.fillMaxWidth())}}
+  if(section=="Cirugías"){
+   item{OptionsCard("Antecedente de cirugía",listOf("Ninguna","Sí, una","Sí, dos","Sí, tres o más","No recuerda"))}
+   item{OptionsCard("Tipo de cirugía",listOf("No aplica","Cesárea","Apendicectomía","Colecistectomía","Hernioplastia","Amigdalectomía/adenoidectomía","Ortopédica","Maxilofacial/dental","Ginecológica","Cardiovascular","Abdominal/digestiva","Otra/no recuerda"))}
+   item{OptionsCard("Antigüedad de cirugía",listOf("<1 mes","1–6 meses","7–12 meses","1–5 años","6–10 años",">10 años","Infancia","No recuerda"))}
+   item{OptionsCard("Complicaciones quirúrgicas",listOf("Ninguna referida","Infección","Hemorragia","Reacción anestésica referida","Problema de cicatrización","Reintervención","Otra complicación","No sabe/no recuerda"))}
+   item{OptionsCard("Secuelas actuales",listOf("Ninguna referida","Dolor","Limitación funcional","Alteración sensitiva","Cicatriz problemática","Otra secuela","No sabe"))}
+  }
+  if(section=="Hospitalizaciones"){
+   item{OptionsCard("Hospitalizaciones previas",listOf("Nunca","1","2","3","4 o más","No recuerda"))}
+   item{OptionsCard("Motivo principal",listOf("No aplica","Cirugía programada","Parto/cesárea","Infección/neumonía","Accidente/trauma","Enfermedad gastrointestinal","Descompensación metabólica","Problema cardiovascular","Problema respiratorio","Otra/no recuerda"))}
+   item{OptionsCard("Antigüedad de hospitalización",listOf("<1 mes","1–6 meses","7–12 meses","1–5 años","6–10 años",">10 años","Infancia","No recuerda"))}
+   item{OptionsCard("Duración aproximada",listOf("<24 horas","1–3 días","4–7 días","8–14 días",">14 días","No recuerda"))}
+   item{OptionsCard("Complicaciones durante hospitalización",listOf("Ninguna referida","Infección","Hemorragia","Ingreso a terapia intensiva","Reintervención","Otra","No sabe/no recuerda"))}
+  }
+  if(section=="Transfusiones"){
+   item{OptionsCard("Transfusiones sanguíneas",listOf("Nunca","Sí, una vez","Sí, varias","No recuerda"))}
+   item{OptionsCard("Motivo de transfusión",listOf("No aplica","Cirugía","Hemorragia/trauma","Parto/cesárea","Anemia/enfermedad hematológica","Tratamiento oncológico","Otro","No recuerda"))}
+   item{OptionsCard("Antigüedad de transfusión",listOf("<1 año","1–5 años","6–10 años",">10 años","Infancia","No recuerda"))}
+   item{OptionsCard("Reacción transfusional referida",listOf("No presentó","Fiebre/escalofríos","Reacción alérgica","Dificultad respiratoria","Otra reacción","No sabe/no recuerda"))}
+  }
+  if(section=="Donación de sangre"){
+   item{OptionsCard("Donación de sangre",listOf("Nunca","Sí, una vez","Sí, varias veces","No recuerda"))}
+   item{OptionsCard("Última donación",listOf("No aplica","<1 mes","1–6 meses","7–12 meses","1–5 años",">5 años","No recuerda"))}
+   item{OptionsCard("Reacción posterior a donación",listOf("No presentó","Mareo/lipotimia","Sangrado prolongado","Malestar general","Otra","No recuerda"))}
+  }
+  if(section=="Trasplantes"){
+   item{OptionsCard("Antecedente de trasplante",listOf("Ninguno","Renal","Hepático","Cardiaco","Pulmonar","Médula/células hematopoyéticas","Otro","No sabe"))}
+   item{OptionsCard("Antigüedad del trasplante",listOf("No aplica","<1 año","1–5 años","6–10 años",">10 años","No recuerda"))}
+   item{OptionsCard("Inmunosupresión referida",listOf("No aplica","Sí actualmente","Antecedente, ya no","No","No sabe"),"Si existe inmunosupresión, debe vincularse con APP y medicamentos referidos.")}
+   item{OptionsCard("Seguimiento médico",listOf("Regular referido","Irregular referido","Sin seguimiento actual","No sabe"))}
+  }
+  if(section=="Traumatismos"){
+   item{OptionsCard("Antecedente de traumatismo/fractura/luxación",listOf("Ninguno","Traumatismo sin fractura","Fractura","Luxación","Más de un tipo","No recuerda"))}
+   item{OptionsCard("Región afectada",listOf("No aplica","Cráneo/cara","Mandíbula/maxilar","Dientes","ATM","Columna","Miembro superior","Miembro inferior","Tórax","Otra/múltiples"))}
+   item{OptionsCard("Antigüedad del trauma",listOf("<1 mes","1–6 meses","7–12 meses","1–5 años","6–10 años",">10 años","Infancia","No recuerda"))}
+   item{OptionsCard("Tratamiento recibido",listOf("No aplica","Observación/reposo","Inmovilización","Reducción","Cirugía","Tratamiento dental","Rehabilitación/fisioterapia","Combinado","No recuerda"))}
+   item{OptionsCard("Secuelas",listOf("Ninguna referida","Dolor","Limitación de movimiento","Alteración de mordida/oclusión","Alteración de ATM","Pérdida/daño dental","Alteración sensitiva","Otra","No sabe"),"Trauma de cara, maxilares, dientes o ATM puede requerir correlación con exploración clínica y estudios auxiliares.")}
+  }
+  item{Button(onClick={},modifier=Modifier.fillMaxWidth()){Text("💾 Guardar antecedentes seleccionados")}}
+  item{NoticeCard("Una cesárea también debe ser congruente con antecedentes gineco-obstétricos. Trasplantes e inmunosupresión deben correlacionarse con APP y medicamentos.")}
+ }
 }
 
 @Composable fun HistoryPhysicalV38(lang:String,onBack:()->Unit)=explain("Exploración física",listOf(
