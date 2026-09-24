@@ -96,7 +96,7 @@ fun AppRootV7(
                         )
                         V7Overlay.HUB -> ExamHubV1Screen(lang,{openOverlay(it)},backPrevious)
                         V7Overlay.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
-                        V7Overlay.HISTORY -> ClinicalHistoryHubV38(lang,{ target ->\n                            when(target){\n                                com.yomismtz.expedientedeldentista.clinical.AppScreen.HISTORY_IDENTIFICATION -> openOverlay(V7Overlay.IDENTIFICATION)\n                                com.yomismtz.expedientedeldentista.clinical.AppScreen.OCCLUSION -> openOverlay(V7Overlay.OCCLUSION)\n                                com.yomismtz.expedientedeldentista.clinical.AppScreen.PERIODONTOGRAM -> openOverlay(V7Overlay.PERIODONTAL)\n                                else -> Unit\n                            }\n                        },backPrevious)
+                        V7Overlay.HISTORY -> ClinicalHistoryFlowV39(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.VITALS -> VitalsInteractiveV19Screen(lang,backPrevious)
                         V7Overlay.ATM -> AtmScreen(lang,backPrevious)
                         V7Overlay.OCCLUSION -> OcclusionInteractiveV19Screen(lang,backPrevious)
