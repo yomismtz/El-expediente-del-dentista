@@ -120,6 +120,7 @@ fun AppRootV3(
             AppScreen.ATM -> AtmScreen(preferences.languageTag, folderBack)
             AppScreen.OCCLUSION -> OcclusionScreen(preferences.languageTag, folderBack)
             AppScreen.MUCOSA -> MucosaScreen(preferences.languageTag, folderBack)
+            AppScreen.CALCULATORS -> DentalCalculatorsV40Screen(lang, onBack) 
             AppScreen.AUXILIARIES -> AuxiliariesInteractiveScreen(preferences.languageTag, folderBack)
             AppScreen.ODONTOGRAM -> OdontogramQuadrantsScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.ICDAS -> IcdasScreen(preferences.languageTag, session, onSessionChanged, folderBack)
