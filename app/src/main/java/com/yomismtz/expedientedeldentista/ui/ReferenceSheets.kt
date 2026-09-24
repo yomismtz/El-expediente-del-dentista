@@ -35,26 +35,91 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
-    val rows = listOf(
-        tr(lang, "Alumno", "Student") to tr(lang, "Quién realiza la actividad clínica.", "Who performs the clinical activity."),
-        tr(lang, "Actividad", "Activity") to tr(lang, "Procedimiento planeado para esa sesión.", "Procedure planned for that session."),
-        tr(lang, "Autorización", "Authorization") to tr(lang, "Aprobación del docente antes de iniciar.", "Instructor approval before starting."),
-        tr(lang, "Actividad realizada", "Activity performed") to tr(lang, "Lo que realmente se realizó, aunque difiera de lo planeado.", "What was actually performed, even if it differs from the plan."),
-        tr(lang, "Supervisión", "Supervision") to tr(lang, "Validación final del docente después del procedimiento.", "Final instructor validation after the procedure.")
+    data class ActivityGuide(
+        val nameEs:String,val nameEn:String,val purposeEs:String,val purposeEn:String,
+        val stepsEs:List<String>,val stepsEn:List<String>,val changesEs:List<String>,val changesEn:List<String>
     )
+    val guides = listOf(
+        ActivityGuide("Restauración con resina","Composite restoration",
+            "Eliminar tejido cariado cuando esté indicado, conservar estructura sana y restaurar forma, función y sellado.","Remove indicated carious tissue, preserve sound structure and restore form, function and seal.",
+            listOf("Confirmar diagnóstico, profundidad y restaurabilidad.","Seleccionar aislamiento y anestesia cuando corresponda.","Remoción selectiva de caries/preparación conservadora.","Protección pulpar sólo si está indicada.","Adhesión, colocación de resina, fotocurado, ajuste oclusal y pulido."),
+            listOf("Confirm diagnosis, depth and restorability.","Select isolation and anesthesia when indicated.","Selective caries removal/conservative preparation.","Pulp protection only when indicated.","Bonding, composite placement, curing, occlusal adjustment and polishing."),
+            listOf("Caries más profunda de lo previsto → detener y reevaluar estado pulpar antes de continuar.","Exposición pulpar en diente vital → no implica automáticamente endodoncia; valorar control de hemorragia, contaminación, madurez y diagnóstico para terapia pulpar vital cuando proceda.","Hallazgos compatibles con pulpitis irreversible o necrosis → cambiar al protocolo pulpar/endodóntico; en dientes temporales puede corresponder pulpotomía o pulpectomía según diagnóstico y caso.","Diente no restaurable, fractura subgingival o pronóstico desfavorable → reevaluar plan; puede requerir cirugía/extracción o referencia.","Contaminación del campo o fallo adhesivo → corregir aislamiento y repetir el paso adhesivo afectado."),
+            listOf("Caries deeper than expected → stop and reassess pulpal status.","Pulp exposure in a vital tooth → does not automatically mean root canal treatment; assess bleeding control, contamination, maturity and diagnosis for vital pulp therapy when indicated.","Findings compatible with irreversible pulpitis or necrosis → move to pulpal/endodontic protocol; in primary teeth pulpotomy or pulpectomy may be indicated according to diagnosis.","Non-restorable tooth/subgingival fracture/poor prognosis → reassess plan; surgery, extraction or referral may be required.","Field contamination or bonding failure → correct isolation and repeat the affected bonding step.")
+        ),
+        ActivityGuide("Sellador de fosetas y fisuras","Pit and fissure sealant","Prevenir o controlar lesiones oclusales no cavitadas seleccionadas mediante sellado.","Prevent or control selected non-cavitated occlusal lesions by sealing.",
+            listOf("Valorar riesgo de caries y superficie.","Limpiar y aislar.","Grabar, lavar y secar según material.","Aplicar sellador, fotocurar y revisar retención/oclusión."),
+            listOf("Assess caries risk and surface.","Clean and isolate.","Etch, rinse and dry according to material.","Apply sealant, cure and check retention/occlusion."),
+            listOf("Cavitación o dentina comprometida → deja de ser un caso de sellador simple; valorar restauración.","Contaminación salival antes del curado → reacondicionar según protocolo del material.","Pérdida parcial de sellador → reparar o reemplazar tras reevaluación."),
+            listOf("Cavitation/dentin involvement → no longer a simple sealant case; assess restoration.","Salivary contamination before curing → recondition according to material protocol.","Partial sealant loss → repair or replace after reassessment.")
+        ),
+        ActivityGuide("Profilaxis e higiene oral","Prophylaxis and oral hygiene","Eliminar depósitos blandos y enseñar control de placa individualizado.","Remove soft deposits and teach individualized plaque control.",
+            listOf("Revelado/valoración de placa cuando proceda.","Instrucción de cepillado e higiene interdental.","Profilaxis selectiva y reevaluación."),
+            listOf("Plaque assessment/disclosing when indicated.","Brushing and interdental hygiene instruction.","Selective prophylaxis and reassessment."),
+            listOf("Cálculo supra/subgingival significativo → pasar a valoración periodontal y raspado según diagnóstico.","Sangrado importante, bolsas o movilidad → completar examen periodontal antes de limitarse a profilaxis."),
+            listOf("Significant supra/subgingival calculus → periodontal assessment and scaling according to diagnosis.","Marked bleeding, pockets or mobility → complete periodontal examination rather than prophylaxis alone.")
+        ),
+        ActivityGuide("Raspado y alisado radicular","Scaling and root planing","Controlar depósitos y factores retentivos en enfermedad periodontal según diagnóstico.","Control deposits and retentive factors in periodontal disease according to diagnosis.",
+            listOf("Periodontograma y diagnóstico periodontal.","Planificar cuadrantes/sesiones y control de dolor.","Instrumentación supra y subgingival indicada.","Reevaluación periodontal."),
+            listOf("Periodontal chart and diagnosis.","Plan quadrants/sessions and pain control.","Indicated supra- and subgingival instrumentation.","Periodontal reevaluation."),
+            listOf("Absceso, supuración o dolor agudo → valorar manejo de urgencia antes de continuar electivamente.","Movilidad avanzada/defecto complejo → reevaluar pronóstico y posible referencia periodontal.","Persistencia de bolsas tras fase inicial → reevaluación para tratamiento periodontal adicional."),
+            listOf("Abscess, suppuration or acute pain → assess urgent management before elective continuation.","Advanced mobility/complex defect → reassess prognosis and possible periodontal referral.","Persistent pockets after initial therapy → reassess for additional periodontal treatment.")
+        ),
+        ActivityGuide("Extracción dental","Dental extraction","Retirar un órgano dentario cuando exista indicación y el diagnóstico/plan lo justifiquen.","Remove a tooth when an indication exists and diagnosis/treatment plan justify it.",
+            listOf("Confirmar indicación, radiografía, antecedentes y consentimiento.","Anestesia y técnica de extracción adecuada.","Inspección del alveolo, hemostasia e indicaciones postoperatorias."),
+            listOf("Confirm indication, radiograph, history and consent.","Anesthesia and appropriate extraction technique.","Socket inspection, hemostasis and postoperative instructions."),
+            listOf("Fractura radicular → localizar y decidir recuperación o referencia según riesgo anatómico.","Hemorragia persistente → medidas locales, reevaluación médica y escalamiento según gravedad.","Comunicación oroantral/sospecha de lesión anatómica → suspender maniobras no indicadas y activar manejo/referencia."),
+            listOf("Root fracture → locate and decide retrieval or referral according to anatomic risk.","Persistent bleeding → local measures, medical reassessment and escalation according to severity.","Oroantral communication/suspected anatomic injury → stop inappropriate manipulation and initiate management/referral.")
+        ),
+        ActivityGuide("Pulpotomía","Pulpotomy","Terapia pulpar vital indicada para conservar tejido radicular vital cuando el diagnóstico y el tipo de diente lo permiten.","Vital pulp therapy intended to preserve vital radicular tissue when diagnosis and tooth type allow.",
+            listOf("Confirmar diagnóstico pulpar y periapical.","Aislamiento absoluto y acceso.","Retirar tejido coronal indicado y valorar hemostasia.","Material/protocolo correspondiente y restauración con buen sellado."),
+            listOf("Confirm pulpal and periapical diagnosis.","Rubber dam isolation and access.","Remove indicated coronal tissue and assess hemostasis.","Appropriate material/protocol and well-sealed restoration."),
+            listOf("Hemorragia que no se controla en tiempo clínicamente razonable o signos de inflamación radicular → reevaluar indicación; puede requerir pulpectomía/endodoncia o extracción según diente y caso.","Necrosis, supuración o lesión periapical incompatible con terapia vital → no continuar como pulpotomía."),
+            listOf("Bleeding not controlled within a clinically reasonable period or signs of radicular inflammation → reassess indication; pulpectomy/root canal treatment or extraction may be needed depending on tooth/case.","Necrosis, suppuration or periapical disease incompatible with vital therapy → do not continue as pulpotomy.")
+        ),
+        ActivityGuide("Pulpectomía / tratamiento endodóntico","Pulpectomy / root canal treatment","Eliminar tejido pulpar infectado o necrótico, desinfectar y sellar el sistema de conductos según indicación.","Remove infected/necrotic pulp tissue, disinfect and seal the root canal system when indicated.",
+            listOf("Diagnóstico pulpar/periapical y radiografías.","Aislamiento absoluto y acceso.","Conductometría, preparación, irrigación segura y control del conducto.","Obturación indicada y restauración coronal."),
+            listOf("Pulpal/periapical diagnosis and radiographs.","Rubber dam isolation and access.","Working length, preparation, safe irrigation and canal control.","Indicated obturation and coronal restoration."),
+            listOf("Anatomía compleja, instrumento separado, perforación o imposibilidad de negociación → detener, informar y valorar referencia endodóntica.","Exudado persistente o síntomas agudos → no forzar obturación; reevaluar diagnóstico y control de infección.","Diente temporal próximo a exfoliación o sin pronóstico restaurador → reconsiderar pulpectomía frente a extracción/manejo del espacio."),
+            listOf("Complex anatomy, separated instrument, perforation or inability to negotiate canal → stop, disclose and assess endodontic referral.","Persistent exudate or acute symptoms → do not force obturation; reassess diagnosis and infection control.","Primary tooth near exfoliation or without restorative prognosis → reconsider pulpectomy versus extraction/space management.")
+        ),
+        ActivityGuide("Toma de impresión","Dental impression","Obtener una reproducción adecuada de dientes y tejidos para el procedimiento indicado.","Obtain an adequate reproduction of teeth and tissues for the intended procedure.",
+            listOf("Seleccionar cubeta y material.","Probar cubeta y preparar al paciente.","Manipular material respetando proporciones/tiempo.","Retirar, revisar, desinfectar y manejar según material."),
+            listOf("Select tray and material.","Try tray and prepare patient.","Mix material respecting ratio/time.","Remove, inspect, disinfect and handle according to material."),
+            listOf("Vacíos, arrastres o zonas críticas incompletas → repetir impresión.","Reflejo nauseoso intenso → ajustar posición/técnica y cantidad de material; suspender si compromete seguridad.","Material separado de cubeta → revisar adhesión/retención y repetir."),
+            listOf("Voids, pulls or missing critical areas → repeat impression.","Severe gag reflex → adjust position/technique and material amount; stop if safety is compromised.","Material separated from tray → review adhesion/retention and repeat.")
+        )
+    )
+    var selected by remember { mutableStateOf(0) }
+    val g = guides[selected]
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { ScreenHeader(tr(lang, "Autorización y registro de actividades", "Activity authorization and record"), onBack,
-            tr(lang, "Esta hoja enseña la diferencia entre lo planeado, autorizado, realmente realizado y supervisado.", "This sheet teaches the difference between planned, authorized, actually performed and supervised work.")) }
+        item { ScreenHeader(tr(lang,"Autorización y registro de actividades","Activity authorization and record"),onBack,
+            tr(lang,"Selecciona una actividad para estudiar qué se planea, cómo se realiza y qué hallazgos pueden obligar a cambiar el procedimiento.","Select an activity to study what is planned, how it is performed and which findings may require changing the procedure.")) }
         item {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(tr(lang, "REGISTRO DE ACTIVIDADES", "ACTIVITY RECORD"), fontWeight = FontWeight.Bold)
-                    Text("Alumno | Actividad | Autorización | Actividad realizada | Supervisión")
-                    repeat(5) { Text("________ | ________ | ________ | ________ | ________") }
+            SectionCard(tr(lang,"1 · Actividad planeada","1 · Planned activity")) {
+                Column(verticalArrangement=Arrangement.spacedBy(7.dp)) {
+                    guides.forEachIndexed { i,a ->
+                        FilterChip(selected==i,{selected=i},{Text(if(lang=="en") a.nameEn else a.nameEs)},modifier=Modifier.fillMaxWidth())
+                    }
                 }
             }
         }
-        items(rows.size) { index -> SectionCard(rows[index].first) { Text(rows[index].second) } }
+        item { SectionCard(tr(lang,"2 · ¿En qué consiste?","2 · What does it involve?")) { Text(if(lang=="en")g.purposeEn else g.purposeEs) } }
+        item { SectionCard(tr(lang,"3 · Secuencia clínica educativa","3 · Educational clinical sequence")) {
+            Column(verticalArrangement=Arrangement.spacedBy(7.dp)) { (if(lang=="en")g.stepsEn else g.stepsEs).forEachIndexed{i,s->Text("${i+1}. $s")} }
+        } }
+        item {
+            Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) {
+                Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                    Text("⚠️ "+tr(lang,"4 · Si encuentro esto, ¿a qué actividad puede cambiar?","4 · If I find this, what can the activity change to?"),fontWeight=FontWeight.Bold)
+                    (if(lang=="en")g.changesEn else g.changesEs).forEach { Text("• $it") }
+                    Text(tr(lang,"El cambio se decide por diagnóstico y supervisión clínica; una complicación aislada no determina automáticamente un procedimiento.","The change is based on diagnosis and clinical supervision; an isolated complication does not automatically determine a procedure."),style=MaterialTheme.typography.bodySmall)
+                }
+            }
+        }
+        item { SectionCard(tr(lang,"5 · Autorización y supervisión","5 · Authorization and supervision")) {
+            Text(tr(lang,"Antes de iniciar: el docente valida diagnóstico, actividad planeada y condiciones de seguridad. Si durante el procedimiento cambia el diagnóstico o el plan, se solicita una nueva autorización antes de continuar. Al finalizar se registra la actividad realmente realizada y la supervisión final.","Before starting: the instructor validates diagnosis, planned activity and safety conditions. If diagnosis or plan changes during treatment, new authorization is obtained before continuing. At the end, record the activity actually performed and final supervision."))
+        } }
     }
 }
 
