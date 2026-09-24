@@ -46,19 +46,47 @@ private data class ExplainField(val n:String,val why:String,val examples:String)
   items(fields.size){i->val f=fields[i];Card(onClick={open=if(open==i)null else i},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(15.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){Text(f.n,fontWeight=FontWeight.Bold);if(open==i){Text("Por qué importa: "+f.why);Text("Ejemplos: "+f.examples)}else Text("Toca para ver explicación y ejemplos",style=MaterialTheme.typography.bodySmall)}}}
  }
 }
-@Composable fun TreatmentRequestTeachingV41(lang:String,onBack:()->Unit)=ExplainedAdministrativeSheet("Solicitud de tratamiento","Cada apartado explica qué debe registrar el alumno y por qué es necesario para una solicitud clara.",listOf(
- ExplainField("Servicios solicitados","Define exactamente qué atención, estudio o intervención se está solicitando y evita referencias ambiguas.","valoración endodóntica; extracción; rehabilitación protésica; estudio radiográfico; valoración periodontal."),
- ExplainField("Motivo","Relaciona la solicitud con el problema clínico que la origina.","dolor persistente; lesión cariosa profunda; diente no restaurable; necesidad de valoración especializada."),
- ExplainField("Área u órgano dentario","Evita confundir el sitio y permite relacionar solicitud, diagnóstico e imagen.","OD 36; región posterior superior derecha; ATM derecha; mucosa de carrillo izquierdo."),
- ExplainField("Prioridad","Permite distinguir atención inmediata/urgente de la programable según el escenario clínico.","urgente; prioritaria; programable; control."),
- ExplainField("Responsable","Identifica quién solicita o realiza el procedimiento dentro del flujo clínico.","alumno responsable; operador; servicio receptor."),
- ExplainField("Supervisión","Documenta al docente/profesional que revisa o autoriza la actividad cuando corresponde.","docente supervisor; firma/autorización institucional; servicio responsable.")
-),onBack)
-@Composable fun BudgetTeachingV41(lang:String,onBack:()->Unit)=ExplainedAdministrativeSheet("Presupuesto","Estructura educativa del presupuesto. No registra cobros reales.",listOf(
- ExplainField("Procedimiento","Relaciona el costo con una actividad identificable del plan.","resina; corona; prótesis; estudio auxiliar."),
- ExplainField("Cantidad","Indica cuántas unidades del procedimiento o material se consideran.","1 corona; 2 restauraciones; 1 estudio."),
- ExplainField("Costo unitario","Permite conocer el importe de una unidad antes de multiplicarlo por la cantidad.","importe institucional por una restauración o procedimiento."),
- ExplainField("Subtotal","Muestra el resultado de cantidad × costo unitario por concepto.","2 × costo unitario = subtotal del concepto."),
- ExplainField("Laboratorio cuando proceda","Separa costos externos o de laboratorio cuando el procedimiento los requiere.","corona, prótesis removible, aparato, férula."),
- ExplainField("Total","Suma los subtotales y conceptos aplicables para presentar el importe global de forma comprensible.","suma final del plan presupuestado.")
-),onBack)
+@Composable fun TreatmentRequestTeachingV41(lang:String,onBack:()->Unit){
+ var service by remember{mutableStateOf("Valoración")}
+ var site by remember{mutableStateOf("Órgano dentario")}
+ var priority by remember{mutableStateOf("Programable")}
+ var reason by remember{mutableStateOf("Dolor / síntomas")}
+ var destination by remember{mutableStateOf("Clínica integral")}
+ val services=listOf("Valoración","Estudio radiográfico","Endodoncia","Periodoncia","Cirugía / extracción","Restauración","Prótesis","Ortodoncia","Medicina bucal")
+ val sites=listOf("Órgano dentario","Cuadrante","Arcada","Región periapical","Periodonto","Mucosa oral","ATM","Maxilar / mandíbula")
+ val priorities=listOf("Urgente","Prioritaria","Programable","Control")
+ val reasons=listOf("Dolor / síntomas","Hallazgo clínico","Hallazgo radiográfico","Lesión de tejidos blandos","Pérdida dental","Alteración periodontal","Alteración oclusal","Continuidad de tratamiento")
+ val destinations=listOf("Clínica integral","Endodoncia","Periodoncia","Cirugía","Prótesis","Ortodoncia","Radiología","Patología / medicina bucal")
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
+  item{ScreenHeader("Solicitud de tratamiento",onBack,"Selecciona los datos; la app construye una solicitud educativa sin redacción libre.")}
+  item{SectionCard("1 · Servicio solicitado"){services.forEach{FilterChip(service==it,{service=it},{Text(it)},Modifier.fillMaxWidth())}}}
+  item{SectionCard("2 · Sitio o estructura"){sites.forEach{FilterChip(site==it,{site=it},{Text(it)},Modifier.fillMaxWidth())}}}
+  item{SectionCard("3 · Motivo"){reasons.forEach{FilterChip(reason==it,{reason=it},{Text(it)},Modifier.fillMaxWidth())}}}
+  item{SectionCard("4 · Prioridad"){Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(5.dp)){priorities.forEach{FilterChip(priority==it,{priority=it},{Text(it)},Modifier.weight(1f))}}}}
+  item{SectionCard("5 · Servicio receptor"){destinations.forEach{FilterChip(destination==it,{destination=it},{Text(it)},Modifier.fillMaxWidth())}}}
+  item{SectionCard("Solicitud generada"){Text("Se solicita $service para $site por $reason. Prioridad: $priority. Servicio receptor: $destination. La autorización y supervisión deberán documentarse conforme al formato institucional.",fontWeight=FontWeight.Bold)}}
+  item{NoticeCard("La solicitud no sustituye diagnóstico, consentimiento, indicación clínica ni autorización del docente/profesional responsable.")}
+ }
+}
+
+@Composable fun BudgetTeachingV41(lang:String,onBack:()->Unit){
+ var procedure by remember{mutableStateOf("Valoración")}
+ var qty by remember{mutableStateOf(1)}
+ var costBand by remember{mutableStateOf("Por cotizar")}
+ var lab by remember{mutableStateOf("No aplica")}
+ var status by remember{mutableStateOf("Borrador")}
+ val procedures=listOf("Valoración","Radiografía / imagen","Profilaxis","Restauración","Endodoncia","Extracción","Corona","Prótesis removible","Férula / aparato","Otro concepto institucional")
+ val costs=listOf("Por cotizar","Tarifa institucional baja","Tarifa institucional media","Tarifa institucional alta")
+ val labs=listOf("No aplica","Incluido","Laboratorio por separado","Pendiente de cotización")
+ val states=listOf("Borrador","Explicado al paciente","Pendiente de autorización","Autorizado","Requiere actualización")
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
+  item{ScreenHeader("Presupuesto",onBack,"Ejercicio educativo sin cobros reales. Todo se selecciona mediante opciones predefinidas.")}
+  item{SectionCard("1 · Procedimiento"){procedures.forEach{FilterChip(procedure==it,{procedure=it},{Text(it)},Modifier.fillMaxWidth())}}}
+  item{SectionCard("2 · Cantidad"){Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){(1..5).forEach{FilterChip(qty==it,{qty=it},{Text(it.toString())})}}}}
+  item{SectionCard("3 · Costo institucional"){costs.forEach{FilterChip(costBand==it,{costBand=it},{Text(it)},Modifier.fillMaxWidth())};Text("La app no inventa precios: el importe monetario debe provenir del tarifario autorizado de la institución.")}}
+  item{SectionCard("4 · Laboratorio"){labs.forEach{FilterChip(lab==it,{lab=it},{Text(it)},Modifier.fillMaxWidth())}}}
+  item{SectionCard("5 · Estado"){states.forEach{FilterChip(status==it,{status=it},{Text(it)},Modifier.fillMaxWidth())}}}
+  item{SectionCard("Resumen"){Text("$qty × $procedure · Costo: $costBand · Laboratorio: $lab · Estado: $status",fontWeight=FontWeight.Bold)}}
+  item{NoticeCard("Presupuesto educativo. El total monetario real debe calcularse con precios institucionales vigentes y conceptos efectivamente autorizados.")}
+ }
+}
