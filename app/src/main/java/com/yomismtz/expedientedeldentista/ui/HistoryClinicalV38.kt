@@ -204,25 +204,39 @@ private data class E(val n:String,val d:String)
 }
 
 @Composable fun HistoryGynecoV38(lang:String,onBack:()->Unit){
- var sex by remember{mutableStateOf("")};var open by remember{mutableStateOf<Int?>(null)}
- val q=listOf(
-  E("Menarca","Primera menstruación. Opciones educativas: aún no presenta / edad 8–9 / 10–11 / 12–13 / 14–15 / 16 o más / no recuerda. Se pregunta para contextualizar maduración y etapa reproductiva; una edad aislada no establece enfermedad."),
-  E("Inicio de vida sexual activa (IVSA)","Opciones: no ha iniciado / edad al inicio por intervalos / prefiere no responder / no recuerda. Es información confidencial y se pregunta sólo con pertinencia clínica, respeto y privacidad."),
-  E("Embarazos (gestas)","Opciones: 0 / 1 / 2 / 3 / 4 / 5 o más. El número de gestas permite organizar después partos, cesáreas, abortos y embarazo actual."),
-  E("Partos vaginales","Opciones: 0 / 1 / 2 / 3 / 4 / 5 o más. Debe ser congruente con el total de gestas."),
-  E("Cesáreas","Opciones: 0 / 1 / 2 / 3 / 4 / 5 o más. Una cesárea también cuenta como antecedente quirúrgico y debe aparecer en ese apartado."),
-  E("Abortos / pérdidas gestacionales","Opciones: 0 / 1 / 2 / 3 o más / prefiere no responder. Registrar sin juicios y ampliar sólo cuando sea clínicamente pertinente."),
-  E("Fecha de última menstruación (FUM)","Opciones: fecha conocida / no recuerda / ciclos irregulares / amenorrea / menopausia. Ayuda a contextualizar posibilidad de embarazo y etapa reproductiva."),
-  E("Embarazo actual","Opciones: no / sí y semanas de gestación / posible-no confirmado / no sabe. Si es positivo, registrar semanas y control prenatal referido."),
-  E("Anticoncepción","Opciones: ninguno / barrera / hormonal oral / inyectable / implante / DIU / esterilización / otro. Registrar método referido, no inferirlo."),
-  E("Lactancia","Opciones: no / sí actualmente / antecedente. Puede ser relevante para selección de medicamentos cuando exista tratamiento."),
-  E("Menopausia","Opciones: no aplica / sí y edad aproximada / no recuerda. Contextualiza etapa hormonal y antecedentes generales.")
- )
+ var sex by remember{mutableStateOf("")}
+ val chosen=remember{mutableStateMapOf<String,String>()}
+ val nums=listOf("0","1","2","3","4","5 o más")
+ @Composable fun OptionsCard(title:String,options:List<String>,note:String=""){
+  SectionCard(title){
+   options.forEach{x->FilterChip(chosen[title]==x,{chosen[title]=x},{Text(x)},modifier=Modifier.fillMaxWidth())}
+   if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)
+  }
+ }
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Antecedentes gineco-obstétricos",onBack,"El estudiante selecciona opciones predeterminadas y puede abrir cada concepto para aprender qué significa y por qué se pregunta.")}
+  item{ScreenHeader("Antecedentes gineco-obstétricos",onBack,"Registro educativo con opciones predeterminadas. Primero selecciona sexo; el interrogatorio gineco-obstétrico sólo se despliega cuando corresponde.")}
   item{Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(sex=="H",{sex="H"},{Text("Hombre")});FilterChip(sex=="M",{sex="M"},{Text("Mujer")})}}
-  if(sex=="H")item{NoticeCard("No aplica este interrogatorio gineco-obstétrico.")}
-  if(sex=="M")items(q.size){i->val x=q[i];Card(onClick={open=if(open==i)null else i},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp)){Text(x.n,fontWeight=FontWeight.Bold);if(open==i)Text(x.d)else Text("Toca para ver significado, opciones y utilidad clínica",style=MaterialTheme.typography.bodySmall)}}}
+  if(sex=="H")item{NoticeCard("No aplica el interrogatorio gineco-obstétrico. No se solicitan ni despliegan estos campos.")}
+  if(sex=="M"){
+   item{OptionsCard("Menarca",listOf("Aún no presenta","8–9 años","10–11 años","12–13 años","14–15 años","16 años o más","No recuerda"),"Menarca = primera menstruación. Se registra la edad referida; una edad aislada no establece diagnóstico.")}
+   item{OptionsCard("Inicio de vida sexual activa (IVSA)",listOf("No ha iniciado","Antes de 15 años","15–17 años","18–20 años","21–25 años","26 años o más","Prefiere no responder","No recuerda"),"Dato confidencial; registrar sólo lo referido por la paciente.")}
+   item{OptionsCard("Embarazos / gestas",nums,"Número total de embarazos referidos, independientemente de su desenlace.")}
+   item{OptionsCard("Partos vaginales",nums)}
+   item{OptionsCard("Cesáreas",nums,"Las cesáreas también deben considerarse en antecedentes quirúrgicos.")}
+   item{OptionsCard("Abortos / pérdidas gestacionales",listOf("0","1","2","3","4 o más","Prefiere no responder"),"Registrar sin juicios. La suma de desenlaces debe revisarse contra el número de gestas; la app no inventa datos faltantes.")}
+   item{OptionsCard("Tipo de pérdida/aborto referido",listOf("No aplica","Espontáneo","Inducido referido","Ambos antecedentes","No especificado","Prefiere no responder"),"Sólo se registra lo que la paciente refiere; no inferir causa ni circunstancia.")}
+   item{OptionsCard("Fecha de última menstruación (FUM)",listOf("Menos de 1 semana","1–2 semanas","3–4 semanas","1–2 meses","3–6 meses","Más de 6 meses","No recuerda","Amenorrea","Menopausia"),"Selección por intervalo para evitar escritura libre en este módulo educativo.")}
+   item{OptionsCard("Regularidad del ciclo",listOf("Regular referido","Irregular referido","Amenorrea","Menopausia","No sabe/no recuerda"))}
+   item{OptionsCard("Duración habitual del ciclo",listOf("Menos de 21 días","21–24 días","25–35 días","Más de 35 días","Variable","No sabe/no recuerda"))}
+   item{OptionsCard("Duración del sangrado",listOf("1–2 días","3–7 días","8 días o más","Variable","No sabe/no recuerda"))}
+   item{OptionsCard("Embarazo actual",listOf("No","Sí confirmado referido","Posible/no confirmado","No sabe","Prefiere no responder"),"Si existe embarazo actual, se registra la edad gestacional y el control prenatal referidos.")}
+   item{OptionsCard("Semanas de gestación",listOf("No aplica","1–4","5–8","9–12","13–16","17–20","21–24","25–28","29–32","33–36","37–40","Más de 40","No sabe"))}
+   item{OptionsCard("Control prenatal",listOf("No aplica","Sí","No","Aún no inicia","No sabe"))}
+   item{OptionsCard("Método anticonceptivo",listOf("Ninguno","Condón/barrera","Anticonceptivo oral","Inyectable hormonal","Implante subdérmico","DIU de cobre","DIU hormonal","Parche","Anillo vaginal","Esterilización","Otro método referido","Prefiere no responder"),"Registrar el método referido; no inferir eficacia, adherencia ni indicación.")}
+   item{OptionsCard("Lactancia",listOf("No","Sí actualmente","Antecedente de lactancia","No aplica","Prefiere no responder"),"Puede ser relevante al revisar medicamentos y tratamiento odontológico.")}
+   item{OptionsCard("Menopausia",listOf("No","Sí: antes de 40 años","Sí: 40–44 años","Sí: 45–49 años","Sí: 50–54 años","Sí: 55 años o más","No recuerda","No aplica"),"Registrar edad aproximada referida, sin diagnosticar a partir de este dato.")}
+   item{NoticeCard("Congruencia obstétrica: gestas = total de embarazos. Partos, cesáreas y pérdidas describen desenlaces; si las cantidades no concuerdan, el estudiante debe revisar el interrogatorio en vez de completar datos automáticamente.")}
+  }
  }
 }
 
