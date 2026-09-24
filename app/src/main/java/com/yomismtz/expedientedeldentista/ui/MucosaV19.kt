@@ -3,6 +3,7 @@ package com.yomismtz.expedientedeldentista.ui
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -69,6 +73,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
     var symptoms by remember{mutableStateOf("Asintomática")}
     var duration by remember{mutableStateOf("No referido")}
     var evolution by remember{mutableStateOf("No referida")}
+    var lesionHelp by remember{mutableStateOf(false)}
     var count by remember{mutableStateOf("Única")}
     val selected=zones19.first{it.id==selectedId}
     val name=if(lang=="en")selected.en else selected.es
@@ -92,6 +97,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
             Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) { Text(detail,Modifier.padding(12.dp)) }
         }
         ResponsiveSectionV17(tr(lang,"2 · Registro rápido","2 · Quick description")) {
+            Button(onClick={lesionHelp=true},modifier=Modifier.fillMaxWidth()){Text("❓ Ayuda · Lesiones elementales de mucosa oral")}
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(7.dp)) {
                 listOf("Normal","Úlcera","Placa blanca","Placa roja","Eritema","Aumento de volumen","Pigmentación","Vesícula","Fístula","Masa").forEach { f -> FilterChip(finding==f,{finding=f},{Text(f)}) }
             }
@@ -116,6 +122,42 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 Text(tr(lang,"¿Qué escribo en el expediente?","What do I write in the record?"),fontWeight=FontWeight.Black)
                 Text(example)
             }
+        }
+
+        if(lesionHelp){
+            val elementary=listOf(
+                "Mácula / mancha" to "Cambio circunscrito de color, plano y no palpable.",
+                "Eritema" to "Enrojecimiento de la mucosa por aumento visible de la vascularidad; describir distribución y contexto.",
+                "Petequia" to "Punto hemorrágico pequeño, rojo a violáceo, que no desaparece a la presión.",
+                "Púrpura / equimosis" to "Extravasación sanguínea mayor que una petequia; la equimosis es una zona hemorrágica más extensa.",
+                "Pápula" to "Elevación sólida, pequeña y circunscrita.",
+                "Placa" to "Lesión elevada o engrosada, de superficie relativamente amplia; puede ser blanca, roja o mixta.",
+                "Nódulo" to "Lesión sólida palpable, más profunda o voluminosa que una pápula.",
+                "Tumor / masa" to "Aumento de volumen sólido; término descriptivo y no sinónimo automático de cáncer.",
+                "Vesícula" to "Elevación pequeña con contenido líquido.",
+                "Ampolla / bula" to "Elevación con contenido líquido de mayor tamaño que una vesícula.",
+                "Pústula" to "Elevación circunscrita con contenido purulento.",
+                "Quiste" to "Cavidad patológica revestida, habitualmente con contenido líquido o semisólido; suele requerir correlación clínica/radiográfica o histológica.",
+                "Erosión" to "Pérdida superficial del epitelio, sin exposición profunda del tejido conjuntivo.",
+                "Úlcera" to "Pérdida del epitelio con exposición del tejido conjuntivo; describir fondo, bordes, dolor e induración.",
+                "Fisura / grieta" to "Hendidura lineal de la superficie mucosa.",
+                "Costra" to "Material seco de exudado o sangre; es más habitual en piel o bermellón que dentro de la mucosa húmeda.",
+                "Escama" to "Lámina de queratina desprendida; principalmente observable en superficies queratinizadas/piel.",
+                "Atrofia" to "Adelgazamiento epitelial que puede dar aspecto liso o eritematoso.",
+                "Queratosis" to "Engrosamiento queratósico clínicamente blanquecino; es una descripción, no una etiología.",
+                "Vegetación / lesión papilar" to "Crecimiento exofítico con superficie papilar, verrugosa o digitiforme.",
+                "Fístula / trayecto sinusal" to "Conducto de drenaje hacia la superficie; buscar el origen clínico.",
+                "Trauma" to "Mecanismo o antecedente, no lesión elemental. Puede producir erosión, úlcera, hematoma, fisura u otras lesiones.",
+                "Edema" to "Aumento de volumen por acumulación de líquido en tejidos.",
+                "Hematoma" to "Colección localizada de sangre en tejidos, generalmente relacionada con trauma o sangrado.",
+                "Pigmentación" to "Cambio de color por pigmento endógeno o exógeno; describir color, patrón, extensión y evolución."
+            )
+            AlertDialog(onDismissRequest={lesionHelp=false},confirmButton={TextButton(onClick={lesionHelp=false}){Text("Cerrar")}},title={Text("Lesiones elementales · ayuda rápida")},text={
+                Column(Modifier.height(460.dp).verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(8.dp)){
+                    Text("Toca esta ayuda cuando necesites recordar qué estás observando. Primero describe la lesión; después se integra el diagnóstico.",fontWeight=FontWeight.Bold)
+                    elementary.forEach{(n,d)->Card(Modifier.fillMaxWidth()){Column(Modifier.padding(9.dp)){Text(n,fontWeight=FontWeight.Black);Text(d)}}}
+                }
+            })
         }
         NoticeCard(tr(lang,"Describe antes de diagnosticar. Lesiones persistentes, induradas, ulceradas sin causa clara, masas o crecimiento requieren supervisión docente/profesional y seguimiento.","Describe before diagnosing. Persistent, indurated, unexplained ulcerated lesions, masses or growth require faculty/professional assessment and follow-up."))
     }
