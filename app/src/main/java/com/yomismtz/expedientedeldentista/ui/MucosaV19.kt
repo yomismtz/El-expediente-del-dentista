@@ -157,7 +157,9 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
             )
             AlertDialog(onDismissRequest={lesionHelp=false},confirmButton={TextButton(onClick={lesionHelp=false}){Text("Cerrar")}},title={Text("Lesiones elementales · ayuda rápida")},text={
                 Column(Modifier.height(460.dp).verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(8.dp)){
-                    Text("Toca esta ayuda cuando necesites recordar qué estás observando. Primero describe la lesión; después se integra el diagnóstico.",fontWeight=FontWeight.Bold)\n                    Image(painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),contentDescription="Ilustración de lesiones elementales de mucosa oral",modifier=Modifier.fillMaxWidth().height(360.dp),contentScale=ContentScale.Fit)\n                    Text("Ilustración educativa de referencia: compara el aspecto general; no sustituye la exploración clínica ni confirma diagnósticos.",style=MaterialTheme.typography.bodySmall)
+                    Text("Toca esta ayuda cuando necesites recordar qué estás observando. Primero describe la lesión; después se integra el diagnóstico.",fontWeight=FontWeight.Bold)
+                    Image(painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),contentDescription="Ilustración de lesiones elementales de mucosa oral",modifier=Modifier.fillMaxWidth().height(360.dp),contentScale=ContentScale.Fit)
+                    Text("Ilustración educativa de referencia: compara el aspecto general; no sustituye la exploración clínica ni confirma diagnósticos.",style=MaterialTheme.typography.bodySmall)
                     elementary.forEach{(n,d)->Card(Modifier.fillMaxWidth()){Column(Modifier.padding(9.dp)){Text(n,fontWeight=FontWeight.Black);Text(d)}}}
                 }
             })
