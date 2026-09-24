@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 internal fun GynecoObstetricGuideV52Screen(lang: String, onBack: () -> Unit) {
     var openTopic by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
+    var applies by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<Boolean?>(null) }
     val contraception = listOf(
         Triple("Combinado oral", "Combined oral contraceptive", "Tabletas con estrógeno y progestágeno. Se toman siguiendo el esquema del producto y requieren valorar antecedentes y contraindicaciones."),
         Triple("Píldora de progestágeno", "Progestin-only pill", "Tableta sin estrógeno. Se usa diariamente y la regularidad de la toma es especialmente importante."),
@@ -37,6 +38,34 @@ internal fun GynecoObstetricGuideV52Screen(lang: String, onBack: () -> Unit) {
         onBack
     ) { profile ->
         NoticeCard(tr(lang, "Este módulo enseña a llenar el apartado. Practica una redacción objetiva y registra sólo lo que la persona refiera; no infieras diagnósticos.", "This module teaches how to complete the section. Practice objective wording and record only what the person reports; do not infer diagnoses."))
+        ResponsiveSectionV17(tr(lang, "¿Este apartado aplica?", "Does this section apply?")) {
+            Text(tr(lang, "En este formato educativo, si el paciente es hombre selecciona «No aplica» y no se llena el interrogatorio gineco-obstétrico. Si la paciente es mujer, selecciona «Sí aplica» para estudiar y completar los campos correspondientes.", "In this educational form, if the patient is male select “Not applicable” and do not complete the gynecologic-obstetric interview. If the patient is female, select “Applies” to study and complete the corresponding fields."))
+            androidx.compose.foundation.layout.Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                androidx.compose.material3.FilterChip(
+                    selected = applies == false,
+                    onClick = { applies = false },
+                    label = { Text(tr(lang, "Hombre · No aplica", "Male · Not applicable")) },
+                    modifier = Modifier.weight(1f)
+                )
+                androidx.compose.material3.FilterChip(
+                    selected = applies == true,
+                    onClick = { applies = true },
+                    label = { Text(tr(lang, "Mujer · Sí aplica", "Female · Applies")) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+        if (applies == false) {
+            NoticeCard(tr(lang, "Registro educativo: antecedentes gineco-obstétricos — No aplica. No es necesario llenar los campos siguientes.", "Teaching record: gynecologic-obstetric history — Not applicable. The following fields do not need to be completed."))
+            return@ResponsiveScreenV17
+        }
+        if (applies == null) {
+            NoticeCard(tr(lang, "Selecciona primero si el apartado aplica para continuar con el interrogatorio.", "First select whether this section applies to continue with the interview."))
+            return@ResponsiveScreenV17
+        }
         val fields = listOf(
             "Menarca" to "Edad de la primera menstruación.",
             "Patrón menstrual y FUM" to "Regularidad, características relevantes y fecha de última menstruación cuando corresponda.",
