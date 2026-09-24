@@ -293,17 +293,45 @@ private data class E(val n:String,val d:String)
  }
 }
 
-@Composable fun HistoryPhysicalV38(lang:String,onBack:()->Unit)=explain("Exploración física",listOf(
- E("Signos vitales y somatometría","Temperatura, tensión arterial, frecuencia respiratoria, frecuencia cardiaca, peso, talla, IMC y glucosa capilar. El formato fuente incluye estos campos e IMC; los rangos por edad/sexo se mostrarán como referencia separada para no inventarlos a partir del formato."),
- E("Inspección general","Edad aparente, marcha, facies, actitud, constitución/habitus, movimientos anormales, conciencia, actitud psicológica, cuidado personal y cooperación."),
- E("Cráneo","Forma, volumen, implantación del cabello, exostosis/abultamientos, hundimientos/depresiones, simetría, lesiones y dolor. Las referencias visuales se incorporarán desde fuentes reales citadas, no como dibujo vectorial."),
- E("Cara / facies","Perfil, simetría, color de tez, volumen, lesiones y movimientos. La fuente usa ejemplos de normocromía, palidez, ictericia, cianosis y eritema; la imagen será referencia clínica citada."),
- E("Músculos de la expresión facial","Valorar tono, simetría y función; registrar normotonía, hipotonía o hipertonía cuando corresponda y describir el hallazgo."),
- E("Músculos de la masticación","Explorar maseteros, temporales y músculos accesibles clínicamente según técnica; valorar dolor, tono, hipertrofia/asimetría y función."),
- E("Cuello","Inspección y palpación de simetría, movilidad, masas, dolor y otros hallazgos pertinentes."),
- E("Cadenas ganglionares","Preauriculares, mastoideos, submandibulares, cervicales, submentonianos y claviculares: palpable/no palpable, fijos/móviles, dolorosos/no dolorosos y descripción."),
- E("ATM","Dolor, chasquido, crepitación, desviación, limitación, apertura/cierre, lateralidades, protrusión/retrusión, apertura máxima y relación con línea media; complementar con DVO/DVR cuando corresponda.")
-),onBack)
+@Composable fun HistoryPhysicalV38(lang:String,onBack:()->Unit){
+ var section by remember{mutableStateOf("Signos vitales")}
+ val selected=remember{mutableStateMapOf<String,String>()}
+ var weight by remember{mutableStateOf("")};var height by remember{mutableStateOf("")}
+ @Composable fun Pick(title:String,options:List<String>,note:String=""){
+  SectionCard(title){options.forEach{x->FilterChip(selected[title]==x,{selected[title]=x},{Text(x)},modifier=Modifier.fillMaxWidth())};if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)}
+ }
+ val w=weight.toDoubleOrNull();val h=height.toDoubleOrNull();val bmi=if(w!=null&&h!=null&&h>0) w/((h/100)*(h/100)) else null
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
+  item{ScreenHeader("Exploración física y signos vitales",onBack,"Registro educativo. Los valores deben medirse; la app no sustituye la valoración clínica ni asigna diagnósticos automáticamente.")}
+  item{listOf("Signos vitales","Somatometría","Glucosa capilar","Inspección general").forEach{x->FilterChip(section==x,{section=x},{Text(x)},modifier=Modifier.fillMaxWidth())}}
+  if(section=="Signos vitales"){
+   item{Pick("Temperatura (°C)",listOf("<35.0","35.0–35.9","36.0–36.9","37.0–37.9","38.0–38.9","39.0–39.9","≥40.0","No medida"),"Seleccionar el intervalo correspondiente a la medición obtenida; interpretar según sitio y técnica de medición.")}
+   item{Pick("Presión arterial sistólica (mmHg)",listOf("<90","90–99","100–109","110–119","120–129","130–139","140–159","160–179","≥180","No medida"))}
+   item{Pick("Presión arterial diastólica (mmHg)",listOf("<60","60–69","70–79","80–89","90–99","100–109","≥110","No medida"),"La interpretación depende de edad y contexto clínico. En población pediátrica requiere edad, sexo y talla; no aplicar categorías de adulto automáticamente.")}
+   item{Pick("Frecuencia cardiaca (lpm)",listOf("<50","50–59","60–69","70–79","80–89","90–99","100–119","120–139","≥140","No medida"),"Interpretar según edad, reposo, síntomas y contexto clínico.")}
+   item{Pick("Frecuencia respiratoria (rpm)",listOf("<10","10–11","12–15","16–20","21–24","25–29","≥30","No medida"),"Los rangos normales varían especialmente con la edad; no clasificar automáticamente a niños con criterios de adulto.")}
+  }
+  if(section=="Somatometría"){
+   item{SectionCard("Peso y talla"){OutlinedTextField(weight,{weight=it.filter{x->x.isDigit()||x=='.'}},label={Text("Peso medido (kg)")},modifier=Modifier.fillMaxWidth());OutlinedTextField(height,{height=it.filter{x->x.isDigit()||x=='.'}},label={Text("Talla medida (cm)")},modifier=Modifier.fillMaxWidth());if(bmi!=null)Text("IMC calculado: %.1f kg/m²".format(bmi),fontWeight=FontWeight.Bold);Text("En adultos el IMC puede contextualizarse con criterios aplicables. En menores de edad debe interpretarse con referencias por edad y sexo; este valor aislado no establece diagnóstico.",style=MaterialTheme.typography.bodySmall)}}
+  }
+  if(section=="Glucosa capilar"){
+   item{Pick("Glucosa capilar (mg/dL)",listOf("<54","54–69","70–99","100–125","126–179","180–199","200–249","250–299","≥300","No medida"))}
+   item{Pick("Contexto de la medición",listOf("Ayuno referido","Antes de alimento","Después de alimento","Medición aleatoria","No se conoce"),"La glucosa capilar aislada debe interpretarse según contexto, síntomas y antecedentes; la app no diagnostica diabetes con una medición aislada.")}
+  }
+  if(section=="Inspección general"){
+   item{Pick("Edad aparente",listOf("Acorde con edad cronológica","Aparenta menor edad","Aparenta mayor edad","No valorable"))}
+   item{Pick("Marcha",listOf("Sin alteración aparente","Con apoyo","Claudicante","Inestable","No deambula","No valorable"))}
+   item{Pick("Actitud / postura",listOf("Libremente escogida","Postura antálgica referida/observada","Limitada","Otra alteración observable","No valorable"))}
+   item{Pick("Constitución / habitus",listOf("Sin particularidades aparentes","Delgado","Robusto","Otra constitución observable","No valorable"))}
+   item{Pick("Movimientos anormales",listOf("No observados","Temblor","Tics","Movimientos involuntarios","Otro","No valorable"))}
+   item{Pick("Estado de conciencia",listOf("Alerta","Somnoliento","Confuso/desorientado","Respuesta disminuida","No valorable"))}
+   item{Pick("Actitud durante la consulta",listOf("Cooperador","Ansioso","Temeroso","Poco cooperador","No valorable"))}
+   item{Pick("Cuidado personal",listOf("Adecuado","Regular","Deficiente aparente","No valorable"))}
+  }
+  item{Button(onClick={},modifier=Modifier.fillMaxWidth()){Text("💾 Guardar exploración")}}
+  item{NoticeCard("Cráneo, cara, músculos, cuello, cadenas ganglionares y ATM se desarrollan en el Paso 9 con su exploración específica.")}
+ }
+}
 
 @Composable fun HistoryOrthoV38(lang:String,onBack:()->Unit){
  var prior by remember{mutableStateOf<Boolean?>(null)}
