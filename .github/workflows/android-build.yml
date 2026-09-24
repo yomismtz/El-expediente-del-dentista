@@ -1,4 +1,5 @@
 name: Android build
+# compile step2 identification reason 2026-09-24
 # compile after legacy root fixes 2026-09-24
 # retry step1 after Kotlin compatibility fix
 # manual compile requested 2026-09-24 step1
