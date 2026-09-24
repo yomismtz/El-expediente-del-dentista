@@ -74,8 +74,8 @@ fun EndodonticInteractiveV2Screen(
     var dentition by remember { mutableStateOf("mature") }
     var procedure by remember { mutableStateOf("root_canal") }
     var restoration by remember { mutableStateOf("") }
-    var referencePoint by remember { mutableStateOf("") }
-    var notes by remember { mutableStateOf("") }
+    var referencePoint by remember { mutableStateOf("Cúspide vestibular reproducible") }
+    var notes by remember { mutableStateOf("Sin observaciones adicionales") }
     var canals by remember { mutableStateOf(defaultCanals(selectedTooth)) }
     val completed = remember { mutableStateMapOf<String, Boolean>() }
 
@@ -247,38 +247,29 @@ fun EndodonticInteractiveV2Screen(
                                 "Working length is a clinical reference for shaping and filling while avoiding unnecessary extension into apical tissues. Integrate a reproducible coronal reference, an apex locator and radiographic control when indicated by protocol."
                             )
                         )
-                        OutlinedTextField(
-                            value = referencePoint,
-                            onValueChange = { referencePoint = it },
-                            label = { Text(tr(lang, "Punto de referencia coronal", "Coronal reference point")) },
-                            placeholder = { Text(tr(lang, "Ej. cúspide MV / borde incisal", "e.g. MB cusp / incisal edge")) },
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        Text(tr(lang, "Punto de referencia coronal", "Coronal reference point"), fontWeight = FontWeight.Bold)
+                        listOf("Cúspide vestibular reproducible","Cúspide lingual/palatina reproducible","Borde incisal reproducible","Referencia restauradora estable").forEach { ref ->
+                            FilterChip(referencePoint == ref, { referencePoint = ref }, { Text(ref) }, modifier = Modifier.fillMaxWidth())
+                        }
                     }
                 }
                 items(canals.size) { index ->
                     val canal = canals[index]
                     SectionCard("${tr(lang, "Conducto", "Canal")} ${canal.name}") {
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            OutlinedTextField(
-                                value = canal.estimated,
-                                onValueChange = { v -> canals = canals.updated(index, canal.copy(estimated = numericLength(v))) },
-                                label = { Text(tr(lang, "Estimación Rx mm", "Rx estimate mm")) },
-                                modifier = Modifier.weight(1f)
-                            )
-                            OutlinedTextField(
-                                value = canal.apex,
-                                onValueChange = { v -> canals = canals.updated(index, canal.copy(apex = numericLength(v))) },
-                                label = { Text(tr(lang, "Localizador mm", "Apex locator mm")) },
-                                modifier = Modifier.weight(1f)
-                            )
+                            Column(Modifier.weight(1f)) {
+                                Text(tr(lang,"Estimación Rx","Rx estimate"),fontWeight=FontWeight.SemiBold)
+                                listOf("≤15","16–18","19–21","22–24","≥25").forEach { v -> FilterChip(canal.estimated==v,{canals=canals.updated(index,canal.copy(estimated=v))},{Text("$v mm")}) }
+                            }
+                            Column(Modifier.weight(1f)) {
+                                Text(tr(lang,"Localizador","Apex locator"),fontWeight=FontWeight.SemiBold)
+                                listOf("≤15","16–18","19–21","22–24","≥25").forEach { v -> FilterChip(canal.apex==v,{canals=canals.updated(index,canal.copy(apex=v))},{Text("$v mm")}) }
+                            }
                         }
-                        OutlinedTextField(
-                            value = canal.working,
-                            onValueChange = { v -> canals = canals.updated(index, canal.copy(working = numericLength(v))) },
-                            label = { Text(tr(lang, "Longitud de trabajo elegida (mm)", "Selected working length (mm)")) },
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        Text(tr(lang,"Longitud de trabajo seleccionada","Selected working length"),fontWeight=FontWeight.SemiBold)
+                        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(4.dp)) {
+                            listOf("≤15","16–18","19–21","22–24","≥25").forEach { v -> FilterChip(canal.working==v,{canals=canals.updated(index,canal.copy(working=v))},{Text("$v mm")},Modifier.weight(1f)) }
+                        }
                         Text(
                             tr(
                                 lang,
