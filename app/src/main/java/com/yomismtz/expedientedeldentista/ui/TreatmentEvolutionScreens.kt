@@ -195,33 +195,46 @@ private fun supplementalNoteLibraryV39():List<NoteTemplate> = listOf(
 @Composable
 fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Unit) {
     var selected by remember { mutableStateOf(0) }
+    var site by remember { mutableStateOf("OD / zona seleccionada") }
+    var status by remember { mutableStateOf("Paciente estable y cooperador") }
+    var anesthesia by remember { mutableStateOf("No requerida") }
+    var incidents by remember { mutableStateOf("Sin incidentes") }
+    var instructions by remember { mutableStateOf("Indicaciones generales y signos de alarma") }
+    var followUp by remember { mutableStateOf("Control programado") }
+    var supervision by remember { mutableStateOf("Realizado bajo supervisión docente") }
     val library=noteLibrary()+supplementalNoteLibraryV39()
-    val plans=ClinicalContent.treatmentPlans.associateBy{it.id}
-    val options=ClinicalContent.treatmentPlans.flatMap{it.options}.associateBy{it.id}
-    val dynamic=session.teeth.toSortedMap().mapNotNull{(tooth,record)->
-        val d=record.diagnosisId?.let{plans[it]}?:return@mapNotNull null
-        val o=record.treatmentId?.let{options[it]}?:return@mapNotNull null
-        if(lang=="en") "Tooth $tooth · Diagnosis: ${d.diagnosisEn}. Selected plan: ${o.labelEn}. Convert this into a progress note by documenting only the procedure actually performed, relevant anesthesia/materials, incidents, instructions and follow-up."
-        else "OD $tooth · Diagnóstico: ${d.diagnosisEs}. Plan seleccionado: ${o.labelEs}. Convierte esto en nota de evolución documentando únicamente el procedimiento realmente realizado, anestesia/materiales relevantes, incidencias, indicaciones y seguimiento."
-    }
+    val n=library[selected]
+    val sites=listOf("OD / zona seleccionada","Cuadrante","Arcada","Mucosa oral","Periodonto","ATM / región craneofacial")
+    val states=listOf("Paciente estable y cooperador","Paciente ansioso pero cooperador","Requiere reevaluación antes de continuar","Procedimiento diferido")
+    val anesthesias=listOf("No requerida","Anestesia local según protocolo","Anestesia tópica según protocolo","Dato no aplicable")
+    val incidentOptions=listOf("Sin incidentes","Sangrado controlado","Dolor durante el procedimiento","Dificultad técnica","Reacción adversa / suspender y valorar")
+    val instructionOptions=listOf("Indicaciones generales y signos de alarma","Higiene oral reforzada","Cuidados posoperatorios","Cuidados de restauración / prótesis","Remisión e indicaciones del servicio")
+    val followOptions=listOf("Control programado","Continuar tratamiento por fases","Revaloración clínica","Control radiográfico indicado","Remisión a otro servicio","Alta del procedimiento")
+    val supervisionOptions=listOf("Realizado bajo supervisión docente","Revisado por docente","Pendiente de revisión docente")
+    val procedure=if(lang=="en") n.titleEn else n.titleEs
+    val generated=if(lang=="en")
+        "$site. $status. Procedure: $procedure. Anesthesia: $anesthesia. Incidents: $incidents. Instructions: $instructions. Follow-up: $followUp. $supervision."
+    else "$site. $status. Procedimiento realizado: $procedure. Anestesia: $anesthesia. Incidentes: $incidents. Indicaciones: $instructions. Seguimiento: $followUp. $supervision."
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-        item { ScreenHeader(tr(lang,"Notas de evolución · biblioteca","Progress notes · library"),onBack,
-            tr(lang,"Modelos genéricos para aprender estructura y vocabulario. Deben adaptarse a lo que realmente ocurrió; nunca se copian de forma automática a un expediente real.","Generic models for learning structure and vocabulary. Adapt them to what actually occurred; never copy them automatically into a real record.")) }
-        item { NoticeCard(tr(lang,"Estructura mínima: fecha/hora cuando corresponda · OD/zona · estado/signos vitales pertinentes · diagnóstico · procedimiento realizado · materiales/anestesia relevantes · incidentes · indicaciones · seguimiento · operador/supervisión conforme al formato.","Minimum structure: date/time when applicable · tooth/site · relevant status/vitals · diagnosis · procedure performed · relevant materials/anesthesia · incidents · instructions · follow-up · operator/supervision according to the form.")) }
-        if(dynamic.isNotEmpty()) item { SectionCard(tr(lang,"Ejemplos ligados a tu práctica actual","Examples linked to current practice")) { dynamic.forEach{Text("• $it")} } }
-        item { SectionCard(tr(lang,"Elige una nota genérica","Choose a generic note")) {
-            library.chunked(3).forEachIndexed{row,items->Row(horizontalArrangement=Arrangement.spacedBy(5.dp),modifier=Modifier.fillMaxWidth()) {
-                items.forEachIndexed{col,n->val idx=row*3+col;FilterChip(selected==idx,{selected=idx},{Text(if(lang=="en")n.titleEn else n.titleEs)},modifier=Modifier.weight(1f))}
-                repeat(3-items.size){Text("",modifier=Modifier.weight(1f))}
+        item { ScreenHeader(tr(lang,"Notas de evolución · generador","Progress notes · generator"),onBack,
+            tr(lang,"Selecciona únicamente lo que realmente ocurrió durante la cita. La app construye la redacción clínica sin que el alumno tenga que escribirla.","Select only what actually occurred during the appointment. The app builds the clinical wording without requiring free text.")) }
+        item { NoticeCard(tr(lang,"La nota debe corresponder al expediente real: fecha/hora institucional, diagnóstico, procedimiento, materiales y datos clínicos deben verificarse antes de firmar.","The note must match the real record: institutional date/time, diagnosis, procedure, materials and clinical data must be verified before signing.")) }
+        item { SectionCard(tr(lang,"1 · Procedimiento realizado","1 · Procedure performed")) {
+            library.chunked(2).forEachIndexed { row, items -> Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(5.dp)) {
+                items.forEachIndexed { col,x -> val idx=row*2+col; FilterChip(selected==idx,{selected=idx},{Text(if(lang=="en")x.titleEn else x.titleEs)},Modifier.weight(1f)) }
+                if(items.size==1) Text("",Modifier.weight(1f))
             }}
-        } }
-        item { val n=library[selected];Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) {
-            Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
-                Text("📋 ${if(lang=="en")n.titleEn else n.titleEs}",fontWeight=FontWeight.Bold,style=MaterialTheme.typography.titleLarge)
-                Text(if(lang=="en")n.textEn else n.textEs)
-                Text(tr(lang,"Antes de usar una nota: sustituye los espacios por hallazgos reales y elimina cualquier frase que no corresponda a la cita.","Before using a note: replace placeholders with actual findings and remove any statement that did not occur."),fontWeight=FontWeight.SemiBold)
-            }
-        } }
+        }}
+        item { SectionCard(tr(lang,"2 · OD o zona","2 · Tooth or site")) { sites.forEach{FilterChip(site==it,{site=it},{Text(it)},Modifier.fillMaxWidth())} } }
+        item { SectionCard(tr(lang,"3 · Estado durante la cita","3 · Appointment status")) { states.forEach{FilterChip(status==it,{status=it},{Text(it)},Modifier.fillMaxWidth())} } }
+        item { SectionCard(tr(lang,"4 · Anestesia","4 · Anesthesia")) { anesthesias.forEach{FilterChip(anesthesia==it,{anesthesia=it},{Text(it)},Modifier.fillMaxWidth())} } }
+        item { SectionCard(tr(lang,"5 · Incidentes","5 · Incidents")) { incidentOptions.forEach{FilterChip(incidents==it,{incidents=it},{Text(it)},Modifier.fillMaxWidth())} } }
+        item { SectionCard(tr(lang,"6 · Indicaciones","6 · Instructions")) { instructionOptions.forEach{FilterChip(instructions==it,{instructions=it},{Text(it)},Modifier.fillMaxWidth())} } }
+        item { SectionCard(tr(lang,"7 · Seguimiento","7 · Follow-up")) { followOptions.forEach{FilterChip(followUp==it,{followUp=it},{Text(it)},Modifier.fillMaxWidth())} } }
+        item { SectionCard(tr(lang,"8 · Supervisión","8 · Supervision")) { supervisionOptions.forEach{FilterChip(supervision==it,{supervision=it},{Text(it)},Modifier.fillMaxWidth())} } }
+        item { SectionCard(tr(lang,"Nota generada automáticamente","Automatically generated note")) { Text(generated,fontWeight=FontWeight.Bold); Text(if(lang=="en")n.textEn else n.textEs,style=MaterialTheme.typography.bodySmall) } }
+        item { NoticeCard(tr(lang,"No debe seleccionarse una opción que no haya ocurrido. Materiales, dosis, técnica, hallazgos y firmas específicas se documentan conforme al formato y protocolo institucional.","Do not select an option that did not occur. Specific materials, doses, technique, findings and signatures are documented according to institutional forms and protocols.")) }
     }
 }
+
