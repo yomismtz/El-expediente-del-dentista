@@ -303,7 +303,7 @@ private data class E(val n:String,val d:String)
  val w=weight.toDoubleOrNull();val h=height.toDoubleOrNull();val bmi=if(w!=null&&h!=null&&h>0) w/((h/100)*(h/100)) else null
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Exploración física y signos vitales",onBack,"Registro educativo. Los valores deben medirse; la app no sustituye la valoración clínica ni asigna diagnósticos automáticamente.")}
-  item{listOf("Signos vitales","Somatometría","Glucosa capilar","Inspección general","Cráneo y cara","Músculos","Ganglios","ATM y dimensión vertical").forEach{x->FilterChip(section==x,{section=x},{Text(x)},modifier=Modifier.fillMaxWidth())}}
+  item{listOf("Signos vitales","Somatometría","Glucosa capilar","Inspección general","Cráneo y cara","Músculos","Cuello","Ganglios","ATM y dimensión vertical").forEach{x->FilterChip(section==x,{section=x},{Text(x)},modifier=Modifier.fillMaxWidth())}}
   if(section=="Signos vitales"){
    item{Pick("Temperatura (°C)",listOf("<35.0","35.0–35.9","36.0–36.9","37.0–37.9","38.0–38.9","39.0–39.9","≥40.0","No medida"),"Seleccionar el intervalo correspondiente a la medición obtenida; interpretar según sitio y técnica de medición.")}
    item{Pick("Presión arterial sistólica (mmHg)",listOf("<90","90–99","100–109","110–119","120–129","130–139","140–159","160–179","≥180","No medida"))}
@@ -341,16 +341,27 @@ private data class E(val n:String,val d:String)
    item{Pick("Masetero",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"))}
    item{Pick("Pterigoideos / función clínica",listOf("Sin hallazgos aparentes","Dolor reproducible en maniobra","Limitación funcional","No valorable"),"Correlacionar palpación accesible y movimientos contra resistencia; no atribuir dolor inespecífico a un músculo profundo sin sustento clínico.")}
   }
+  if(section=="Cuello"){
+   item{Pick("Simetría del cuello",listOf("Simétrico aparente","Asimetría derecha","Asimetría izquierda","Aumento de volumen localizado","No valorable"))}
+   item{Pick("Movilidad cervical",listOf("Conservada","Limitada a derecha","Limitada a izquierda","Limitada en flexión/extensión","Limitación global","Dolorosa","No valorable"),"Observar flexión, extensión y rotación sin forzar movimientos dolorosos.")}
+   item{Pick("Dolor a exploración",listOf("Sin dolor","Derecho","Izquierdo","Bilateral","Localizado anterior","Localizado posterior","No valorable"))}
+   item{Pick("Masas / aumento de volumen",listOf("No observado/palpado","Anterior","Lateral derecho","Lateral izquierdo","Posterior","Difuso","No valorable"),"Un aumento de volumen requiere descripción clínica y valoración; la app no asigna etiología.")}
+   item{Pick("Tiroides · hallazgo clínico",listOf("Sin aumento aparente","Aumento aparente","Asimetría aparente","Nódulo/masa referida o palpable","Antecedente tiroideo sin hallazgo visible","No valorable"),"Registrar sólo el hallazgo o antecedente; no diagnosticar enfermedad tiroidea por inspección/palpación aislada.")}
+  }
   if(section=="Ganglios"){
-   item{Pick("Cadena ganglionar",listOf("Preauriculares","Mastoideos/postauriculares","Occipitales","Submentonianos","Submandibulares","Cervicales anteriores","Cervicales posteriores","Supraclaviculares"))}
+   item{Pick("Cadena ganglionar",listOf("Preauriculares","Mastoideos/postauriculares","Occipitales","Submentonianos","Submandibulares","Cervicales superficiales/anterior","Cervicales profundos","Cervicales posteriores","Supraclaviculares"))}
    item{Pick("Palpabilidad",listOf("No palpable","Palpable","No valorable"))}
    item{Pick("Movilidad",listOf("Móvil","Fijo/adherido aparente","No aplica/no palpable","No valorable"))}
    item{Pick("Dolor",listOf("No doloroso","Doloroso","No aplica/no palpable","No valorable"))}
-   item{Pick("Consistencia",listOf("Blanda","Elástica","Firme","Dura","No aplica/no palpable","No valorable"),"Registrar lateralidad y tamaño si existe un hallazgo. Un ganglio palpable no establece por sí solo una etiología.")}
+   item{Pick("Lateralidad ganglionar",listOf("Derecha","Izquierda","Bilateral","No aplica/no palpable","No valorable"))}
+   item{Pick("Tamaño aproximado",listOf("<0.5 cm","0.5–0.9 cm","1.0–1.9 cm","≥2 cm","No aplica/no palpable","No medido"))}
+   item{Pick("Consistencia",listOf("Blanda","Elástica","Firme","Dura","No aplica/no palpable","No valorable"),"Registrar sitio, lateralidad y tamaño. Un ganglio palpable no establece por sí solo una etiología.")}
   }
   if(section=="ATM y dimensión vertical"){
    item{Pick("ATM · dolor",listOf("Sin dolor","Derecha","Izquierda","Bilateral","No valorable"))}
+   item{Pick("Dolor durante movimiento",listOf("No","En apertura","En cierre","En lateralidad derecha","En lateralidad izquierda","En protrusión","En retrusión","En varios movimientos","No valorable"))}
    item{Pick("ATM · sonido",listOf("Sin sonido detectable","Click/chasquido derecho","Click/chasquido izquierdo","Click bilateral","Crepitación derecha","Crepitación izquierda","Crepitación bilateral","Otro/no valorable"),"Palpar región preauricular durante apertura, cierre y excursiones. Registrar el sonido sin generar diagnóstico automático.")}
+   item{Pick("Palpación ATM",listOf("Sin dolor","Dolor polo lateral derecho","Dolor polo lateral izquierdo","Dolor bilateral","No valorable"))}
    item{Pick("Línea media al abrir/cerrar",listOf("Recta/centrada","Desviación derecha con retorno","Desviación izquierda con retorno","Deflexión persistente derecha","Deflexión persistente izquierda","Trayectoria irregular","No valorable"))}
    item{Pick("Apertura máxima interincisal",listOf("<25 mm","25–34 mm","35–39 mm","40–44 mm","45–55 mm","56–60 mm",">60 mm","No medida"),"Referencia adulta: se reportan rangos frecuentes alrededor de 42–55 mm; existe variación por edad, sexo y anatomía.")}
    item{Pick("Lateralidad derecha",listOf("<4 mm","4–6 mm","7–9 mm","10–12 mm",">12 mm","No medida"),"7 mm o más se usa como referencia clínica funcional mínima; individualizar.")}
@@ -358,7 +369,9 @@ private data class E(val n:String,val d:String)
    item{Pick("Protrusión",listOf("<4 mm","4–5 mm","6–9 mm","10–12 mm",">12 mm","No medida"),"6 mm se usa como referencia clínica funcional mínima; individualizar.")}
    item{Pick("Retrusión",listOf("<1 mm","1–2 mm","3–4 mm",">4 mm","No medida"),"Registrar el desplazamiento medido; las referencias clínicas son menos uniformes para retrusión.")}
    item{Pick("Limitación de movimiento",listOf("No aparente","Apertura","Cierre","Lateralidad derecha","Lateralidad izquierda","Protrusión","Retrusión","Varios movimientos","No valorable"))}
-   item{SectionCard("Dimensión vertical en reposo y oclusión"){Text("Marcar dos puntos faciales reproducibles, habitualmente uno subnasal y otro en mentón. Medir DVR con mandíbula en reposo fisiológico y DVO con dientes en oclusión habitual.",fontWeight=FontWeight.Bold);Text("Espacio interoclusal = DVR − DVO. Referencia habitual: 2–4 mm, con variación individual.");listOf("DVR − DVO <2 mm","DVR − DVO 2–4 mm","DVR − DVO >4 mm","No medido").forEach{v->FilterChip(selected["Espacio interoclusal"]==v,{selected["Espacio interoclusal"]=v},{Text(v)},modifier=Modifier.fillMaxWidth())}}}
+   item{Pick("DVR · distancia medida",listOf("<50 mm","50–54 mm","55–59 mm","60–64 mm","65–69 mm","70–74 mm","≥75 mm","No medida"),"Medir entre dos puntos faciales reproducibles con mandíbula en reposo fisiológico.")}
+   item{Pick("DVO · distancia medida",listOf("<50 mm","50–54 mm","55–59 mm","60–64 mm","65–69 mm","70–74 mm","≥75 mm","No medida"),"Medir entre los mismos puntos con dientes en oclusión habitual. No existe una DVO universal en milímetros: depende de los puntos elegidos y de la anatomía individual.")}
+   item{SectionCard("Espacio interoclusal"){Text("Espacio interoclusal = DVR − DVO. Referencia habitual: 2–4 mm, con variación individual.",fontWeight=FontWeight.Bold);listOf("DVR − DVO <2 mm","DVR − DVO 2–4 mm","DVR − DVO >4 mm","No calculado").forEach{v->FilterChip(selected["Espacio interoclusal"]==v,{selected["Espacio interoclusal"]=v},{Text(v)},modifier=Modifier.fillMaxWidth())}}}
   }
   item{Button(onClick={},modifier=Modifier.fillMaxWidth()){Text("💾 Guardar exploración")}}
   item{NoticeCard("Los valores de referencia son educativos y deben interpretarse con edad, sexo, anatomía, síntomas, técnica de medición y contexto clínico. Los hallazgos no generan un diagnóstico automático.")}
