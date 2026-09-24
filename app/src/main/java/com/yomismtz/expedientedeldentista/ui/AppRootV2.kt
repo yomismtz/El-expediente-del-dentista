@@ -94,7 +94,7 @@ fun AppRootV2(
             )
             AppScreen.SETTINGS -> SettingsV2(preferences, onPreferencesChanged, onLanguageChanged, { onSessionChanged(EducationalSession()) }, folderBack)
             AppScreen.IDENTIFICATION -> IdentificationScreen(preferences.languageTag, session, onSessionChanged, folderBack)
-            AppScreen.HISTORY -> HistoryScreen(preferences.languageTag, session, onSessionChanged, folderBack)
+            AppScreen.HISTORY -> HistoryScreen(preferences.languageTag, session, onSessionChanged, folderBack)\n            AppScreen.SYSTEMIC_PROTOCOLS -> SystemicProtocols37Screen(preferences.languageTag, folderBack)
             AppScreen.INTAKE -> IntakeNoteScreen(preferences.languageTag, session, folderBack)
             AppScreen.ACTIVITIES -> ActivitiesScreen(preferences.languageTag, folderBack)
             AppScreen.VITALS -> VitalsInteractiveScreen(preferences.languageTag, folderBack)
