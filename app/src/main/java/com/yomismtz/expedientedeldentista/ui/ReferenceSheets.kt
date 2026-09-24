@@ -90,15 +90,38 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
             listOf("Voids, pulls or missing critical areas → repeat impression.","Severe gag reflex → adjust position/technique and material amount; stop if safety is compromised.","Material separated from tray → review adhesion/retention and repeat.")
         )
     )
+    val extraNames = listOf(
+        "Aplicación tópica de flúor","Barniz de flúor","Control de placa O’Leary","IHOS","IPC","Periodontograma",
+        "Restauración preventiva de resina","Resina Clase I","Resina Clase II","Resina Clase III","Resina Clase IV","Resina Clase V",
+        "Ionómero de vidrio","Restauración provisional","Recubrimiento pulpar indirecto","Recubrimiento pulpar directo",
+        "Corona de acero cromo","Corona provisional","Corona definitiva","Incrustación / onlay","Cementación provisional","Cementación definitiva",
+        "Impresión para prótesis","Registro intermaxilar","Prueba de estructura protésica","Prueba de dientes","Entrega de prótesis","Ajuste de prótesis",
+        "Destartraje supragingival","Control periodontal","Mantenimiento periodontal","Ferulización periodontal",
+        "Exodoncia quirúrgica","Sutura","Retiro de sutura","Control posoperatorio","Manejo de alveolitis bajo supervisión",
+        "Biopsia","Toma radiográfica periapical","Toma radiográfica bitewing","Fotografía clínica","Modelos de estudio",
+        "Mantenedor de espacio","Colocación de banda y ansa","Ajuste oclusal","Guarda oclusal","Valoración de ATM","Urgencia odontológica",
+        "Interconsulta médica","Alta y mantenimiento"
+    )
+    val extraGuides = extraNames.map { name ->
+        ActivityGuide(name,name,
+            "Actividad clínica que debe partir de una indicación y diagnóstico documentados; estudia su objetivo, preparación, ejecución, control y seguimiento.",
+            "Clinical activity that must start from a documented indication and diagnosis; review its objective, preparation, execution, control and follow-up.",
+            listOf("Confirmar diagnóstico, indicación y órgano dentario o zona.","Revisar antecedentes, auxiliares, consentimiento y condiciones de seguridad.","Preparar instrumental, materiales, aislamiento y anestesia cuando correspondan.","Realizar la actividad conforme al protocolo docente y bajo supervisión.","Comprobar resultado, registrar incidentes, indicaciones y seguimiento."),
+            listOf("Confirm diagnosis, indication and tooth/site.","Review history, aids, consent and safety conditions.","Prepare instruments, materials, isolation and anesthesia when applicable.","Perform according to the teaching protocol under supervision.","Check result and record incidents, instructions and follow-up."),
+            listOf("Si el hallazgo clínico cambia el diagnóstico, detener y reevaluar antes de continuar.","Si aparece una complicación o el caso excede el nivel autorizado, solicitar supervisión y modificar o diferir la actividad.","Registrar la actividad realmente realizada, no sólo la que estaba planeada."),
+            listOf("If findings change the diagnosis, stop and reassess before continuing.","If a complication occurs or the case exceeds the authorized level, obtain supervision and modify or defer the activity.","Record what was actually performed, not only what was planned.")
+        )
+    }
+    val allGuides = guides + extraGuides
     var selected by remember { mutableStateOf(0) }
-    val g = guides[selected]
+    val g = allGuides[selected]
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { ScreenHeader(tr(lang,"Autorización y registro de actividades","Activity authorization and record"),onBack,
             tr(lang,"Selecciona una actividad para estudiar qué se planea, cómo se realiza y qué hallazgos pueden obligar a cambiar el procedimiento.","Select an activity to study what is planned, how it is performed and which findings may require changing the procedure.")) }
         item {
             SectionCard(tr(lang,"1 · Actividad planeada","1 · Planned activity")) {
                 Column(verticalArrangement=Arrangement.spacedBy(7.dp)) {
-                    guides.forEachIndexed { i,a ->
+                    allGuides.forEachIndexed { i,a ->
                         FilterChip(selected==i,{selected=i},{Text(if(lang=="en") a.nameEn else a.nameEs)},modifier=Modifier.fillMaxWidth())
                     }
                 }
