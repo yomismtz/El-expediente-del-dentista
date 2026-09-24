@@ -7,6 +7,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import com.yomismtz.expedientedeldentista.clinical.AppScreen
 
 private data class HItem(val screen:AppScreen,val title:String,val subtitle:String)
@@ -293,6 +295,14 @@ private data class E(val n:String,val d:String)
  }
 }
 
+@Composable private fun ClinicalPhotoV38(title:String,url:String,credit:String){
+ Card(Modifier.fillMaxWidth()){Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+  Text(title,fontWeight=FontWeight.Bold)
+  AsyncImage(model=url,contentDescription=title,modifier=Modifier.fillMaxWidth().height(220.dp),contentScale=ContentScale.Fit)
+  Text("Imagen clínica real · "+credit,style=MaterialTheme.typography.bodySmall)
+ }}
+}
+
 @Composable fun HistoryPhysicalV38(lang:String,onBack:()->Unit){
  var section by remember{mutableStateOf("Signos vitales")}
  val selected=remember{mutableStateMapOf<String,String>()}
@@ -333,9 +343,11 @@ private data class E(val n:String,val d:String)
    item{Pick("Forma craneal",listOf("Dolicocefálico","Mesocéfalo","Braquicéfalo","No valorable"),"Dolicocefálico: cráneo relativamente largo y estrecho. Mesocéfalo: proporciones intermedias. Braquicéfalo: cráneo relativamente corto y ancho.")}
    item{Pick("Patrón facial",listOf("Dolicofacial","Mesofacial","Braquifacial","No valorable"),"Dolicofacial: cara relativamente larga y estrecha. Mesofacial: proporción intermedia. Braquifacial: cara relativamente corta y ancha.")}
    item{Pick("Simetría facial",listOf("Simétrica aparente","Asimetría derecha","Asimetría izquierda","Asimetría compleja","No valorable"))}
+   item{ClinicalPhotoV38("Referencia clínica real · asimetría de expresión facial","https://commons.wikimedia.org/wiki/Special:Redirect/file/Bellspalsy.JPG","James Heilman, MD · Wikimedia Commons · licencia abierta; publicación con consentimiento declarado por el autor.")}
   }
   if(section=="Músculos"){
    item{Pick("Expresión facial · inspección",listOf("Simetría conservada","Asimetría al sonreír","Asimetría al fruncir ceño","Asimetría al cerrar ojos","Asimetría al inflar mejillas","Debilidad aparente","No valorable"),"Evaluar en reposo y pedir elevar cejas/fruncir ceño, cerrar ojos, sonreír/mostrar dientes e inflar mejillas. Comparar ambos lados.")}
+   item{ClinicalPhotoV38("Referencia clínica real · evaluación de sonrisa en parálisis facial","https://commons.wikimedia.org/wiki/Special:Redirect/file/Bell%27s_Palsy_smiling.jpg","Shantoo · Wikimedia Commons · CC0; uso educativo para ilustrar parálisis facial.")}
    item{Pick("Músculos de la expresión · tono/función",listOf("Función aparentemente conservada","Hipotonía aparente","Hipertonía aparente","Movimiento involuntario","Dolor referido","No valorable"))}
    item{Pick("Temporal",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"))}
    item{Pick("Masetero",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"))}
@@ -350,6 +362,7 @@ private data class E(val n:String,val d:String)
   }
   if(section=="Ganglios"){
    item{Pick("Cadena ganglionar",listOf("Preauriculares","Mastoideos/postauriculares","Occipitales","Submentonianos","Submandibulares","Cervicales superficiales/anterior","Cervicales profundos","Cervicales posteriores","Supraclaviculares"))}
+   item{ClinicalPhotoV38("Referencia clínica real · linfadenopatía cervical","https://commons.wikimedia.org/wiki/Special:Redirect/file/Cervical_lymphadenopathy.jpg","Whispyhistory · Wikimedia Commons · CC0.")}
    item{Pick("Palpabilidad",listOf("No palpable","Palpable","No valorable"))}
    item{Pick("Movilidad",listOf("Móvil","Fijo/adherido aparente","No aplica/no palpable","No valorable"))}
    item{Pick("Dolor",listOf("No doloroso","Doloroso","No aplica/no palpable","No valorable"))}
@@ -358,6 +371,7 @@ private data class E(val n:String,val d:String)
    item{Pick("Consistencia",listOf("Blanda","Elástica","Firme","Dura","No aplica/no palpable","No valorable"),"Registrar sitio, lateralidad y tamaño. Un ganglio palpable no establece por sí solo una etiología.")}
   }
   if(section=="ATM y dimensión vertical"){
+   item{ClinicalPhotoV38("Referencia clínica real · región de cabeza y cuello","https://commons.wikimedia.org/wiki/Special:Redirect/file/Cervical_lymphadenopathy_right_neck.png","Coronation Dental Specialty Group · Wikimedia Commons · CC BY-SA 4.0. Imagen de aumento cervical; no representa un diagnóstico de ATM.")}
    item{Pick("ATM · dolor",listOf("Sin dolor","Derecha","Izquierda","Bilateral","No valorable"))}
    item{Pick("Dolor durante movimiento",listOf("No","En apertura","En cierre","En lateralidad derecha","En lateralidad izquierda","En protrusión","En retrusión","En varios movimientos","No valorable"))}
    item{Pick("ATM · sonido",listOf("Sin sonido detectable","Click/chasquido derecho","Click/chasquido izquierdo","Click bilateral","Crepitación derecha","Crepitación izquierda","Crepitación bilateral","Otro/no valorable"),"Palpar región preauricular durante apertura, cierre y excursiones. Registrar el sonido sin generar diagnóstico automático.")}
