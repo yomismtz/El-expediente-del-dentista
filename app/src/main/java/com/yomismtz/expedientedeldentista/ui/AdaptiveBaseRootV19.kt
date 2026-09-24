@@ -45,7 +45,8 @@ private data class TabV19(val screen:AppScreen,val icon:String,val es:String,val
 
 private val tabsV19=listOf(
     TabV19(AppScreen.IDENTIFICATION,"👤","Identificación","Identification",0),
-    TabV19(AppScreen.HISTORY,"🩺","Antecedentes patológicos / ASA","Medical history / ASA",0),\n    TabV19(AppScreen.SYSTEMIC_PROTOCOLS,"📚","Protocolos de enfermedades sistémicas","Systemic disease protocols",0),
+    TabV19(AppScreen.HISTORY,"🩺","Antecedentes patológicos / ASA","Medical history / ASA",0),
+    TabV19(AppScreen.SYSTEMIC_PROTOCOLS,"📚","Protocolos de enfermedades sistémicas","Systemic disease protocols",0),
     TabV19(AppScreen.INTAKE,"📋","Nota de ingreso","Intake note",0),
     TabV19(AppScreen.VITALS,"❤️","Signos vitales","Vital signs",0),
     TabV19(AppScreen.ATM,"◉","ATM y músculos","TMJ and muscles",0),
@@ -103,7 +104,8 @@ fun AdaptiveBaseRootV19(
         AppScreen.FOLDER -> FolderV19(lang,{navigate(it)},backPrevious)
         AppScreen.SETTINGS -> ResponsiveScreenV17(tr(lang,"Configuración","Settings"),tr(lang,"Usa el botón de Configuración de la barra superior.","Use Settings in the top bar."),backPrevious){ }
         AppScreen.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
-        AppScreen.HISTORY -> PathologicalHistory37Screen(lang,session,onSessionChanged,{navigate(AppScreen.SYSTEMIC_PROTOCOLS)},backPrevious)\n        AppScreen.SYSTEMIC_PROTOCOLS -> SystemicProtocols37Screen(lang,backPrevious)
+        AppScreen.HISTORY -> PathologicalHistory37Screen(lang,session,onSessionChanged,{navigate(AppScreen.SYSTEMIC_PROTOCOLS)},backPrevious)
+        AppScreen.SYSTEMIC_PROTOCOLS -> SystemicProtocols37Screen(lang,backPrevious)
         AppScreen.INTAKE -> IntakeNoteScreen(lang,session,backPrevious)
         AppScreen.ACTIVITIES -> ActivitiesScreen(lang,backPrevious)
         AppScreen.VITALS -> VitalsInteractiveV19Screen(lang,backPrevious)
