@@ -106,7 +106,7 @@ fun AppRoot(
             AppScreen.ATM -> AtmScreen(preferences.languageTag, folderBack)
             AppScreen.OCCLUSION -> OcclusionScreen(preferences.languageTag, folderBack)
             AppScreen.MUCOSA -> MucosaScreen(preferences.languageTag, folderBack)
-            AppScreen.CALCULATORS -> DentalCalculatorsV40Screen(lang, onBack) 
+            AppScreen.CALCULATORS -> DentalCalculatorsV40Screen(preferences.languageTag, folderBack) 
             AppScreen.AUXILIARIES -> AuxiliariesScreen(preferences.languageTag, folderBack)
             AppScreen.ODONTOGRAM -> OdontogramScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.ICDAS -> IcdasScreen(preferences.languageTag, session, onSessionChanged, folderBack)
@@ -119,7 +119,7 @@ fun AppRoot(
             AppScreen.PULPAL -> PulpalScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.APICAL -> ApicalScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.TREATMENT -> TreatmentScreen(preferences.languageTag, session, onSessionChanged, folderBack)
-            AppScreen.SESSIONS -> TreatmentBySessionsScreen(preferences.languageTag, folderBack)
+            AppScreen.SESSIONS -> TreatmentBySessionsScreen(preferences.languageTag, session, folderBack)
             AppScreen.ENDO -> EndodonticSheetScreen(
                 preferences.languageTag, session,
                 onOpenPulpal = { screen = AppScreen.PULPAL },
