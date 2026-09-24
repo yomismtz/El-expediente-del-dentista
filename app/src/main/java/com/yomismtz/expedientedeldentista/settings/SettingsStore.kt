@@ -21,7 +21,14 @@ enum class BirdPaletteStyle {
     QUETZAL,
     TRICHOGLOSSUS_MOLUCCANUS,
     CUERVO,
-    ABEJARUCO
+    ABEJARUCO,
+    PERRO,
+    KOALA,
+    PUG,
+    GATO,
+    TORTUGA,
+    HAMSTER,
+    DRAGON
 }
 
 enum class FontStyle { MODERN, ROUNDED, ACADEMIC, ACCESSIBLE }
