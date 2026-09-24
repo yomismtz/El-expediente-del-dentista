@@ -33,46 +33,34 @@ fun IdentificationScreen(
 ) {
     var opened by remember { mutableStateOf<Int?>(0) }
     val fields = listOf(
-        TeachingField("Nombre", "Name", "Se registra el nombre completo tal como aparece en la identificación del paciente.", "Record the complete name as it appears on the patient's identification.", "Ejemplo: Apellido paterno · apellido materno · nombre(s).", "Example: family name(s) and given name(s)."),
-        TeachingField("Edad y fecha de nacimiento", "Age and date of birth", "La edad se registra junto con la fecha de nacimiento para contextualizar dentición, crecimiento y antecedentes.", "Age and birth date help contextualize dentition, growth and history.", "Ejemplo: 10 años · 14/03/2016.", "Example: 10 years · 14/03/2016."),
-        TeachingField("Sexo / género", "Sex / gender", "Anota el dato solicitado por el formato clínico de manera respetuosa y consistente.", "Record the information requested by the clinical form respectfully and consistently.", "Ejemplo: femenino / masculino / dato referido según el formato.", "Example: female / male / reported information according to the form."),
-        TeachingField("Domicilio y teléfono", "Address and telephone", "Son datos de localización y contacto. En esta app solo se explica dónde se anotan; no se capturan datos reales.", "These are contact details. This app only teaches where they belong; no real data is entered.", "Ejemplo de estructura: calle, número, colonia, municipio y teléfono.", "Example structure: street, number, district, city and phone."),
-        TeachingField("Ocupación, escolaridad y estado civil", "Occupation, education and marital status", "Se registran como parte del contexto social de la ficha de identificación.", "These are recorded as part of the social context in the identification sheet.", "Ejemplo: estudiante · primaria · soltero(a).", "Example: student · primary school · single."),
-        TeachingField("Servicio de salud", "Health service", "Indica si cuenta con algún servicio de atención médica o seguridad social.", "Indicates whether the patient has access to a health service or insurance.", "Ejemplo: institución correspondiente o “ninguno”, según lo referido.", "Example: corresponding service or “none”, as reported."),
-        TeachingField("Motivo de consulta", "Reason for consultation", "Debe reflejar de manera breve lo que refiere la persona como razón principal de la consulta.", "Briefly reflects what the person reports as the main reason for the visit.", "Ejemplo: “Vengo porque me duele una muela desde ayer”.", "Example: “I came because a tooth has hurt since yesterday”."),
-        TeachingField("Padecimiento actual", "Current condition", "Describe inicio, desencadenante, evolución, signos, síntomas, factores que alivian o agravan y medicamentos relacionados.", "Describe onset, trigger, course, signs, symptoms, relieving/aggravating factors and related medication.", "Ejemplo: inició hace 2 días, espontáneo, aumenta con frío y persiste después de retirar el estímulo.", "Example: began 2 days ago, spontaneous, worsens with cold and lingers after the stimulus is removed.")
+        TeachingField("Nombre completo","Full name","Identifica clínica y legalmente al paciente. En el expediente físico se escribe completo y sin abreviaturas.","Clinically and legally identifies the patient.","Ejemplo de estructura: apellido paterno · apellido materno · nombre(s).","Example structure: family names · given name(s)."),
+        TeachingField("Género / sexo registrado","Recorded gender / sex","Registra el dato que solicita el formato, de manera respetuosa y sin inferirlo por apariencia.","Record the information requested by the form respectfully.","Ejemplo: dato referido y asentado conforme al formato institucional.","Example: reported information recorded according to the institutional form."),
+        TeachingField("Edad","Age","La edad ayuda a contextualizar desarrollo, dentición y antecedentes; debe ser congruente con la fecha de nacimiento.","Age helps contextualize development, dentition and history.","Ejemplo: 11 años.","Example: 11 years."),
+        TeachingField("Fecha de nacimiento","Date of birth","Permite corroborar la edad y ubicar la etapa de desarrollo.","Helps verify age and developmental stage.","Ejemplo de estructura: día / mes / año.","Example structure: day / month / year."),
+        TeachingField("Lugar de nacimiento","Place of birth","Se registra tal como lo refiere el paciente o tutor y forma parte de la identificación.","Record as reported by the patient or guardian.","Ejemplo: Ciudad de México.","Example: Mexico City."),
+        TeachingField("Dirección","Address","Dato de localización del expediente físico y contexto epidemiológico. Esta app sólo enseña dónde se registra; no solicita domicilios reales.","Contact/location field in the physical record. This app does not request real addresses.","Estructura: calle, número, colonia, alcaldía/municipio, entidad y C.P.","Structure: street, number, district, municipality, state and postal code."),
+        TeachingField("Teléfono","Telephone","Se utiliza para contacto, seguimiento y situaciones de urgencia. No se captura un número real en esta guía.","Used for contact, follow-up and urgent situations. No real number is entered in this guide.","Ejemplo didáctico: teléfono de contacto del expediente físico.","Teaching example: contact telephone in the physical record."),
+        TeachingField("Ocupación anterior","Previous occupation","Permite reconocer exposiciones o hábitos laborales previos que puedan ser relevantes para la historia clínica.","Helps identify prior occupational exposures or habits relevant to history.","Ejemplo: actividad previa referida por el paciente.","Example: prior activity reported by the patient."),
+        TeachingField("Ocupación actual","Current occupation","El trabajo o actividad cotidiana puede orientar sobre estrés, exposiciones, horarios y hábitos que después se investigan en la historia.","Current work/activity can guide questions about stress, exposures, schedules and habits.","Ejemplo: estudiante, comerciante, docente, etc., según lo referido.","Example: student, merchant, teacher, etc., as reported."),
+        TeachingField("Religión","Religion","El material docente la incluye porque algunas creencias pueden influir en decisiones sobre procedimientos o productos médicos. Se registra sin asumir restricciones: cualquier decisión debe confirmarse con el paciente.","The teaching form includes it because beliefs may affect medical decisions. Do not assume restrictions; confirm them with the patient.","Ejemplo: registrar la respuesta del paciente o «prefiere no responder».","Example: record the patient's response or “prefers not to answer”."),
+        TeachingField("Número de miembros en la familia","Number of family members","Describe parte del contexto familiar solicitado por el formato.","Part of the family context requested by the form.","Ejemplo: número referido de integrantes del núcleo familiar.","Example: reported number of household/family members."),
+        TeachingField("Estado civil","Marital status","Forma parte del contexto social solicitado en la ficha; no debe usarse para hacer suposiciones clínicas.","Part of the social context requested by the identification form.","Ejemplo: soltero(a), casado(a), unión libre, divorciado(a), viudo(a), según lo referido.","Example: single, married, partnered, divorced, widowed, as reported."),
+        TeachingField("Escolaridad","Education","Ayuda al estudiante a adaptar la explicación y verificar comprensión, sin juzgar la capacidad del paciente.","Helps adapt explanations and verify understanding without judging the patient.","Ejemplo: primaria, secundaria, bachillerato, licenciatura u otra, según lo referido.","Example: primary, secondary, high school, university or other, as reported."),
+        TeachingField("Servicio de salud","Health service","El formato distingue servicio privado o institucional y pide especificar cuál corresponde.","The form distinguishes private or institutional health services and asks which one.","Opciones del formato: privado · institucional · especificar institución.","Form options: private · institutional · specify institution."),
+        TeachingField("Responsable / tutor","Responsible adult / guardian","Es fundamental cuando el paciente requiere representante, especialmente en población pediátrica. Registrar conforme al expediente institucional.","Important when a representative is required, especially in pediatric patients.","Ejemplo de estructura: nombre y parentesco en el expediente físico.","Example structure: name and relationship in the physical record."),
+        TeachingField("Tipo de sangre","Blood type","El material docente lo considera relevante en urgencias o procedimientos invasivos. Si se desconoce, se registra como desconocido; no debe suponerse.","The teaching material considers it relevant in emergencies or invasive procedures. Never infer it.","Opciones: A, B, AB u O; Rh positivo/negativo; o «desconocido».","Options: A, B, AB or O; Rh positive/negative; or “unknown”.")
     )
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item {
-            ScreenHeader(
-                tr(lang, "Ficha de identificación", "Identification sheet"),
-                onBack,
-                tr(lang,
-                    "Aquí no se llena un paciente. Toca cada rubro para aprender qué información corresponde y ver un ejemplo de redacción.",
-                    "No patient is entered here. Tap each field to learn what belongs there and see a writing example.")
-            )
-        }
-        item {
-            NoticeCard(tr(lang,
-                "La app es una guía de llenado: no solicita nombre, teléfono, domicilio ni otros datos personales.",
-                "This app is a completion guide: it does not request names, telephone numbers, addresses or other personal data."))
-        }
+        item { ScreenHeader(tr(lang,"Identificación del paciente","Patient identification"),onBack,tr(lang,"Primer apartado de la Historia Clínica. Toca cada dato para aprender qué se registra y por qué es importante.","First section of the clinical history. Tap each field to learn what is recorded and why it matters.")) }
+        item { NoticeCard(tr(lang,"La app funciona como guía de llenado. No introduzcas nombre, domicilio, teléfono ni otros datos personales reales.","This app is a completion guide. Do not enter real names, addresses, telephone numbers or other personal data.")) }
         items(fields.size) { index ->
-            val field = fields[index]
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = if (opened == index) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface),
-                onClick = { opened = if (opened == index) null else index }
-            ) {
-                Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
-                    Text(if (lang == "en") field.titleEn else field.titleEs, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                    if (opened == index) {
-                        Text("💡 ${if (lang == "en") field.helpEn else field.helpEs}")
-                        Text("✍️ ${if (lang == "en") field.exampleEn else field.exampleEs}", color = MaterialTheme.colorScheme.primary)
-                    } else {
-                        Text(tr(lang, "Toca para ver cómo se llena", "Tap to see how it is completed"), style = MaterialTheme.typography.bodyMedium)
-                    }
+            val field=fields[index]
+            Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=if(opened==index) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface),onClick={opened=if(opened==index)null else index}){
+                Column(Modifier.padding(15.dp),verticalArrangement=Arrangement.spacedBy(7.dp)){
+                    Text("${index+1}. ${if(lang=="en")field.titleEn else field.titleEs}",fontWeight=FontWeight.Bold,style=MaterialTheme.typography.titleMedium)
+                    if(opened==index){Text("💡 ${if(lang=="en")field.helpEn else field.helpEs}");Text("✍️ ${if(lang=="en")field.exampleEn else field.exampleEs}",color=MaterialTheme.colorScheme.primary)}
+                    else Text(tr(lang,"Toca para ver cómo se llena","Tap to see how it is completed"),style=MaterialTheme.typography.bodyMedium)
                 }
             }
         }
