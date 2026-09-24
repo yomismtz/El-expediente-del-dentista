@@ -128,13 +128,13 @@ fun birdPalette(style: BirdPaletteStyle): BirdPalette = when (style) {
         secondary = Color(0xFFF1B929), tertiary = Color(0xFF34BFC2),
         background = Color(0xFFF5FBF7), surface = Color(0xFFFEFFFD), onSurface = Color(0xFF173429),
         primaryContainer = Color(0xFFD5F0E3), secondaryContainer = Color(0xFFFFEDB2), outline = Color(0xFF8AA497)
-    ),
-    BirdPaletteStyle.PERRO -> BirdPalette(Color(0xFF6D4C41),Color.White,Color(0xFFD7A86E),Color(0xFF5D8A66),Color(0xFFFFF8F2),Color.White,Color(0xFF35251F),Color(0xFFEEDFD5),Color(0xFFE6F0E7),Color(0xFFA58F85)),
-    BirdPaletteStyle.KOALA -> BirdPalette(Color(0xFF59636E),Color.White,Color(0xFF9DA7B1),Color(0xFF7FAE9B),Color(0xFFF5F7F8),Color.White,Color(0xFF273039),Color(0xFFE0E5E9),Color(0xFFDDEEE7),Color(0xFF9AA2A9)),
-    BirdPaletteStyle.PUG -> BirdPalette(Color(0xFF76513A),Color.White,Color(0xFFC99B6B),Color(0xFF30343B),Color(0xFFFFF8EF),Color.White,Color(0xFF382A22),Color(0xFFF0DDC7),Color(0xFFE1E2E5),Color(0xFFA48F7D)),
-    BirdPaletteStyle.GATO -> BirdPalette(Color(0xFF4D5664),Color.White,Color(0xFFD38FA8),Color(0xFF8A72B5),Color(0xFFF8F5FA),Color.White,Color(0xFF2D2933),Color(0xFFE4E6EB),Color(0xFFF2DFE8),Color(0xFF9D96A3)),
-    BirdPaletteStyle.TORTUGA -> BirdPalette(Color(0xFF47734D),Color.White,Color(0xFF8DAA62),Color(0xFFB88A54),Color(0xFFF5F8EE),Color.White,Color(0xFF293629),Color(0xFFDCE9D4),Color(0xFFECE4CF),Color(0xFF93A08A)),
-    BirdPaletteStyle.HAMSTER -> BirdPalette(Color(0xFFA66745),Color.White,Color(0xFFE1AD72),Color(0xFFD9878B),Color(0xFFFFF7F1),Color.White,Color(0xFF402B22),Color(0xFFF5DECB),Color(0xFFF5DFDF),Color(0xFFB19A8E)),
+    )
+    BirdPaletteStyle.PERRO -> BirdPalette(Color(0xFF6D4C41),Color.White,Color(0xFFD7A86E),Color(0xFF5D8A66),Color(0xFFFFF8F2),Color.White,Color(0xFF35251F),Color(0xFFEEDFD5),Color(0xFFE6F0E7),Color(0xFFA58F85))
+    BirdPaletteStyle.KOALA -> BirdPalette(Color(0xFF59636E),Color.White,Color(0xFF9DA7B1),Color(0xFF7FAE9B),Color(0xFFF5F7F8),Color.White,Color(0xFF273039),Color(0xFFE0E5E9),Color(0xFFDDEEE7),Color(0xFF9AA2A9))
+    BirdPaletteStyle.PUG -> BirdPalette(Color(0xFF76513A),Color.White,Color(0xFFC99B6B),Color(0xFF30343B),Color(0xFFFFF8EF),Color.White,Color(0xFF382A22),Color(0xFFF0DDC7),Color(0xFFE1E2E5),Color(0xFFA48F7D))
+    BirdPaletteStyle.GATO -> BirdPalette(Color(0xFF4D5664),Color.White,Color(0xFFD38FA8),Color(0xFF8A72B5),Color(0xFFF8F5FA),Color.White,Color(0xFF2D2933),Color(0xFFE4E6EB),Color(0xFFF2DFE8),Color(0xFF9D96A3))
+    BirdPaletteStyle.TORTUGA -> BirdPalette(Color(0xFF47734D),Color.White,Color(0xFF8DAA62),Color(0xFFB88A54),Color(0xFFF5F8EE),Color.White,Color(0xFF293629),Color(0xFFDCE9D4),Color(0xFFECE4CF),Color(0xFF93A08A))
+    BirdPaletteStyle.HAMSTER -> BirdPalette(Color(0xFFA66745),Color.White,Color(0xFFE1AD72),Color(0xFFD9878B),Color(0xFFFFF7F1),Color.White,Color(0xFF402B22),Color(0xFFF5DECB),Color(0xFFF5DFDF),Color(0xFFB19A8E))
     BirdPaletteStyle.DRAGON -> BirdPalette(Color(0xFF633A8C),Color.White,Color(0xFF9B7AC7),Color(0xFF54CDBF),Color(0xFFF7F0FC),Color.White,Color(0xFF32203F),Color(0xFFE7D6F4),Color(0xFFD4F4ED),Color(0xFFA596AF))
 }
 
