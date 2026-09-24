@@ -54,6 +54,7 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
   item{Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
    FilterChip(tab==0,{tab=0},{Text("Anestésico local")},Modifier.weight(1f))
    FilterChip(tab==1,{tab=1},{Text("Medicamentos pediátricos")},Modifier.weight(1f))
+   FilterChip(tab==2,{tab=2},{Text("Conversión y práctica")},Modifier.weight(1f))
   }}
   if(tab==0){
    item{SectionCard("1 · Paciente"){
@@ -71,7 +72,7 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
     Text(if(mgLimit==null)"Completa peso y límite mg/kg." else "Límite calculado: %.1f mg".format(mgLimit),fontWeight=FontWeight.Bold)
     Text(if(cartridges==null)"Completa los datos para estimar cartuchos." else "Equivalencia matemática: %.2f cartuchos".format(cartridges),fontWeight=FontWeight.Bold)
    }}
-  }else{
+  }else if(tab==1){
    item{SectionCard("1 · Grupo farmacológico"){
     pediatricDrugGroupsV40.forEach{g->Text(g.title,fontWeight=FontWeight.Bold);Text(g.examples);Spacer(Modifier.height(6.dp))}
    }}
@@ -84,6 +85,15 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
     Text(if(doseMl==null)"Captura mg/mL para convertir a volumen." else "Volumen matemático: %.2f mL por dosis".format(doseMl),fontWeight=FontWeight.Bold)
    }}
    item{NoticeCard("Verifica edad, alergias, función renal/hepática, interacciones, contraindicaciones, concentración comercial, máximo diario y pauta con el docente/profesional antes de usar cualquier resultado.")}
+  }else{
+   item{SectionCard("Actividades de cálculo y conversión"){
+    Text("Practica conversiones sin que la app prescriba tratamientos.",fontWeight=FontWeight.Bold)
+    Text("• mg ↔ mL a partir de una concentración conocida.\n• mg/kg × peso = mg por dosis cuando la dosis ya fue indicada.\n• mg por cartucho = concentración (mg/mL) × volumen (mL).\n• Número teórico de cartuchos = límite total (mg) ÷ mg por cartucho.\n• Revisión de unidades antes de aceptar el resultado.")
+   }}
+   item{SectionCard("Protocolo de comprobación"){
+    listOf("1. Confirmar identidad, edad y peso del paciente.","2. Confirmar medicamento/anestésico y concentración exacta de la presentación.","3. Consultar ficha técnica o protocolo docente vigente.","4. Revisar alergias, embarazo cuando aplique, función renal/hepática, enfermedades e interacciones.","5. Realizar la conversión matemática.","6. Comprobar máximo por dosis y máximo diario cuando correspondan.","7. Hacer una segunda verificación antes de administrar o registrar.").forEach{Text(it)}
+   }}
+   item{NoticeCard("Actividad educativa: la calculadora verifica operaciones matemáticas; no selecciona fármaco, indicación, dosis, intervalo ni duración.")}
   }
  }
 }
