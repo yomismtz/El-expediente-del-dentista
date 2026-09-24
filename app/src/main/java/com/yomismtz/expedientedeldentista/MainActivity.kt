@@ -39,14 +39,14 @@ class MainActivity : AppCompatActivity() {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     Box(Modifier.fillMaxSize()) {
                         AppRootV19(
-                                preferences = preferences,
-                                onPreferencesChanged = savePreferences,
-                                onLanguageChanged = { tag -> savePreferences(preferences.copy(languageTag = tag)) },
-                                session = session,
-                                onSessionChanged = { session = it }
-                            )
-                        }
-                    }
+                            preferences = preferences,
+                            onPreferencesChanged = savePreferences,
+                            onLanguageChanged = { tag ->
+                                savePreferences(preferences.copy(languageTag = tag))
+                            },
+                            session = session,
+                            onSessionChanged = { session = it }
+                        )
                     }
                 }
             }
