@@ -160,7 +160,7 @@ private fun CoverV19(lang:String,onOpen:()->Unit) {
 private fun FolderV19(lang:String,onNavigate:(AppScreen)->Unit,onClose:()->Unit) {
     var group by remember { mutableStateOf(0) }
     ResponsiveScreenV17("YSM Expediente",tr(lang,"Elige una sección. La barra superior queda reservada y nunca tapa el contenido.","Choose a section. The top bar has reserved space and never covers content."),onClose) { profile ->
-        val names=listOf(tr(lang,"Ingreso","Intake"),tr(lang,"Exámenes","Exams"),tr(lang,"Tratamiento","Treatment"))
+        val names=listOf(tr(lang,"Apartados del expediente","Record sections"),tr(lang,"Exámenes y referencias","Exams and references"),tr(lang,"Calculadoras y herramientas","Calculators and tools"))
         ResponsiveSectionV17(tr(lang,"Secciones del expediente","Record sections")) {
             AdaptiveGridV17(3,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 3) { i ->
                 FilterChip(group==i,{group=i},{Text(names[i])},modifier=Modifier.fillMaxWidth())
