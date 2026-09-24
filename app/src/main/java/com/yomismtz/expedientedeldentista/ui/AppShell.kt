@@ -98,6 +98,7 @@ fun AppRoot(
             AppScreen.SETTINGS -> SettingsScreen(preferences, onPreferencesChanged, onLanguageChanged, { onSessionChanged(EducationalSession()) }, folderBack)
             AppScreen.IDENTIFICATION -> IdentificationScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.HISTORY -> HistoryScreen(preferences.languageTag, session, onSessionChanged, folderBack)
+            AppScreen.HISTORY_IDENTIFICATION, AppScreen.HISTORY_REASON, AppScreen.HISTORY_HEREDITARY, AppScreen.HISTORY_NONPATH, AppScreen.HISTORY_GYNECO, AppScreen.HISTORY_PATH, AppScreen.HISTORY_SURGICAL_TRAUMA, AppScreen.HISTORY_PHYSICAL, AppScreen.HISTORY_ORTHO, AppScreen.HISTORY_DENTAL_ALTERATIONS, AppScreen.HISTORY_HABITS, AppScreen.HISTORY_ORAL_EXAM -> HistoryScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.SYSTEMIC_PROTOCOLS -> SystemicProtocols37Screen(preferences.languageTag, folderBack)
             AppScreen.INTAKE -> IntakeNoteScreen(preferences.languageTag, session, folderBack)
             AppScreen.ACTIVITIES -> ActivitiesScreen(preferences.languageTag, folderBack)
