@@ -106,7 +106,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
         ResponsiveSectionV17(tr(lang,"2 · Registro rápido","2 · Quick description")) {
             Button(onClick={lesionHelp=true},modifier=Modifier.fillMaxWidth()){Text("❓ Ayuda · Lesiones elementales de mucosa oral")}
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(7.dp)) {
-                listOf("Normal","Úlcera","Placa blanca","Placa roja","Eritema","Aumento de volumen","Pigmentación","Vesícula","Fístula","Masa").forEach { f -> FilterChip(finding==f,{finding=f},{Text(f)}) }
+                listOf("Normal","Mácula / mancha","Eritema","Petequia","Púrpura / equimosis","Pápula","Placa blanca","Placa roja","Nódulo","Masa","Vesícula","Ampolla / bula","Pústula","Quiste","Erosión","Úlcera","Fisura / grieta","Costra","Escama","Atrofia","Queratosis","Lesión papilar / vegetación","Fístula / trayecto sinusal","Edema","Hematoma","Pigmentación").forEach { f -> FilterChip(finding==f,{finding=f},{Text(f)}) }
             }
             if(finding!="Normal") {
                 MucosaPick19("Tamaño mayor aproximado",listOf("<2 mm","2–4 mm","5–9 mm","10–19 mm","20–29 mm","≥30 mm","No medido"),sizeMm){sizeMm=it}
@@ -175,7 +175,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 Column(Modifier.height(460.dp).verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(8.dp)){
                     Text("Toca esta ayuda cuando necesites recordar qué estás observando. Primero describe la lesión; después se integra el diagnóstico.",fontWeight=FontWeight.Bold)
                     Card(onClick={zoomHelpImage=true},modifier=Modifier.fillMaxWidth()){Column{Image(painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),contentDescription="Ilustración de lesiones elementales de mucosa oral",modifier=Modifier.fillMaxWidth().height(360.dp),contentScale=ContentScale.Fit); Text("🔍 Toca la imagen para ampliar y usar zoom con dos dedos",modifier=Modifier.padding(8.dp),fontWeight=FontWeight.Bold)}}
-                    Text("Ilustración educativa de referencia: compara el aspecto general; no sustituye la exploración clínica ni confirma diagnósticos.",style=MaterialTheme.typography.bodySmall)
+                    Text("Atlas visual offline: la lámina incluye ejemplos ilustrados de mácula, eritema, petequia, púrpura/equimosis, pápula, placa, nódulo, masa, vesícula, ampolla, pústula, quiste, erosión, úlcera, fisura, costra, escama, atrofia, queratosis, lesión papilar, fístula, edema, hematoma y pigmentación. Es apoyo descriptivo; no confirma diagnósticos.",style=MaterialTheme.typography.bodySmall)
                     elementary.forEach{(n,d)->Card(Modifier.fillMaxWidth()){Column(Modifier.padding(9.dp)){Text(n,fontWeight=FontWeight.Black);Text(d)}}}
                 }
             })
