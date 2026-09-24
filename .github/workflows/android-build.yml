@@ -1,4 +1,5 @@
 name: Android build
+# compile after legacy root fixes 2026-09-24
 # retry step1 after Kotlin compatibility fix
 # manual compile requested 2026-09-24 step1
 # step 1 menu-navigation build 2026-09-24
