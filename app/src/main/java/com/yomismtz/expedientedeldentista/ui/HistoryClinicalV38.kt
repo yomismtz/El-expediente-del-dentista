@@ -78,16 +78,40 @@ private data class E(val n:String,val d:String)
 }
 
 @Composable fun HistoryHereditaryV38(lang:String,onBack:()->Unit){
- val relatives=listOf("Madre","Padre","Hermanas/os","Hijas/os","Abuelas/os maternos","Abuelas/os paternos","Tías/os maternos","Tías/os paternos")
- val diseases=listOf("Diabetes mellitus","Hipertensión arterial","Cardiopatías","Infarto / evento vascular","Enfermedad renal","Enfermedad hepática","Asma / enfermedad pulmonar","Alergias","Epilepsia / neurológicas","Trastornos hematológicos","Cáncer / neoplasias","Enfermedades autoinmunes","Osteoporosis / enfermedad ósea","Trastornos tiroideos/endocrinos","Tuberculosis / enfermedades fímicas","VIH","Hepatitis","Infecciones de transmisión sexual","Alteraciones congénitas o hereditarias","Otras")
- var relative by remember{mutableStateOf(0)};val selected=remember{mutableStateMapOf<String,Boolean>()}
+ val relatives=listOf("Madre","Padre","Hermana/o","Hija/o","Tía/o","Abuela/o")
+ val categories=linkedMapOf(
+  "Cardiovasculares" to listOf("Hipertensión arterial","Infarto","Cardiopatía","Evento vascular referido","Otra cardiovascular"),
+  "Endocrinos" to listOf("Diabetes mellitus","Hipotiroidismo","Hipertiroidismo","Obesidad","Resistencia a la insulina","Otra endocrina"),
+  "Pulmonares" to listOf("Asma","EPOC","Tuberculosis","Otra pulmonar"),
+  "Alérgicos" to listOf("Alergia a medicamentos","Alergia a alimentos","Rinitis alérgica","Otra alergia"),
+  "Neurológicos" to listOf("Epilepsia","Alzheimer","Parkinson","Otra neurológica"),
+  "Neoplásicos" to listOf("Cáncer de mama","Cáncer de próstata","Cáncer colorrectal","Cáncer de pulmón","Cáncer de cabeza/cuello","Leucemia/linfoma","Otro cáncer"),
+  "ETS / infecciosos relevantes" to listOf("VIH referido","Sífilis","Hepatitis B","Otra infección referida"),
+  "Otros" to listOf("Psoriasis","Enfermedad renal","Enfermedad ósea/hereditaria","Alteración congénita","Otra")
+ )
+ var relative by remember{mutableStateOf(0)}
+ var category by remember{mutableStateOf(categories.keys.first())}
+ val selected=remember{mutableStateMapOf<String,Boolean>()}
+ val status=remember{mutableStateMapOf<String,String>()}
+ var openHelp by remember{mutableStateOf(false)}
+ val current=relatives[relative]
+ val diseases=categories[category]?:emptyList()
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Antecedentes heredo-familiares",onBack,"Elige primero el familiar y después marca sus antecedentes. Repite el proceso para construir el registro familiar completo.")}
+  item{ScreenHeader("Antecedentes heredo-familiares",onBack,"Primero selecciona el familiar y después la categoría de enfermedad. Ante un positivo, amplía inicio, evolución, estado actual, medicamentos y complicaciones.")}
+  item{NoticeCard("Este apartado busca antecedentes familiares que puedan aportar predisposición o contexto clínico. No significa que el paciente padezca la misma enfermedad.")}
   item{SectionCard("1 · Familiar"){relatives.forEachIndexed{i,x->FilterChip(relative==i,{relative=i},{Text(x)},modifier=Modifier.fillMaxWidth())}}}
-  item{Text("2 · Enfermedades de "+relatives[relative],fontWeight=FontWeight.Bold)}
-  items(diseases.size){i->val key=relatives[relative]+"|"+diseases[i];Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){Checkbox(selected[key]==true,{selected[key]=it});Text(diseases[i],Modifier.weight(1f))}}
-  item{SectionCard("3 · Qué ampliar ante un positivo"){Text("Registra parentesco, enfermedad específica, edad aproximada de inicio, tratamiento/complicaciones y estado: vive, controlado/en tratamiento, curado cuando corresponda o falleció.")}}
-  item{SectionCard("Resumen familiar"){val positives=selected.filterValues{it}.keys;if(positives.isEmpty())Text("Aún no hay antecedentes marcados.") else positives.forEach{Text("• "+it.replace("|"," · "))}}}
+  item{SectionCard("2 · Categoría"){categories.keys.forEach{x->FilterChip(category==x,{category=x},{Text(x)},modifier=Modifier.fillMaxWidth())}}}
+  item{Text("3 · $category · $current",fontWeight=FontWeight.Bold)}
+  items(diseases.size){i->
+   val d=diseases[i];val key="$current|$category|$d";val checked=selected[key]==true
+   Card(Modifier.fillMaxWidth()){Column(Modifier.padding(10.dp)){
+    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){Checkbox(checked,{selected[key]=it;if(!it)status.remove(key)});Text(d,Modifier.weight(1f))}
+    if(checked){Row(horizontalArrangement=Arrangement.spacedBy(5.dp)){listOf("Vive","Falleció","No sabe").forEach{x->FilterChip(status[key]==x,{status[key]=x},{Text(x)})}};Text("Amplía: inicio/edad aproximada · evolución · estado actual · tratamiento/medicamentos · complicaciones.",style=MaterialTheme.typography.bodySmall)}
+   }}
+  }
+  item{Card(onClick={openHelp=!openHelp},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(13.dp)){Text("4 · ¿Cómo registrar un positivo?",fontWeight=FontWeight.Bold);if(openHelp){Text("Ejemplo de estructura: «Abuela materna · diabetes mellitus · inicio aproximado ___ · evolución/estado actual ___ · tratamiento referido ___ · complicaciones ___ · vive/falleció/no sabe».");Text("Ejemplos del material docente incluyen abuelo paterno con hipertensión, abuela materna con diabetes, madre con resistencia a la insulina, hermano con asma, hermana con alergia a penicilina y abuelo con Alzheimer.")}else Text("Toca para ver la estructura")}}}
+  item{SectionCard("5 · Cuando no hay información"){Text("Usa la opción que corresponda al interrogatorio: «Negado» · «Sin antecedentes» · «No referido». No son equivalentes: «no referido» indica que no se obtuvo o no se proporcionó el dato.")}}
+  item{SectionCard("Resumen familiar"){val positives=selected.filterValues{it}.keys;if(positives.isEmpty())Text("Aún no hay antecedentes positivos seleccionados.") else positives.forEach{key->val p=key.split("|");Text("• "+p.joinToString(" · ")+" · "+(status[key]?:"estado no indicado"))}}}
  }
 }
 
