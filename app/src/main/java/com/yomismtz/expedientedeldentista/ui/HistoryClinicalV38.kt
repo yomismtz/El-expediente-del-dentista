@@ -41,16 +41,37 @@ private data class E(val n:String,val d:String)
  }
 }
 @Composable fun HistoryReasonV38(lang:String,onBack:()->Unit){
- var reason by remember{mutableStateOf("")}; var openSymptoms by remember{mutableStateOf(false)}
- val examples=listOf("“Tiene un hoyo en el diente” → conservar la frase y, después de explorar, describir la lesión y diagnóstico confirmado.","“Le duele el diente” → caracterizar dolor y pruebas; el dolor por sí solo no define diagnóstico pulpar.","“Le sale agua blanca / pus del diente” → registrar secreción; buscar trayecto fistuloso, inflamación y origen antes de diagnosticar.","“Se le rompió el diente” → precisar traumatismo/fractura, tejidos comprometidos, tiempo y síntomas.")
- val symptoms=listOf("Dolor: inicio, espontáneo/provocado, intensidad y duración","Localización e irradiación","Frío, calor, dulce y masticación","Dolor nocturno","Inflamación / aumento de volumen","Secreción, pus o fístula","Sangrado","Movilidad","Traumatismo","Fiebre o malestar referido")
+ var reason by remember{mutableStateOf("")}
+ var visitType by remember{mutableStateOf<String?>(null)}
+ val selectedSymptoms=remember{mutableStateMapOf<String,Boolean>()}
+ val visitTypes=listOf("Urgencia","Primera vez","Otra causa")
+ val symptoms=listOf("Dolor","Inflamación / aumento de volumen","Secreción / exudado / pus","Fístula","Sangrado","Movilidad dental","Traumatismo / fractura","Fiebre o malestar referido","Dificultad para masticar","Sensibilidad a frío","Sensibilidad a calor","Sensibilidad a dulce","Dolor al masticar","Dolor nocturno","Otro")
+ val guide=listOf(
+  E("Fecha de inicio","¿Cuándo comenzó? Registra fecha o tiempo aproximado. Evita inventar precisión si el paciente no la recuerda."),
+  E("Factor desencadenante","Pregunta qué estaba ocurriendo cuando inició: espontáneo, alimento, frío/calor, masticación, traumatismo, procedimiento previo u otro factor referido."),
+  E("Evolución","Aclara si ha aumentado, disminuido, permanece igual, aparece por episodios o cambió de características desde el inicio."),
+  E("Características de los síntomas","En dolor: localización, irradiación, intensidad referida, duración, espontáneo/provocado y estímulos. En otros síntomas describe tamaño, frecuencia, duración y cambios."),
+  E("Signos observables","Se registran después de explorar: aumento de volumen, cambio de color, fístula, exudado, sangrado, movilidad, fractura u otros hallazgos comprobados."),
+  E("Factores que alivian o agravan","Pregunta por frío, calor, masticación, postura, reposo, alimentos y cualquier medida que modifique el problema."),
+  E("Medicamentos usados","Pregunta qué tomó o aplicó, dosis/presentación si la conoce, frecuencia, desde cuándo y si produjo alivio. Registrar lo referido; no convertirlo en prescripción.")
+ )
+ val examples=listOf(
+  "“Me duele una muela cuando tomo frío.” → conservar la frase; después caracterizar el dolor y realizar las pruebas correspondientes.",
+  "“Le salió una bolita en la encía a mi hijo y le sale agua blanca.” → conservar la frase; después describir clínicamente aumento de volumen, trayecto/fístula o exudado si realmente se observan.",
+  "“Tengo inflamado aquí y no puedo comer.” → precisar sitio, inicio, evolución, dolor, función, signos locales y síntomas generales.",
+  "“Se le rompió el diente.” → precisar mecanismo, tiempo, órgano dentario, tejidos comprometidos y síntomas."
+ )
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
-  item{ScreenHeader("Motivo de consulta y padecimiento actual",onBack,"Primero conserva las palabras del paciente o acompañante; después construye el padecimiento actual con lenguaje clínico y hallazgos comprobados.")}
-  item{SectionCard("1 · Motivo de consulta literal"){OutlinedTextField(reason,{reason=it.take(250)},modifier=Modifier.fillMaxWidth(),label={Text("Escribe tal cual lo dijo el paciente, mamá/papá o acompañante")},minLines=3);Text("No sustituyas aquí las palabras originales por un diagnóstico.",style=MaterialTheme.typography.bodySmall)}}
-  item{SectionCard("2 · Traducción clínica educativa"){examples.forEach{Text("• $it")}}}
-  item{Card(onClick={openSymptoms=!openSymptoms},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp)){Text("3 · Signos y síntomas",fontWeight=FontWeight.Bold);Text(if(openSymptoms)"Toca para cerrar" else "Toca para abrir interrogatorio")}}}
-  if(openSymptoms)items(symptoms.size){i->Card(Modifier.fillMaxWidth()){Text("□ "+symptoms[i],Modifier.padding(13.dp))}}
-  item{NoticeCard("El padecimiento actual se redacta con inicio, evolución, localización, características, factores desencadenantes/atenuantes y hallazgos relacionados. La orientación no convierte automáticamente una frase coloquial en diagnóstico definitivo.")}
+  item{ScreenHeader("Motivo de consulta y padecimiento actual",onBack,"El motivo se escribe literalmente con las palabras del paciente o tutor. El padecimiento actual se construye después, con interrogatorio y hallazgos clínicos.")}
+  item{SectionCard("1 · Tipo de consulta"){visitTypes.forEach{x->FilterChip(selected=visitType==x,onClick={visitType=x},label={Text(x)},modifier=Modifier.fillMaxWidth())}}}
+  item{SectionCard("2 · Motivo de consulta literal"){OutlinedTextField(reason,{reason=it.take(300)},modifier=Modifier.fillMaxWidth(),label={Text("Palabras exactas del paciente, mamá/papá o tutor")},placeholder={Text("Ej.: “Me duele una muela cuando tomo frío.”")},minLines=3);Text("Debe conservarse la expresión original. No escribas aquí un diagnóstico.",style=MaterialTheme.typography.bodySmall)}}
+  item{SectionCard("3 · Ejemplos de traducción clínica educativa"){examples.forEach{Text("• $it")}}}
+  item{Text("4 · Síntomas referidos · selecciona los presentes",fontWeight=FontWeight.Bold)}
+  items(symptoms.size){i->val x=symptoms[i];Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){Checkbox(selectedSymptoms[x]==true,{selectedSymptoms[x]=it});Text(x,Modifier.weight(1f))}}
+  item{Text("5 · Construcción del padecimiento actual",fontWeight=FontWeight.Bold)}
+  items(guide.size){i->val x=guide[i];Card(Modifier.fillMaxWidth()){Column(Modifier.padding(13.dp)){Text(x.n,fontWeight=FontWeight.Bold);Text(x.d)}}}
+  item{SectionCard("Resumen didáctico de lo seleccionado"){Text("Tipo: "+(visitType?:"sin seleccionar"));Text("Motivo literal: "+if(reason.isBlank())"sin escribir" else reason);val positives=selectedSymptoms.filterValues{it}.keys;Text("Síntomas: "+if(positives.isEmpty())"ninguno seleccionado" else positives.joinToString())}}
+  item{NoticeCard("La interpretación clínica no debe convertir automáticamente una frase coloquial en un diagnóstico definitivo. El diagnóstico requiere integrar interrogatorio, exploración y pruebas indicadas.")}
  }
 }
 
