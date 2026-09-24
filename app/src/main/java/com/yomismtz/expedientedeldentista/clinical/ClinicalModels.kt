@@ -63,7 +63,11 @@ data class PerioRecord(
     val suppuration: Boolean = false,
     val mobility: Int = 0,
     val furcation: Int = 0,
-    val recessionMm: Int = 0
+    val recessionMm: Int = 0,
+    val bleedingSites: Set<Int> = emptySet(),
+    val plaqueSites: Set<Int> = emptySet(),
+    val suppurationSites: Set<Int> = emptySet(),
+    val recessionBySite: List<Int> = List(6) { 0 }
 )
 
 data class PulpalAssessment(
