@@ -14,13 +14,17 @@ fun AdaptiveBaseRootV17(
     onPreferencesChanged: (AppPreferences) -> Unit,
     onLanguageChanged: (String) -> Unit,
     session: EducationalSession,
-    onSessionChanged: (EducationalSession) -> Unit
+    onSessionChanged: (EducationalSession) -> Unit,
+    onIntake: (() -> Unit)? = null,
+    onSettings: (() -> Unit)? = null
 ) {
     AdaptiveBaseRootV19(
         preferences = preferences,
         onPreferencesChanged = onPreferencesChanged,
         onLanguageChanged = onLanguageChanged,
         session = session,
-        onSessionChanged = onSessionChanged
+        onSessionChanged = onSessionChanged,
+        onIntake = onIntake,
+        onSettings = onSettings
     )
 }

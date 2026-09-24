@@ -31,12 +31,20 @@ import com.yomismtz.expedientedeldentista.clinical.ToothStatus
 private data class OdontoArchV20(val titleEs:String,val titleEn:String,val teeth:List<Int>)
 
 private fun archesV20(primary:Boolean)=if(primary) listOf(
-    OdontoArchV20("Maxilar","Maxillary",listOf(55,54,53,52,51,61,62,63,64,65)),
-    OdontoArchV20("Mandíbula","Mandibular",listOf(85,84,83,82,81,71,72,73,74,75))
+    OdontoArchV20("Q5 · superior derecho","Q5 · upper right",listOf(55,54,53,52,51)),
+    OdontoArchV20("Q6 · superior izquierdo","Q6 · upper left",listOf(61,62,63,64,65)),
+    OdontoArchV20("Q8 · inferior derecho","Q8 · lower right",listOf(85,84,83,82,81)),
+    OdontoArchV20("Q7 · inferior izquierdo","Q7 · lower left",listOf(71,72,73,74,75))
 ) else listOf(
-    OdontoArchV20("Maxilar","Maxillary",listOf(18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28)),
-    OdontoArchV20("Mandíbula","Mandibular",listOf(48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38))
+    OdontoArchV20("Q1 · superior derecho","Q1 · upper right",listOf(18,17,16,15,14,13,12,11)),
+    OdontoArchV20("Q2 · superior izquierdo","Q2 · upper left",listOf(21,22,23,24,25,26,27,28)),
+    OdontoArchV20("Q4 · inferior derecho","Q4 · lower right",listOf(48,47,46,45,44,43,42,41)),
+    OdontoArchV20("Q3 · inferior izquierdo","Q3 · lower left",listOf(31,32,33,34,35,36,37,38))
 )
+
+private fun isPosteriorV48(tooth:Int)=tooth%10>=4
+private fun eligibleSurfacesV48(tooth:Int)=if(isPosteriorV48(tooth)) Surface.entries.toSet()
+else setOf(Surface.VESTIBULAR,Surface.LINGUAL_PALATAL,Surface.MESIAL,Surface.DISTAL)
 
 private fun surfaceShortV20(surface:Surface)=when(surface){
     Surface.VESTIBULAR->"V"
@@ -79,7 +87,7 @@ fun OdontogramV20Screen(
     val marks=session.odontogramSurfaces[selectedTooth]?:emptyMap()
 
     fun saveSurface(surface:Surface){
-        if(missing) return
+        if(missing || surface !in eligibleSurfacesV48(selectedTooth)) return
         val updated=marks.toMutableMap()
         if(selectedMark==SurfaceMark.HEALTHY) updated.remove(surface) else updated[surface]=selectedMark
         val status=when{
@@ -95,22 +103,39 @@ fun OdontogramV20Screen(
         ))
     }
 
-    fun setMissing(value:Boolean){
+    fun setWholeStatus(status:ToothStatus){
         val present=session.presentTeeth.toMutableSet()
-        if(value) present.remove(selectedTooth) else present.add(selectedTooth)
-        val surfaces=if(value) session.odontogramSurfaces-selectedTooth else session.odontogramSurfaces
+        val becomesMissing=status in setOf(ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER)
+        if(becomesMissing) present.remove(selectedTooth) else present.add(selectedTooth)
+        val surfaces=if(becomesMissing) {
+            session.odontogramSurfaces-selectedTooth
+        } else {
+            val cleaned=(session.odontogramSurfaces[selectedTooth]?:emptyMap())
+                .filterKeys{it in eligibleSurfacesV48(selectedTooth)}
+            session.odontogramSurfaces+(selectedTooth to cleaned)
+        }
+        val effectiveStatus=if(status==ToothStatus.HEALTHY&&!becomesMissing){
+            val live=surfaces[selectedTooth]?:emptyMap()
+            when{
+                live.values.any{it==SurfaceMark.CARIES}->ToothStatus.CARIES
+                live.values.any{it==SurfaceMark.RESTORATION}->ToothStatus.RESTORED
+                live.values.any{it==SurfaceMark.SEALANT}->ToothStatus.SEALANT
+                else->ToothStatus.HEALTHY
+            }
+        }else status
         onSessionChanged(session.copy(
             presentTeeth=present,
             odontogramSurfaces=surfaces,
-            teeth=session.teeth+(selectedTooth to record.copy(status=if(value)ToothStatus.MISSING_OTHER else ToothStatus.HEALTHY))
+            teeth=session.teeth+(selectedTooth to record.copy(status=effectiveStatus))
         ))
     }
 
     ResponsiveScreenV17(
-        tr(lang,"Odontograma · varias caras","Odontogram · multiple surfaces"),
-        tr(lang,"Selecciona caries, restauración o sellador y toca todas las caras que correspondan. Cada diente puede tener varias caras marcadas al mismo tiempo.","Choose caries, restoration or sealant and tap every applicable surface. A tooth may have multiple marked surfaces at the same time."),
+        tr(lang,"Odontograma clínico","Clinical odontogram"),
+        tr(lang,"Trabaja por cuadrantes. Los dientes anteriores usan cuatro superficies y los posteriores cinco; cada superficie conserva su propia marca.","Work by quadrants. Anterior teeth use four surfaces and posterior teeth five; each surface keeps its own mark."),
         onBack
     ){profile->
+        PracticeSaveControlsV48(lang,"odontogram_v48")
         ResponsiveSectionV17(tr(lang,"Dentición","Dentition")){
             AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
                 val value=i==1
@@ -121,9 +146,8 @@ fun OdontogramV20Screen(
         arches.forEach{arch->
             ResponsiveSectionV17(if(lang=="en")arch.titleEn else arch.titleEs){
                 val columns=when{
-                    profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT->5
-                    profile.width==ScreenWidthV17.MEDIUM->8
-                    else->10
+                    profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT->4
+                    else->arch.teeth.size
                 }
                 AdaptiveGridV17(arch.teeth.size,columns){i->
                     val tooth=arch.teeth[i]
@@ -167,12 +191,12 @@ fun OdontogramV20Screen(
                 }
             }else{
                 DentalSurfaceDiagram(
-                    centerEnabled=true,
+                    centerEnabled=isPosteriorV48(selectedTooth),
                     surfaceColor={surface->markColorV20(marks[surface]).let{if(it==Color.Transparent)MaterialTheme.colorScheme.primaryContainer.copy(alpha=.58f) else it}},
                     onSurfaceTap={saveSurface(it)},
                     modifier=Modifier.fillMaxWidth()
                 )
-                val groups=marks.entries.groupBy{it.value}
+                val groups=marks.filterKeys{it in eligibleSurfacesV48(selectedTooth)}.entries.groupBy{it.value}
                 if(groups.isEmpty()) Text(tr(lang,"Aún no hay caras marcadas en este diente.","No surfaces are marked on this tooth yet."))
                 groups.forEach{(mark,entries)->
                     Text("${markLabelV20(mark,lang)}: ${entries.map{surfaceShortV20(it.key)}.sorted().joinToString(", ")}",fontWeight=FontWeight.Bold,color=if(mark==SurfaceMark.CARIES)Color(0xFFE04B57) else MaterialTheme.colorScheme.primary)
@@ -180,25 +204,58 @@ fun OdontogramV20Screen(
                 OutlinedButton(onClick={
                     onSessionChanged(session.copy(
                         odontogramSurfaces=session.odontogramSurfaces-selectedTooth,
-                        teeth=session.teeth+(selectedTooth to record.copy(status=ToothStatus.HEALTHY))
+                        teeth=session.teeth+(selectedTooth to record.copy(status=ToothStatus.HEALTHY)),
+                        presentTeeth=session.presentTeeth+selectedTooth
                     ))
                 },modifier=Modifier.fillMaxWidth()) { Text(tr(lang,"Limpiar todas las caras del OD $selectedTooth","Clear all surfaces on tooth $selectedTooth")) }
             }
 
-            AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
-                val targetMissing=i==1
+            AdaptiveGridV17(3,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 3){i->
+                val status=when(i){
+                    0->ToothStatus.HEALTHY
+                    1->ToothStatus.MISSING_CARIES
+                    else->ToothStatus.MISSING_OTHER
+                }
+                val selectedStatus=when(status){
+                    ToothStatus.HEALTHY->!missing
+                    else->record.status==status
+                }
                 FilterChip(
-                    selected=missing==targetMissing,
-                    onClick={setMissing(targetMissing)},
-                    label={Text(if(targetMissing)tr(lang,"✕ Diente ausente","✕ Missing tooth") else tr(lang,"🦷 Diente presente","🦷 Present tooth"))},
+                    selected=selectedStatus,
+                    onClick={setWholeStatus(status)},
+                    label={Text(when(status){
+                        ToothStatus.HEALTHY->tr(lang,"🦷 Diente presente","🦷 Present tooth")
+                        ToothStatus.MISSING_CARIES->tr(lang,"✕ Perdido por caries","✕ Missing due to caries")
+                        else->tr(lang,"✕ Ausente por otra causa","✕ Missing for another reason")
+                    })},
                     modifier=Modifier.fillMaxWidth()
                 )
             }
         }
 
+        ResponsiveSectionV17(tr(lang,"Resumen del odontograma","Odontogram summary")){
+            val marked=all.count{session.odontogramSurfaces[it]?.filterKeys{s->s in eligibleSurfacesV48(it)}?.isNotEmpty()==true}
+            val missingCaries=all.count{session.teeth[it]?.status==ToothStatus.MISSING_CARIES}
+            val missingOther=all.count{session.teeth[it]?.status==ToothStatus.MISSING_OTHER}
+            Text(tr(lang,"Dientes con superficies marcadas: $marked","Teeth with marked surfaces: $marked"))
+            Text(tr(lang,"Perdidos por caries: $missingCaries","Missing due to caries: $missingCaries"))
+            Text(tr(lang,"Ausentes por otra causa: $missingOther","Missing for another reason: $missingOther"))
+            Card(
+                onClick={
+                    TeachingStateV40.moduleSummaries["odontogram"]="Odontograma · marcados $marked · perdidos por caries $missingCaries · otras ausencias $missingOther"
+                    TeachingStateV40.savedPracticeSections["odontogram_v48"]=true
+                },
+                modifier=Modifier.fillMaxWidth(),
+                colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer),
+                border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline)
+            ){
+                Text(tr(lang,"Guardar resumen del odontograma","Save odontogram summary"),Modifier.padding(12.dp),fontWeight=FontWeight.Black)
+            }
+        }
         NoticeCard(tr(lang,
-            "Ejemplo: un mismo OD puede quedar O y V en caries, M en restauración y D en sellador. Cada cara conserva su propia marca. Al declarar el diente ausente se borran las marcas de superficies para evitar datos contradictorios. Registra al final la simbología exigida por tu expediente físico.",
-            "Example: the same tooth may have O and V caries, an M restoration and a D sealant. Each surface keeps its own mark. Marking a tooth missing clears its surface marks to avoid contradictory data. Record the symbols required by your physical chart."
+            "Ejemplo: un mismo OD posterior puede quedar O y V en caries, M en restauración y D en sellador. Los anteriores sólo habilitan V, L/P, M y D. Al declarar un diente ausente se borran sus marcas para evitar datos contradictorios; registra además si la ausencia fue por caries u otra causa.",
+            "Example: the same posterior tooth may have O and B caries, an M restoration and a D sealant. Anterior teeth only enable B, L/P, M and D. Marking a tooth missing clears its surface marks; also record whether it is missing due to caries or another cause."
         ))
+        PracticeSaveControlsV48(lang,"odontogram_v48")
     }
 }

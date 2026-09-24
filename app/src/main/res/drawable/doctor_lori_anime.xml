@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="320dp"
+    android:viewportWidth="360"
+    android:viewportHeight="320">
+
+    <!-- Consultorio dental: fondo suave para que el personaje se reconozca como odontólogo. -->
+    <path android:fillColor="#EAF3F7" android:pathData="M18,18 H342 A22,22 0,0 1,364 40 V282 A22,22 0,0 1,342 304 H18 A22,22 0,0 1,-4 282 V40 A22,22 0,0 1,18 18 Z" />
+    <path android:fillColor="#D9E8EE" android:pathData="M25,245 C74,224 119,222 154,237 C192,253 250,252 337,226 L337,304 L25,304 Z" />
+    <path android:fillColor="#C4D8E1" android:pathData="M278,48 C301,42 321,52 327,70 C333,89 321,106 299,110 C277,114 259,103 255,86 C251,68 260,53 278,48 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M268,61 C284,55 305,59 314,72 C322,85 316,96 301,100 C284,104 268,98 264,87 C260,76 261,65 268,61 Z" />
+    <path android:fillColor="#7895A2" android:pathData="M293,109 L287,151 L292,152 L300,111 Z" />
+    <path android:fillColor="#7895A2" android:pathData="M289,148 C307,152 318,164 319,180 L310,181 C308,169 299,160 286,158 Z" />
+
+    <!-- Cabello, cuello y rostro con capas de sombreado. -->
+    <path android:fillColor="#3A302C" android:pathData="M119,91 C120,48 145,24 181,24 C219,24 243,49 243,92 C242,117 232,132 218,141 L143,140 C128,131 119,116 119,91 Z" />
+    <path android:fillColor="#C98E6F" android:pathData="M146,128 L145,160 C147,174 162,184 181,184 C200,184 215,174 217,160 L216,128 Z" />
+    <path android:fillColor="#DDA683" android:pathData="M181,47 C153,47 137,67 139,93 C140,121 155,140 181,143 C207,140 222,121 223,93 C225,67 209,47 181,47 Z" />
+    <path android:fillColor="#E8B694" android:pathData="M181,53 C160,53 147,70 148,95 C149,117 160,132 181,135 C202,132 213,117 214,95 C215,70 202,53 181,53 Z" />
+    <path android:fillColor="#B87960" android:pathData="M139,90 C132,91 129,99 132,108 C135,116 141,119 147,117 L146,94 Z M223,90 C230,91 233,99 230,108 C227,116 221,119 215,117 L216,94 Z" />
+    <path android:fillColor="#332925" android:pathData="M133,74 C140,42 160,33 181,33 C207,33 226,47 229,77 C213,67 198,61 177,61 C160,61 146,65 133,74 Z" />
+    <path android:fillColor="#4A3B34" android:pathData="M130,72 C139,48 153,36 169,32 C153,46 148,58 148,71 C142,72 136,73 130,72 Z" />
+
+    <!-- Cejas y ojos más anatómicos. -->
+    <path android:fillColor="#4D372F" android:pathData="M151,83 C159,78 170,78 177,82 C169,81 160,82 152,86 Z" />
+    <path android:fillColor="#4D372F" android:pathData="M186,82 C194,78 205,78 212,83 L211,86 C203,82 194,81 186,83 Z" />
+    <path android:fillColor="#FFFDFB" android:pathData="M151,91 C158,86 170,86 177,91 C171,99 158,99 151,91 Z" />
+    <path android:fillColor="#FFFDFB" android:pathData="M186,91 C193,86 205,86 212,91 C205,99 193,99 186,91 Z" />
+    <path android:fillColor="#5C7A7D" android:pathData="M161,91 A5,5 0,1 0,171 91 A5,5 0,1 0,161 91" />
+    <path android:fillColor="#5C7A7D" android:pathData="M195,91 A5,5 0,1 0,205 91 A5,5 0,1 0,195 91" />
+    <path android:fillColor="#1F2729" android:pathData="M164,91 A2.5,2.5 0,1 0,169 91 A2.5,2.5 0,1 0,164 91" />
+    <path android:fillColor="#1F2729" android:pathData="M198,91 A2.5,2.5 0,1 0,203 91 A2.5,2.5 0,1 0,198 91" />
+    <path android:fillColor="#FFFFFF" android:pathData="M166,89 A1.2,1.2 0,1 0,168.4 89 A1.2,1.2 0,1 0,166 89" />
+    <path android:fillColor="#FFFFFF" android:pathData="M200,89 A1.2,1.2 0,1 0,202.4 89 A1.2,1.2 0,1 0,200 89" />
+
+    <!-- Nariz, labios y barba tenue. -->
+    <path android:fillColor="#C18469" android:pathData="M180,91 C177,101 176,109 178,115 C181,118 185,118 188,115 C184,116 181,114 181,110 Z" />
+    <path android:fillColor="#B9796F" android:pathData="M164,123 C174,119 188,119 198,123 C190,130 172,130 164,123 Z" />
+    <path android:fillColor="#F3D7C8" android:pathData="M171,123 C177,121 185,121 191,123 C185,125 177,125 171,123 Z" />
+    <path android:fillColor="#B77E68" android:fillAlpha="0.22" android:pathData="M151,112 C160,137 200,140 212,112 C207,135 196,148 181,150 C165,148 155,135 151,112 Z" />
+
+    <!-- Pijama quirúrgica y bata con solapas y sombras. -->
+    <path android:fillColor="#2F6F78" android:pathData="M143,163 L181,188 L219,163 L228,225 L135,225 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M98,304 L108,210 C112,181 133,163 155,157 L181,188 L207,157 C230,163 250,181 254,210 L264,304 Z" />
+    <path android:fillColor="#E7EEF1" android:pathData="M108,209 C115,183 134,169 153,163 L168,189 L147,207 L128,185 L119,304 L98,304 Z" />
+    <path android:fillColor="#E7EEF1" android:pathData="M254,209 C247,183 228,169 209,163 L194,189 L215,207 L234,185 L243,304 L264,304 Z" />
+    <path android:fillColor="#C9D8DE" android:pathData="M147,207 L168,189 L181,200 L181,304 L171,304 L171,211 Z" />
+    <path android:fillColor="#C9D8DE" android:pathData="M215,207 L194,189 L181,200 L181,304 L191,304 L191,211 Z" />
+    <path android:fillColor="#7B9BA4" android:pathData="M179,197 H183 V304 H179 Z" />
+
+    <!-- Credencial y emblema de diente. -->
+    <path android:fillColor="#DDEBF0" android:pathData="M210,218 H245 V257 H210 Z" />
+    <path android:fillColor="#5E8794" android:pathData="M214,222 H241 V229 H214 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M224,237 C219,235 216,238 217,243 C218,248 221,252 224,252 C227,252 228,247 229,244 C230,247 231,252 234,252 C237,252 240,248 241,243 C242,238 239,235 234,237 C231,238 228,238 224,237 Z" />
+
+    <!-- Guantes y espejo/explorador odontológico. -->
+    <path android:fillColor="#8ED6E2" android:pathData="M104,252 C92,255 86,266 90,279 C94,291 105,296 116,290 C124,285 125,274 120,264 C116,256 111,252 104,252 Z" />
+    <path android:fillColor="#8ED6E2" android:pathData="M253,252 C265,255 271,266 267,279 C263,291 252,296 241,290 C233,285 232,274 237,264 C241,256 246,252 253,252 Z" />
+    <path android:fillColor="#667A82" android:pathData="M111,257 L152,217 L156,221 L116,262 Z" />
+    <path android:fillColor="#B8C7CC" android:pathData="M148,213 C155,207 165,208 170,214 C176,221 175,231 168,237 C161,243 151,242 146,235 C140,229 141,219 148,213 Z" />
+    <path android:fillColor="#F9FEFF" android:pathData="M151,217 C156,213 163,214 166,218 C170,223 169,229 165,233 C160,237 153,236 150,232 C146,227 147,221 151,217 Z" />
+    <path android:fillColor="#667A82" android:pathData="M247,257 L212,220 L215,217 L251,254 Z" />
+    <path android:fillColor="#667A82" android:pathData="M210,218 L205,204 L209,202 L217,217 Z" />
+    <path android:fillColor="#667A82" android:pathData="M204,204 L202,196 L206,194 L210,202 Z" />
+
+    <!-- Costuras, bolsillos y detalles finales. -->
+    <path android:fillColor="#B8C7CC" android:pathData="M119,250 H159 V254 H119 Z" />
+    <path android:fillColor="#B8C7CC" android:pathData="M203,268 H242 V272 H203 Z" />
+    <path android:fillColor="#9FB5BD" android:pathData="M122,254 H157 V286 H122 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M126,258 H153 V282 H126 Z" />
+</vector>

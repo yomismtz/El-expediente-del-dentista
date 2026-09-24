@@ -1,5 +1,6 @@
 package com.yomismtz.expedientedeldentista.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -528,16 +529,22 @@ private fun kennedyV17(arch: List<Int>, present: Set<Int>, ignored: Set<Int>, la
 }
 
 @Composable
-fun ProstheticResponsiveV17Screen(lang: String, onBack: () -> Unit) {
+fun ProstheticResponsiveV17Screen(
+    lang: String,
+    session: EducationalSession,
+    onSessionChanged: (EducationalSession) -> Unit,
+    onBack: () -> Unit
+) {
     var fullModule by remember { mutableStateOf(false) }
     if (fullModule) {
-        ProstheticInteractiveV2Screen(lang) { fullModule = false }
+        BackHandler { fullModule = false }
+        ProstheticInteractiveV2Screen(lang, session, onSessionChanged) { fullModule = false }
         return
     }
-    var upperPresent by remember { mutableStateOf(upperArchV17.toSet()) }
-    var lowerPresent by remember { mutableStateOf(lowerArchV17.toSet()) }
-    var upperIgnored by remember { mutableStateOf<Set<Int>>(emptySet()) }
-    var lowerIgnored by remember { mutableStateOf<Set<Int>>(emptySet()) }
+    val upperPresent = session.prosthetic.upperPresent
+    val lowerPresent = session.prosthetic.lowerPresent
+    val upperIgnored = session.prosthetic.upperIgnored
+    val lowerIgnored = session.prosthetic.lowerIgnored
 
     val upperResult = kennedyV17(upperArchV17, upperPresent, upperIgnored, lang)
     val lowerResult = kennedyV17(lowerArchV17, lowerPresent, lowerIgnored, lang)
@@ -548,11 +555,25 @@ fun ProstheticResponsiveV17Screen(lang: String, onBack: () -> Unit) {
         onBack
     ) { profile ->
         KennedyArchSectionV17(lang, tr(lang,"MAXILAR","MAXILLA"), upperArchV17, upperPresent, upperIgnored, upperResult, profile,
-            onToggle = { tooth -> upperPresent = if (tooth in upperPresent) upperPresent - tooth else upperPresent + tooth; if (tooth in upperPresent) upperIgnored = upperIgnored - tooth },
-            onIgnore = { tooth -> upperIgnored = if (tooth in upperIgnored) upperIgnored - tooth else upperIgnored + tooth })
+            onToggle = { tooth ->
+                val present = if (tooth in upperPresent) upperPresent - tooth else upperPresent + tooth
+                val ignored = if (tooth in present) upperIgnored - tooth else upperIgnored
+                onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(upperPresent = present, upperIgnored = ignored)))
+            },
+            onIgnore = { tooth ->
+                val ignored = if (tooth in upperIgnored) upperIgnored - tooth else upperIgnored + tooth
+                onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(upperIgnored = ignored)))
+            })
         KennedyArchSectionV17(lang, tr(lang,"MANDÍBULA","MANDIBLE"), lowerArchV17, lowerPresent, lowerIgnored, lowerResult, profile,
-            onToggle = { tooth -> lowerPresent = if (tooth in lowerPresent) lowerPresent - tooth else lowerPresent + tooth; if (tooth in lowerPresent) lowerIgnored = lowerIgnored - tooth },
-            onIgnore = { tooth -> lowerIgnored = if (tooth in lowerIgnored) lowerIgnored - tooth else lowerIgnored + tooth })
+            onToggle = { tooth ->
+                val present = if (tooth in lowerPresent) lowerPresent - tooth else lowerPresent + tooth
+                val ignored = if (tooth in present) lowerIgnored - tooth else lowerIgnored
+                onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(lowerPresent = present, lowerIgnored = ignored)))
+            },
+            onIgnore = { tooth ->
+                val ignored = if (tooth in lowerIgnored) lowerIgnored - tooth else lowerIgnored + tooth
+                onSessionChanged(session.copy(prosthetic = session.prosthetic.copy(lowerIgnored = ignored)))
+            })
 
         ResponsiveSectionV17(tr(lang,"Diseño protésico completo","Complete prosthetic design")) {
             Text(tr(lang,
