@@ -57,8 +57,8 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
     var selectedId by remember{mutableStateOf("lengua")}
     var tab by remember{mutableStateOf(0)}
     var finding by remember{mutableStateOf("Normal")}
-    var sizeMm by remember{mutableStateOf("")}
-    var notes by remember{mutableStateOf("")}
+    var sizeMm by remember{mutableStateOf("5 mm")}
+    var notes by remember{mutableStateOf("Sin observaciones adicionales")}
     var color by remember{mutableStateOf("Rosado")}
     var shape by remember{mutableStateOf("Redonda/oval")}
     var surface by remember{mutableStateOf("Lisa")}
@@ -73,7 +73,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
     val selected=zones19.first{it.id==selectedId}
     val name=if(lang=="en")selected.en else selected.es
     val example=if(finding=="Normal") "$name: ${if(lang=="en")selected.normalEn else selected.normalEs}"
-    else tr(lang,"$name: $finding; ${if(count=="Única")"lesión única" else "lesiones múltiples"}; tamaño ${if(sizeMm.isBlank())"no registrado" else "$sizeMm mm"}; color $color; forma $shape; superficie $surface; borde $border; base $base; consistencia $consistency; movilidad $mobility; $symptoms; duración $duration; evolución $evolution${if(notes.isBlank())"" else "; $notes"}. Descripción clínica; correlacionar antes de diagnosticar.","$name: $finding; size ${if(sizeMm.isBlank())"not entered" else "$sizeMm mm"}; color $color; shape $shape; surface $surface; border $border; base $base; consistency $consistency; mobility $mobility; symptoms $symptoms; duration $duration; evolution $evolution. Clinical description; correlate before diagnosis.")
+    else tr(lang,"$name: $finding; ${if(count=="Única")"lesión única" else "lesiones múltiples"}; tamaño ${sizeMm}; color $color; forma $shape; superficie $surface; borde $border; base $base; consistencia $consistency; movilidad $mobility; $symptoms; duración $duration; evolución $evolution${if(notes.isBlank())"" else "; $notes"}. Descripción clínica; correlacionar antes de diagnosticar.","$name: $finding; size ${if(sizeMm.isBlank())"not entered" else "$sizeMm mm"}; color $color; shape $shape; surface $surface; border $border; base $base; consistency $consistency; mobility $mobility; symptoms $symptoms; duration $duration; evolution $evolution. Clinical description; correlate before diagnosis.")
 
     ResponsiveScreenV17(tr(lang,"Mucosas orales interactivas","Interactive oral mucosa"),tr(lang,"Toca una zona en la boca abierta y practica una descripción clínica sistemática.","Tap a region on the open-mouth diagram and practice systematic clinical description."),onBack) { profile ->
         ResponsiveSectionV17(tr(lang,"1 · Boca abierta: toca una zona","1 · Open mouth: tap a region")) {
@@ -96,7 +96,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 listOf("Normal","Úlcera","Placa blanca","Placa roja","Eritema","Aumento de volumen","Pigmentación","Vesícula","Fístula","Masa").forEach { f -> FilterChip(finding==f,{finding=f},{Text(f)}) }
             }
             if(finding!="Normal") {
-                OutlinedTextField(sizeMm,{sizeMm=it.filter{c->c.isDigit()||c=='.'}.take(6)},label={Text(tr(lang,"Tamaño mayor aproximado (mm)","Approximate largest dimension (mm)"))},modifier=Modifier.fillMaxWidth())
+                MucosaPick19("Tamaño mayor aproximado",listOf("<2 mm","2–4 mm","5–9 mm","10–19 mm","20–29 mm","≥30 mm","No medido"),sizeMm){sizeMm=it}
                 MucosaPick19("Número",listOf("Única","Múltiples"),count){count=it}
                 MucosaPick19("Color",listOf("Rosado","Rojo","Blanco","Rojo-blanco","Amarillo","Azulado/violáceo","Marrón/negro","Translúcido","Mixto"),color){color=it}
                 MucosaPick19("Forma",listOf("Redonda/oval","Irregular","Lineal","Anular","Lobulada","Difusa/no delimitable"),shape){shape=it}
@@ -108,7 +108,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 MucosaPick19("Síntomas",listOf("Asintomática","Dolor","Ardor","Sangrado","Prurito","Parestesia/adormecimiento"),symptoms){symptoms=it}
                 MucosaPick19("Duración referida",listOf("<1 semana","1–2 semanas","2–4 semanas","1–3 meses",">3 meses","Recurrente","No referido"),duration){duration=it}
                 MucosaPick19("Evolución",listOf("Nueva","Estable","En crecimiento","Disminuyendo","Recurrente","No referida"),evolution){evolution=it}
-                OutlinedTextField(notes,{notes=it.take(180)},label={Text(tr(lang,"Observaciones adicionales","Additional observations"))},modifier=Modifier.fillMaxWidth())
+                MucosaPick19("Observaciones adicionales",listOf("Sin observaciones adicionales","Trauma local aparente","Prótesis/aparato en contacto","Próximo a diente/restauración","Secreción presente","Sangrado al contacto","No valorable"),notes){notes=it}
             }
         }
         Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)) {
