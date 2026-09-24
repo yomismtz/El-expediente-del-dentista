@@ -44,33 +44,39 @@ import com.yomismtz.expedientedeldentista.settings.AppPreferences
 private data class TabV19(val screen:AppScreen,val icon:String,val es:String,val en:String,val group:Int)
 
 private val tabsV19=listOf(
-    TabV19(AppScreen.IDENTIFICATION,"👤","Identificación","Identification",0),
-    TabV19(AppScreen.HISTORY,"🩺","Antecedentes patológicos / ASA","Medical history / ASA",0),
-    TabV19(AppScreen.SYSTEMIC_PROTOCOLS,"📚","Protocolos de enfermedades sistémicas","Systemic disease protocols",0),
+    TabV19(AppScreen.ACTIVITIES,"✍","Autorización de actividades","Activity authorization",0),
+    TabV19(AppScreen.IDENTIFICATION,"👤","Ficha de identificación","Identification",0),
+    TabV19(AppScreen.TREATMENT,"📝","Diagnóstico y tratamiento","Diagnosis and treatment",0),
+    TabV19(AppScreen.HISTORY,"🩺","Historia clínica","Medical history",0),
+    TabV19(AppScreen.SESSIONS,"🗓","Tratamiento por sesiones","Treatment by sessions",0),
+    TabV19(AppScreen.ODONTOGRAM,"🦷","Análisis del odontograma","Odontogram analysis",0),
+    TabV19(AppScreen.ENDO,"⚡","Ficha endodóntica","Endodontic sheet",0),
+    TabV19(AppScreen.AUXILIARIES,"🧪","Auxiliares de diagnóstico","Diagnostic auxiliaries",0),
+    TabV19(AppScreen.PROSTHETIC,"👑","Ficha protésica","Prosthetic sheet",0),
+    TabV19(AppScreen.BUDGET,"💰","Presupuesto","Budget",0),
+    TabV19(AppScreen.PERIODONTOGRAM,"📈","Ficha periodontal / periodontograma","Periodontal sheet / periodontogram",0),
+    TabV19(AppScreen.CONSENT,"✍","Consentimiento informado","Informed consent",0),
+    TabV19(AppScreen.SURGICAL,"✚","Ficha quirúrgica","Surgical sheet",0),
+    TabV19(AppScreen.REQUEST,"📨","Solicitud de tratamiento","Treatment request",0),
+    TabV19(AppScreen.ATM,"◉","Ficha de trastornos temporomandibulares","Temporomandibular disorders",0),
+    TabV19(AppScreen.EVOLUTION,"📄","Notas de evolución","Progress notes",0),
+    TabV19(AppScreen.VITALS,"❤️","Signos vitales y glucosa capilar","Vital signs and capillary glucose",0),
     TabV19(AppScreen.INTAKE,"📋","Nota de ingreso","Intake note",0),
-    TabV19(AppScreen.VITALS,"❤️","Signos vitales","Vital signs",0),
-    TabV19(AppScreen.ATM,"◉","ATM y músculos","TMJ and muscles",0),
-    TabV19(AppScreen.OCCLUSION,"↔","Oclusión","Occlusion",0),
-    TabV19(AppScreen.MUCOSA,"👄","Mucosas","Mucosa",0),
-    TabV19(AppScreen.AUXILIARIES,"🧪","Auxiliares","Auxiliaries",0),
+    TabV19(AppScreen.SYSTEMIC_PROTOCOLS,"📚","Protocolos para enfermedades sistémicas","Systemic disease protocols",0),
 
-    TabV19(AppScreen.ODONTOGRAM,"🦷","Odontograma","Odontogram",1),
     TabV19(AppScreen.ICDAS,"🔎","ICDAS","ICDAS",1),
     TabV19(AppScreen.CPOD,"➕","CPOD / ceod","DMFT / dmft",1),
     TabV19(AppScreen.OLEARY,"🔴","O’Leary","O’Leary",1),
     TabV19(AppScreen.IPC,"6️⃣","IPC","CPI",1),
     TabV19(AppScreen.IHOS,"🪥","IHOS","OHI-S",1),
-    TabV19(AppScreen.PERIODONTOGRAM,"📈","Periodontograma","Periodontogram",1),
-    TabV19(AppScreen.POSTURE,"🧍","Postura","Posture",1),
-    TabV19(AppScreen.PULPAL,"⚡","Pulpar + periapical","Pulpal + apical",1),
+    TabV19(AppScreen.POSTURE,"🧍","Postura craneocervical","Craniocervical posture",1),
+    TabV19(AppScreen.OCCLUSION,"↔","Oclusión y clasificación de Angle","Occlusion and Angle classification",1),
+    TabV19(AppScreen.MUCOSA,"👄","Mucosas orales","Oral mucosa",1),
+    TabV19(AppScreen.PULPAL,"⚡","Diagnóstico pulpar y periapical","Pulpal and periapical diagnosis",1),
 
-    TabV19(AppScreen.TREATMENT,"📝","Diagnóstico / tratamiento","Diagnosis / treatment",2),
-    TabV19(AppScreen.SESSIONS,"🗓","Tratamiento por sesiones","Treatment by sessions",2),
-    TabV19(AppScreen.ENDO,"⚡","Endodoncia","Endodontics",2),
-    TabV19(AppScreen.PROSTHETIC,"👑","Prótesis / Kennedy","Prosthodontics / Kennedy",2),
-    TabV19(AppScreen.SURGICAL,"✚","Cirugía","Surgery",2),
-    TabV19(AppScreen.CONSENT,"✍","Consentimiento","Consent",2),
-    TabV19(AppScreen.EVOLUTION,"📄","Evolución","Progress notes",2)
+    TabV19(AppScreen.AUXILIARIES,"🧮","Calculadoras y auxiliares ortodóncicos","Calculators and orthodontic auxiliaries",2),
+    TabV19(AppScreen.PROSTHETIC,"📐","Kennedy / Applegate / Seibert / PPR","Kennedy / Applegate / Seibert / RPD",2),
+    TabV19(AppScreen.ENDO,"🦷","Herramientas endodónticas","Endodontic tools",2)
 )
 
 @Composable
