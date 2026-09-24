@@ -116,6 +116,32 @@ fun PeriodontogramScreen(
                     "Tooth $selectedTooth: selected maximum probing depth $maxPd mm; $bleedingText; $plaqueText; mobility grade ${record.mobility}; furcation grade ${record.furcation}; gingival margin/recession ${record.recessionMm} mm."),fontWeight=FontWeight.Bold)
             }
         }
+        item {
+            SectionCard(tr(lang,"Periodontograma total · resumen global","Full-mouth periodontal chart · global summary")) {
+                val records = session.periodontogram.values
+                val evaluated = records.size
+                val sites = records.flatMap { it.probingDepths }.filter { it > 0 }
+                val totalSites = sites.size
+                val sites4 = sites.count { it >= 4 }
+                val sites6 = sites.count { it >= 6 }
+                val deepest = sites.maxOrNull() ?: 0
+                val bleedingTeeth = records.count { it.bleeding }
+                val plaqueTeeth = records.count { it.plaque }
+                val suppurationTeeth = records.count { it.suppuration }
+                val mobilityTeeth = records.count { it.mobility > 0 }
+                val furcationTeeth = records.count { it.furcation > 0 }
+                val recessionTeeth = records.count { it.recessionMm != 0 }
+                Text(tr(lang,
+                    "Dientes registrados: $evaluated. Sitios con medición seleccionada: $totalSites. Profundidad máxima registrada: $deepest mm.",
+                    "Recorded teeth: $evaluated. Sites with a selected measurement: $totalSites. Maximum recorded probing depth: $deepest mm."),fontWeight=FontWeight.Bold)
+                Text(tr(lang,
+                    "Sitios ≥4 mm: $sites4 · sitios ≥6 mm: $sites6. Dientes con sangrado: $bleedingTeeth; placa: $plaqueTeeth; supuración: $suppurationTeeth; movilidad: $mobilityTeeth; furcación: $furcationTeeth; margen/recesión distinto de 0 mm: $recessionTeeth.",
+                    "Sites ≥4 mm: $sites4 · sites ≥6 mm: $sites6. Teeth with bleeding: $bleedingTeeth; plaque: $plaqueTeeth; suppuration: $suppurationTeeth; mobility: $mobilityTeeth; furcation: $furcationTeeth; gingival margin/recession other than 0 mm: $recessionTeeth."))
+                Text(tr(lang,
+                    "Este bloque resume los hallazgos registrados en toda la boca. No asigna automáticamente diagnóstico, estadio ni grado periodontal; éstos requieren integrar pérdida de inserción clínica, pérdida ósea radiográfica, dientes perdidos por periodontitis, complejidad y modificadores de riesgo.",
+                    "This block summarizes recorded full-mouth findings. It does not automatically assign periodontal diagnosis, stage or grade; these require integration of clinical attachment loss, radiographic bone loss, teeth lost to periodontitis, complexity and risk modifiers."),style=MaterialTheme.typography.bodySmall)
+            }
+        }
         item { NoticeCard(ClinicalEngines.periodontalSummary(session, lang)) }
     }
 }
