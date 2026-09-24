@@ -43,7 +43,9 @@ private data class E(val n:String,val d:String)
 @Composable fun HistoryReasonV38(lang:String,onBack:()->Unit){
  var reason by remember{mutableStateOf("")}
  var visitType by remember{mutableStateOf<String?>(null)}
+ var translatorOpen by remember{mutableStateOf(false)}
  val selectedSymptoms=remember{mutableStateMapOf<String,Boolean>()}
+ if(translatorOpen){ ColloquialDentalTranslatorV42{translatorOpen=false}; return }
  val visitTypes=listOf("Urgencia","Primera vez","Otra causa")
  val symptoms=listOf("Dolor","Inflamación / aumento de volumen","Secreción / exudado / pus","Fístula","Sangrado","Movilidad dental","Traumatismo / fractura","Fiebre o malestar referido","Dificultad para masticar","Sensibilidad a frío","Sensibilidad a calor","Sensibilidad a dulce","Dolor al masticar","Dolor nocturno","Otro")
  val guide=listOf(
@@ -65,7 +67,7 @@ private data class E(val n:String,val d:String)
   item{ScreenHeader("Motivo de consulta y padecimiento actual",onBack,"El motivo se escribe literalmente con las palabras del paciente o tutor. El padecimiento actual se construye después, con interrogatorio y hallazgos clínicos.")}
   item{SectionCard("1 · Tipo de consulta"){visitTypes.forEach{x->FilterChip(selected=visitType==x,onClick={visitType=x},label={Text(x)},modifier=Modifier.fillMaxWidth())}}}
   item{SectionCard("2 · Motivo de consulta literal"){OutlinedTextField(reason,{reason=it.take(300)},modifier=Modifier.fillMaxWidth(),label={Text("Palabras exactas del paciente, mamá/papá o tutor")},placeholder={Text("Ej.: “Me duele una muela cuando tomo frío.”")},minLines=3);Text("Debe conservarse la expresión original. No escribas aquí un diagnóstico.",style=MaterialTheme.typography.bodySmall)}}
-  item{SectionCard("3 · Ejemplos de traducción clínica educativa"){examples.forEach{Text("• $it")}}}
+  item{SectionCard("3 · Traductor coloquial → clínico"){Button(onClick={translatorOpen=true},modifier=Modifier.fillMaxWidth()){Text("Abrir traductor · 50 expresiones")};Spacer(Modifier.height(6.dp));examples.forEach{Text("• $it")}}}
   item{Text("4 · Síntomas referidos · selecciona los presentes",fontWeight=FontWeight.Bold)}
   items(symptoms.size){i->val x=symptoms[i];Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){Checkbox(selectedSymptoms[x]==true,{selectedSymptoms[x]=it});Text(x,Modifier.weight(1f))}}
   item{Text("5 · Construcción del padecimiento actual",fontWeight=FontWeight.Bold)}
