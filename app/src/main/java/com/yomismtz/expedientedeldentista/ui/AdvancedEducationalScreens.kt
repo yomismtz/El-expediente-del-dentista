@@ -74,7 +74,7 @@ private fun ExpandableTeachingCard(item: TeachingItem, lang: String) {
 }
 
 @Composable
-fun TreatmentBySessionsScreen(lang: String, onBack: () -> Unit) {
+fun TreatmentBySessionsScreen(lang: String, session: EducationalSession, onBack: () -> Unit) {
     var child by remember { mutableStateOf(true) }
     val childItems = listOf(
         TeachingItem("Sesión 1 · Integración y diagnóstico", "Session 1 · Integration and diagnosis",
@@ -112,6 +112,17 @@ fun TreatmentBySessionsScreen(lang: String, onBack: () -> Unit) {
             ScreenHeader(tr(lang, "Tratamiento por sesiones", "Treatment by sessions"), onBack,
                 tr(lang, "Organiza el plan en un orden lógico. La secuencia depende de urgencia, edad/dentición, cooperación, enfermedad activa, pronóstico, tiempo clínico y complejidad.",
                     "Organize treatment in a logical sequence. Order depends on urgency, age/dentition, cooperation, active disease, prognosis, chair time and complexity."))
+        }
+        item {
+            SectionCard(tr(lang,"Resumen importado de Diagnóstico y tratamiento","Summary imported from Diagnosis and treatment")) {
+                val planned=session.teeth.filterValues{it.diagnosisId!=null || it.treatmentId!=null}
+                if(planned.isEmpty()) Text(tr(lang,"Aún no hay diagnósticos/tratamientos seleccionados por diente. Regresa a Diagnóstico y tratamiento para construir el plan.","No tooth-level diagnoses/treatments selected yet. Return to Diagnosis and treatment to build the plan."))
+                else planned.toSortedMap().forEach { entry ->
+                    val tooth=entry.key; val record=entry.value
+                    Text("OD "+tooth+" · "+tr(lang,"Diagnóstico","Diagnosis")+": "+(record.diagnosisId ?: "—")+" · "+tr(lang,"Tratamiento","Treatment")+": "+(record.treatmentId ?: "—"),fontWeight=FontWeight.SemiBold)
+                }
+                Text(tr(lang,"Estos datos son los mismos guardados por diente; se usan como base para organizar las sesiones por urgencia, control de enfermedad, complejidad y secuencia clínica.","These are the same tooth-level saved data and are used to organize sessions by urgency, disease control, complexity and clinical sequence."),style=MaterialTheme.typography.bodySmall)
+            }
         }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
