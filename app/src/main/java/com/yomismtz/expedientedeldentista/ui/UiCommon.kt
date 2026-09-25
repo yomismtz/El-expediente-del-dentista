@@ -90,10 +90,13 @@ fun ChipChoices(
 ) {
     BoxWithConstraints(Modifier.fillMaxWidth()) {
         val largeText = LocalDensity.current.fontScale >= 1.20f
+        val longestLabel = labels.maxOfOrNull { it.first.length } ?: 0
+        val requested = columns.coerceIn(1, 5)
         val responsiveColumns = when {
-            largeText || maxWidth < 360.dp -> 1
-            maxWidth < 600.dp -> columns.coerceAtMost(2)
-            else -> columns
+            maxWidth < 360.dp -> if (largeText || longestLabel > 22) 1 else requested.coerceAtMost(2)
+            maxWidth < 600.dp -> if (largeText || longestLabel > 30) requested.coerceAtMost(2) else requested.coerceAtMost(3)
+            maxWidth < 900.dp -> if (largeText || longestLabel > 34) requested.coerceAtMost(3) else requested.coerceAtMost(4)
+            else -> if (largeText || longestLabel > 38) requested.coerceAtMost(4) else requested
         }.coerceAtLeast(1)
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             labels.chunked(responsiveColumns).forEachIndexed { rowIndex, row ->
