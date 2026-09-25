@@ -184,8 +184,8 @@ fun OnboardingV15Screen(
                     fontWeight = FontWeight.Black
                 )
                 Text(
-                    if (lang == "en") "Choose among 20 mascots. Each mascot has its own app color palette."
-                    else "Elige entre 20 mascotas. Cada mascota tiene su propia paleta de colores para la app.",
+                    if (lang == "en") "Choose your mascot. Each mascot has its own app color palette."
+                    else "Elige tu mascota. Cada mascota tiene su propia paleta de colores para la app.",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -354,4 +354,7 @@ private fun mascotEmoji(style: BirdPaletteStyle): String = when(style) {
     BirdPaletteStyle.MURCIELAGO_NOCHE -> "🦇"
     BirdPaletteStyle.PANDA_MONO -> "🐼"
     BirdPaletteStyle.ABEJA_CONTRASTE -> "🐝"
+    BirdPaletteStyle.CAMALEON -> "🦎"
+    BirdPaletteStyle.PERICO -> "🦜"
+    BirdPaletteStyle.GALLO -> "🐓"
 }
