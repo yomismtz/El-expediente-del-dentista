@@ -7,31 +7,30 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import kotlin.math.max
+import kotlin.math.min
 
 /**
- * Gesto de regreso tipo Android/iOS: solo inicia desde el borde izquierdo y
- * exige un desplazamiento horizontal claro hacia la derecha. El callback usa
+ * Gesto global de regreso: un deslizamiento horizontal claro hacia la izquierda
+ * vuelve a la pantalla anterior real de la pila de navegación. El callback usa
  * el mismo dispatcher que el botón físico/gesto del sistema, por lo que respeta
  * la pantalla anterior real en la pila de navegación.
  */
 fun Modifier.edgeSwipeBackV21(onBack: () -> Unit): Modifier = composed {
     val density = LocalDensity.current
-    val edgePx = with(density) { 32.dp.toPx() }
     val triggerPx = with(density) { 76.dp.toPx() }
 
-    pointerInput(onBack, edgePx, triggerPx) {
+    pointerInput(onBack, triggerPx) {
         var eligible = false
         var accumulated = 0f
         detectHorizontalDragGestures(
             onDragStart = { start ->
-                eligible = start.x <= edgePx
+                eligible = true
                 accumulated = 0f
             },
             onHorizontalDrag = { _, dragAmount ->
                 if (eligible) {
-                    accumulated = max(0f, accumulated + dragAmount)
-                    if (accumulated >= triggerPx) {
+                    accumulated = min(0f, accumulated + dragAmount)
+                    if (accumulated <= -triggerPx) {
                         eligible = false
                         accumulated = 0f
                         onBack()
