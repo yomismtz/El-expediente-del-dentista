@@ -45,7 +45,8 @@ class MainActivity : AppCompatActivity() {
             ExpedienteTheme(
                 paletteStyle = preferences.birdPaletteStyle,
                 fontStyle = preferences.fontStyle,
-                textSizeStyle = preferences.textSizeStyle
+                textSizeStyle = preferences.textSizeStyle,
+                cardShapeStyle = preferences.cardShapeStyle
             ) {
                 Surface(modifier = Modifier.fillMaxSize(), color = androidx.compose.material3.MaterialTheme.colorScheme.background) {
                     Box(Modifier.fillMaxSize()) {
