@@ -181,6 +181,8 @@ private fun CoverV19(lang:String,onOpen:()->Unit) {
 private fun FolderV19(lang:String,onNavigate:(AppScreen)->Unit,onClose:()->Unit) {
     var group by remember { mutableStateOf(0) }
     var query by remember { mutableStateOf("") }
+    var groupReturn by remember { mutableStateOf<Int?>(null) }
+    groupReturn?.let { group = it; groupReturn = null }
     ResponsiveScreenV17("YSM Expediente",tr(lang,"Elige una sección. La barra superior queda reservada y nunca tapa el contenido.","Choose a section. The top bar has reserved space and never covers content."),onClose) { profile ->
         val names=listOf(tr(lang,"Acciones y herramientas","Actions and tools"),tr(lang,"Expediente clínico","Clinical record"),tr(lang,"Fichas","Sheets"))
         OutlinedTextField(value=query,onValueChange={query=it},modifier=Modifier.fillMaxWidth(),singleLine=true,label={Text("🔎 "+tr(lang,"Buscar en el expediente","Search record"))},placeholder={Text(tr(lang,"Ej. bruxismo, CPOD, mucosa, presión arterial","e.g. bruxism, DMFT, mucosa, blood pressure"))})
@@ -204,7 +206,7 @@ private fun FolderV19(lang:String,onNavigate:(AppScreen)->Unit,onClose:()->Unit)
             AdaptiveGridV17(items.size,when { profile.largeSystemText -> 1; profile.width==ScreenWidthV17.COMPACT -> 2; profile.width==ScreenWidthV17.MEDIUM -> 2; else -> 3 }) { i ->
                 val tab=items[i]
                 val cardColor by animateColorAsState(MaterialTheme.colorScheme.primaryContainer.copy(alpha=.55f),animationSpec=tween(220),label="menuCard")
-                Card(onClick={onNavigate(tab.screen)},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=cardColor),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.30f)),shape=RoundedCornerShape(16.dp)) {
+                Card(onClick={groupReturn=group; onNavigate(tab.screen)},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=cardColor),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.30f)),shape=RoundedCornerShape(16.dp)) {
                     Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(3.dp)) {
                         Text("${tab.icon} ${if(lang=="en")tab.en else tab.es}",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
                         Text(tr(lang,"Toca para abrir","Tap to open"),style=MaterialTheme.typography.bodyMedium)
