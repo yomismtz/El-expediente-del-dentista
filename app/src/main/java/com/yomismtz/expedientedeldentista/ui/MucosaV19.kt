@@ -199,9 +199,9 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                         Text(tr(lang,"Antes de pensar en un diagnóstico, identifica el tipo de lesión y registra ubicación, número, tamaño, color, forma, superficie, bordes, base, consistencia, movilidad, síntomas, duración y evolución.","Before considering a diagnosis, identify the lesion type and record site, number, size, color, shape, surface, borders, base, consistency, mobility, symptoms, duration and evolution."))
                         Card(onClick={zoomHelpImage=true},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){
                             Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
-                                Image(painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),contentDescription=tr(lang,"Lámina de lesiones elementales","Elementary lesions chart"),modifier=Modifier.fillMaxWidth().height(220.dp),contentScale=ContentScale.Fit)
+                                Image(painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),contentDescription=tr(lang,"Lámina de lesiones elementales","Elementary lesions chart"),modifier=Modifier.fillMaxWidth().height(320.dp),contentScale=ContentScale.Fit)
                                 Text(tr(lang,"🔍 Toca la lámina para verla grande y usar zoom","🔍 Tap the chart to enlarge and zoom"),fontWeight=FontWeight.Bold)
-                                Text(tr(lang,"Imagen incluida dentro de la aplicación · disponible sin Internet.","Image bundled inside the app · available without Internet."),style=MaterialTheme.typography.bodySmall)
+                                Text(tr(lang,"Imagen incluida dentro del APK · no requiere Internet. Si necesitas detalle, tócala para abrir el visor ampliado.","Image bundled inside the APK · no Internet required. Tap it to open the enlarged viewer for detail."),style=MaterialTheme.typography.bodySmall)
                             }
                         }
                         Text(tr(lang,"2 · ¿Qué significa cada lesión?","2 · What does each lesion mean?"),fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
