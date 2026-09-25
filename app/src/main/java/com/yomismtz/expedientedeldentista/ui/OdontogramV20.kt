@@ -29,13 +29,18 @@ import com.yomismtz.expedientedeldentista.clinical.ToothRecord
 import com.yomismtz.expedientedeldentista.clinical.ToothStatus
 
 private data class OdontoArchV20(val titleEs:String,val titleEn:String,val teeth:List<Int>)
+private data class OdontoQuadrantV20(val titleEs:String,val titleEn:String,val teeth:List<Int>)
 
-private fun archesV20(primary:Boolean)=if(primary) listOf(
-    OdontoArchV20("Maxilar","Maxillary",listOf(55,54,53,52,51,61,62,63,64,65)),
-    OdontoArchV20("Mandíbula","Mandibular",listOf(85,84,83,82,81,71,72,73,74,75))
+private fun quadrantsV20(primary:Boolean)=if(primary) listOf(
+    OdontoQuadrantV20("Q5 · superior derecho","Q5 · upper right",listOf(55,54,53,52,51)),
+    OdontoQuadrantV20("Q6 · superior izquierdo","Q6 · upper left",listOf(61,62,63,64,65)),
+    OdontoQuadrantV20("Q8 · inferior derecho","Q8 · lower right",listOf(85,84,83,82,81)),
+    OdontoQuadrantV20("Q7 · inferior izquierdo","Q7 · lower left",listOf(71,72,73,74,75))
 ) else listOf(
-    OdontoArchV20("Maxilar","Maxillary",listOf(18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28)),
-    OdontoArchV20("Mandíbula","Mandibular",listOf(48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38))
+    OdontoQuadrantV20("Q1 · superior derecho","Q1 · upper right",listOf(18,17,16,15,14,13,12,11)),
+    OdontoQuadrantV20("Q2 · superior izquierdo","Q2 · upper left",listOf(21,22,23,24,25,26,27,28)),
+    OdontoQuadrantV20("Q4 · inferior derecho","Q4 · lower right",listOf(48,47,46,45,44,43,42,41)),
+    OdontoQuadrantV20("Q3 · inferior izquierdo","Q3 · lower left",listOf(31,32,33,34,35,36,37,38))
 )
 
 private fun surfaceShortV20(surface:Surface)=when(surface){
@@ -70,8 +75,8 @@ fun OdontogramV20Screen(
     var primary by remember{mutableStateOf(false)}
     var selectedTooth by remember{mutableStateOf(16)}
     var selectedMark by remember{mutableStateOf(SurfaceMark.CARIES)}
-    val arches=archesV20(primary)
-    val all=arches.flatMap{it.teeth}
+    val quadrants=quadrantsV20(primary)
+    val all=quadrants.flatMap{it.teeth}
     if(selectedTooth !in all) selectedTooth=all.first()
 
     val record=session.teeth[selectedTooth]?:ToothRecord()
@@ -118,31 +123,16 @@ fun OdontogramV20Screen(
             }
         }
 
-        arches.forEach{arch->
-            ResponsiveSectionV17(if(lang=="en")arch.titleEn else arch.titleEs){
-                val columns=when{
-                    profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT->5
-                    profile.width==ScreenWidthV17.MEDIUM->8
-                    else->10
-                }
-                AdaptiveGridV17(arch.teeth.size,columns){i->
-                    val tooth=arch.teeth[i]
+        val wideQuadrants = profile.width != ScreenWidthV17.COMPACT && !profile.largeSystemText
+        fun quadrantContent(q:OdontoQuadrantV20) {
+            ResponsiveSectionV17(if(lang=="en")q.titleEn else q.titleEs) {
+                AdaptiveGridV17(q.teeth.size,q.teeth.size){i->
+                    val tooth=q.teeth[i]
                     val status=session.teeth[tooth]?.status
                     val isMissing=status in setOf(ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER)
                     val selected=selectedTooth==tooth
                     val hasMark=session.odontogramSurfaces[tooth]?.isNotEmpty()==true
-                    Card(
-                        onClick={selectedTooth=tooth},
-                        modifier=Modifier.fillMaxWidth(),
-                        colors=CardDefaults.cardColors(containerColor=when{
-                            selected->MaterialTheme.colorScheme.primary
-                            isMissing->MaterialTheme.colorScheme.errorContainer
-                            hasMark->MaterialTheme.colorScheme.secondaryContainer
-                            else->MaterialTheme.colorScheme.surface
-                        }),
-                        border=BorderStroke(1.dp,if(selected)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha=.4f)),
-                        shape=RoundedCornerShape(12.dp)
-                    ){
+                    Card(onClick={selectedTooth=tooth},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=when{selected->MaterialTheme.colorScheme.primary;isMissing->MaterialTheme.colorScheme.errorContainer;hasMark->MaterialTheme.colorScheme.secondaryContainer;else->MaterialTheme.colorScheme.surface}),border=BorderStroke(1.dp,if(selected)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha=.4f)),shape=RoundedCornerShape(12.dp)){
                         Column(Modifier.fillMaxWidth().padding(vertical=7.dp),horizontalAlignment=Alignment.CenterHorizontally){
                             Text(if(isMissing)"✕" else "🦷",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleLarge)
                             Text(tooth.toString(),fontWeight=FontWeight.Black,color=if(selected)MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface)
@@ -150,6 +140,15 @@ fun OdontogramV20Screen(
                     }
                 }
             }
+        }
+        if(wideQuadrants) {
+            quadrants.chunked(2).forEach { pair ->
+                androidx.compose.foundation.layout.Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
+                    pair.forEach { q -> androidx.compose.foundation.layout.Box(Modifier.weight(1f)) { quadrantContent(q) } }
+                }
+            }
+        } else {
+            quadrants.forEach { q -> quadrantContent(q) }
         }
 
         ResponsiveSectionV17("OD $selectedTooth",if(missing)tr(lang,"Diente ausente: se muestra una X en su viñeta.","Missing tooth: an X is shown in its tile.") else tr(lang,"Puedes combinar marcas en distintas caras del mismo diente.","You can combine marks on different surfaces of the same tooth.")){
