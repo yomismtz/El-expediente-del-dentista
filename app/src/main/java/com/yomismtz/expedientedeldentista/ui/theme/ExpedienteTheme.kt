@@ -29,113 +29,61 @@ val BirdPaletteChoices = BirdPaletteStyle.entries.toList()
 
 fun paletteDisplayName(style: BirdPaletteStyle, lang: String = "es"): String = when (style) {
     BirdPaletteStyle.AGAPORNI -> "Agaporni"
-    BirdPaletteStyle.TUCAN -> if (lang == "en") "Toucan" else "Tucán"
-    BirdPaletteStyle.PAVO_REAL -> if (lang == "en") "Peacock" else "Pavo real"
-    BirdPaletteStyle.FENIX -> if (lang == "en") "Phoenix" else "Fénix"
-    BirdPaletteStyle.COLIBRI -> if (lang == "en") "Hummingbird" else "Colibrí"
-    BirdPaletteStyle.PATO_MANDARIN -> if (lang == "en") "Mandarin duck" else "Pato mandarín"
-    BirdPaletteStyle.NINFA -> if (lang == "en") "Cockatiel" else "Ninfa"
-    BirdPaletteStyle.MARTIN_PESCADOR -> if (lang == "en") "Kingfisher" else "Martín pescador"
-    BirdPaletteStyle.GUACAMAYA -> if (lang == "en") "Macaw" else "Guacamaya"
-    BirdPaletteStyle.QUETZAL -> "Quetzal"
-    BirdPaletteStyle.TRICHOGLOSSUS_MOLUCCANUS -> "Trichoglossus moluccanus"
-    BirdPaletteStyle.CUERVO -> if (lang == "en") "Raven" else "Cuervo"
-    BirdPaletteStyle.ABEJARUCO -> if (lang == "en") "Bee-eater" else "Abejaruco"
-    BirdPaletteStyle.PERRO -> if (lang == "en") "Dog" else "Perro"
-    BirdPaletteStyle.KOALA -> "Koala"
+    BirdPaletteStyle.TUCAN -> if(lang=="en") "Toucan" else "Tucán"
+    BirdPaletteStyle.NINFA -> if(lang=="en") "Cockatiel" else "Ninfa"
+    BirdPaletteStyle.BUHO -> if(lang=="en") "Owl" else "Búho"
+    BirdPaletteStyle.CUERVO -> if(lang=="en") "Raven" else "Cuervo"
+    BirdPaletteStyle.GUACAMAYA -> if(lang=="en") "Macaw" else "Guacamaya"
     BirdPaletteStyle.PUG -> "Pug"
-    BirdPaletteStyle.GATO -> if (lang == "en") "Cat" else "Gato"
-    BirdPaletteStyle.TORTUGA -> if (lang == "en") "Turtle" else "Tortuga"
-    BirdPaletteStyle.HAMSTER -> if (lang == "en") "Hamster" else "Hámster"
-    BirdPaletteStyle.DRAGON -> if (lang == "en") "Dragon" else "Dragón"
+    BirdPaletteStyle.POMERANIA -> if(lang=="en") "Pomeranian" else "Pomerania"
+    BirdPaletteStyle.GATO -> if(lang=="en") "Cat" else "Gato"
+    BirdPaletteStyle.CONEJO -> if(lang=="en") "Rabbit" else "Conejo"
+    BirdPaletteStyle.ELEFANTE -> if(lang=="en") "Elephant" else "Elefante"
+    BirdPaletteStyle.CABALLO_CAFE -> if(lang=="en") "Brown horse" else "Caballo café"
+    BirdPaletteStyle.CABALLO_PINTO -> if(lang=="en") "Pinto horse" else "Caballo pinto"
+    BirdPaletteStyle.IGUANA -> "Iguana"
+    BirdPaletteStyle.ARANA -> if(lang=="en") "Spider" else "Araña"
+    BirdPaletteStyle.TORTUGA -> if(lang=="en") "Turtle" else "Tortuga"
+    BirdPaletteStyle.PEZ_PAYASO -> if(lang=="en") "Clownfish" else "Pez payaso"
+    BirdPaletteStyle.DELFIN -> if(lang=="en") "Dolphin" else "Delfín"
+    BirdPaletteStyle.TIBURON -> if(lang=="en") "Shark" else "Tiburón"
+    BirdPaletteStyle.AJOLOTE -> if(lang=="en") "Axolotl" else "Ajolote"
+    BirdPaletteStyle.PINGUINO -> if(lang=="en") "Penguin" else "Pingüino"
+    BirdPaletteStyle.PATO_MANDARIN -> if(lang=="en") "Mandarin duck" else "Pato mandarín"
+    BirdPaletteStyle.HAMSTER -> if(lang=="en") "Hamster" else "Hámster"
+    BirdPaletteStyle.FENIX -> if(lang=="en") "Phoenix" else "Fénix"
+    BirdPaletteStyle.ZORRO -> if(lang=="en") "Fox" else "Zorro"
 }
 
-fun birdPalette(style: BirdPaletteStyle): BirdPalette = when (style) {
-    BirdPaletteStyle.AGAPORNI -> BirdPalette(
-        primary = Color(0xFF5D347F), onPrimary = Color.White,
-        secondary = Color(0xFF66D6C7), tertiary = Color(0xFF2EB9B1),
-        background = Color(0xFFF5EFFA), surface = Color(0xFFFFFCFF), onSurface = Color(0xFF321943),
-        primaryContainer = Color(0xFFE7D7F6), secondaryContainer = Color(0xFFD5F4EF), outline = Color(0xFFB7B0BD)
-    )
-    BirdPaletteStyle.TUCAN -> BirdPalette(
-        primary = Color(0xFF153C43), onPrimary = Color.White,
-        secondary = Color(0xFFFFA321), tertiary = Color(0xFFFFD447),
-        background = Color(0xFFFFF8E9), surface = Color(0xFFFFFCF5), onSurface = Color(0xFF172B30),
-        primaryContainer = Color(0xFFCDE9E6), secondaryContainer = Color(0xFFFFE2B5), outline = Color(0xFF819598)
-    )
-    BirdPaletteStyle.PAVO_REAL -> BirdPalette(
-        primary = Color(0xFF1457A6), onPrimary = Color.White,
-        secondary = Color(0xFF0A8F78), tertiary = Color(0xFFD2A72C),
-        background = Color(0xFFF0F8FB), surface = Color(0xFFFCFEFF), onSurface = Color(0xFF102A3A),
-        primaryContainer = Color(0xFFD6E9FF), secondaryContainer = Color(0xFFD5F3EA), outline = Color(0xFF8AA0AC)
-    )
-    BirdPaletteStyle.FENIX -> BirdPalette(
-        primary = Color(0xFFA92A34), onPrimary = Color.White,
-        secondary = Color(0xFFE76122), tertiary = Color(0xFFF4B73D),
-        background = Color(0xFFFFF4EC), surface = Color(0xFFFFFCF8), onSurface = Color(0xFF3D1F20),
-        primaryContainer = Color(0xFFFFD8D9), secondaryContainer = Color(0xFFFFE0C9), outline = Color(0xFFAF8F82)
-    )
-    BirdPaletteStyle.COLIBRI -> BirdPalette(
-        primary = Color(0xFF7B3AA7), onPrimary = Color.White,
-        secondary = Color(0xFF00A89A), tertiary = Color(0xFFE34D9A),
-        background = Color(0xFFF7F2FB), surface = Color(0xFFFFFCFF), onSurface = Color(0xFF30203A),
-        primaryContainer = Color(0xFFE9D9F8), secondaryContainer = Color(0xFFD1F4EE), outline = Color(0xFFAA9DB2)
-    )
-    BirdPaletteStyle.PATO_MANDARIN -> BirdPalette(
-        primary = Color(0xFF7A3F31), onPrimary = Color.White,
-        secondary = Color(0xFFE17A2D), tertiary = Color(0xFF2D6B8D),
-        background = Color(0xFFFFF7EF), surface = Color(0xFFFFFCF8), onSurface = Color(0xFF34241E),
-        primaryContainer = Color(0xFFF2D9CC), secondaryContainer = Color(0xFFFFDFC4), outline = Color(0xFFA69185)
-    )
-    BirdPaletteStyle.NINFA -> BirdPalette(
-        primary = Color(0xFF6E7179), onPrimary = Color.White,
-        secondary = Color(0xFFF2C84B), tertiary = Color(0xFFF28B35),
-        background = Color(0xFFFAF9F3), surface = Color(0xFFFFFFFF), onSurface = Color(0xFF2D2F33),
-        primaryContainer = Color(0xFFE5E6E8), secondaryContainer = Color(0xFFFFF1B8), outline = Color(0xFFA7A8AC)
-    )
-    BirdPaletteStyle.MARTIN_PESCADOR -> BirdPalette(
-        primary = Color(0xFF1465A8), onPrimary = Color.White,
-        secondary = Color(0xFF19A7B8), tertiary = Color(0xFFF28B39),
-        background = Color(0xFFEFF8FC), surface = Color(0xFFFCFEFF), onSurface = Color(0xFF173047),
-        primaryContainer = Color(0xFFD5EAFE), secondaryContainer = Color(0xFFD6F3F5), outline = Color(0xFF8AA8B5)
-    )
-    BirdPaletteStyle.GUACAMAYA -> BirdPalette(
-        primary = Color(0xFFB3262E), onPrimary = Color.White,
-        secondary = Color(0xFFF4C430), tertiary = Color(0xFF2468B4),
-        background = Color(0xFFFFF7F2), surface = Color(0xFFFFFCF9), onSurface = Color(0xFF382122),
-        primaryContainer = Color(0xFFFFD9DC), secondaryContainer = Color(0xFFFFEDAF), outline = Color(0xFFAA8D85)
-    )
-    BirdPaletteStyle.QUETZAL -> BirdPalette(
-        primary = Color(0xFF087A62), onPrimary = Color.White,
-        secondary = Color(0xFF13A6A0), tertiary = Color(0xFFC73C5A),
-        background = Color(0xFFF0FAF6), surface = Color(0xFFFCFFFD), onSurface = Color(0xFF17362F),
-        primaryContainer = Color(0xFFD2F1E6), secondaryContainer = Color(0xFFD4F5F2), outline = Color(0xFF87A39B)
-    )
-    BirdPaletteStyle.TRICHOGLOSSUS_MOLUCCANUS -> BirdPalette(
-        primary = Color(0xFF2C63C7), onPrimary = Color.White,
-        secondary = Color(0xFF49A82D), tertiary = Color(0xFFF28A18),
-        background = Color(0xFFF4F9FF), surface = Color(0xFFFEFFFF), onSurface = Color(0xFF172B4C),
-        primaryContainer = Color(0xFFD9E7FF), secondaryContainer = Color(0xFFE3F4D8), outline = Color(0xFF8EA1B5)
-    )
-    BirdPaletteStyle.CUERVO -> BirdPalette(
-        primary = Color(0xFF24212E), onPrimary = Color.White,
-        secondary = Color(0xFF5E4B8B), tertiary = Color(0xFF8E78B7),
-        background = Color(0xFFF4F2F7), surface = Color(0xFFFCFBFE), onSurface = Color(0xFF201C29),
-        primaryContainer = Color(0xFFE4DFEB), secondaryContainer = Color(0xFFE8E1F3), outline = Color(0xFF8F8898)
-    )
-    BirdPaletteStyle.ABEJARUCO -> BirdPalette(
-        primary = Color(0xFF0A7E55), onPrimary = Color.White,
-        secondary = Color(0xFFF1B929), tertiary = Color(0xFF34BFC2),
-        background = Color(0xFFF5FBF7), surface = Color(0xFFFEFFFD), onSurface = Color(0xFF173429),
-        primaryContainer = Color(0xFFD5F0E3), secondaryContainer = Color(0xFFFFEDB2), outline = Color(0xFF8AA497)
-    )
-    BirdPaletteStyle.PERRO -> BirdPalette(Color(0xFF6D4C41),Color.White,Color(0xFFD7A86E),Color(0xFF5D8A66),Color(0xFFFFF8F2),Color.White,Color(0xFF35251F),Color(0xFFEEDFD5),Color(0xFFE6F0E7),Color(0xFFA58F85))
-    BirdPaletteStyle.KOALA -> BirdPalette(Color(0xFF59636E),Color.White,Color(0xFF9DA7B1),Color(0xFF7FAE9B),Color(0xFFF5F7F8),Color.White,Color(0xFF273039),Color(0xFFE0E5E9),Color(0xFFDDEEE7),Color(0xFF9AA2A9))
-    BirdPaletteStyle.PUG -> BirdPalette(Color(0xFF76513A),Color.White,Color(0xFFC99B6B),Color(0xFF30343B),Color(0xFFFFF8EF),Color.White,Color(0xFF382A22),Color(0xFFF0DDC7),Color(0xFFE1E2E5),Color(0xFFA48F7D))
-    BirdPaletteStyle.GATO -> BirdPalette(Color(0xFF4D5664),Color.White,Color(0xFFD38FA8),Color(0xFF8A72B5),Color(0xFFF8F5FA),Color.White,Color(0xFF2D2933),Color(0xFFE4E6EB),Color(0xFFF2DFE8),Color(0xFF9D96A3))
-    BirdPaletteStyle.TORTUGA -> BirdPalette(Color(0xFF47734D),Color.White,Color(0xFF8DAA62),Color(0xFFB88A54),Color(0xFFF5F8EE),Color.White,Color(0xFF293629),Color(0xFFDCE9D4),Color(0xFFECE4CF),Color(0xFF93A08A))
-    BirdPaletteStyle.HAMSTER -> BirdPalette(Color(0xFFA66745),Color.White,Color(0xFFE1AD72),Color(0xFFD9878B),Color(0xFFFFF7F1),Color.White,Color(0xFF402B22),Color(0xFFF5DECB),Color(0xFFF5DFDF),Color(0xFFB19A8E))
-    BirdPaletteStyle.DRAGON -> BirdPalette(Color(0xFF633A8C),Color.White,Color(0xFF9B7AC7),Color(0xFF54CDBF),Color(0xFFF7F0FC),Color.White,Color(0xFF32203F),Color(0xFFE7D6F4),Color(0xFFD4F4ED),Color(0xFFA596AF))
+fun birdPalette(style: BirdPaletteStyle): BirdPalette {
+    fun p(a:Long,b:Long,c:Long,bg:Long,pc:Long,sc:Long,on:Long=0xFF29232AL)=BirdPalette(Color(a),Color.White,Color(b),Color(c),Color(bg),Color(0xFFFFFCFF),Color(on),Color(pc),Color(sc),Color(0xFF9B919BL))
+    return when(style){
+        BirdPaletteStyle.AGAPORNI -> p(0xFF6FAF79,0xFFF2A47F,0xFF54B8A5,0xFFFFF7F1,0xFFDDF0DE,0xFFFFE0D1)
+        BirdPaletteStyle.TUCAN -> p(0xFFF2C230,0xFF202124,0xFFF28C28,0xFFFFFAE8,0xFFFFED9B,0xFFE4E4E4)
+        BirdPaletteStyle.NINFA -> p(0xFF74777D,0xFFF0C83F,0xFFF28B35,0xFFFAF9F2,0xFFE6E7E8,0xFFFFF0AD)
+        BirdPaletteStyle.BUHO -> p(0xFF76513D,0xFFD8B98C,0xFF9A714F,0xFFFFF8F0,0xFFEAD9CA,0xFFF5E7CF)
+        BirdPaletteStyle.CUERVO -> p(0xFF5D4388,0xFF191820,0xFF8870AE,0xFFF5F2F8,0xFFE7DFF2,0xFFDCD9E1)
+        BirdPaletteStyle.GUACAMAYA -> p(0xFFC72E36,0xFF2874C6,0xFFF2C438,0xFFFFF5F3,0xFFFFD9DC,0xFFD8E9FC)
+        BirdPaletteStyle.PUG -> p(0xFFC49A6C,0xFF704A35,0xFF3C3533,0xFFFFF8EE,0xFFF2DFC8,0xFFE6D4C8)
+        BirdPaletteStyle.POMERANIA -> p(0xFFE4B86B,0xFFFFE3AE,0xFFB97935,0xFFFFFAF0,0xFFFFEBCB,0xFFFFF2D9)
+        BirdPaletteStyle.GATO -> p(0xFF626B78,0xFFD88FA9,0xFF9B82BD,0xFFF9F5FA,0xFFE3E6EB,0xFFF4DDE7)
+        BirdPaletteStyle.CONEJO -> p(0xFFB77A9B,0xFFFFD6E5,0xFF8D6AA8,0xFFFFF8FB,0xFFFFE7EF,0xFFF3E7F7)
+        BirdPaletteStyle.ELEFANTE -> p(0xFF697987,0xFF6EA7D8,0xFF9BAAB4,0xFFF4F8FB,0xFFDDE6EC,0xFFDCECF9)
+        BirdPaletteStyle.CABALLO_CAFE -> p(0xFF7A4E32,0xFFD5B38A,0xFF9B6844,0xFFFFF7EF,0xFFEBD7C5,0xFFF2E5D4)
+        BirdPaletteStyle.CABALLO_PINTO -> p(0xFF9B6A4A,0xFFF7F1E7,0xFF594338,0xFFFFFBF6,0xFFE9D6C8,0xFFF4EEE5)
+        BirdPaletteStyle.IGUANA -> p(0xFF438B50,0xFFA7CF3A,0xFF74B65D,0xFFF5FAEF,0xFFD9EED5,0xFFEAF5C7)
+        BirdPaletteStyle.ARANA -> p(0xFF2D2A31,0xFFE67E32,0xFF8A5A44,0xFFFFF6EF,0xFFE3E0E5,0xFFFFDFC8)
+        BirdPaletteStyle.TORTUGA -> p(0xFF4D7950,0xFFA37A50,0xFF87A85C,0xFFF5F8EF,0xFFDDE9D5,0xFFE9DFCF)
+        BirdPaletteStyle.PEZ_PAYASO -> p(0xFFEA7627,0xFFFFF4E8,0xFF343A40,0xFFFFF7F0,0xFFFFDFC6,0xFFF4ECE5)
+        BirdPaletteStyle.DELFIN -> p(0xFF337FB5,0xFF8ED8EA,0xFF4CA6C6,0xFFF0FAFD,0xFFD6ECF8,0xFFD9F5FA)
+        BirdPaletteStyle.TIBURON -> p(0xFF657783,0xFF4B93C6,0xFF9DB1BC,0xFFF2F7FA,0xFFDDE5EA,0xFFDCECF7)
+        BirdPaletteStyle.AJOLOTE -> p(0xFFD77FA8,0xFF8056A5,0xFFF0A7C6,0xFFFFF4FA,0xFFF7DCE9,0xFFE9DDF3)
+        BirdPaletteStyle.PINGUINO -> p(0xFF343B43,0xFFA7D9EA,0xFF6FA9C2,0xFFF3F9FB,0xFFDEE4E8,0xFFDFF3F9)
+        BirdPaletteStyle.PATO_MANDARIN -> p(0xFFE47D32,0xFF35A9A3,0xFF7D4C3D,0xFFFFF7EF,0xFFFFDFC6,0xFFD6F1EE)
+        BirdPaletteStyle.HAMSTER -> p(0xFFB97845,0xFFF2D5A4,0xFFD99578,0xFFFFF7EF,0xFFF5DFC9,0xFFFFEED4)
+        BirdPaletteStyle.FENIX -> p(0xFFC83B2F,0xFFF2B536,0xFFE96D25,0xFFFFF3EA,0xFFFFD8D1,0xFFFFE9B9)
+        BirdPaletteStyle.ZORRO -> p(0xFFE36F2D,0xFFFFE2B8,0xFF8B5033,0xFFFFF6ED,0xFFFFDCC6,0xFFFFEBD4)
+    }
 }
 
 fun paletteSwatches(style: BirdPaletteStyle): List<Color> {
