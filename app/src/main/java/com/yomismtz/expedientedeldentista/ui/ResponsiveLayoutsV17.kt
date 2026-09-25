@@ -108,7 +108,13 @@ internal fun AdaptiveGridV17(
     modifier: Modifier = Modifier,
     content: @Composable (Int) -> Unit
 ) {
-    val safeColumns = columns.coerceAtLeast(1)
+    val availableWidth = with(LocalDensity.current) { androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp.dp }
+    val largeText = LocalDensity.current.fontScale >= 1.20f
+    val safeColumns = when {
+        largeText || availableWidth < 360.dp -> 1
+        availableWidth < 600.dp -> columns.coerceAtMost(2)
+        else -> columns
+    }.coerceAtLeast(1)
     Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         (0 until itemCount).toList().chunked(safeColumns).forEach { rowItems ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
