@@ -25,10 +25,18 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -286,8 +294,11 @@ private fun BirdPaletteCard(
 ) {
     val swatches = paletteSwatches(style)
     val cs = MaterialTheme.colorScheme
+    var reaction by remember { mutableStateOf(0) }
+    val motion = remember { Animatable(0f) }
+    LaunchedEffect(reaction) { if(reaction>0){ motion.snapTo(0f); motion.animateTo(1f,tween(180)); motion.animateTo(0f,tween(300)) } }
     Card(
-        onClick = onClick,
+        onClick = { reaction++; onClick() },
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = if (selected) cs.primaryContainer else cs.surface),
         border = BorderStroke(if (selected) 2.dp else 1.dp, if (selected) cs.primary else cs.outline.copy(alpha = 0.45f)),
@@ -298,11 +309,10 @@ private fun BirdPaletteCard(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                mascotEmoji(style) + " " + paletteDisplayName(style, lang),
-                fontWeight = if (selected) FontWeight.Black else FontWeight.SemiBold,
-                textAlign = TextAlign.Center
-            )
+            Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(5.dp)) {
+                Text(mascotEmoji(style),modifier=Modifier.graphicsLayer { val k=motion.value; when(mascotMotionOnboarding(style)){0->{translationY=-18f*k;scaleX=1f+.12f*k;scaleY=1f+.12f*k};1->{rotationZ=14f*k;scaleX=1f+.08f*k};2->{translationX=12f*k;rotationZ=-10f*k};else->{scaleX=1f+.16f*k;scaleY=1f-.10f*k} } })
+                Text(paletteDisplayName(style, lang),fontWeight=if(selected) FontWeight.Black else FontWeight.SemiBold,textAlign=TextAlign.Center)
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                 swatches.forEach { color ->
                     Box(Modifier.size(18.dp).background(color, CircleShape))
@@ -357,4 +367,11 @@ private fun mascotEmoji(style: BirdPaletteStyle): String = when(style) {
     BirdPaletteStyle.CAMALEON -> "🦎"
     BirdPaletteStyle.PERICO -> "🦜"
     BirdPaletteStyle.GALLO -> "🐓"
+}
+
+private fun mascotMotionOnboarding(style:BirdPaletteStyle)=when(style){
+ BirdPaletteStyle.AGAPORNI,BirdPaletteStyle.NINFA,BirdPaletteStyle.CONEJO,BirdPaletteStyle.RANA_VERDE,BirdPaletteStyle.PINGUINO->0
+ BirdPaletteStyle.TUCAN,BirdPaletteStyle.GUACAMAYA,BirdPaletteStyle.PERICO,BirdPaletteStyle.GALLO,BirdPaletteStyle.COLIBRI,BirdPaletteStyle.MARIPOSA_MONARCA,BirdPaletteStyle.MURCIELAGO_NOCHE->1
+ BirdPaletteStyle.SERPIENTE,BirdPaletteStyle.IGUANA,BirdPaletteStyle.CAMALEON,BirdPaletteStyle.CANGREJO_CORAL,BirdPaletteStyle.PEZ_PAYASO,BirdPaletteStyle.DELFIN,BirdPaletteStyle.CABALLITO_TURQUESA->2
+ else->3
 }
