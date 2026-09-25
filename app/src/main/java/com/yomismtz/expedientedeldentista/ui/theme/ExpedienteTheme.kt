@@ -53,6 +53,11 @@ fun paletteDisplayName(style: BirdPaletteStyle, lang: String = "es"): String = w
     BirdPaletteStyle.HAMSTER -> if(lang=="en") "Hamster" else "Hámster"
     BirdPaletteStyle.FENIX -> if(lang=="en") "Phoenix" else "Fénix"
     BirdPaletteStyle.ZORRO -> if(lang=="en") "Fox" else "Zorro"
+    BirdPaletteStyle.PAVO_REAL -> if(lang=="en") "Peacock" else "Pavo real"
+    BirdPaletteStyle.COLIBRI -> if(lang=="en") "Hummingbird" else "Colibrí"
+    BirdPaletteStyle.MARTIN_PESCADOR -> if(lang=="en") "Kingfisher" else "Martín pescador"
+    BirdPaletteStyle.QUETZAL -> "Quetzal"
+    BirdPaletteStyle.DRAGON -> if(lang=="en") "Dragon" else "Dragón"
 }
 
 fun birdPalette(style: BirdPaletteStyle): BirdPalette {
@@ -83,6 +88,11 @@ fun birdPalette(style: BirdPaletteStyle): BirdPalette {
         BirdPaletteStyle.HAMSTER -> p(0xFFB97845,0xFFF2D5A4,0xFFD99578,0xFFFFF7EF,0xFFF5DFC9,0xFFFFEED4)
         BirdPaletteStyle.FENIX -> p(0xFFC83B2F,0xFFF2B536,0xFFE96D25,0xFFFFF3EA,0xFFFFD8D1,0xFFFFE9B9)
         BirdPaletteStyle.ZORRO -> p(0xFFE36F2D,0xFFFFE2B8,0xFF8B5033,0xFFFFF6ED,0xFFFFDCC6,0xFFFFEBD4)
+        BirdPaletteStyle.PAVO_REAL -> p(0xFF176A9A,0xFF138C7A,0xFFB99132,0xFFF0F8FA,0xFFD4EAF4,0xFFD6F1EA)
+        BirdPaletteStyle.COLIBRI -> p(0xFF8A3FA8,0xFF1BA89C,0xFFD85A9D,0xFFF8F2FA,0xFFEBDCF4,0xFFD5F2ED)
+        BirdPaletteStyle.MARTIN_PESCADOR -> p(0xFF2479B8,0xFF1BA9B5,0xFFF18A38,0xFFF0F8FC,0xFFD8ECFA,0xFFD5F2F4)
+        BirdPaletteStyle.QUETZAL -> p(0xFF087C62,0xFF15A69B,0xFFC43E58,0xFFF0FAF6,0xFFD2F1E5,0xFFD4F4F0)
+        BirdPaletteStyle.DRAGON -> BirdPalette(Color(0xFF4B176D),Color.White,Color(0xFF6D28A2),Color(0xFF9B59D0),Color(0xFFF7F0FC),Color(0xFFFFFBFF),Color(0xFF2D1538),Color(0xFFE6D2F2),Color(0xFFF0E2F8),Color(0xFF9D82AC))
     }
 }
 
