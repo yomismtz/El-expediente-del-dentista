@@ -24,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -168,8 +169,20 @@ private fun CoverV19(lang:String,onOpen:()->Unit) {
 @Composable
 private fun FolderV19(lang:String,onNavigate:(AppScreen)->Unit,onClose:()->Unit) {
     var group by remember { mutableStateOf(0) }
+    var query by remember { mutableStateOf("") }
     ResponsiveScreenV17("YSM Expediente",tr(lang,"Elige una sección. La barra superior queda reservada y nunca tapa el contenido.","Choose a section. The top bar has reserved space and never covers content."),onClose) { profile ->
         val names=listOf(tr(lang,"Acciones y herramientas","Actions and tools"),tr(lang,"Expediente clínico","Clinical record"),tr(lang,"Fichas","Sheets"))
+        OutlinedTextField(value=query,onValueChange={query=it},modifier=Modifier.fillMaxWidth(),singleLine=true,label={Text("🔎 "+tr(lang,"Buscar en el expediente","Search record"))},placeholder={Text(tr(lang,"Ej. bruxismo, CPOD, mucosa, presión arterial","e.g. bruxism, DMFT, mucosa, blood pressure"))})
+        if(query.isNotBlank()) {
+            val q=query.trim().lowercase()
+            val special=listOf(
+                Triple(AppScreen.HISTORY_HABITS,"🦷",tr(lang,"Hábitos · bruxismo","Habits · bruxism")),
+                Triple(AppScreen.CPOD,"➕","CPOD / ceod"), Triple(AppScreen.MUCOSA,"👄",tr(lang,"Mucosa oral","Oral mucosa")),
+                Triple(AppScreen.VITALS,"❤️",tr(lang,"Signos vitales · presión arterial","Vital signs · blood pressure")),
+                Triple(AppScreen.OCCLUSION,"↔",tr(lang,"Oclusión","Occlusion")), Triple(AppScreen.ATM,"◉","ATM"), Triple(AppScreen.PERIODONTOGRAM,"📈",tr(lang,"Periodoncia","Periodontics")))
+            val results=special.filter{it.third.lowercase().contains(q)||(q.contains("brux")&&it.first==AppScreen.HISTORY_HABITS)||(q.contains("pres")&&it.first==AppScreen.VITALS)||(q.contains("cpod")&&it.first==AppScreen.CPOD)}
+            ResponsiveSectionV17(tr(lang,"Resultados","Results")) { AdaptiveGridV17(results.size.coerceAtLeast(1),if(profile.width==ScreenWidthV17.EXPANDED)3 else 2){i-> if(results.isEmpty()) Text(tr(lang,"Sin coincidencias","No matches")) else { val r=results[i]; Card(onClick={onNavigate(r.first)},modifier=Modifier.fillMaxWidth(),shape=MaterialTheme.shapes.medium){Text("${r.second} ${r.third}",Modifier.padding(12.dp),fontWeight=FontWeight.Bold)} } } }
+        }
         ResponsiveSectionV17(tr(lang,"Secciones del expediente","Record sections")) {
             AdaptiveGridV17(3,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 3) { i ->
                 FilterChip(group==i,{group=i},{Text(names[i])},modifier=Modifier.fillMaxWidth())
