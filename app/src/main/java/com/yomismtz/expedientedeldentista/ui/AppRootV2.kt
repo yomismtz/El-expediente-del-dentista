@@ -431,6 +431,9 @@ private fun SettingsV2(
                         FontStyle.ROUNDED -> tr(lang, "Redondeada", "Rounded")
                         FontStyle.ACADEMIC -> tr(lang, "Académica", "Academic")
                         FontStyle.ACCESSIBLE -> tr(lang, "Alta legibilidad", "High readability")
+                        FontStyle.CLASSIC -> tr(lang, "Clásica", "Classic")
+                        FontStyle.HANDWRITTEN -> tr(lang, "Manuscrita", "Handwritten")
+                        FontStyle.COMPACT -> tr(lang, "Compacta", "Compact")
                     }
                     FilterChip(preferences.fontStyle == style, { onPreferencesChanged(preferences.copy(fontStyle = style)) }, { Text(label) }, modifier = Modifier.padding(end = 4.dp, bottom = 4.dp))
                 }
