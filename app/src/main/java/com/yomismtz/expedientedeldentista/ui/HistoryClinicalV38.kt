@@ -8,8 +8,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
+import androidx.annotation.DrawableRes
+import com.yomismtz.expedientedeldentista.R
 import com.yomismtz.expedientedeldentista.clinical.AppScreen
 
 private data class HItem(val screen:AppScreen,val title:String,val subtitle:String)
@@ -296,12 +296,8 @@ private data class E(val n:String,val d:String)
  }
 }
 
-@Composable private fun ClinicalPhotoV38(title:String,url:String,credit:String){
- Card(Modifier.fillMaxWidth()){Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
-  Text(title,fontWeight=FontWeight.Bold)
-  AsyncImage(model=url,contentDescription=title,modifier=Modifier.fillMaxWidth().height(220.dp),contentScale=ContentScale.Fit)
-  Text(credit,style=MaterialTheme.typography.bodySmall)
- }}
+@Composable private fun ClinicalPhotoV38(title:String,@DrawableRes resource:Int,credit:String){
+ LocalZoomableImageV21(title=title,resource=resource,attribution=credit)
 }
 
 @Composable fun HistoryPhysicalV38(lang:String,onBack:()->Unit){
@@ -342,17 +338,17 @@ private data class E(val n:String,val d:String)
 
   if(section=="Cráneo y cara"){
    item{Pick("Forma craneal",listOf("Dolicocefálico","Mesocéfalo","Braquicéfalo","No valorable"),"Dolicocefálico: cráneo relativamente largo y estrecho. Mesocéfalo: proporciones intermedias. Braquicéfalo: cráneo relativamente corto y ancho.")}
-   item{ClinicalPhotoV38("Dolicocefálico y braquicéfalo · comparación morfológica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/PSM_V52_D333_Brachycephalic_and_dolichocephalic_types_from_the_coast_of_zeeland.jpg","Fotografía antropométrica histórica real · Popular Science Monthly, 1897–1898 · dominio público. Úsese sólo como referencia morfológica, no diagnóstica.")}
+   item{ClinicalPhotoV38("Dolicocefálico y braquicéfalo · comparación morfológica real",R.drawable.clinical_cranial_morphology,"Fotografía antropométrica histórica real · Popular Science Monthly, 1897–1898 · dominio público. Úsese sólo como referencia morfológica, no diagnóstica.")}
    item{Pick("Patrón facial",listOf("Dolicofacial","Mesofacial","Braquifacial","No valorable"),"Dolicofacial: cara relativamente larga y estrecha. Mesofacial: proporción intermedia. Braquifacial: cara relativamente corta y ancha.")}
    item{Pick("Simetría facial",listOf("Simétrica aparente","Asimetría derecha","Asimetría izquierda","Asimetría compleja","No valorable"))}
-   item{ClinicalPhotoV38("Referencia clínica real · asimetría de expresión facial","https://commons.wikimedia.org/wiki/Special:Redirect/file/Bellspalsy.JPG","James Heilman, MD · Wikimedia Commons · licencia abierta; publicación con consentimiento declarado por el autor.")}
+   item{ClinicalPhotoV38("Referencia clínica real · asimetría de expresión facial",R.drawable.clinical_facial_asymmetry,"James Heilman, MD · Wikimedia Commons · licencia abierta; publicación con consentimiento declarado por el autor.")}
   }
   if(section=="Músculos"){
-   item{ClinicalPhotoV38("Expresión facial · sonrisa","https://commons.wikimedia.org/wiki/Special:Redirect/file/Bell%27s_Palsy_smiling.jpg","Fotografía clínica real · Shantoo · CC0 · muestra asimetría facial durante sonrisa.")}
-   item{ClinicalPhotoV38("Expresión facial · cierre ocular","https://commons.wikimedia.org/wiki/Special:Redirect/file/Bell%27s_Palsy_Symptoms_Closed_Eyes.jpg","Fotografía clínica real · Benjaminginterr · CC BY-SA · maniobra de cierre ocular.")}
-   item{ClinicalPhotoV38("Expresión facial · apertura oral","https://commons.wikimedia.org/wiki/Special:Redirect/file/Bell%27s_Palsy_Symptoms_Mouth_Wide_Open.jpg","Fotografía clínica real · Benjaminginterr · CC BY-SA · maniobra de apertura oral.")}
+   item{ClinicalPhotoV38("Expresión facial · sonrisa",R.drawable.clinical_smile,"Fotografía clínica real · Shantoo · CC0 · muestra asimetría facial durante sonrisa.")}
+   item{ClinicalPhotoV38("Expresión facial · cierre ocular",R.drawable.clinical_eye_closure,"Fotografía clínica real · Benjaminginterr · CC BY-SA · maniobra de cierre ocular.")}
+   item{ClinicalPhotoV38("Expresión facial · apertura oral",R.drawable.clinical_mouth_open,"Fotografía clínica real · Benjaminginterr · CC BY-SA · maniobra de apertura oral.")}
    item{Pick("Expresión facial · inspección",listOf("Simetría conservada","Asimetría al sonreír","Asimetría al fruncir ceño","Asimetría al cerrar ojos","Asimetría al inflar mejillas","Debilidad aparente","No valorable"),"Evaluar en reposo y pedir elevar cejas/fruncir ceño, cerrar ojos, sonreír/mostrar dientes e inflar mejillas. Comparar ambos lados.")}
-   item{ClinicalPhotoV38("Referencia clínica real · evaluación de sonrisa en parálisis facial","https://commons.wikimedia.org/wiki/Special:Redirect/file/Bell%27s_Palsy_smiling.jpg","Shantoo · Wikimedia Commons · CC0; uso educativo para ilustrar parálisis facial.")}
+   item{ClinicalPhotoV38("Referencia clínica real · evaluación de sonrisa en parálisis facial",R.drawable.clinical_smile,"Shantoo · Wikimedia Commons · CC0; uso educativo para ilustrar parálisis facial.")}
    item{Pick("Músculos de la expresión · tono/función",listOf("Función aparentemente conservada","Hipotonía aparente","Hipertonía aparente","Movimiento involuntario","Dolor referido","No valorable"))}
    item{Pick("Temporal",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"))}
    item{Pick("Masetero",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"))}
@@ -366,11 +362,11 @@ private data class E(val n:String,val d:String)
    item{Pick("Tiroides · hallazgo clínico",listOf("Sin aumento aparente","Aumento aparente","Asimetría aparente","Nódulo/masa referida o palpable","Antecedente tiroideo sin hallazgo visible","No valorable"),"Registrar sólo el hallazgo o antecedente; no diagnosticar enfermedad tiroidea por inspección/palpación aislada.")}
   }
   if(section=="Ganglios"){
-   item{ClinicalPhotoV38("Técnica de palpación ganglionar","https://commons.wikimedia.org/wiki/Special:Redirect/file/Palpa%C3%A7%C3%A3o_linfonodo.jpg","Fotografía clínica real de palpación ganglionar · Fernandovet · Wikimedia Commons.")}
-   item{ClinicalPhotoV38("Hallazgo · linfadenopatía cervical","https://commons.wikimedia.org/wiki/Special:Redirect/file/Cervical_lymphadenopathy.jpg","Fotografía clínica real · Whispyhistory · CC0.")}
-   item{ClinicalPhotoV38("Mapa anatómico de cadenas cervicales","https://commons.wikimedia.org/wiki/Special:Redirect/file/Cervical_lymph_nodes_and_levels.png","Referencia anatómica didáctica · Wikimedia Commons. No es fotografía clínica.")}
+   item{ClinicalPhotoV38("Técnica de palpación ganglionar",R.drawable.clinical_node_palpation,"Fotografía clínica real de palpación ganglionar · Fernandovet · Wikimedia Commons.")}
+   item{ClinicalPhotoV38("Hallazgo · linfadenopatía cervical",R.drawable.clinical_cervical_nodes,"Fotografía clínica real · Whispyhistory · CC0.")}
+   item{ClinicalPhotoV38("Mapa anatómico de cadenas cervicales",R.drawable.clinical_cervical_map,"Referencia anatómica didáctica · Wikimedia Commons. No es fotografía clínica.")}
    item{Pick("Cadena ganglionar",listOf("Preauriculares","Mastoideos/postauriculares","Occipitales","Submentonianos","Submandibulares","Cervicales superficiales/anterior","Cervicales profundos","Cervicales posteriores","Supraclaviculares"))}
-   item{ClinicalPhotoV38("Referencia clínica real · linfadenopatía cervical","https://commons.wikimedia.org/wiki/Special:Redirect/file/Cervical_lymphadenopathy.jpg","Whispyhistory · Wikimedia Commons · CC0.")}
+   item{ClinicalPhotoV38("Referencia clínica real · linfadenopatía cervical",R.drawable.clinical_cervical_nodes,"Whispyhistory · Wikimedia Commons · CC0.")}
    item{Pick("Palpabilidad",listOf("No palpable","Palpable","No valorable"))}
    item{Pick("Movilidad",listOf("Móvil","Fijo/adherido aparente","No aplica/no palpable","No valorable"))}
    item{Pick("Dolor",listOf("No doloroso","Doloroso","No aplica/no palpable","No valorable"))}
@@ -384,14 +380,14 @@ private data class E(val n:String,val d:String)
    item{Pick("ATM · sonido",listOf("Sin sonido detectable","Click/chasquido derecho","Click/chasquido izquierdo","Click bilateral","Crepitación derecha","Crepitación izquierda","Crepitación bilateral","Otro/no valorable"),"Palpar región preauricular durante apertura, cierre y excursiones. Registrar el sonido sin generar diagnóstico automático.")}
    item{Pick("Palpación ATM",listOf("Sin dolor","Dolor polo lateral derecho","Dolor polo lateral izquierdo","Dolor bilateral","No valorable"))}
    item{Pick("Línea media al abrir/cerrar",listOf("Recta/centrada","Desviación derecha con retorno","Desviación izquierda con retorno","Deflexión persistente derecha","Deflexión persistente izquierda","Trayectoria irregular","No valorable"))}
-   item{ClinicalPhotoV38("Apertura mandibular · referencia clínica","https://commons.wikimedia.org/wiki/Special:Redirect/file/Bell%27s_Palsy_Symptoms_Mouth_Wide_Open.jpg","Fotografía clínica real · Benjaminginterr · CC BY-SA. Ilustra apertura oral; la medición debe realizarse clínicamente con regla/calibrador.")}
+   item{ClinicalPhotoV38("Apertura mandibular · referencia clínica",R.drawable.clinical_mouth_open,"Fotografía clínica real · Benjaminginterr · CC BY-SA. Ilustra apertura oral; la medición debe realizarse clínicamente con regla/calibrador.")}
    item{Pick("Apertura máxima interincisal",listOf("<25 mm","25–34 mm","35–39 mm","40–44 mm","45–55 mm","56–60 mm",">60 mm","No medida"),"Referencia adulta: se reportan rangos frecuentes alrededor de 42–55 mm; existe variación por edad, sexo y anatomía.")}
    item{Pick("Lateralidad derecha",listOf("<4 mm","4–6 mm","7–9 mm","10–12 mm",">12 mm","No medida"),"7 mm o más se usa como referencia clínica funcional mínima; individualizar.")}
    item{Pick("Lateralidad izquierda",listOf("<4 mm","4–6 mm","7–9 mm","10–12 mm",">12 mm","No medida"),"Comparar ambos lados y registrar dolor, click o limitación.")}
    item{Pick("Protrusión",listOf("<4 mm","4–5 mm","6–9 mm","10–12 mm",">12 mm","No medida"),"6 mm se usa como referencia clínica funcional mínima; individualizar.")}
    item{Pick("Retrusión",listOf("<1 mm","1–2 mm","3–4 mm",">4 mm","No medida"),"Registrar el desplazamiento medido; las referencias clínicas son menos uniformes para retrusión.")}
    item{Pick("Limitación de movimiento",listOf("No aparente","Apertura","Cierre","Lateralidad derecha","Lateralidad izquierda","Protrusión","Retrusión","Varios movimientos","No valorable"))}
-   item{ClinicalPhotoV38("Dimensión vertical · referencia clínica","https://commons.wikimedia.org/wiki/Special:Redirect/file/VerticalDO2.JPG","Fotografía clínica real disponible en Wikimedia Commons para referencia de dimensión vertical; verificar puntos de medición y aplicar la técnica descrita en la app.")}
+   item{ClinicalPhotoV38("Dimensión vertical · referencia clínica",R.drawable.clinical_vertical_dimension,"Fotografía clínica real disponible en Wikimedia Commons para referencia de dimensión vertical; verificar puntos de medición y aplicar la técnica descrita en la app.")}
    item{Pick("DVR · distancia medida",listOf("<50 mm","50–54 mm","55–59 mm","60–64 mm","65–69 mm","70–74 mm","≥75 mm","No medida"),"Medir entre dos puntos faciales reproducibles con mandíbula en reposo fisiológico.")}
    item{Pick("DVO · distancia medida",listOf("<50 mm","50–54 mm","55–59 mm","60–64 mm","65–69 mm","70–74 mm","≥75 mm","No medida"),"Medir entre los mismos puntos con dientes en oclusión habitual. No existe una DVO universal en milímetros: depende de los puntos elegidos y de la anatomía individual.")}
    item{SectionCard("Espacio interoclusal"){Text("Espacio interoclusal = DVR − DVO. Referencia habitual: 2–4 mm, con variación individual.",fontWeight=FontWeight.Bold);listOf("DVR − DVO <2 mm","DVR − DVO 2–4 mm","DVR − DVO >4 mm","No calculado").forEach{v->FilterChip(selected["Espacio interoclusal"]==v,{selected["Espacio interoclusal"]=v},{Text(v)},modifier=Modifier.fillMaxWidth())}}}
@@ -420,7 +416,7 @@ private data class E(val n:String,val d:String)
    item{Text(name,fontWeight=FontWeight.Black)}
    items(opts.size){i->val o=opts[i];FilterChip(selected[name]==o,{selected[name]=o},{Text(o)},modifier=Modifier.fillMaxWidth())}
   }
-  if(prior==true)item{ClinicalPhotoV38("Aparatología ortodóntica fija · referencia clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Dental_braces.jpg","Fotografía clínica real · Wikimedia Commons · referencia visual de aparatología fija; consultar autor/licencia del archivo.")}
+  if(prior==true)item{ClinicalPhotoV38("Aparatología ortodóntica fija · referencia clínica real",R.drawable.clinical_braces,"Fotografía clínica real · Wikimedia Commons · referencia visual de aparatología fija; consultar autor/licencia del archivo.")}
   item{NoticeCard("El antecedente ortodóntico se registra según lo referido y lo observable. No asumir diagnóstico previo, indicación original ni estabilidad futura sin expediente, exploración y estudios.")}
  }
 }
@@ -439,14 +435,14 @@ private data class E(val n:String,val d:String)
   "Posición" to listOf("Sin alteración","Rotación","Versión/inclinación","Transposición","Desplazamiento vestibular","Desplazamiento lingual/palatino","Infraoclusión","Supraoclusión")
  )
  val photos=listOf(
-  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Hypodontia.jpg",
-  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Mesiodens.jpg",
-  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Microdontia.jpg",
-  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gemination_of_tooth.jpg",
-  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Amelogenesis_imperfecta.jpg",
-  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Dental_fluorosis.jpg",
-  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Impacted_wisdom_tooth.jpg",
-  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Transposition_of_teeth.jpg"
+  R.drawable.clinical_hypodontia,
+  R.drawable.clinical_mesiodens,
+  R.drawable.clinical_microdontia,
+  R.drawable.clinical_gemination,
+  R.drawable.clinical_amelogenesis,
+  R.drawable.clinical_fluorosis,
+  R.drawable.clinical_impacted,
+  R.drawable.clinical_transposition
  )
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Alteraciones y anomalías dentales",onBack,"Selecciona el grupo, revisa una referencia visual y registra el hallazgo. Describe primero; confirma con radiografía/estudios cuando corresponda.")}
