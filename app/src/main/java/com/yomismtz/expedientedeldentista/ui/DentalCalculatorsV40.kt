@@ -37,6 +37,8 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
  var selected by remember{mutableStateOf(0)}
  var concentration by remember{mutableStateOf("")}
  var doseMgKg by remember{mutableStateOf("")}
+ var topicalAge by remember{mutableStateOf(0)}
+ var topicalProduct by remember{mutableStateOf(0)}
  val w=weight.toDoubleOrNull()
  val limitPerKg=mgKg.toDoubleOrNull()
  val absolute=maxAbsolute.toDoubleOrNull()
@@ -54,7 +56,8 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
   item{Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
    FilterChip(tab==0,{tab=0},{Text("Anestésico local")},Modifier.weight(1f))
    FilterChip(tab==1,{tab=1},{Text("Medicamentos pediátricos")},Modifier.weight(1f))
-   FilterChip(tab==2,{tab=2},{Text("Conversión y práctica")},Modifier.weight(1f))
+   FilterChip(tab==2,{tab=2},{Text("Fluoruros / clorhexidina")},Modifier.weight(1f))
+   FilterChip(tab==3,{tab=3},{Text("Conversión y práctica")},Modifier.weight(1f))
   }}
   if(tab==0){
    item{SectionCard("1 · Paciente"){
@@ -85,6 +88,26 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
     Text(if(doseMl==null)"Captura mg/mL para convertir a volumen." else "Volumen matemático: %.2f mL por dosis".format(doseMl),fontWeight=FontWeight.Bold)
    }}
    item{NoticeCard("Verifica edad, alergias, función renal/hepática, interacciones, contraindicaciones, concentración comercial, máximo diario y pauta con el docente/profesional antes de usar cualquier resultado.")}
+  }else if(tab==2){
+   item{SectionCard("1 · Edad del paciente"){
+    Text("Selecciona el grupo de edad. Para productos tópicos no se aplica una fórmula mg/kg cuando la norma o ficha técnica no los dosifica por peso.")
+    listOf("Menor de 3 años","3 a 5 años","6 años o más").forEachIndexed{i,v->FilterChip(topicalAge==i,{topicalAge=i},{Text(v)},modifier=Modifier.fillMaxWidth())}
+   }}
+   item{SectionCard("2 · Producto odontológico"){
+    val products=listOf("Pasta dental fluorurada","Enjuague fluorurado","Gel fluorurado profesional","Barniz fluorurado profesional","Clorhexidina 0.12%")
+    products.forEachIndexed{i,v->FilterChip(topicalProduct==i,{topicalProduct=i},{Text(v)},modifier=Modifier.fillMaxWidth())}
+   }}
+   item{SectionCard("3 · Orientación verificada para México"){
+    val guidance=when(topicalProduct){
+     0->if(topicalAge<2) "NOM-013-SSA2-2015: en menores de 6 años se orienta pasta con 550 ppm de fluoruro. La cantidad y supervisión deben ajustarse a edad y capacidad para evitar ingestión." else "NOM-013-SSA2-2015: a partir de 6 años se contemplan pastas fluoruradas de 551 a 1500 ppm; la norma también enfatiza evitar la ingestión."
+     1->if(topicalAge<2) "NO INDICADO POR EDAD: la NOM-013-SSA2-2015 establece que los enjuagues fluorurados no deben utilizarse en menores de 6 años." else "NOM-013-SSA2-2015: pueden emplearse enjuagues fluorurados desde los 6 años. En programas escolares, la norma contempla fluoruro de sodio al 0.2% semanal o quincenal."
+     2->if(topicalAge==0) "NO INDICADO POR EDAD: la NOM-013-SSA2-2015 establece que los geles fluorurados no deben utilizarse en menores de 3 años." else "NOM-013-SSA2-2015: el gel fluorurado puede aplicarse a partir de los 3 años, según riesgo de caries y bajo vigilancia de personal de salud bucal capacitado."
+     3->"NOM-013-SSA2-2015: los barnices fluorurados son de aplicación profesional y se indican de acuerdo con el riesgo de caries, diagnóstico y plan de tratamiento. No se calcula su uso por mg/kg en esta herramienta."
+     else->"Clorhexidina 0.12%: concentración documentada en fuentes clínicas mexicanas. Su indicación, volumen, frecuencia y duración dependen del producto y del objetivo clínico; la app no extrapola una pauta universal ni la calcula por kg."
+    }
+    Text(guidance,fontWeight=FontWeight.Bold)
+   }}
+   item{NoticeCard("Fuentes del contenido: NOM-013-SSA2-2015 (Diario Oficial de la Federación) para fluoruros y documentación clínica mexicana/IMSS para clorhexidina al 0.12%. Verifica además la ficha técnica del producto concreto. Uso educativo; no sustituye valoración ni prescripción profesional.")}
   }else{
    item{SectionCard("Actividades de cálculo y conversión"){
     Text("Practica conversiones sin que la app prescriba tratamientos.",fontWeight=FontWeight.Bold)
