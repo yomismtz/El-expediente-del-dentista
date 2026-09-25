@@ -217,7 +217,7 @@ private fun PowellResultV20(name:String,value:Double,min:Double,max:Double,lang:
 private fun SteinerV20(lang:String){
     var bitmap by remember{mutableStateOf<ImageBitmap?>(null)}
     val points=remember{mutableStateListOf<Offset>()}
-    ResponsiveSectionV17(tr(lang,"Radiografía lateral de cráneo · Steiner simplificado","Lateral cephalogram · simplified Steiner"),tr(lang,"Carga la telerradiografía y toca, en orden: S, N, A, B, Go y Gn. La app calcula SNA, SNB, ANB y SN–GoGn.","Upload the lateral cephalogram and tap in order: S, N, A, B, Go and Gn. The app calculates SNA, SNB, ANB and SN–GoGn.")){
+    ResponsiveSectionV17(tr(lang,"Radiografía lateral de cráneo · Steiner simplificado","Lateral cephalogram · simplified Steiner"),tr(lang,"Steiner simplificado: usa únicamente los puntos S, N, A, B, Go y Gn para obtener SNA, SNB, ANB y GoGn–SN.","Simplified Steiner: use only S, N, A, B, Go and Gn to obtain SNA, SNB, ANB and GoGn–SN.")){
         PickableImageV20(bitmap,{bitmap=it},listOf("S","N","A","B","Go","Gn"),points)
         if(points.size==6){
             val s=points[0];val n=points[1];val a=points[2];val b=points[3];val go=points[4];val gn=points[5]
