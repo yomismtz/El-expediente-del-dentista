@@ -345,4 +345,13 @@ private fun mascotEmoji(style: BirdPaletteStyle): String = when(style) {
     BirdPaletteStyle.ZORRO -> "🦊"
     BirdPaletteStyle.PAVO_REAL -> "🦚"
     BirdPaletteStyle.DRAGON -> "🐉"
+    BirdPaletteStyle.BALLENA_AZUL -> "🐋"
+    BirdPaletteStyle.RANA_VERDE -> "🐸"
+    BirdPaletteStyle.MARIPOSA_LAVANDA -> "🦋"
+    BirdPaletteStyle.FLAMENCO_ROSA -> "🦩"
+    BirdPaletteStyle.CABALLITO_TURQUESA -> "🐠"
+    BirdPaletteStyle.CANGREJO_CORAL -> "🦀"
+    BirdPaletteStyle.MURCIELAGO_NOCHE -> "🦇"
+    BirdPaletteStyle.PANDA_MONO -> "🐼"
+    BirdPaletteStyle.ABEJA_CONTRASTE -> "🐝"
 }
