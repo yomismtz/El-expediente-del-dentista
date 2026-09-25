@@ -30,27 +30,27 @@ private data class HubExam(val icon: String, val es: String, val en: String, val
 internal fun ExamHubV1Screen(lang: String, onOpen: (V7Overlay) -> Unit, onBack: () -> Unit) {
     val general = listOf(
         HubExam("👤", "Identificación", "Identification", V7Overlay.IDENTIFICATION),
-        HubExam("🩺", "Anamnesis / ASA", "History / ASA", V7Overlay.HISTORY),
-        HubExam("❤️", "Signos vitales", "Vital signs", V7Overlay.VITALS),
+        HubExam("📋", "Anamnesis / ASA", "History / ASA", V7Overlay.HISTORY),
+        HubExam("♥", "Signos vitales", "Vital signs", V7Overlay.VITALS),
         HubExam("◉", "ATM y músculos", "TMJ and muscles", V7Overlay.ATM),
-        HubExam("↔", "Oclusión", "Occlusion", V7Overlay.OCCLUSION),
-        HubExam("👄", "Mucosas", "Mucosa", V7Overlay.MUCOSA),
-        HubExam("🧪", "Auxiliares", "Auxiliaries", V7Overlay.AUXILIARIES),
+        HubExam("⌁", "Oclusión", "Occlusion", V7Overlay.OCCLUSION),
+        HubExam("◒", "Mucosas", "Mucosa", V7Overlay.MUCOSA),
+        HubExam("▣", "Auxiliares", "Auxiliaries", V7Overlay.AUXILIARIES),
         HubExam("🧍", "Postura", "Posture", V7Overlay.POSTURE)
     )
     val analyses = listOf(
-        HubExam("🦷", "Odontograma", "Odontogram", V7Overlay.ODONTOGRAM),
+        HubExam("◇", "Odontograma", "Odontogram", V7Overlay.ODONTOGRAM),
         HubExam("🔎", "ICDAS", "ICDAS", V7Overlay.ICDAS),
         HubExam("➕", "CPOD / ceod", "DMFT / dmft", V7Overlay.CPOD),
         HubExam("🔴", "O'Leary", "O'Leary", V7Overlay.OLEARY),
         HubExam("6️⃣", "IPC", "CPI", V7Overlay.IPC),
         HubExam("🪥", "IHOS", "OHI-S", V7Overlay.IHOS),
-        HubExam("📈", "Periodontograma", "Periodontal chart", V7Overlay.PERIODONTAL),
+        HubExam("▥", "Periodontograma", "Periodontal chart", V7Overlay.PERIODONTAL),
         HubExam("⚡", "Pulpar + periapical", "Pulpal + apical", V7Overlay.PULPAL_APICAL)
     )
     val treatment = listOf(
-        HubExam("⚡", "Endodoncia", "Endodontics", V7Overlay.ENDO),
-        HubExam("👑", "Prótesis / Kennedy", "Prosthodontics / Kennedy", V7Overlay.PROSTHETIC),
+        HubExam("∿", "Endodoncia", "Endodontics", V7Overlay.ENDO),
+        HubExam("⌂", "Prótesis / Kennedy", "Prosthodontics / Kennedy", V7Overlay.PROSTHETIC),
         HubExam("✚", "Cirugía", "Surgery", V7Overlay.SURGICAL),
         HubExam("✍", "Consentimiento", "Consent", V7Overlay.CONSENT),
         HubExam("📄", "Notas de evolución", "Progress notes", V7Overlay.EVOLUTION)
@@ -84,7 +84,8 @@ private fun HubGroupV17(
 ) {
     ResponsiveSectionV17(title) {
         val columns = when {
-            profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT -> 1
+            profile.largeSystemText -> 1
+            profile.width == ScreenWidthV17.COMPACT -> 2
             profile.width == ScreenWidthV17.MEDIUM -> 2
             else -> 3
         }
@@ -95,7 +96,7 @@ private fun HubGroupV17(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = .62f)),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = .35f)),
-                shape = RoundedCornerShape(15.dp)
+                shape = MaterialTheme.shapes.medium
             ) {
                 Row(
                     Modifier.fillMaxWidth().padding(12.dp),
