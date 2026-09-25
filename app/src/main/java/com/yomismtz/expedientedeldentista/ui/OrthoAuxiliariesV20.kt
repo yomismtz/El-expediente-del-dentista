@@ -225,7 +225,7 @@ private fun SteinerV20(lang:String){
             SteinerRowV20("SNA",sna,80.0,84.0,tr(lang,"<80°: posición maxilar retruida; >84°: adelantada/prognática según el material.","<80°: retruded maxillary position; >84°: advanced/prognathic per the teaching material."),lang)
             SteinerRowV20("SNB",snb,78.0,82.0,tr(lang,"<78°: retrogenismo mandibular; >82°: prognatismo mandibular.","<78°: mandibular retrognathism; >82°: mandibular prognathism."),lang)
             SteinerRowV20("ANB",anb,1.0,3.0,tr(lang,"<1°: tendencia Clase III; 1–3°: Clase I; >3°: tendencia Clase II (norma 2° ±1° en la tabla de Steiner del material).","<1°: Class III tendency; 1–3°: Class I; >3°: Class II tendency (2° ±1° in the material's Steiner table)."),lang)
-            SteinerRowV20("SN–GoGn",sngogn,27.0,37.0,tr(lang,"<27°: patrón horizontal; 27–37°: mesofacial; >37°: patrón vertical (norma 32° ±5°).","<27°: horizontal pattern; 27–37°: mesofacial; >37°: vertical pattern (32° ±5°)."),lang)
+            SteinerRowV20("GoGn–SN",sngogn,27.0,37.0,tr(lang,"<27°: patrón horizontal; 27–37°: mesofacial; >37°: patrón vertical (norma 32° ±5°).","<27°: horizontal pattern; 27–37°: mesofacial; >37°: vertical pattern (32° ±5°)."),lang)
             NoticeCard(tr(lang,"Resultado educativo de trazado manual. Antes de usarlo académicamente verifica calibración de imagen, identificación de puntos y protocolo del curso.","Educational manual-tracing result. Before academic use, verify image calibration, landmark identification and course protocol."))
         }
     }
