@@ -101,3 +101,5 @@ jobs:
           name: El-expediente-del-dentista-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
+# build-trigger: mascotas-30
