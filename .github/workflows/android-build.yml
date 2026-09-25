@@ -56,6 +56,42 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      - name: Cache clinical images inside APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          D="app/src/main/res/drawable"
+          mkdir -p "$D"
+          fetch() { curl -L --fail --retry 3 --silent --show-error "$1" -o "$D/$2"; }
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/PSM_V52_D333_Brachycephalic_and_dolichocephalic_types_from_the_coast_of_zeeland.jpg" "clinical_cranial_morphology.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Bellspalsy.JPG" "clinical_facial_asymmetry.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Bell%27s_Palsy_smiling.jpg" "clinical_smile.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Bell%27s_Palsy_Symptoms_Closed_Eyes.jpg" "clinical_eye_closure.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Bell%27s_Palsy_Symptoms_Mouth_Wide_Open.jpg" "clinical_mouth_open.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Palpa%C3%A7%C3%A3o_linfonodo.jpg" "clinical_node_palpation.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Cervical_lymphadenopathy.jpg" "clinical_cervical_nodes.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Cervical_lymph_nodes_and_levels.png" "clinical_cervical_map.png"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/VerticalDO2.JPG" "clinical_vertical_dimension.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Dental_braces.jpg" "clinical_braces.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Hypodontia.jpg" "clinical_hypodontia.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Mesiodens.jpg" "clinical_mesiodens.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Microdontia.jpg" "clinical_microdontia.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gemination_of_tooth.jpg" "clinical_gemination.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Amelogenesis_imperfecta.jpg" "clinical_amelogenesis.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Dental_fluorosis.jpg" "clinical_fluorosis.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Impacted_wisdom_tooth.jpg" "clinical_impacted.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Transposition_of_teeth.jpg" "clinical_transposition.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/DentalSeperators.jpg" "occlusion_primary.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Angle_KL_1.JPG" "occlusion_angle1.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Class2division1malocclusion.jpg" "occlusion_angle2.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Overjet-overbite.png" "occlusion_overjet.png"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Anterior_open_bite_malocclusion.jpg" "occlusion_openbite.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Patient_with_Apert_syndrome.jpg" "occlusion_crossbite.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Canted_occlusal_plane.jpg" "occlusion_canted.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Sever_Crowding_of_teeth.jpg" "occlusion_crowding.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Moderate_crowding_with_deep_bite.jpg" "occlusion_deepbite.jpg"
+          fetch "https://commons.wikimedia.org/wiki/Special:Redirect/file/Brian_diastema.png" "occlusion_diastema.png"
+
       - name: Build debug APK
         run: gradle :app:assembleDebug --stacktrace
 
