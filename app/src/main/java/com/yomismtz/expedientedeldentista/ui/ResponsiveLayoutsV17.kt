@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +20,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -121,13 +127,16 @@ internal fun ResponsiveSectionV17(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.38f)),
-        shape = RoundedCornerShape(18.dp)
+        shape = MaterialTheme.shapes.large
     ) {
         Column(
             Modifier.fillMaxWidth().padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, modifier=Modifier.weight(1f))
+                SectionHelpV22(subtitle)
+            }
             if (!subtitle.isNullOrBlank()) Text(subtitle, style = MaterialTheme.typography.bodyMedium)
             content()
         }
@@ -139,4 +148,20 @@ internal fun responsiveColumnsV17(profile: ScreenProfileV17, preferredExpanded: 
     profile.width == ScreenWidthV17.COMPACT -> 1
     profile.width == ScreenWidthV17.MEDIUM -> 2
     else -> preferredExpanded.coerceAtLeast(2)
+}
+
+
+@Composable
+internal fun SectionHelpV22(text:String?) {
+    if(text.isNullOrBlank()) return
+    var open by remember { mutableStateOf(false) }
+    OutlinedButton(onClick={open=!open}) { Text("?") }
+    if(open) Surface(color=MaterialTheme.colorScheme.secondaryContainer,shape=MaterialTheme.shapes.medium) { Text(text,Modifier.padding(10.dp),style=MaterialTheme.typography.bodySmall) }
+}
+
+@Composable
+internal fun CompletionBadgeV22(done:Boolean,inProgress:Boolean,lang:String) {
+    val text=when { done -> "✓ "+tr(lang,"Completado","Completed"); inProgress -> "● "+tr(lang,"En progreso","In progress"); else -> "○ "+tr(lang,"Pendiente","Pending") }
+    val color=when { done -> MaterialTheme.colorScheme.secondaryContainer; inProgress -> MaterialTheme.colorScheme.primaryContainer; else -> MaterialTheme.colorScheme.surfaceVariant }
+    Surface(color=color,shape=MaterialTheme.shapes.small){ Text(text,Modifier.padding(horizontal=8.dp,vertical=4.dp),style=MaterialTheme.typography.labelMedium,fontWeight=FontWeight.Bold) }
 }
