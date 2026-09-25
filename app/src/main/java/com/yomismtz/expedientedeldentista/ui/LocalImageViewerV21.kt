@@ -25,6 +25,7 @@ fun LocalZoomableImageV21(
     title:String,
     @DrawableRes resource:Int,
     attribution:String,
+    observation:String="",
     modifier:Modifier=Modifier.fillMaxWidth()
 ){
     var open by remember{mutableStateOf(false)}
@@ -32,6 +33,7 @@ fun LocalZoomableImageV21(
         Column(Modifier.padding(8.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
             Text(title,fontWeight=FontWeight.Bold)
             Image(painterResource(resource),title,Modifier.fillMaxWidth().heightIn(min=180.dp,max=360.dp),contentScale=ContentScale.Fit)
+            if(observation.isNotBlank()) Text("👁 Qué observar: $observation",style=MaterialTheme.typography.bodySmall)
             Text("🔍 Toca para ampliar · recurso interno/offline",style=MaterialTheme.typography.bodySmall)
             if(attribution.isNotBlank()) Text(attribution,style=MaterialTheme.typography.bodySmall)
         }
@@ -52,4 +54,18 @@ fun LocalZoomableImageV21(
             }}
         )
     }
+}
+
+
+@Composable
+fun ClinicalComparisonCardV22(title:String,@DrawableRes normal:Int,@DrawableRes alteration:Int,normalLabel:String="Normal",alterationLabel:String="Alteración",observation:String=""){
+    Card(Modifier.fillMaxWidth(),shape=MaterialTheme.shapes.large){Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
+        Text(title,fontWeight=FontWeight.Bold)
+        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+            Column(Modifier.weight(1f)){Text(normalLabel,fontWeight=FontWeight.SemiBold);Image(painterResource(normal),normalLabel,Modifier.fillMaxWidth().heightIn(min=120.dp,max=220.dp),contentScale=ContentScale.Fit)}
+            Column(Modifier.weight(1f)){Text(alterationLabel,fontWeight=FontWeight.SemiBold);Image(painterResource(alteration),alterationLabel,Modifier.fillMaxWidth().heightIn(min=120.dp,max=220.dp),contentScale=ContentScale.Fit)}
+        }
+        if(observation.isNotBlank()) Text("👁 Qué observar: $observation",style=MaterialTheme.typography.bodySmall)
+        Text("🔍 Toca cada referencia individual para ampliarla cuando esté disponible.",style=MaterialTheme.typography.bodySmall)
+    }}
 }
