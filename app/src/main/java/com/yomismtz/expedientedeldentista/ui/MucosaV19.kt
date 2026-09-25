@@ -103,6 +103,20 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
             val detail=when(tab){1->if(lang=="en")selected.changesEn else selected.changesEs;2->if(lang=="en")selected.exploreEn else selected.exploreEs;else->if(lang=="en")selected.normalEn else selected.normalEs}
             Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) { Text(detail,Modifier.padding(12.dp)) }
         }
+        ResponsiveSectionV17(tr(lang,"Atlas visual · lesiones elementales","Visual atlas · elementary lesions")) {
+            Card(onClick={zoomHelpImage=true},modifier=Modifier.fillMaxWidth()){
+                Column(Modifier.padding(8.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+                    Image(
+                        painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),
+                        contentDescription="Atlas visual de lesiones elementales de mucosa oral",
+                        modifier=Modifier.fillMaxWidth().height(360.dp),
+                        contentScale=ContentScale.Fit
+                    )
+                    Text("🔍 Toca la lámina para abrirla y ampliar con dos dedos.",fontWeight=FontWeight.Bold)
+                    Text("Recurso interno de la app: funciona sin conexión.",style=MaterialTheme.typography.bodySmall)
+                }
+            }
+        }
         ResponsiveSectionV17(tr(lang,"2 · Registro rápido","2 · Quick description")) {
             Button(onClick={lesionHelp=true},modifier=Modifier.fillMaxWidth()){Text("❓ Ayuda · Lesiones elementales de mucosa oral")}
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(7.dp)) {
@@ -174,7 +188,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
             AlertDialog(onDismissRequest={lesionHelp=false},confirmButton={TextButton(onClick={lesionHelp=false}){Text("Cerrar")}},title={Text("Lesiones elementales · ayuda rápida")},text={
                 Column(Modifier.height(460.dp).verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(8.dp)){
                     Text("Toca esta ayuda cuando necesites recordar qué estás observando. Primero describe la lesión; después se integra el diagnóstico.",fontWeight=FontWeight.Bold)
-                    Card(onClick={zoomHelpImage=true},modifier=Modifier.fillMaxWidth()){Column{Image(painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),contentDescription="Ilustración de lesiones elementales de mucosa oral",modifier=Modifier.fillMaxWidth().height(360.dp),contentScale=ContentScale.Fit); Text("🔍 Toca la imagen para ampliar y usar zoom con dos dedos",modifier=Modifier.padding(8.dp),fontWeight=FontWeight.Bold)}}
+                    Text("La lámina visual está disponible directamente en la pantalla de mucosas, arriba del registro rápido.",fontWeight=FontWeight.Bold)
                     Text("Atlas visual offline: la lámina incluye ejemplos ilustrados de mácula, eritema, petequia, púrpura/equimosis, pápula, placa, nódulo, masa, vesícula, ampolla, pústula, quiste, erosión, úlcera, fisura, costra, escama, atrofia, queratosis, lesión papilar, fístula, edema, hematoma y pigmentación. Es apoyo descriptivo; no confirma diagnósticos.",style=MaterialTheme.typography.bodySmall)
                     elementary.forEach{(n,d)->Card(Modifier.fillMaxWidth()){Column(Modifier.padding(9.dp)){Text(n,fontWeight=FontWeight.Black);Text(d)}}}
                 }
