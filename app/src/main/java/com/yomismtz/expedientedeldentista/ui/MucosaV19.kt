@@ -88,6 +88,10 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
     else tr(lang,"$name: $finding; ${if(count=="Única")"lesión única" else "lesiones múltiples"}; tamaño ${sizeMm}; color $color; forma $shape; superficie $surface; borde $border; base $base; consistencia $consistency; movilidad $mobility; $symptoms; duración $duration; evolución $evolution${if(notes.isBlank())"" else "; $notes"}. Descripción clínica; correlacionar antes de diagnosticar.","$name: $finding; size ${if(sizeMm.isBlank())"not entered" else "$sizeMm mm"}; color $color; shape $shape; surface $surface; border $border; base $base; consistency $consistency; mobility $mobility; symptoms $symptoms; duration $duration; evolution $evolution. Clinical description; correlate before diagnosis.")
 
     ResponsiveScreenV17(tr(lang,"Mucosas orales interactivas","Interactive oral mucosa"),tr(lang,"Toca una zona en la boca abierta y practica una descripción clínica sistemática.","Tap a region on the open-mouth diagram and practice systematic clinical description."),onBack) { profile ->
+        Button(onClick={lesionHelp=true},modifier=Modifier.fillMaxWidth()) {
+            Text(tr(lang,"❓ Ayuda · Lesiones elementales básicas","❓ Help · Basic elementary lesions"),fontWeight=FontWeight.Black)
+        }
+        Text(tr(lang,"Abre la guía rápida para identificar y describir lesiones antes de registrarlas.","Open the quick guide to identify and describe lesions before recording them."),style=MaterialTheme.typography.bodySmall)
         ResponsiveSectionV17(tr(lang,"1 · Boca abierta: toca una zona","1 · Open mouth: tap a region")) {
             OpenMouthMap19(selectedId){selectedId=it}
             Text("${tr(lang,"Zona seleccionada","Selected region")}: $name",fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
