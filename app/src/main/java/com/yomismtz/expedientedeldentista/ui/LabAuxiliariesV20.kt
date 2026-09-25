@@ -127,46 +127,29 @@ private fun labStatusV20(value:Double?,p:LabParamV20,male:Boolean,lang:String):P
 
 @Composable
 fun LaboratoryAuxiliariesV20Screen(lang:String,onBack:()->Unit){
-    var tab by remember{mutableStateOf(0)}
-    var male by remember{mutableStateOf(true)}
-    val values=remember{mutableStateMapOf<String,String>()}
-    val tabs=listOf(tr(lang,"Biometría","CBC"),tr(lang,"Química 18","Chemistry 18"),tr(lang,"Tiroides","Thyroid"),tr(lang,"Coagulación","Coagulation"),tr(lang,"Histología","Histology"),tr(lang,"Microbiología","Microbiology"),"CAMBRA")
-
-    ResponsiveScreenV17(tr(lang,"Laboratorio e histopatología","Laboratory & histopathology"),tr(lang,"Introduce resultados para compararlos con intervalos educativos de adulto. La referencia del laboratorio y el contexto clínico siempre tienen prioridad.","Enter results to compare them with adult teaching intervals. The reporting laboratory and clinical context always take priority."),onBack){profile->
-        AdaptiveGridV17(tabs.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 4){i->
-            FilterChip(tab==i,{tab=i},{Text(tabs[i])},Modifier.fillMaxWidth())
-        }
-
-        if(tab<4){
-            ResponsiveSectionV17(tr(lang,"Sexo para intervalos que cambian","Sex for intervals that differ")){
-                Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
-                    FilterChip(male,{male=true},{Text(tr(lang,"Hombre","Male"))},Modifier.weight(1f))
-                    FilterChip(!male,{male=false},{Text(tr(lang,"Mujer","Female"))},Modifier.weight(1f))
-                }
-            }
-            val params=when(tab){0->cbcV20;1->chemistryV20;2->thyroidV23;else->coagV20}
-            params.forEach{p->
-                val raw=values[p.key].orEmpty()
-                val result=labStatusV20(raw.toDoubleOrNull(),p,male,lang)
-                val min=if(male)p.maleMin else p.femaleMin
-                val max=if(male)p.maleMax else p.femaleMax
-                ResponsiveSectionV17(if(lang=="en")p.en else p.es,"${tr(lang,"Referencia","Reference")}: ${formatLabV20(min)}–${formatLabV20(max)} ${p.unit}"){
-                    OutlinedTextField(value=raw,onValueChange={values[p.key]=it.filter{c->c.isDigit()||c=='.'}.take(10)},label={Text(tr(lang,"Resultado","Result"))},suffix={if(p.unit.isNotBlank())Text(p.unit)},modifier=Modifier.fillMaxWidth(),singleLine=true)
-                    if(raw.isNotBlank()){
-                        Text(result.first,fontWeight=FontWeight.Black,color=when{raw.toDoubleOrNull()==null->MaterialTheme.colorScheme.error;raw.toDouble()<min||raw.toDouble()>max->MaterialTheme.colorScheme.error;else->MaterialTheme.colorScheme.primary})
-                        Text(result.second)
-                    }
-                }
-            }
-            if(tab==3) NoticeCard(tr(lang,"Los objetivos de INR cambian en pacientes con anticoagulación (p. ej. warfarina). No uses el intervalo de una persona sin anticoagulante para decidir suspender/modificar medicamentos ni para autorizar un procedimiento.","INR targets differ for anticoagulated patients (e.g. warfarin). Do not use the non-anticoagulated interval to change medication or clear a procedure."))
-        }else when(tab){
-            4->HistopathologyV20(lang)
-            5->MicrobiologyV23(lang)
-            else->CambraV23(lang)
-        }
-
-        NoticeCard(tr(lang,"Estos intervalos son referencias educativas para adultos y pueden variar por laboratorio, método, edad, embarazo, altitud, medicación y enfermedad. Un valor fuera de rango no equivale por sí solo a un diagnóstico.","These are adult teaching references and may vary by laboratory, method, age, pregnancy, altitude, medication and disease. An out-of-range value is not a diagnosis by itself."))
+ var tab by remember{mutableStateOf(0)}; var male by remember{mutableStateOf(true)}
+ val values=remember{mutableStateMapOf<String,String>()}
+ val tabs=listOf(tr(lang,"Biometría","CBC"),tr(lang,"Química 18","Chemistry 18"),tr(lang,"Tiroides","Thyroid"),tr(lang,"Coagulación","Coagulation"),tr(lang,"Histología","Histology"),tr(lang,"Microbiología","Microbiology"),"CAMBRA")
+ ResponsiveScreenV17(tr(lang,"Laboratorio e histopatología","Laboratory & histopathology"),tr(lang,"El alumno no escribe ni sube resultados. Selecciona valores educativos y la app explica qué significan; todo debe comprobarse con el reporte real y el contexto clínico.","The student does not type or upload results. Select teaching values and the app explains their meaning; everything must be verified against the actual report and clinical context."),onBack){profile->
+  val tabCols=when{profile.largeSystemText->3;profile.width==ScreenWidthV17.COMPACT->3;profile.width==ScreenWidthV17.MEDIUM->4;else->5}
+  AdaptiveGridV17(tabs.size,tabCols){i->FilterChip(tab==i,{tab=i},{Text(tabs[i])},Modifier.fillMaxWidth())}
+  if(tab<4){
+   ResponsiveSectionV17(tr(lang,"Sexo para intervalos que cambian","Sex for intervals that differ")){ChipChoices(listOf(tr(lang,"Hombre","Male") to male,tr(lang,"Mujer","Female") to !male),{male=it==0},columns=3)}
+   val params=when(tab){0->cbcV20;1->chemistryV20;2->thyroidV23;else->coagV20}
+   params.forEach{p->
+    val min=if(male)p.maleMin else p.femaleMin; val max=if(male)p.maleMax else p.femaleMax
+    val low=if(min<=0.0)0.0 else min*.8; val mid=(min+max)/2.0; val high=max+(max-min).coerceAtLeast(max*.1)
+    val examples=listOf(low,min,mid,max,high).distinct().sorted(); val raw=values[p.key].orEmpty(); val result=labStatusV20(raw.toDoubleOrNull(),p,male,lang)
+    ResponsiveSectionV17(if(lang=="en")p.en else p.es,"${tr(lang,"Referencia educativa","Teaching reference")}: ${formatLabV20(min)}–${formatLabV20(max)} ${p.unit}"){
+     Text(tr(lang,"Selecciona un valor de ejemplo. No hay captura libre.","Select an example value. There is no free-form entry."),style=MaterialTheme.typography.bodySmall)
+     ChipChoices(examples.map{v->"${formatLabV20(v)} ${p.unit}".trim() to (raw==v.toString())},{i->values[p.key]=examples[i].toString()},columns=5)
+     if(raw.isNotBlank()){Text(result.first,fontWeight=FontWeight.Black,color=if(raw.toDouble()<min||raw.toDouble()>max)MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary);Text(result.second)}
     }
+   }
+   if(tab==3) NoticeCard(tr(lang,"Los objetivos de INR cambian en pacientes con anticoagulación. Estas opciones enseñan interpretación; no autorizan procedimientos ni cambios de medicamentos.","INR targets differ in anticoagulated patients. These options teach interpretation; they do not clear procedures or medication changes."))
+  }else when(tab){4->HistopathologyV20(lang);5->MicrobiologyV23(lang);else->CambraV23(lang)}
+  NoticeCard(tr(lang,"Valores y resultados son ejemplos educativos seleccionables. El alumno no sube archivos ni escribe resultados en este módulo. Un valor seleccionado no equivale a un resultado real ni a un diagnóstico.","Values and results are selectable teaching examples. The student does not upload files or type results in this module. A selected value is not an actual result or a diagnosis."))
+ }
 }
 
 private fun formatLabV20(v:Double)=if(v%1.0==0.0)v.toInt().toString() else v.toString()
