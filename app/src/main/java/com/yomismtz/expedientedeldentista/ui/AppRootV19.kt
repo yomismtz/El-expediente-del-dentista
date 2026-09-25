@@ -26,12 +26,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -181,9 +185,12 @@ private fun SettingCardV19(title:String,content:@Composable ()->Unit) {
 
 @Composable
 private fun PaletteCardV19(style:BirdPaletteStyle,lang:String,selected:Boolean,onClick:()->Unit,modifier:Modifier=Modifier) {
-    Card(onClick=onClick,modifier=modifier,colors=CardDefaults.cardColors(containerColor=if(selected)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface),border=BorderStroke(if(selected)2.dp else 1.dp,if(selected)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha=.4f)),shape=RoundedCornerShape(14.dp)) {
+    var reaction by remember { mutableStateOf(0) }
+    val motion = remember { Animatable(0f) }
+    LaunchedEffect(reaction) { if(reaction>0){ motion.snapTo(0f); motion.animateTo(1f,tween(180)); motion.animateTo(0f,tween(300)) } }
+    Card(onClick={ reaction++; onClick() },modifier=modifier,colors=CardDefaults.cardColors(containerColor=if(selected)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface),border=BorderStroke(if(selected)2.dp else 1.dp,if(selected)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha=.4f)),shape=RoundedCornerShape(14.dp)) {
         Column(Modifier.fillMaxWidth().padding(9.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(6.dp)) {
-            Text(mascotIconV19(style),style=MaterialTheme.typography.headlineMedium)
+            Text(mascotIconV19(style),style=MaterialTheme.typography.headlineMedium,modifier=Modifier.graphicsLayer { val k=motion.value; when(mascotMotionV19(style)){0->{translationY=-18f*k; scaleX=1f+.12f*k; scaleY=1f+.12f*k};1->{rotationZ=14f*k; scaleX=1f+.08f*k};2->{translationX=12f*k; rotationZ=-10f*k};else->{scaleX=1f+.16f*k; scaleY=1f-.10f*k} } })
             Text(paletteDisplayName(style,lang),fontWeight=if(selected)FontWeight.Black else FontWeight.Medium,textAlign=TextAlign.Center)
             Row(horizontalArrangement=Arrangement.spacedBy(4.dp)) { paletteSwatches(style).forEach { c -> Box(Modifier.size(16.dp).background(c,CircleShape)) } }
             if(style==BirdPaletteStyle.AGAPORNI) Text(tr(lang,"Predeterminada","Default"),style=MaterialTheme.typography.labelSmall)
@@ -202,4 +209,11 @@ private fun mascotIconV19(style:BirdPaletteStyle)=when(style){
  BirdPaletteStyle.BALLENA_AZUL->"🐋"; BirdPaletteStyle.RANA_VERDE->"🐸"; BirdPaletteStyle.MARIPOSA_MONARCA->"🦋"; BirdPaletteStyle.FLAMENCO_ROSA->"🦩"; BirdPaletteStyle.CABALLITO_TURQUESA->"🐠"
  BirdPaletteStyle.CANGREJO_CORAL->"🦀"; BirdPaletteStyle.MURCIELAGO_NOCHE->"🦇"; BirdPaletteStyle.PANDA_MONO->"🐼"; BirdPaletteStyle.ABEJA_CONTRASTE->"🐝"
  BirdPaletteStyle.CAMALEON->"🦎"; BirdPaletteStyle.PERICO->"🦜"; BirdPaletteStyle.GALLO->"🐓"
+}
+
+private fun mascotMotionV19(style:BirdPaletteStyle)=when(style){
+ BirdPaletteStyle.AGAPORNI,BirdPaletteStyle.NINFA,BirdPaletteStyle.CONEJO,BirdPaletteStyle.RANA_VERDE,BirdPaletteStyle.PINGUINO->0
+ BirdPaletteStyle.TUCAN,BirdPaletteStyle.GUACAMAYA,BirdPaletteStyle.PERICO,BirdPaletteStyle.GALLO,BirdPaletteStyle.COLIBRI,BirdPaletteStyle.MARIPOSA_MONARCA,BirdPaletteStyle.MURCIELAGO_NOCHE->1
+ BirdPaletteStyle.SERPIENTE,BirdPaletteStyle.IGUANA,BirdPaletteStyle.CAMALEON,BirdPaletteStyle.CANGREJO_CORAL,BirdPaletteStyle.PEZ_PAYASO,BirdPaletteStyle.DELFIN,BirdPaletteStyle.CABALLITO_TURQUESA->2
+ else->3
 }
