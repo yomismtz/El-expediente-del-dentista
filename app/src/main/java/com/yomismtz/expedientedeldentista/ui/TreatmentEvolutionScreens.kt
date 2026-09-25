@@ -221,19 +221,23 @@ fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Uni
             tr(lang,"Selecciona únicamente lo que realmente ocurrió durante la cita. La app construye la redacción clínica sin que el alumno tenga que escribirla.","Select only what actually occurred during the appointment. The app builds the clinical wording without requiring free text.")) }
         item { NoticeCard(tr(lang,"La nota debe corresponder al expediente real: fecha/hora institucional, diagnóstico, procedimiento, materiales y datos clínicos deben verificarse antes de firmar.","The note must match the real record: institutional date/time, diagnosis, procedure, materials and clinical data must be verified before signing.")) }
         item { SectionCard(tr(lang,"1 · Procedimiento realizado","1 · Procedure performed")) {
-            library.chunked(2).forEachIndexed { row, items -> Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(5.dp)) {
-                items.forEachIndexed { col,x -> val idx=row*2+col; FilterChip(selected==idx,{selected=idx},{Text(if(lang=="en")x.titleEn else x.titleEs)},Modifier.weight(1f)) }
-                if(items.size==1) Text("",Modifier.weight(1f))
-            }}
+            ChipChoices(library.mapIndexed{i,x->(if(lang=="en")x.titleEn else x.titleEs) to (selected==i)},{selected=it},columns=5)
         }}
-        item { SectionCard(tr(lang,"2 · OD o zona","2 · Tooth or site")) { sites.forEach{FilterChip(site==it,{site=it},{Text(it)},Modifier.fillMaxWidth())} } }
-        item { SectionCard(tr(lang,"3 · Estado durante la cita","3 · Appointment status")) { states.forEach{FilterChip(status==it,{status=it},{Text(it)},Modifier.fillMaxWidth())} } }
-        item { SectionCard(tr(lang,"4 · Anestesia","4 · Anesthesia")) { anesthesias.forEach{FilterChip(anesthesia==it,{anesthesia=it},{Text(it)},Modifier.fillMaxWidth())} } }
-        item { SectionCard(tr(lang,"5 · Incidentes","5 · Incidents")) { incidentOptions.forEach{FilterChip(incidents==it,{incidents=it},{Text(it)},Modifier.fillMaxWidth())} } }
-        item { SectionCard(tr(lang,"6 · Indicaciones","6 · Instructions")) { instructionOptions.forEach{FilterChip(instructions==it,{instructions=it},{Text(it)},Modifier.fillMaxWidth())} } }
-        item { SectionCard(tr(lang,"7 · Seguimiento","7 · Follow-up")) { followOptions.forEach{FilterChip(followUp==it,{followUp=it},{Text(it)},Modifier.fillMaxWidth())} } }
-        item { SectionCard(tr(lang,"8 · Supervisión","8 · Supervision")) { supervisionOptions.forEach{FilterChip(supervision==it,{supervision=it},{Text(it)},Modifier.fillMaxWidth())} } }
-        item { SectionCard(tr(lang,"Nota generada automáticamente","Automatically generated note")) { Text(generated,fontWeight=FontWeight.Bold); Text(if(lang=="en")n.textEn else n.textEs,style=MaterialTheme.typography.bodySmall) } }
+        item { SectionCard(tr(lang,"2 · OD o zona","2 · Tooth or site")) { ChipChoices(sites.map{it to (site==it)},{site=sites[it]},columns=4) } }
+        item { SectionCard(tr(lang,"3 · Estado durante la cita","3 · Appointment status")) { ChipChoices(states.map{it to (status==it)},{status=states[it]},columns=4) } }
+        item { SectionCard(tr(lang,"4 · Anestesia","4 · Anesthesia")) { ChipChoices(anesthesias.map{it to (anesthesia==it)},{anesthesia=anesthesias[it]},columns=4) } }
+        item { SectionCard(tr(lang,"5 · Incidentes","5 · Incidents")) { ChipChoices(incidentOptions.map{it to (incidents==it)},{incidents=incidentOptions[it]},columns=4) } }
+        item { SectionCard(tr(lang,"6 · Indicaciones","6 · Instructions")) { ChipChoices(instructionOptions.map{it to (instructions==it)},{instructions=instructionOptions[it]},columns=4) } }
+        item { SectionCard(tr(lang,"7 · Seguimiento","7 · Follow-up")) { ChipChoices(followOptions.map{it to (followUp==it)},{followUp=followOptions[it]},columns=4) } }
+        item { SectionCard(tr(lang,"8 · Supervisión","8 · Supervision")) { ChipChoices(supervisionOptions.map{it to (supervision==it)},{supervision=supervisionOptions[it]},columns=3) } }
+        item { SectionCard(tr(lang,"Qué debe llevar esta nota","What this note should contain")) { Text(if(lang=="en")n.textEn else n.textEs) } }
+        item { SectionCard(tr(lang,"Ejemplo redactado","Written example")) {
+            Text(generated,fontWeight=FontWeight.Bold)
+            Text(tr(lang,
+                "Ejemplo educativo: Paciente acude a la cita en condiciones estables y cooperador. Se verifica el sitio de trabajo y los antecedentes pertinentes. Se realiza $procedure en $site conforme al diagnóstico y al protocolo clínico autorizado. Anestesia: $anesthesia. Durante el procedimiento: $incidents. Al finalizar se proporcionan $instructions. Se indica $followUp. $supervision. La redacción final debe sustituir estas selecciones por los hallazgos, materiales, dosis y datos que realmente correspondan a la atención realizada.",
+                "Educational example: Patient attends the appointment stable and cooperative. The treatment site and relevant history are verified. $procedure is performed at $site according to the diagnosis and authorized clinical protocol. Anesthesia: $anesthesia. During the procedure: $incidents. At completion, $instructions are provided. Plan: $followUp. $supervision. The final note must replace these selections with the actual findings, materials, doses and data from the care provided.")
+            )
+        } }
         item { NoticeCard(tr(lang,"No debe seleccionarse una opción que no haya ocurrido. Materiales, dosis, técnica, hallazgos y firmas específicas se documentan conforme al formato y protocolo institucional.","Do not select an option that did not occur. Specific materials, doses, technique, findings and signatures are documented according to institutional forms and protocols.")) }
     }
 }
