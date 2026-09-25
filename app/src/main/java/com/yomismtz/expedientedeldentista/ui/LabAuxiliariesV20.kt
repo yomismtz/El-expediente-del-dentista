@@ -7,6 +7,8 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.Checkbox
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -53,7 +55,56 @@ private val chemistryV20=listOf(
     LabParamV20("ca","Calcio","Calcium","mg/dL",8.5,10.2,8.5,10.2,"Calcio bajo requiere considerar albúmina, vitamina D y otras causas.","Calcio alto requiere confirmar y estudiar causa; correlacionar con albúmina/PTH según el caso."),
     LabParamV20("alb","Albúmina","Albumin","g/dL",3.4,5.4,3.4,5.4,"Albúmina baja puede relacionarse con inflamación, hígado, riñón o nutrición.","Albúmina alta suele asociarse a hemoconcentración/deshidratación."),
     LabParamV20("ast","AST/TGO","AST","U/L",8.0,33.0,8.0,33.0,"AST baja rara vez tiene significado aislado.","AST alta puede reflejar lesión hepática o muscular; interpretar con ALT y contexto."),
-    LabParamV20("alt","ALT/TGP","ALT","U/L",4.0,36.0,4.0,36.0,"ALT baja rara vez tiene significado aislado.","ALT alta orienta a lesión hepatocelular, pero no define por sí sola la causa.")
+    LabParamV20("alt","ALT/TGP","ALT","U/L",4.0,36.0,4.0,36.0,"ALT baja rara vez tiene significado aislado.","ALT alta orienta a lesión hepatocelular, pero no define por sí sola la causa."),
+    LabParamV20("co2","CO₂ / bicarbonato","CO₂ / bicarbonate","mEq/L",23.0,29.0,23.0,29.0,"Valor bajo puede acompañar alteraciones ácido-base; interpretar clínicamente.","Valor alto puede acompañar alteraciones ácido-base; interpretar clínicamente."),
+    LabParamV20("tp","Proteínas totales","Total protein","g/dL",6.0,8.3,6.0,8.3,"Valor bajo puede asociarse con nutrición, hígado, riñón u otras causas.","Valor alto puede reflejar deshidratación, inflamación u otras causas."),
+    LabParamV20("alp","Fosfatasa alcalina","Alkaline phosphatase","U/L",44.0,147.0,44.0,147.0,"Valor bajo requiere correlación con edad, nutrición y laboratorio.","Valor alto puede ser de origen hepatobiliar u óseo; edad y crecimiento modifican la interpretación."),
+    LabParamV20("bt","Bilirrubina total","Total bilirubin","mg/dL",0.1,1.2,0.1,1.2,"Valor bajo suele carecer de significado aislado.","Elevación requiere correlacionar con fracciones, hígado, hemólisis y clínica."),
+    LabParamV20("chol","Colesterol total","Total cholesterol","mg/dL",0.0,199.0,0.0,199.0,"Un valor bajo se interpreta según nutrición, enfermedad y contexto.","Un valor alto se relaciona con riesgo cardiometabólico; valorar perfil lipídico completo."),
+    LabParamV20("tg","Triglicéridos","Triglycerides","mg/dL",0.0,149.0,0.0,149.0,"Valor bajo suele interpretarse con nutrición y contexto.","Valor alto puede relacionarse con alimentación, metabolismo, diabetes u otras causas."),
+    LabParamV20("ua","Ácido úrico","Uric acid","mg/dL",3.4,7.0,2.4,6.0,"Valor bajo puede relacionarse con fármacos o menor producción; correlacionar.","Valor alto puede acompañar hiperuricemia/gota, función renal u otras causas.")
+)
+
+private val thyroidV23=listOf(
+    LabParamV20("tsh","TSH","TSH","µUI/mL",0.4,4.8,0.4,4.8,"TSH baja puede acompañar hipertiroidismo primario o alteraciones hipofisarias; interpretar con T4L/T3.","TSH alta puede acompañar hipotiroidismo primario; interpretar con T4L y contexto."),
+    LabParamV20("ft4","T4 libre","Free T4","ng/dL",0.8,1.8,0.8,1.8,"T4L baja puede acompañar hipotiroidismo; interpretar junto con TSH.","T4L alta puede acompañar hipertiroidismo; interpretar junto con TSH."),
+    LabParamV20("t3","T3 total","Total T3","ng/dL",80.0,200.0,80.0,200.0,"T3 baja puede verse en hipotiroidismo o enfermedad no tiroidea; no interpretar sola.","T3 alta puede acompañar hipertiroidismo; interpretar con TSH y T4L.")
+)
+
+private data class MicroV23(val name:String,val sample:String,val meaning:String)
+private val microV23=listOf(
+    MicroV23("Cultivo bacteriano aerobio + antibiograma","Pus/exudado o muestra profunda obtenida con técnica adecuada","Identifica bacterias aerobias cultivables y, cuando procede, susceptibilidad. Un aislamiento debe correlacionarse con sitio, calidad de muestra y clínica."),
+    MicroV23("Cultivo anaerobio","Aspirado o muestra profunda, transportada sin exposición al oxígeno","Útil en infecciones profundas seleccionadas; una muestra superficial puede contaminarse con microbiota oral."),
+    MicroV23("Cultivo micológico","Raspado, hisopo o muestra de lesión según protocolo","Puede apoyar identificación de Candida u otros hongos cuando la presentación o respuesta clínica lo justifica."),
+    MicroV23("PCR / prueba molecular","Muestra definida por el ensayo","Detecta material genético de microorganismos específicos; detección no siempre equivale a infección activa."),
+    MicroV23("Tinción de Gram","Muestra de exudado/tejido","Orienta morfología y respuesta de Gram; es complementaria y no sustituye cultivo/identificación cuando éstos son necesarios."),
+    MicroV23("Hemocultivos","Sangre, solicitados por equipo médico","Se usan ante sospecha de bacteriemia/infección sistémica; no son un estudio odontológico rutinario.")
+)
+
+private data class CambraItemV23(val label:String,val kind:Int)
+private val cambraAdultV23=listOf(
+    CambraItemV23("Lesiones cavitadas/no cavitadas o restauraciones recientes por caries",2),
+    CambraItemV23("Diente perdido por caries recientemente",2),
+    CambraItemV23("Xerostomía / flujo salival marcadamente reducido",2),
+    CambraItemV23("Exposición frecuente a azúcares entre comidas",1),
+    CambraItemV23("Biofilm abundante / higiene insuficiente",1),
+    CambraItemV23("Aparatos que favorecen retención de biofilm",1),
+    CambraItemV23("Necesidades especiales que dificultan higiene",1),
+    CambraItemV23("Cepillado dos veces al día con dentífrico fluorurado",0),
+    CambraItemV23("Exposición adecuada a fluoruro / medidas preventivas",0),
+    CambraItemV23("Atención dental regular y medidas de control activas",0)
+)
+private val cambraChildV23=listOf(
+    CambraItemV23("Lesiones de caries/restauraciones recientes",2),
+    CambraItemV23("Diente perdido por caries",2),
+    CambraItemV23("Flujo salival visualmente inadecuado",2),
+    CambraItemV23("Biberón/vaso con bebida azucarada o exposición frecuente a azúcares",1),
+    CambraItemV23("Madre/cuidador/hermanos con experiencia reciente de caries",1),
+    CambraItemV23("Necesidades especiales que dificultan higiene",1),
+    CambraItemV23("Biofilm visible / higiene insuficiente",1),
+    CambraItemV23("Cepillado con dentífrico fluorurado apropiado para edad",0),
+    CambraItemV23("Exposición adecuada a fluoruro",0),
+    CambraItemV23("Hogar dental / controles preventivos regulares",0)
 )
 
 private val coagV20=listOf(
@@ -79,21 +130,21 @@ fun LaboratoryAuxiliariesV20Screen(lang:String,onBack:()->Unit){
     var tab by remember{mutableStateOf(0)}
     var male by remember{mutableStateOf(true)}
     val values=remember{mutableStateMapOf<String,String>()}
-    val tabs=listOf(tr(lang,"Biometría","CBC"),tr(lang,"Química","Chemistry"),tr(lang,"Coagulación","Coagulation"),tr(lang,"Biopsia","Biopsy"))
+    val tabs=listOf(tr(lang,"Biometría","CBC"),tr(lang,"Química 18","Chemistry 18"),tr(lang,"Tiroides","Thyroid"),tr(lang,"Coagulación","Coagulation"),tr(lang,"Histología","Histology"),tr(lang,"Microbiología","Microbiology"),"CAMBRA")
 
     ResponsiveScreenV17(tr(lang,"Laboratorio e histopatología","Laboratory & histopathology"),tr(lang,"Introduce resultados para compararlos con intervalos educativos de adulto. La referencia del laboratorio y el contexto clínico siempre tienen prioridad.","Enter results to compare them with adult teaching intervals. The reporting laboratory and clinical context always take priority."),onBack){profile->
         AdaptiveGridV17(tabs.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 4){i->
             FilterChip(tab==i,{tab=i},{Text(tabs[i])},Modifier.fillMaxWidth())
         }
 
-        if(tab<3){
+        if(tab<4){
             ResponsiveSectionV17(tr(lang,"Sexo para intervalos que cambian","Sex for intervals that differ")){
                 Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
                     FilterChip(male,{male=true},{Text(tr(lang,"Hombre","Male"))},Modifier.weight(1f))
                     FilterChip(!male,{male=false},{Text(tr(lang,"Mujer","Female"))},Modifier.weight(1f))
                 }
             }
-            val params=when(tab){0->cbcV20;1->chemistryV20;else->coagV20}
+            val params=when(tab){0->cbcV20;1->chemistryV20;2->thyroidV23;else->coagV20}
             params.forEach{p->
                 val raw=values[p.key].orEmpty()
                 val result=labStatusV20(raw.toDoubleOrNull(),p,male,lang)
@@ -107,9 +158,11 @@ fun LaboratoryAuxiliariesV20Screen(lang:String,onBack:()->Unit){
                     }
                 }
             }
-            if(tab==2) NoticeCard(tr(lang,"Los objetivos de INR cambian en pacientes con anticoagulación (p. ej. warfarina). No uses el intervalo de una persona sin anticoagulante para decidir suspender/modificar medicamentos ni para autorizar un procedimiento.","INR targets differ for anticoagulated patients (e.g. warfarin). Do not use the non-anticoagulated interval to change medication or clear a procedure."))
-        }else{
-            HistopathologyV20(lang)
+            if(tab==3) NoticeCard(tr(lang,"Los objetivos de INR cambian en pacientes con anticoagulación (p. ej. warfarina). No uses el intervalo de una persona sin anticoagulante para decidir suspender/modificar medicamentos ni para autorizar un procedimiento.","INR targets differ for anticoagulated patients (e.g. warfarin). Do not use the non-anticoagulated interval to change medication or clear a procedure."))
+        }else when(tab){
+            4->HistopathologyV20(lang)
+            5->MicrobiologyV23(lang)
+            else->CambraV23(lang)
         }
 
         NoticeCard(tr(lang,"Estos intervalos son referencias educativas para adultos y pueden variar por laboratorio, método, edad, embarazo, altitud, medicación y enfermedad. Un valor fuera de rango no equivale por sí solo a un diagnóstico.","These are adult teaching references and may vary by laboratory, method, age, pregnancy, altitude, medication and disease. An out-of-range value is not a diagnosis by itself."))
@@ -148,4 +201,28 @@ private fun histologyEnglishV20(es:String)=when(es){
     "Lesión quística / odontogénica"->"May include odontogenic/non-odontogenic cysts or odontogenic tumors; integrate pathology with site and imaging."
     "Alteraciones del desarrollo"->"Aplasia means failure of development; hypoplasia means incomplete development. These are developmental terms and differ from dysplasia/neoplasia."
     else->"The pathologist may report insufficient or non-representative tissue or request repeat biopsy or ancillary studies."
+}
+
+@Composable private fun MicrobiologyV23(lang:String){
+    ResponsiveSectionV17(tr(lang,"Cultivos y pruebas microbiológicas frecuentes","Common microbiology cultures and tests"),tr(lang,"Selecciona el estudio según la pregunta clínica y el tipo de muestra; no se solicitan de rutina para toda infección odontogénica.","Choose testing according to the clinical question and specimen; these are not routine for every odontogenic infection.")){
+        microV23.forEach{x->Card(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp)){Text(x.name,fontWeight=FontWeight.Bold);Text("Muestra: "+x.sample);Text("Interpretación: "+x.meaning)}}}
+    }
+    NoticeCard(tr(lang,"Un resultado «positivo» puede representar infección, colonización o contaminación según microorganismo, sitio y técnica. Correlaciona con clínica y antibiograma cuando corresponda.","A positive result may represent infection, colonization or contamination depending on organism, site and technique. Correlate with clinical findings and susceptibility testing when appropriate."))
+}
+
+@Composable private fun CambraV23(lang:String){
+    var child by remember{mutableStateOf(false)}
+    val selected=remember{mutableStateMapOf<String,Boolean>()}
+    val items=if(child)cambraChildV23 else cambraAdultV23
+    ResponsiveSectionV17("CAMBRA · "+tr(lang,"riesgo de caries","caries risk"),tr(lang,"Herramienta educativa para seleccionar indicadores, factores de riesgo y factores protectores.","Teaching tool to select disease indicators, risk factors and protective factors.")){
+        ChipChoices(listOf(tr(lang,"Adulto / >6 años","Adult / >6 years") to !child,tr(lang,"Niño 0–6 años","Child 0–6 years") to child),{child=it==1;selected.clear()},columns=2)
+        items.forEach{x->Row(Modifier.fillMaxWidth()){Checkbox(selected[x.label]==true,{selected[x.label]=it});Text(x.label,Modifier.weight(1f))}}
+        val high=items.any{it.kind==2&&selected[it.label]==true}
+        val risks=items.count{it.kind==1&&selected[it.label]==true}
+        val protective=items.count{it.kind==0&&selected[it.label]==true}
+        val level=when{high->tr(lang,"ALTO","HIGH");risks==0->tr(lang,"BAJO","LOW");risks<=protective+1->tr(lang,"MEDIO","MODERATE");else->tr(lang,"ALTO","HIGH")}
+        Text(tr(lang,"Riesgo educativo calculado: ","Calculated teaching risk: ")+level,fontWeight=FontWeight.Black)
+        Text(tr(lang,"Los indicadores de enfermedad dominan la clasificación. En ausencia de ellos, el balance entre factores de riesgo y protectores orienta la categoría; el juicio clínico puede modificarla.","Disease indicators dominate classification. Without them, the balance of risk and protective factors guides the category; clinical judgment may modify it."),style=MaterialTheme.typography.bodySmall)
+    }
+    NoticeCard(tr(lang,"CAMBRA/valoración de riesgo no diagnostica caries. Confirma lesiones, actividad, dieta, saliva, exposición a fluoruro y antecedentes antes de definir el plan preventivo.","CAMBRA/risk assessment does not diagnose caries. Confirm lesions, activity, diet, saliva, fluoride exposure and history before defining prevention."))
 }
