@@ -212,7 +212,13 @@ private data class E(val n:String,val d:String)
  val nums=listOf("0","1","2","3","4","5 o más")
  @Composable fun OptionsCard(title:String,options:List<String>,note:String=""){
   SectionCard(title){
-   options.forEach{x->FilterChip(chosen[title]==x,{chosen[title]=x},{Text(x)},modifier=Modifier.fillMaxWidth())}
+   val preferred=when {
+    options.size<=2 -> 2
+    options.any{it.length>30} -> 3
+    options.size<=4 -> options.size
+    else -> 5
+   }
+   ChipChoices(options.map{it to (chosen[title]==it)},{i->chosen[title]=options[i]},columns=preferred)
    if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)
   }
  }
@@ -248,7 +254,11 @@ private data class E(val n:String,val d:String)
  val chosen=remember{mutableStateMapOf<String,String>()}
  val sections=listOf("Cirugías","Hospitalizaciones","Transfusiones","Donación de sangre","Trasplantes","Traumatismos")
  @Composable fun OptionsCard(title:String,options:List<String>,note:String=""){
-  SectionCard(title){options.forEach{x->FilterChip(chosen[title]==x,{chosen[title]=x},{Text(x)},modifier=Modifier.fillMaxWidth())};if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)}
+  SectionCard(title){
+   val preferred=when { options.size<=2->2; options.any{it.length>30}->3; options.size<=4->options.size; else->5 }
+   ChipChoices(options.map{it to (chosen[title]==it)},{i->chosen[title]=options[i]},columns=preferred)
+   if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)
+  }
  }
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Antecedentes quirúrgicos, hospitalarios y traumáticos",onBack,"Selecciona opciones predeterminadas. El objetivo es registrar antecedentes, antigüedad, complicaciones y secuelas sin inventar información.")}
