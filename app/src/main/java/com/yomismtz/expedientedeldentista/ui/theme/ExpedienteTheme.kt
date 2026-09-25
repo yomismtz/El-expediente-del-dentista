@@ -43,7 +43,7 @@ fun paletteDisplayName(style: BirdPaletteStyle, lang: String = "es"): String = w
     BirdPaletteStyle.GATO -> if(lang=="en") "Cat" else "Gato"
     BirdPaletteStyle.CONEJO -> if(lang=="en") "Rabbit" else "Conejo"
     BirdPaletteStyle.ELEFANTE -> if(lang=="en") "Elephant" else "Elefante"
-    BirdPaletteStyle.CABALLO_CAFE -> if(lang=="en") "Brown horse" else "Caballo café"
+    BirdPaletteStyle.CABALLO_CAFE -> if(lang=="en") "Horse" else "Caballo"
     BirdPaletteStyle.SERPIENTE -> if(lang=="en") "Snake" else "Serpiente"
     BirdPaletteStyle.IGUANA -> "Iguana"
     BirdPaletteStyle.ARANA -> if(lang=="en") "Spider" else "Araña"
@@ -62,15 +62,15 @@ fun paletteDisplayName(style: BirdPaletteStyle, lang: String = "es"): String = w
     BirdPaletteStyle.MARTIN_PESCADOR -> if(lang=="en") "Kingfisher" else "Martín pescador"
     BirdPaletteStyle.QUETZAL -> "Quetzal"
     BirdPaletteStyle.DRAGON -> if(lang=="en") "Dragon" else "Dragón"
-    BirdPaletteStyle.BALLENA_AZUL -> if(lang=="en") "Clinical blue whale" else "Ballena azul clínica"
-    BirdPaletteStyle.RANA_VERDE -> if(lang=="en") "Surgical green frog" else "Rana verde quirúrgica"
-    BirdPaletteStyle.MARIPOSA_MONARCA -> if(lang=="en") "Monarch butterfly" else "Mariposa monarca"
-    BirdPaletteStyle.FLAMENCO_ROSA -> if(lang=="en") "Soft pink flamingo" else "Flamenco rosa suave"
-    BirdPaletteStyle.CABALLITO_TURQUESA -> if(lang=="en") "Turquoise seahorse" else "Caballito turquesa"
-    BirdPaletteStyle.CANGREJO_CORAL -> if(lang=="en") "Coral crab" else "Cangrejo coral"
-    BirdPaletteStyle.MURCIELAGO_NOCHE -> if(lang=="en") "Night blue bat" else "Murciélago azul noche"
-    BirdPaletteStyle.PANDA_MONO -> if(lang=="en") "Monochrome panda" else "Panda monocromático"
-    BirdPaletteStyle.ABEJA_CONTRASTE -> if(lang=="en") "High contrast bee" else "Abeja alto contraste"
+    BirdPaletteStyle.BALLENA_AZUL -> if(lang=="en") "Whale" else "Ballena"
+    BirdPaletteStyle.RANA_VERDE -> if(lang=="en") "Frog" else "Rana"
+    BirdPaletteStyle.MARIPOSA_MONARCA -> if(lang=="en") "Butterfly" else "Mariposa"
+    BirdPaletteStyle.FLAMENCO_ROSA -> if(lang=="en") "Flamingo" else "Flamenco"
+    BirdPaletteStyle.CABALLITO_TURQUESA -> if(lang=="en") "Seahorse" else "Caballito de mar"
+    BirdPaletteStyle.CANGREJO_CORAL -> if(lang=="en") "Crab" else "Cangrejo"
+    BirdPaletteStyle.MURCIELAGO_NOCHE -> if(lang=="en") "Bat" else "Murciélago"
+    BirdPaletteStyle.PANDA_MONO -> "Panda"
+    BirdPaletteStyle.ABEJA_CONTRASTE -> if(lang=="en") "Bee" else "Abeja"
 }
 
 fun birdPalette(style: BirdPaletteStyle): BirdPalette {
@@ -105,7 +105,7 @@ fun birdPalette(style: BirdPaletteStyle): BirdPalette {
         BirdPaletteStyle.COLIBRI -> p(0xFF8A3FA8,0xFF1BA89C,0xFFD85A9D,0xFFF8F2FA,0xFFEBDCF4,0xFFD5F2ED)
         BirdPaletteStyle.MARTIN_PESCADOR -> p(0xFF2479B8,0xFF1BA9B5,0xFFF18A38,0xFFF0F8FC,0xFFD8ECFA,0xFFD5F2F4)
         BirdPaletteStyle.QUETZAL -> p(0xFF087C62,0xFF15A69B,0xFFC43E58,0xFFF0FAF6,0xFFD2F1E5,0xFFD4F4F0)
-        BirdPaletteStyle.DRAGON -> BirdPalette(Color(0xFF4B176D),Color.White,Color(0xFF6D28A2),Color(0xFF9B59D0),Color(0xFFF7F0FC),Color(0xFFFFFBFF),Color(0xFF2D1538),Color(0xFFE6D2F2),Color(0xFFF0E2F8),Color(0xFF9D82AC))
+        BirdPaletteStyle.DRAGON -> BirdPalette(Color(0xFF173F35),Color.White,Color(0xFFB58A2A),Color(0xFF8B2635),Color(0xFFE7EFE6),Color(0xFFF7F3E8),Color(0xFF1C2925),Color(0xFFBFD6C7),Color(0xFFE2C77C),Color(0xFF596D64))
         BirdPaletteStyle.BALLENA_AZUL -> p(0xFF075985,0xFF38BDF8,0xFF0C4A6E,0xFFDFF4FF,0xFF7DD3FC,0xFFBAE6FD)
         BirdPaletteStyle.RANA_VERDE -> p(0xFF16803A,0xFF8BC34A,0xFFF4D03F,0xFFE6F4D7,0xFFB7DD8A,0xFFFFE58A)
         BirdPaletteStyle.MARIPOSA_MONARCA -> p(0xFFE56A1F,0xFF171717,0xFFF2A23A,0xFFFFF6EA,0xFFFFD8B5,0xFFE8E0D4)
