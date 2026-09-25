@@ -189,14 +189,28 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 "Hematoma" to "Colección localizada de sangre en tejidos, generalmente relacionada con trauma o sangrado.",
                 "Pigmentación" to "Cambio de color por pigmento endógeno o exógeno; describir color, patrón, extensión y evolución."
             )
-            AlertDialog(onDismissRequest={lesionHelp=false},confirmButton={TextButton(onClick={lesionHelp=false}){Text("Cerrar")}},title={Text("Lesiones elementales · ayuda rápida")},text={
-                Column(Modifier.height(460.dp).verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(8.dp)){
-                    Text("Toca esta ayuda cuando necesites recordar qué estás observando. Primero describe la lesión; después se integra el diagnóstico.",fontWeight=FontWeight.Bold)
-                    Text("La lámina visual está disponible directamente en la pantalla de mucosas, arriba del registro rápido.",fontWeight=FontWeight.Bold)
-                    Text("Atlas visual offline: la lámina incluye ejemplos ilustrados de mácula, eritema, petequia, púrpura/equimosis, pápula, placa, nódulo, masa, vesícula, ampolla, pústula, quiste, erosión, úlcera, fisura, costra, escama, atrofia, queratosis, lesión papilar, fístula, edema, hematoma y pigmentación. Es apoyo descriptivo; no confirma diagnósticos.",style=MaterialTheme.typography.bodySmall)
-                    elementary.forEach{(n,d)->Card(Modifier.fillMaxWidth()){Column(Modifier.padding(9.dp)){Text(n,fontWeight=FontWeight.Black);Text(d)}}}
+            AlertDialog(
+                onDismissRequest={lesionHelp=false},
+                confirmButton={TextButton(onClick={lesionHelp=false}){Text(tr(lang,"Cerrar","Close"))}},
+                title={Text(tr(lang,"Lesiones elementales básicas · guía rápida","Basic elementary lesions · quick guide"))},
+                text={
+                    Column(Modifier.height(520.dp).verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(10.dp)){
+                        Text(tr(lang,"1 · Observa y describe","1 · Observe and describe"),fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
+                        Text(tr(lang,"Antes de pensar en un diagnóstico, identifica el tipo de lesión y registra ubicación, número, tamaño, color, forma, superficie, bordes, base, consistencia, movilidad, síntomas, duración y evolución.","Before considering a diagnosis, identify the lesion type and record site, number, size, color, shape, surface, borders, base, consistency, mobility, symptoms, duration and evolution."))
+                        Card(onClick={zoomHelpImage=true},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){
+                            Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+                                Image(painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),contentDescription=tr(lang,"Lámina de lesiones elementales","Elementary lesions chart"),modifier=Modifier.fillMaxWidth().height(220.dp),contentScale=ContentScale.Fit)
+                                Text(tr(lang,"🔍 Toca la lámina para verla grande y usar zoom","🔍 Tap the chart to enlarge and zoom"),fontWeight=FontWeight.Bold)
+                                Text(tr(lang,"Imagen incluida dentro de la aplicación · disponible sin Internet.","Image bundled inside the app · available without Internet."),style=MaterialTheme.typography.bodySmall)
+                            }
+                        }
+                        Text(tr(lang,"2 · ¿Qué significa cada lesión?","2 · What does each lesion mean?"),fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
+                        elementary.forEach{(n,d)->Card(Modifier.fillMaxWidth()){Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(3.dp)){Text(n,fontWeight=FontWeight.Black);Text(d)}}}
+                        Text(tr(lang,"3 · Regresa al registro","3 · Return to the record"),fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
+                        Text(tr(lang,"Cierra la ayuda, selecciona el hallazgo observado y completa sus características. La app genera la descripción clínica con las opciones elegidas; esta guía no establece un diagnóstico definitivo.","Close the guide, select the observed finding and complete its characteristics. The app generates the clinical description from the selected options; this guide does not establish a definitive diagnosis."))
+                    }
                 }
-            })
+            )
         }
         NoticeCard(tr(lang,"Describe antes de diagnosticar. Lesiones persistentes, induradas, ulceradas sin causa clara, masas o crecimiento requieren supervisión docente/profesional y seguimiento.","Describe before diagnosing. Persistent, indurated, unexplained ulcerated lesions, masses or growth require faculty/professional assessment and follow-up."))
     }
