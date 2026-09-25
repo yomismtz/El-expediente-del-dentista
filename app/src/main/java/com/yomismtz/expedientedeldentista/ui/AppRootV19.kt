@@ -111,7 +111,7 @@ private fun SettingsV19Screen(
                 }
             }
 
-            SettingCardV19(tr(lang,"Paleta de colores inspirada en aves","Bird-inspired color palette")) {
+            SettingCardV19(tr(lang,"Elige tu mascota y su paleta","Choose your mascot and palette")) {
                 BirdPaletteChoices.chunked(paletteColumns).forEach { group ->
                     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                         group.forEach { style ->
@@ -167,9 +167,27 @@ private fun SettingCardV19(title:String,content:@Composable ()->Unit) {
 private fun PaletteCardV19(style:BirdPaletteStyle,lang:String,selected:Boolean,onClick:()->Unit,modifier:Modifier=Modifier) {
     Card(onClick=onClick,modifier=modifier,colors=CardDefaults.cardColors(containerColor=if(selected)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface),border=BorderStroke(if(selected)2.dp else 1.dp,if(selected)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha=.4f)),shape=RoundedCornerShape(14.dp)) {
         Column(Modifier.fillMaxWidth().padding(9.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(6.dp)) {
+            Text(mascotIconV19(style),style=MaterialTheme.typography.headlineMedium)
             Text(paletteDisplayName(style,lang),fontWeight=if(selected)FontWeight.Black else FontWeight.Medium,textAlign=TextAlign.Center)
+            Text(mascotPaletteLabelV19(style),style=MaterialTheme.typography.labelSmall,textAlign=TextAlign.Center)
             Row(horizontalArrangement=Arrangement.spacedBy(4.dp)) { paletteSwatches(style).forEach { c -> Box(Modifier.size(16.dp).background(c,CircleShape)) } }
             if(style==BirdPaletteStyle.AGAPORNI) Text(tr(lang,"Predeterminada","Default"),style=MaterialTheme.typography.labelSmall)
         }
     }
+}
+
+
+private fun mascotIconV19(style:BirdPaletteStyle)=when(style){
+ BirdPaletteStyle.AGAPORNI->"🐦"; BirdPaletteStyle.TUCAN->"🦜"; BirdPaletteStyle.NINFA->"🐤"; BirdPaletteStyle.BUHO->"🦉"; BirdPaletteStyle.CUERVO->"🐦‍⬛"
+ BirdPaletteStyle.GUACAMAYA->"🦜"; BirdPaletteStyle.PUG->"🐶"; BirdPaletteStyle.POMERANIA->"🐕"; BirdPaletteStyle.GATO->"🐱"; BirdPaletteStyle.CONEJO->"🐰"
+ BirdPaletteStyle.ELEFANTE->"🐘"; BirdPaletteStyle.CABALLO_CAFE->"🐴"; BirdPaletteStyle.CABALLO_PINTO->"🐎"; BirdPaletteStyle.IGUANA->"🦎"; BirdPaletteStyle.ARANA->"🕷️"
+ BirdPaletteStyle.TORTUGA->"🐢"; BirdPaletteStyle.PEZ_PAYASO->"🐠"; BirdPaletteStyle.DELFIN->"🐬"; BirdPaletteStyle.TIBURON->"🦈"; BirdPaletteStyle.AJOLOTE->"🩷"
+ BirdPaletteStyle.PINGUINO->"🐧"; BirdPaletteStyle.PATO_MANDARIN->"🦆"; BirdPaletteStyle.HAMSTER->"🐹"; BirdPaletteStyle.FENIX->"🔥"; BirdPaletteStyle.ZORRO->"🦊"
+}
+private fun mascotPaletteLabelV19(style:BirdPaletteStyle)=when(style){
+ BirdPaletteStyle.AGAPORNI->"Verde pastel + durazno"; BirdPaletteStyle.TUCAN->"Amarillo + negro"; BirdPaletteStyle.NINFA->"Gris + amarillo"; BirdPaletteStyle.BUHO->"Café + beige"; BirdPaletteStyle.CUERVO->"Morado + negro"
+ BirdPaletteStyle.GUACAMAYA->"Rojo + azul"; BirdPaletteStyle.PUG->"Beige + café"; BirdPaletteStyle.POMERANIA->"Crema + dorado"; BirdPaletteStyle.GATO->"Gris + rosa"; BirdPaletteStyle.CONEJO->"Blanco + rosa"
+ BirdPaletteStyle.ELEFANTE->"Gris + azul"; BirdPaletteStyle.CABALLO_CAFE->"Café + beige"; BirdPaletteStyle.CABALLO_PINTO->"Blanco + café"; BirdPaletteStyle.IGUANA->"Verde + lima"; BirdPaletteStyle.ARANA->"Negro + naranja"
+ BirdPaletteStyle.TORTUGA->"Verde + café"; BirdPaletteStyle.PEZ_PAYASO->"Naranja + blanco"; BirdPaletteStyle.DELFIN->"Azul + celeste"; BirdPaletteStyle.TIBURON->"Gris + azul"; BirdPaletteStyle.AJOLOTE->"Rosa + morado"
+ BirdPaletteStyle.PINGUINO->"Carbón + azul hielo"; BirdPaletteStyle.PATO_MANDARIN->"Naranja + turquesa"; BirdPaletteStyle.HAMSTER->"Caramelo + crema"; BirdPaletteStyle.FENIX->"Rojo fuego + dorado"; BirdPaletteStyle.ZORRO->"Naranja + crema"
 }
