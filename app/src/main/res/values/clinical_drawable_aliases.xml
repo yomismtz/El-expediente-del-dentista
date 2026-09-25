@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="drawable" name="clinical_cranial_morphology">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_facial_asymmetry">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_smile">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_eye_closure">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_mouth_open">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_node_palpation">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_cervical_nodes">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_cervical_map">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_vertical_dimension">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_braces">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_hypodontia">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_mesiodens">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_microdontia">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_gemination">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_amelogenesis">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_fluorosis">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_impacted">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_transposition">@drawable/ic_app_logo</item>
+    <item type="drawable" name="occlusion_primary">@drawable/ic_app_logo</item>
+    <item type="drawable" name="occlusion_angle1">@drawable/ic_app_logo</item>
+    <item type="drawable" name="occlusion_angle2">@drawable/ic_app_logo</item>
+    <item type="drawable" name="occlusion_overjet">@drawable/ic_app_logo</item>
+    <item type="drawable" name="occlusion_openbite">@drawable/ic_app_logo</item>
+    <item type="drawable" name="occlusion_crossbite">@drawable/ic_app_logo</item>
+    <item type="drawable" name="occlusion_canted">@drawable/ic_app_logo</item>
+    <item type="drawable" name="occlusion_crowding">@drawable/ic_app_logo</item>
+    <item type="drawable" name="occlusion_deepbite">@drawable/ic_app_logo</item>
+    <item type="drawable" name="occlusion_diastema">@drawable/ic_app_logo</item>
+</resources>
