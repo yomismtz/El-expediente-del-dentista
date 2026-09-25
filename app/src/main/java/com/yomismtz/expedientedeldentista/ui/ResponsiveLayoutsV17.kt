@@ -110,10 +110,12 @@ internal fun AdaptiveGridV17(
 ) {
     val availableWidth = with(LocalDensity.current) { androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp.dp }
     val largeText = LocalDensity.current.fontScale >= 1.20f
+    val requested = columns.coerceIn(1, 5)
     val safeColumns = when {
-        largeText || availableWidth < 360.dp -> 1
-        availableWidth < 600.dp -> columns.coerceAtMost(2)
-        else -> columns
+        availableWidth < 360.dp -> if (largeText) 1 else requested.coerceAtMost(2)
+        availableWidth < 600.dp -> if (largeText) requested.coerceAtMost(2) else requested.coerceAtMost(3)
+        availableWidth < 900.dp -> if (largeText) requested.coerceAtMost(3) else requested.coerceAtMost(4)
+        else -> if (largeText) requested.coerceAtMost(4) else requested
     }.coerceAtLeast(1)
     Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         (0 until itemCount).toList().chunked(safeColumns).forEach { rowItems ->
