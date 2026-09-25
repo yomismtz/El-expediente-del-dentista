@@ -26,7 +26,21 @@ fun AuxiliariesV20Screen(lang:String,onBack:()->Unit){
         AuxV20Page.LAB->LaboratoryAuxiliariesV20Screen(lang){page=AuxV20Page.HOME}
         AuxV20Page.ORTHO->OrthodonticAuxiliariesV20Screen(lang){page=AuxV20Page.HOME}
         AuxV20Page.IMAGING->ImagingAuxiliariesV20Screen(lang){page=AuxV20Page.HOME}
-        AuxV20Page.SALIVA->SalivaryFlowV20Screen(lang){page=AuxV20Page.HOME}
+        AuxV20Page.SALIVA->ResponsiveScreenV17("Flujo salival · sialometría","Auxiliar diagnóstico para medir flujo salival total.",{page=AuxV20Page.HOME}){_ ->
+            SectionCard("Métodos de obtención"){
+                Text("No estimulada: drenaje pasivo, escupido, succión o papel absorbente. Estimulada: parafina/base de goma sin sabor o estímulo gustativo, con recolección cronometrada.")
+                Text("Flujo salival = volumen recolectado (mL) ÷ tiempo (min).",fontWeight=FontWeight.Bold)
+            }
+            SectionCard("Interpretación educativa"){
+                Text("Saliva total no estimulada: el flujo habitual se sitúa aproximadamente en 0.3–0.4 mL/min; ≤0.1 mL/min es un punto de corte ampliamente utilizado para hiposalivación.")
+                Text("Saliva total estimulada: el flujo habitual se sitúa aproximadamente en 1.5–2.0 mL/min; se han usado puntos de corte de 0.5–0.7 mL/min para flujo reducido.")
+            }
+            SectionCard("Tira de papel"){
+                Text("La tira debe interpretarse según el método o dispositivo específico. La longitud humedecida en mm no se convierte directamente a mL sin una calibración validada.",fontWeight=FontWeight.Bold)
+                Text("En el Oral Schirmer Test se han estudiado resultados en mm/5 min; una tira genérica no debe etiquetarse como normal, hiposalivación o hipersalivación usando una conversión inventada a mL.")
+            }
+            NoticeCard("Xerostomía es la sensación subjetiva de boca seca; hiposalivación es una reducción objetiva del flujo. No existe un único punto de corte universal de mL/min que diagnostique por sí solo hipersalivación/sialorrea. Interpretar según técnica, síntomas y contexto clínico.")
+        }
         AuxV20Page.HOME->ResponsiveScreenV17(
             tr(lang,"Auxiliares de diagnóstico","Diagnostic aids"),
             tr(lang,"Selecciona el bloque que necesitas. Todo funciona localmente y las imágenes cargadas se usan solo durante la práctica actual.","Choose the block you need. Everything works locally and imported images are used only during the current practice."),
