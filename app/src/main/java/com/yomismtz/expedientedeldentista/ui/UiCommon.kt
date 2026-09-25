@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -86,21 +88,28 @@ fun ChipChoices(
     onClick: (Int) -> Unit,
     columns: Int = 3
 ) {
-    labels.chunked(columns).forEachIndexed { rowIndex, row ->
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            row.forEachIndexed { colIndex, item ->
-                val index = rowIndex * columns + colIndex
-                FilterChip(
-                    selected = item.second,
-                    onClick = { onClick(index) },
-                    label = { Text(item.first) },
-                    modifier = Modifier.weight(1f)
-                )
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val largeText = LocalDensity.current.fontScale >= 1.20f
+        val responsiveColumns = when {
+            largeText || maxWidth < 360.dp -> 1
+            maxWidth < 600.dp -> columns.coerceAtMost(2)
+            else -> columns
+        }.coerceAtLeast(1)
+        Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            labels.chunked(responsiveColumns).forEachIndexed { rowIndex, row ->
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    row.forEachIndexed { colIndex, item ->
+                        val index = rowIndex * responsiveColumns + colIndex
+                        FilterChip(
+                            selected = item.second,
+                            onClick = { onClick(index) },
+                            label = { Text(item.first, softWrap = true) },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    repeat(responsiveColumns - row.size) { androidx.compose.foundation.layout.Spacer(Modifier.weight(1f)) }
+                }
             }
-            repeat(columns - row.size) { Text("", modifier = Modifier.weight(1f)) }
         }
     }
 }
