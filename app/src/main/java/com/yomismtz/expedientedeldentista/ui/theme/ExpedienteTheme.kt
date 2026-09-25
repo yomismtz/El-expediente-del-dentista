@@ -2,6 +2,9 @@ package com.yomismtz.expedientedeldentista.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
+import androidx.compose.material3.Shapes
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -9,6 +12,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 import com.yomismtz.expedientedeldentista.settings.BirdPaletteStyle
+import com.yomismtz.expedientedeldentista.settings.CardShapeStyle
 import com.yomismtz.expedientedeldentista.settings.FontStyle
 import com.yomismtz.expedientedeldentista.settings.TextSizeStyle
 
@@ -153,6 +157,7 @@ fun ExpedienteTheme(
     paletteStyle: BirdPaletteStyle,
     fontStyle: FontStyle,
     textSizeStyle: TextSizeStyle = TextSizeStyle.NORMAL,
+    cardShapeStyle: CardShapeStyle = CardShapeStyle.ROUNDED,
     content: @Composable () -> Unit
 ) {
     val p = birdPalette(paletteStyle)
@@ -186,5 +191,7 @@ fun ExpedienteTheme(
         labelLarge = TextStyle(fontFamily = family, fontSize = scaledSp(14f, textSizeStyle))
     )
 
-    MaterialTheme(colorScheme = colors, typography = typography, content = content)
+    val radius = when(cardShapeStyle) { CardShapeStyle.SOFT -> 8.dp; CardShapeStyle.ROUNDED -> 18.dp; CardShapeStyle.SQUARE -> 2.dp }
+    val shapes = Shapes(extraSmall=RoundedCornerShape(radius), small=RoundedCornerShape(radius), medium=RoundedCornerShape(radius), large=RoundedCornerShape(radius), extraLarge=RoundedCornerShape(radius))
+    MaterialTheme(colorScheme = colors, typography = typography, shapes = shapes, content = content)
 }
