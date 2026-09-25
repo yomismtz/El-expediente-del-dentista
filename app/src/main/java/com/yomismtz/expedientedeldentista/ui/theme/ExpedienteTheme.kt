@@ -106,6 +106,9 @@ fun fontDisplayName(style: FontStyle, lang: String = "es"): String = when (style
     FontStyle.ROUNDED -> if (lang == "en") "Rounded" else "Redondeada"
     FontStyle.ACADEMIC -> if (lang == "en") "Academic" else "Académica"
     FontStyle.ACCESSIBLE -> if (lang == "en") "Accessible" else "Accesible"
+    FontStyle.CLASSIC -> if (lang == "en") "Classic" else "Clásica"
+    FontStyle.HANDWRITTEN -> if (lang == "en") "Handwritten" else "Manuscrita"
+    FontStyle.COMPACT -> if (lang == "en") "Compact" else "Compacta"
 }
 
 fun textSizeDisplayName(style: TextSizeStyle, lang: String = "es"): String = when (style) {
@@ -120,6 +123,9 @@ private fun familyFor(style: FontStyle): FontFamily = when (style) {
     FontStyle.ROUNDED -> FontFamily.Cursive
     FontStyle.ACADEMIC -> FontFamily.Serif
     FontStyle.ACCESSIBLE -> FontFamily.Monospace
+    FontStyle.CLASSIC -> FontFamily.Serif
+    FontStyle.HANDWRITTEN -> FontFamily.Cursive
+    FontStyle.COMPACT -> FontFamily.SansSerif
 }
 
 private fun scaledSp(base: Float, textSizeStyle: TextSizeStyle) = (base * textSizeStyle.multiplier).sp
@@ -139,7 +145,7 @@ fun ExpedienteTheme(
         secondary = p.secondary,
         tertiary = p.tertiary,
         background = p.background,
-        surface = p.surface,
+        surface = p.surface.copy(alpha = 0.98f),
         onSurface = p.onSurface,
         primaryContainer = p.primaryContainer,
         onPrimaryContainer = p.onSurface,
