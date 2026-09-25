@@ -182,12 +182,14 @@ private fun mascotIconV19(style:BirdPaletteStyle)=when(style){
  BirdPaletteStyle.GUACAMAYA->"🦜"; BirdPaletteStyle.PUG->"🐶"; BirdPaletteStyle.POMERANIA->"🐕"; BirdPaletteStyle.GATO->"🐱"; BirdPaletteStyle.CONEJO->"🐰"
  BirdPaletteStyle.ELEFANTE->"🐘"; BirdPaletteStyle.CABALLO_CAFE->"🐴"; BirdPaletteStyle.CABALLO_PINTO->"🐎"; BirdPaletteStyle.IGUANA->"🦎"; BirdPaletteStyle.ARANA->"🕷️"
  BirdPaletteStyle.TORTUGA->"🐢"; BirdPaletteStyle.PEZ_PAYASO->"🐠"; BirdPaletteStyle.DELFIN->"🐬"; BirdPaletteStyle.TIBURON->"🦈"; BirdPaletteStyle.AJOLOTE->"🩷"
- BirdPaletteStyle.PINGUINO->"🐧"; BirdPaletteStyle.PATO_MANDARIN->"🦆"; BirdPaletteStyle.HAMSTER->"🐹"; BirdPaletteStyle.FENIX->"🔥"; BirdPaletteStyle.ZORRO->"🦊"\n BirdPaletteStyle.PAVO_REAL->"🦚"; BirdPaletteStyle.COLIBRI->"🐦"; BirdPaletteStyle.MARTIN_PESCADOR->"🐦"; BirdPaletteStyle.QUETZAL->"🐦"; BirdPaletteStyle.DRAGON->"🐉"
+ BirdPaletteStyle.PINGUINO->"🐧"; BirdPaletteStyle.PATO_MANDARIN->"🦆"; BirdPaletteStyle.HAMSTER->"🐹"; BirdPaletteStyle.FENIX->"🔥"; BirdPaletteStyle.ZORRO->"🦊"
+ BirdPaletteStyle.PAVO_REAL->"🦚"; BirdPaletteStyle.COLIBRI->"🐦"; BirdPaletteStyle.MARTIN_PESCADOR->"🐦"; BirdPaletteStyle.QUETZAL->"🐦"; BirdPaletteStyle.DRAGON->"🐉"
 }
 private fun mascotPaletteLabelV19(style:BirdPaletteStyle)=when(style){
  BirdPaletteStyle.AGAPORNI->"Verde pastel + durazno"; BirdPaletteStyle.TUCAN->"Amarillo + negro"; BirdPaletteStyle.NINFA->"Gris + amarillo"; BirdPaletteStyle.BUHO->"Café + beige"; BirdPaletteStyle.CUERVO->"Morado + negro"
  BirdPaletteStyle.GUACAMAYA->"Rojo + azul"; BirdPaletteStyle.PUG->"Beige + café"; BirdPaletteStyle.POMERANIA->"Crema + dorado"; BirdPaletteStyle.GATO->"Gris + rosa"; BirdPaletteStyle.CONEJO->"Blanco + rosa"
  BirdPaletteStyle.ELEFANTE->"Gris + azul"; BirdPaletteStyle.CABALLO_CAFE->"Café + beige"; BirdPaletteStyle.CABALLO_PINTO->"Blanco + café"; BirdPaletteStyle.IGUANA->"Verde + lima"; BirdPaletteStyle.ARANA->"Negro + naranja"
  BirdPaletteStyle.TORTUGA->"Verde + café"; BirdPaletteStyle.PEZ_PAYASO->"Naranja + blanco"; BirdPaletteStyle.DELFIN->"Azul + celeste"; BirdPaletteStyle.TIBURON->"Gris + azul"; BirdPaletteStyle.AJOLOTE->"Rosa + morado"
- BirdPaletteStyle.PINGUINO->"Carbón + azul hielo"; BirdPaletteStyle.PATO_MANDARIN->"Naranja + turquesa"; BirdPaletteStyle.HAMSTER->"Caramelo + crema"; BirdPaletteStyle.FENIX->"Rojo fuego + dorado"; BirdPaletteStyle.ZORRO->"Naranja + crema"\n BirdPaletteStyle.PAVO_REAL->"Azul pavo + verde jade"; BirdPaletteStyle.COLIBRI->"Violeta + turquesa"; BirdPaletteStyle.MARTIN_PESCADOR->"Azul río + turquesa"; BirdPaletteStyle.QUETZAL->"Verde quetzal + jade"; BirdPaletteStyle.DRAGON->"Morado profundo + violeta + lila"
+ BirdPaletteStyle.PINGUINO->"Carbón + azul hielo"; BirdPaletteStyle.PATO_MANDARIN->"Naranja + turquesa"; BirdPaletteStyle.HAMSTER->"Caramelo + crema"; BirdPaletteStyle.FENIX->"Rojo fuego + dorado"; BirdPaletteStyle.ZORRO->"Naranja + crema"
+ BirdPaletteStyle.PAVO_REAL->"Azul pavo + verde jade"; BirdPaletteStyle.COLIBRI->"Violeta + turquesa"; BirdPaletteStyle.MARTIN_PESCADOR->"Azul río + turquesa"; BirdPaletteStyle.QUETZAL->"Verde quetzal + jade"; BirdPaletteStyle.DRAGON->"Morado profundo + violeta + lila"
 }
