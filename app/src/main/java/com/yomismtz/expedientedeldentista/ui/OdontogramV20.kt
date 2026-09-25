@@ -124,7 +124,7 @@ fun OdontogramV20Screen(
         }
 
         val wideQuadrants = profile.width == ScreenWidthV17.EXPANDED && !profile.largeSystemText
-        fun quadrantContent(q:OdontoQuadrantV20) {
+        @Composable fun quadrantContent(q:OdontoQuadrantV20) {
             ResponsiveSectionV17(if(lang=="en")q.titleEn else q.titleEs) {
                 AdaptiveGridV17(q.teeth.size,q.teeth.size){i->
                     val tooth=q.teeth[i]
