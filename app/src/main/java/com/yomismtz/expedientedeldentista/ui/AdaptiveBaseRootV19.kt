@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -79,11 +80,15 @@ fun AdaptiveBaseRootV19(
     onSessionChanged:(EducationalSession)->Unit
 ) {
     var screen by remember { mutableStateOf(AppScreen.HOME) }
+    var completedCount by remember { mutableStateOf(0) }
+    var celebrate by remember { mutableStateOf(false) }
     val history = remember { mutableStateListOf<AppScreen>() }
     val lang=preferences.languageTag
 
     fun navigate(next: AppScreen) {
         if (next == screen) return
+        if(screen != AppScreen.HOME && screen != AppScreen.FOLDER) completedCount++
+        if(completedCount >= 8) celebrate=true
         history.add(screen)
         screen = next
     }
@@ -146,6 +151,11 @@ fun AdaptiveBaseRootV19(
         AppScreen.REQUEST -> TreatmentRequestTeachingV41(lang,backPrevious)
         AppScreen.BUDGET -> BudgetTeachingV41(lang,backPrevious)
         AppScreen.EVOLUTION -> EvolutionScreen(lang,session,backPrevious)
+    }
+    AnimatedVisibility(celebrate) {
+        Surface(Modifier.align(Alignment.BottomCenter).safeDrawingPadding().padding(16.dp),color=MaterialTheme.colorScheme.secondaryContainer,shape=MaterialTheme.shapes.large,shadowElevation=4.dp){
+            Column(Modifier.padding(14.dp),horizontalAlignment=Alignment.CenterHorizontally){Text("🎓",style=MaterialTheme.typography.headlineMedium);Text(tr(lang,"Buen avance: varias secciones revisadas","Good progress: several sections reviewed"),fontWeight=FontWeight.Bold);Button(onClick={celebrate=false}){Text(tr(lang,"Continuar","Continue"))}}
+        }
     }
     }
 }
