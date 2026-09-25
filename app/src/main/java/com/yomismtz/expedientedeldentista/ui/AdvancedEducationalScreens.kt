@@ -311,21 +311,55 @@ private fun KennedyArchRow(teeth: List<Int>, present: Set<Int>, onTap: (Int) -> 
 
 @Composable
 fun SurgicalSheetScreen(lang: String, onBack: () -> Unit) {
-    val sections = listOf(
-        TeachingItem("Datos médicos que modifican cirugía", "Medical data affecting surgery", "Antecedentes cardiovasculares, hematológicos, respiratorios, endocrinos, renales, hepáticos, medicamentos, alergias y embarazo pueden cambiar el riesgo, las pruebas necesarias o la necesidad de interconsulta.", "Cardiovascular, hematologic, respiratory, endocrine, renal/hepatic history, medications, allergies and pregnancy may change risk, testing or need for consultation."),
-        TeachingItem("Indicación y diagnóstico", "Indication and diagnosis", "Debe quedar claro por qué se propone el procedimiento y cuál es el diagnóstico que lo justifica.", "Document why the procedure is proposed and the diagnosis supporting it."),
-        TeachingItem("Zona / órgano dentario", "Site / tooth", "Identifica de manera inequívoca el sitio quirúrgico y correlaciónalo con imagen y plan.", "Clearly identify the surgical site and correlate it with imaging and treatment plan."),
-        TeachingItem("Anestesia y control intraoperatorio", "Anesthesia and intraoperative control", "Registra la técnica y el control clínico conforme a la supervisión docente; no basta escribir solo “anestesia”.", "Record the technique and clinical control according to faculty supervision; do not document only 'anesthesia'."),
-        TeachingItem("Procedimiento", "Procedure", "Describe cronológicamente lo realizado, hallazgos relevantes, complicaciones y medidas de hemostasia.", "Chronologically describe what was done, relevant findings, complications and hemostatic measures."),
-        TeachingItem("Procedimientos quirúrgicos de pregrado", "Undergraduate surgical procedures", "Ejemplos que pueden formar parte de la enseñanza según programa, competencia y supervisión institucional: exodoncia simple de dientes erupcionados, retiro de restos radiculares seleccionados, manejo de colgajo/sutura en casos autorizados, biopsia o cirugía menor sólo cuando el programa y el supervisor lo permitan. El nivel permitido depende de la escuela y del caso.", "Examples may include simple extraction of erupted teeth, selected retained-root removal, flap/suturing in authorized cases, and biopsy/minor surgery only when allowed by the curriculum and supervisor. Scope depends on school and case."),
-        TeachingItem("Indicaciones preoperatorias", "Preoperative instructions", "Confirmar diagnóstico/sitio, historia y medicamentos, alergias, estudios/interconsulta cuando estén indicados, consentimiento, alimentación/ayuno sólo si el protocolo anestésico lo exige, acompañante cuando corresponda y plan de analgesia/seguimiento bajo supervisión.", "Confirm diagnosis/site, history/medications, allergies, indicated studies/consultation, consent, fasting only when required by the anesthesia protocol, escort when applicable and supervised analgesia/follow-up plan."),
-        TeachingItem("Posoperatorio", "Postoperative care", "Documenta hemostasia, cuidado del sitio, higiene, dieta según procedimiento, actividad, medicamentos realmente indicados, signos de alarma, seguimiento y cita de control. Evitar instrucciones universales que contradigan el procedimiento o la supervisión.", "Document hemostasis, site care, hygiene, procedure-appropriate diet/activity, actually prescribed medications, warning signs, follow-up and review appointment.")
-    )
-    LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { ScreenHeader(tr(lang,"Ficha quirúrgica","Surgical sheet"), onBack,
-            tr(lang,"Cada rubro se abre para explicar qué documenta y por qué importa.","Each field opens to explain what it documents and why it matters.")) }
-        items(sections) { ExpandableTeachingCard(it, lang) }
-        item { NoticeCard(tr(lang,"Antes de procedimientos invasivos, los auxiliares y la interconsulta se solicitan cuando la historia, el examen y el riesgo lo justifican; no por rutina indiscriminada.","Before invasive procedures, tests and consultation are requested when history, examination and risk justify them; not indiscriminately.")) }
+    var procedure by remember { mutableStateOf("Exodoncia simple") }
+    var site by remember { mutableStateOf("Órgano dentario seleccionado") }
+    var preop by remember { mutableStateOf("Valoración preoperatoria completa") }
+    var anesthesia by remember { mutableStateOf("Anestesia local según protocolo") }
+    var technique by remember { mutableStateOf("Técnica convencional autorizada") }
+    var finding by remember { mutableStateOf("Sin hallazgos inesperados") }
+    var hemostasis by remember { mutableStateOf("Hemostasia lograda") }
+    var suture by remember { mutableStateOf("No requerida") }
+    var incident by remember { mutableStateOf("Sin incidentes") }
+    var postop by remember { mutableStateOf("Indicaciones posoperatorias y signos de alarma") }
+    var followup by remember { mutableStateOf("Control programado") }
+
+    val procedures=listOf("Exodoncia simple","Retiro de resto radicular seleccionado","Exodoncia quirúrgica autorizada","Biopsia / cirugía menor autorizada","Sutura","Retiro de sutura","Control posoperatorio")
+    val sites=listOf("Órgano dentario seleccionado","Cuadrante","Región posterior maxilar","Región posterior mandibular","Mucosa oral / tejido blando","Zona de biopsia")
+    val preops=listOf("Valoración preoperatoria completa","Requiere revisar estudios auxiliares","Requiere interconsulta antes de proceder","Procedimiento diferido por seguridad")
+    val anesthesias=listOf("Anestesia local según protocolo","Anestesia tópica + local según protocolo","No requerida","Pendiente de autorización docente")
+    val techniques=listOf("Técnica convencional autorizada","Colgajo autorizado","Osteotomía/odontosección bajo supervisión","Toma de muestra / biopsia autorizada","Sólo control posoperatorio")
+    val findings=listOf("Sin hallazgos inesperados","Raíz/resto radicular","Tejido inflamatorio","Lesión de tejido blando","Dificultad anatómica","Hallazgo que obliga a reevaluar")
+    val hemostasisOptions=listOf("Hemostasia lograda","Compresión local","Medida hemostática local autorizada","Requiere reevaluación del sangrado")
+    val sutures=listOf("No requerida","Sutura colocada","Sutura reabsorbible","Sutura no reabsorbible","Retiro de sutura realizado")
+    val incidents=listOf("Sin incidentes","Sangrado mayor al esperado","Fractura dental/radicular","Dificultad de acceso","Dolor durante procedimiento","Procedimiento suspendido y reevaluado")
+    val postops=listOf("Indicaciones posoperatorias y signos de alarma","Cuidado de herida y control de sangrado","Higiene y dieta según procedimiento","Indicaciones específicas del servicio")
+    val followups=listOf("Control programado","Revisión de cicatrización","Retiro de sutura programado","Resultado histopatológico pendiente","Remisión / interconsulta","Alta quirúrgica")
+
+    @Composable fun Pick(title:String, values:List<String>, selected:String, set:(String)->Unit) {
+        SectionCard(title) { Column(verticalArrangement=Arrangement.spacedBy(6.dp)) { values.forEach { v -> FilterChip(selected==v,{set(v)},{Text(v)},modifier=Modifier.fillMaxWidth()) } } }
+    }
+
+    LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+        item { ScreenHeader(tr(lang,"Ficha quirúrgica","Surgical sheet"),onBack,tr(lang,"Registro educativo estructurado sin redacción libre. Selecciona únicamente lo que realmente corresponda al caso y a lo realizado.","Structured educational record without free-text entry. Select only what actually applies to the case and procedure.")) }
+        item { Pick(tr(lang,"1 · Procedimiento","1 · Procedure"),procedures,procedure){procedure=it} }
+        item { Pick(tr(lang,"2 · Zona quirúrgica","2 · Surgical site"),sites,site){site=it} }
+        item { Pick(tr(lang,"3 · Seguridad preoperatoria","3 · Preoperative safety"),preops,preop){preop=it} }
+        item { Pick(tr(lang,"4 · Anestesia","4 · Anesthesia"),anesthesias,anesthesia){anesthesia=it} }
+        item { Pick(tr(lang,"5 · Técnica realizada","5 · Technique performed"),techniques,technique){technique=it} }
+        item { Pick(tr(lang,"6 · Hallazgo transoperatorio","6 · Intraoperative finding"),findings,finding){finding=it} }
+        item { Pick(tr(lang,"7 · Hemostasia","7 · Hemostasis"),hemostasisOptions,hemostasis){hemostasis=it} }
+        item { Pick(tr(lang,"8 · Sutura","8 · Suture"),sutures,suture){suture=it} }
+        item { Pick(tr(lang,"9 · Incidentes / complicaciones","9 · Incidents / complications"),incidents,incident){incident=it} }
+        item { Pick(tr(lang,"10 · Indicaciones posoperatorias","10 · Postoperative instructions"),postops,postop){postop=it} }
+        item { Pick(tr(lang,"11 · Seguimiento","11 · Follow-up"),followups,followup){followup=it} }
+        item {
+            SectionCard(tr(lang,"Nota quirúrgica automática","Automatic surgical note")) {
+                Text(tr(lang,
+                    "Procedimiento: $procedure. Sitio: $site. Seguridad preoperatoria: $preop. Anestesia: $anesthesia. Técnica: $technique. Hallazgo: $finding. Hemostasia: $hemostasis. Sutura: $suture. Incidentes: $incident. Posoperatorio: $postop. Seguimiento: $followup. Realizar y validar conforme a autorización y supervisión docente.",
+                    "Procedure: $procedure. Site: $site. Preoperative safety: $preop. Anesthesia: $anesthesia. Technique: $technique. Finding: $finding. Hemostasis: $hemostasis. Suture: $suture. Incidents: $incident. Postoperative care: $postop. Follow-up: $followup. Perform and validate according to faculty authorization and supervision."),fontWeight=FontWeight.Bold)
+            }
+        }
+        item { NoticeCard(tr(lang,"La ficha no prescribe medicamentos ni sustituye consentimiento, diagnóstico, estudios indicados, interconsulta o protocolo institucional. Ante sangrado no controlado, reacción adversa u otra complicación, se suspende y se solicita supervisión clínica.","This sheet does not prescribe medication or replace consent, diagnosis, indicated studies, consultation or institutional protocol. With uncontrolled bleeding, adverse reaction or another complication, stop and obtain clinical supervision.")) }
     }
 }
 
