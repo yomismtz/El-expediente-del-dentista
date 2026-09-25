@@ -114,17 +114,36 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
     }
     val allGuides = guides + extraGuides
     var selected by remember { mutableStateOf(0) }
+    var specialty by remember { mutableStateOf("Todas") }
+    val specialties = listOf(
+        "Todas" to listOf<String>(),
+        "Preventiva" to listOf("sellador","profilaxis","higiene","flúor","fluor"),
+        "Operatoria / restauradora" to listOf("resina","amalgama","ionómero","incrustación","corona"),
+        "Periodoncia" to listOf("raspado","periodon","gingiv"),
+        "Endodoncia" to listOf("pulpotom","pulpectom","endod","conducto"),
+        "Cirugía" to listOf("extracción","exodon","cirugía","sutura","biopsia"),
+        "Prótesis" to listOf("impresión","prótesis","protes","corona","provisional"),
+        "Ortodoncia / ortopedia" to listOf("ortodon","mantenedor","espacio","aparat"),
+        "Diagnóstico" to listOf("radiograf","explor","fotograf","signos vitales","índice","periodontograma")
+    )
+    fun matchesSpecialty(a:ActivityGuide):Boolean {
+        if(specialty=="Todas") return true
+        val keys=specialties.firstOrNull{it.first==specialty}?.second.orEmpty()
+        val hay=(a.nameEs+" "+a.nameEn).lowercase()
+        return keys.any{hay.contains(it)}
+    }
+    val visibleGuides=allGuides.withIndex().filter{matchesSpecialty(it.value)}
     val g = allGuides[selected]
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { ScreenHeader(tr(lang,"Autorización y registro de actividades","Activity authorization and record"),onBack,
             tr(lang,"Selecciona una actividad para estudiar qué se planea, cómo se realiza y qué hallazgos pueden obligar a cambiar el procedimiento.","Select an activity to study what is planned, how it is performed and which findings may require changing the procedure.")) }
         item {
-            SectionCard(tr(lang,"1 · Actividad planeada","1 · Planned activity")) {
-                Column(verticalArrangement=Arrangement.spacedBy(7.dp)) {
-                    allGuides.forEachIndexed { i,a ->
-                        FilterChip(selected==i,{selected=i},{Text(if(lang=="en") a.nameEn else a.nameEs)},modifier=Modifier.fillMaxWidth())
-                    }
-                }
+            SectionCard(tr(lang,"1 · Actividad planeada por especialidad","1 · Planned activity by specialty")) {
+                Text(tr(lang,"Especialidad","Specialty"),fontWeight=FontWeight.Bold)
+                ChipChoices(specialties.map{it.first to (specialty==it.first)},{i->specialty=specialties[i].first},columns=4)
+                Text(tr(lang,"Actividad","Activity"),fontWeight=FontWeight.Bold)
+                if(visibleGuides.isEmpty()) Text(tr(lang,"No hay actividades de esta especialidad en la biblioteca actual.","No activities from this specialty are in the current library."))
+                else ChipChoices(visibleGuides.map{(idx,a)->(if(lang=="en")a.nameEn else a.nameEs) to (selected==idx)},{i->selected=visibleGuides[i].index},columns=5)
             }
         }
         item { SectionCard(tr(lang,"2 · ¿En qué consiste?","2 · What does it involve?")) { Text(if(lang=="en")g.purposeEn else g.purposeEs) } }
