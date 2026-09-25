@@ -17,7 +17,7 @@ enum class BirdPaletteStyle {
     PAVO_REAL, COLIBRI, MARTIN_PESCADOR, QUETZAL, DRAGON
 }
 
-enum class FontStyle { MODERN, ROUNDED, ACADEMIC, ACCESSIBLE }
+enum class FontStyle { MODERN, ROUNDED, ACADEMIC, ACCESSIBLE, CLASSIC, HANDWRITTEN, COMPACT }
 
 enum class TextSizeStyle(val multiplier: Float) {
     SMALL(0.90f),
