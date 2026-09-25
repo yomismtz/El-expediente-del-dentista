@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -92,6 +93,11 @@ fun AdaptiveBaseRootV19(
 
     BackHandler(enabled=screen!=AppScreen.HOME) { goBack() }
 
+    Box(
+        Modifier
+            .fillMaxSize()
+            .edgeSwipeBackV21 { if (screen != AppScreen.HOME) goBack() }
+    ) {
     when(screen) {
         AppScreen.HOME -> CoverV19(lang){navigate(AppScreen.FOLDER)}
         AppScreen.FOLDER -> FolderV19(lang,{navigate(it)},backPrevious)
@@ -137,6 +143,7 @@ fun AdaptiveBaseRootV19(
         AppScreen.REQUEST -> TreatmentRequestTeachingV41(lang,backPrevious)
         AppScreen.BUDGET -> BudgetTeachingV41(lang,backPrevious)
         AppScreen.EVOLUTION -> EvolutionScreen(lang,session,backPrevious)
+    }
     }
 }
 
