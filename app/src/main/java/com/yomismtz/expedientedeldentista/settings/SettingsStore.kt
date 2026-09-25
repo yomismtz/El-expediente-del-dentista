@@ -19,6 +19,8 @@ enum class BirdPaletteStyle {
     CANGREJO_CORAL, MURCIELAGO_NOCHE, PANDA_MONO, ABEJA_CONTRASTE
 }
 
+enum class CardShapeStyle { SOFT, ROUNDED, SQUARE }
+
 enum class FontStyle { MODERN, ROUNDED, ACADEMIC, ACCESSIBLE, CLASSIC, HANDWRITTEN, COMPACT }
 
 enum class TextSizeStyle(val multiplier: Float) {
@@ -35,6 +37,7 @@ data class AppPreferences(
     val birdPaletteStyle: BirdPaletteStyle = BirdPaletteStyle.AGAPORNI,
     val fontStyle: FontStyle = FontStyle.MODERN,
     val textSizeStyle: TextSizeStyle = TextSizeStyle.NORMAL,
+    val cardShapeStyle: CardShapeStyle = CardShapeStyle.ROUNDED,
     val languageTag: String = "es"
 )
 
@@ -48,6 +51,7 @@ class SettingsStore(context: Context) {
         birdPaletteStyle = enumValueOrDefault(prefs.getString(KEY_BIRD_PALETTE, null), BirdPaletteStyle.AGAPORNI),
         fontStyle = enumValueOrDefault(prefs.getString(KEY_FONT, null), FontStyle.MODERN),
         textSizeStyle = enumValueOrDefault(prefs.getString(KEY_TEXT_SIZE, null), TextSizeStyle.NORMAL),
+        cardShapeStyle = enumValueOrDefault(prefs.getString(KEY_CARD_SHAPE, null), CardShapeStyle.ROUNDED),
         languageTag = prefs.getString(KEY_LANGUAGE, "es") ?: "es"
     )
 
@@ -59,6 +63,7 @@ class SettingsStore(context: Context) {
             .putString(KEY_BIRD_PALETTE, value.birdPaletteStyle.name)
             .putString(KEY_FONT, value.fontStyle.name)
             .putString(KEY_TEXT_SIZE, value.textSizeStyle.name)
+            .putString(KEY_CARD_SHAPE, value.cardShapeStyle.name)
             .putString(KEY_LANGUAGE, value.languageTag)
             .apply()
     }
@@ -74,6 +79,7 @@ class SettingsStore(context: Context) {
         const val KEY_BIRD_PALETTE = "bird_palette_style"
         const val KEY_FONT = "font_style"
         const val KEY_TEXT_SIZE = "text_size_style"
+        const val KEY_CARD_SHAPE = "card_shape_style"
         const val KEY_LANGUAGE = "language_tag"
     }
 }
