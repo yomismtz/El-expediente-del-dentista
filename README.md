@@ -19,7 +19,7 @@ Aplicación educativa Android, bilingüe y completamente offline para enseñar c
 
 ## Privacidad y funcionamiento
 
-La app no solicita permiso de Internet. Los datos clínicos introducidos son datos de práctica y viven únicamente en la sesión activa; al reiniciar la sesión se eliminan. Solo las preferencias de idioma, tratamiento Doctor/Doctora, paleta y tipografía se guardan localmente en el dispositivo.
+**Requisito de arquitectura: funcionamiento 100 % offline.** Ninguna función clínica o educativa esencial debe depender de Internet, URLs, APIs, WebView ni recursos remotos. Las imágenes clínicas, diagramas, textos, ayudas, índices y demás recursos educativos deben empaquetarse localmente dentro de la aplicación para poder utilizarse incluso en modo avión.\n\nLa app no solicita permiso de Internet. Los datos clínicos introducidos son datos de práctica y viven únicamente en la sesión activa; al reiniciar la sesión se eliminan. Solo las preferencias de idioma, tratamiento Doctor/Doctora, paleta y tipografía se guardan localmente en el dispositivo.
 
 ## Compilar
 
