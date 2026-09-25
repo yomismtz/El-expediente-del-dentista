@@ -151,57 +151,61 @@ private data class AtmFinding(val key: String, val es: String, val en: String)
 @Composable
 fun AtmScreen(lang: String, onBack: () -> Unit) {
     val findings = listOf(
-        AtmFinding("painJoint", "Dolor localizado en ATM que aumenta con función", "Localized TMJ pain increased by function"),
-        AtmFinding("muscle", "Dolor/sensibilidad en maseteros o temporales", "Masseter/temporalis pain or tenderness"),
-        AtmFinding("click", "Chasquido reproducible", "Reproducible click"),
-        AtmFinding("crepitus", "Crepitación", "Crepitus"),
-        AtmFinding("limited", "Apertura limitada (<35 mm)", "Limited opening (<35 mm)"),
-        AtmFinding("excess", "Apertura excesiva (>50 mm)", "Excessive opening (>50 mm)"),
-        AtmFinding("lockOpen", "Boca abierta que no puede cerrar", "Open mouth that cannot close"),
-        AtmFinding("deviation", "Desviación mandibular al abrir", "Mandibular deviation on opening"),
-        AtmFinding("headache", "Cefalea relacionada con masticación", "Chewing-related headache"),
-        AtmFinding("tinnitus", "Tinnitus acompañado de dolor mandibular", "Tinnitus with jaw pain"),
-        AtmFinding("painOpen", "Dolor al abrir o cerrar", "Pain on opening or closing"),
-        AtmFinding("painChew", "Dolor al masticar o apretar", "Pain with chewing or clenching"),
-        AtmFinding("fatigue", "Fatiga o rigidez de músculos masticatorios", "Masticatory muscle fatigue or stiffness"),
-        AtmFinding("locking", "Bloqueo o atoramiento mandibular referido", "Reported jaw locking/catching"),
-        AtmFinding("sublux", "Sensación de que la mandíbula se sale o hipermovilidad", "Feeling of jaw slipping out or hypermobility"),
-        AtmFinding("ear", "Dolor preauricular/otalgia sin causa ótica confirmada", "Preauricular/ear pain without confirmed otologic cause"),
-        AtmFinding("parafunction", "Bruxismo/apretamiento referido", "Reported bruxism/clenching"),
-        AtmFinding("trauma", "Antecedente de traumatismo mandibular/ATM", "History of mandibular/TMJ trauma")
+        AtmFinding("painJoint","Dolor localizado en ATM que aumenta con función","Localized TMJ pain increased by function"),
+        AtmFinding("muscle","Dolor/sensibilidad en maseteros o temporales","Masseter/temporalis pain or tenderness"),
+        AtmFinding("click","Chasquido reproducible","Reproducible click"),
+        AtmFinding("crepitus","Crepitación","Crepitus"),
+        AtmFinding("headache","Cefalea modificada por masticación o función mandibular","Headache modified by chewing or jaw function"),
+        AtmFinding("locking","Bloqueo o atoramiento mandibular referido","Reported jaw locking/catching"),
+        AtmFinding("lockOpen","Boca abierta que no puede cerrar","Open mouth that cannot close"),
+        AtmFinding("ear","Dolor preauricular/otalgia sin causa ótica confirmada","Preauricular/ear pain without confirmed otologic cause"),
+        AtmFinding("parafunction","Bruxismo/apretamiento referido","Reported bruxism/clenching"),
+        AtmFinding("trauma","Antecedente de traumatismo mandibular/ATM","History of mandibular/TMJ trauma")
     )
-    val checked = remember { mutableStateMapOf<String, Boolean>() }
-    fun on(key: String) = checked[key] == true
-    val presumptive = when {
-        on("lockOpen") -> tr(lang, "Luxación mandibular", "Mandibular dislocation")
-        on("limited") && on("click") -> tr(lang, "Trastorno discal / bloqueo: requiere exploración diferencial", "Disc disorder/locking: differential examination required")
-        on("crepitus") && on("painJoint") -> tr(lang, "Hallazgos compatibles con cambio degenerativo / osteoartritis de ATM", "Findings compatible with degenerative change / TMJ osteoarthritis")
-        on("excess") -> tr(lang, "Hipermovilidad / hiperlaxitud articular", "Hypermobility / joint hyperlaxity")
-        on("muscle") && (on("headache") || !on("painJoint")) -> tr(lang, "Mialgia masticatoria / dolor miofascial", "Masticatory myalgia / myofascial pain")
-        on("painJoint") -> tr(lang, "Artralgia de ATM", "TMJ arthralgia")
-        on("click") -> tr(lang, "Chasquido articular; valorar desplazamiento discal con reducción", "Joint click; assess disc displacement with reduction")
-        else -> tr(lang, "Sin patrón suficiente: completa exploración de apertura, músculos, ruidos y dolor", "Insufficient pattern: complete opening, muscle, noise and pain examination")
+    val checked=remember { mutableStateMapOf<String,Boolean>() }
+    fun on(key:String)=checked[key]==true
+    var opening by remember { mutableStateOf("No medida") }
+    var rightLat by remember { mutableStateOf("No medida") }
+    var leftLat by remember { mutableStateOf("No medida") }
+    var protrusion by remember { mutableStateOf("No medida") }
+    var trajectory by remember { mutableStateOf("Recta / sin desviación evidente") }
+    var jointPalpation by remember { mutableStateOf("Sin dolor reproducible") }
+    var musclePalpation by remember { mutableStateOf("Sin dolor reproducible") }
+
+    val orientation=when {
+        on("lockOpen") -> tr(lang,"Luxación mandibular: situación que requiere valoración clínica inmediata","Mandibular dislocation: situation requiring prompt clinical assessment")
+        opening=="<35 mm" && on("locking") -> tr(lang,"Limitación con bloqueo: requiere exploración diferencial del trastorno intraarticular","Limited opening with locking: differential examination for intra-articular disorder required")
+        on("crepitus") && on("painJoint") -> tr(lang,"Hallazgos articulares con crepitación y dolor; correlacionar clínicamente y valorar cambios degenerativos","Joint findings with crepitus and pain; correlate clinically and assess for degenerative changes")
+        on("muscle") && !on("painJoint") -> tr(lang,"Patrón de dolor muscular masticatorio; completar palpación y diagnóstico diferencial","Masticatory muscle pain pattern; complete palpation and differential diagnosis")
+        on("painJoint") -> tr(lang,"Patrón de dolor articular de ATM; completar criterios clínicos y diagnóstico diferencial","TMJ joint-pain pattern; complete clinical criteria and differential diagnosis")
+        on("click") -> tr(lang,"Chasquido articular reproducible; caracterizar durante apertura y cierre","Reproducible joint click; characterize during opening and closing")
+        else -> tr(lang,"Sin patrón suficiente para orientación: completar exploración funcional","Insufficient pattern for orientation: complete functional examination")
     }
 
-    LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { ScreenHeader(tr(lang, "ATM y músculos · razonamiento", "TMJ and muscles · reasoning"), onBack,
-            tr(lang, "Marca signos y síntomas para obtener la orientación presuntiva más cercana. No es un diagnóstico definitivo.", "Check signs and symptoms to obtain the nearest presumptive orientation. This is not a definitive diagnosis.")) }
-        item { NoticeCard(tr(lang,"La referencia vectorial anterior fue retirada. La ficha se centra en signos, síntomas, palpación, movimientos y orientación presuntiva; la referencia visual será sustituida por fotografía/imagen anatómica real con fuente.","The previous vector reference was removed. The sheet now focuses on signs, symptoms, palpation, movement and presumptive orientation; visual reference will be replaced by a sourced real clinical/anatomic image.")) }
-        items(findings) { finding ->
-            Row(Modifier.fillMaxWidth().clickable { checked[finding.key] = !on(finding.key) }, verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Checkbox(on(finding.key), { checked[finding.key] = it })
-                Text(if (lang == "en") finding.en else finding.es, modifier = Modifier.weight(1f))
-            }
-        }
+    @Composable fun Pick(title:String,values:List<String>,selected:String,set:(String)->Unit) {
+        SectionCard(title) { Row(horizontalArrangement=Arrangement.spacedBy(6.dp),modifier=Modifier.fillMaxWidth()) { values.forEach { v -> FilterChip(selected==v,{set(v)},{Text(v)},modifier=Modifier.weight(1f)) } } }
+    }
+
+    LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+        item { ScreenHeader(tr(lang,"Ficha de ATM y trastornos temporomandibulares","TMJ and temporomandibular disorders sheet"),onBack,tr(lang,"Exploración educativa estructurada de dolor, músculos, ruidos y movimientos. La orientación generada no sustituye el diagnóstico clínico.","Structured educational examination of pain, muscles, sounds and movement. Generated orientation does not replace clinical diagnosis.")) }
+        item { SectionCard(tr(lang,"1 · Síntomas y antecedentes","1 · Symptoms and history")) { findings.forEach { f -> Row(Modifier.fillMaxWidth().clickable { checked[f.key]=!on(f.key) },verticalAlignment=androidx.compose.ui.Alignment.CenterVertically) { Checkbox(on(f.key),{checked[f.key]=it});Text(if(lang=="en")f.en else f.es,modifier=Modifier.weight(1f)) } } } }
+        item { Pick(tr(lang,"2 · Apertura máxima interincisal","2 · Maximum interincisal opening"),listOf("No medida","<35 mm","35–39 mm","40–44 mm","45–50 mm",">50 mm"),opening){opening=it} }
+        item { Pick(tr(lang,"3 · Lateralidad derecha","3 · Right lateral excursion"),listOf("No medida","<4 mm","4–6 mm","7–9 mm","≥10 mm"),rightLat){rightLat=it} }
+        item { Pick(tr(lang,"4 · Lateralidad izquierda","4 · Left lateral excursion"),listOf("No medida","<4 mm","4–6 mm","7–9 mm","≥10 mm"),leftLat){leftLat=it} }
+        item { Pick(tr(lang,"5 · Protrusión","5 · Protrusion"),listOf("No medida","<4 mm","4–5 mm","6–8 mm","≥9 mm"),protrusion){protrusion=it} }
+        item { Pick(tr(lang,"6 · Trayectoria de apertura","6 · Opening trajectory"),listOf("Recta / sin desviación evidente","Desviación a derecha","Desviación a izquierda","Deflexión a derecha","Deflexión a izquierda","Bloqueo durante movimiento"),trajectory){trajectory=it} }
+        item { Pick(tr(lang,"7 · Palpación articular","7 · Joint palpation"),listOf("Sin dolor reproducible","Dolor derecho","Dolor izquierdo","Dolor bilateral"),jointPalpation){jointPalpation=it} }
+        item { Pick(tr(lang,"8 · Palpación muscular","8 · Muscle palpation"),listOf("Sin dolor reproducible","Masetero derecho","Masetero izquierdo","Temporal derecho","Temporal izquierdo","Dolor bilateral/múltiples músculos"),musclePalpation){musclePalpation=it} }
         item {
-            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
-                    Text("🧠 ${tr(lang,"Orientación presuntiva","Presumptive orientation")}", fontWeight = FontWeight.Bold)
-                    Text(presumptive, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text(tr(lang,"Correlaciona con palpación muscular/articular, amplitud y trayectoria de apertura, ruidos, oclusión, historia de trauma y diagnóstico diferencial de dolor orofacial.","Correlate with muscle/joint palpation, opening range/path, sounds, occlusion, trauma history and orofacial-pain differential diagnosis."))
+            Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) {
+                Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(7.dp)) {
+                    Text("🧠 "+tr(lang,"Orientación clínica educativa","Educational clinical orientation"),fontWeight=FontWeight.Bold)
+                    Text(orientation,style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Bold)
+                    Text(tr(lang,"Apertura: $opening. Lateralidad D: $rightLat; I: $leftLat. Protrusión: $protrusion. Trayectoria: $trajectory. Palpación ATM: $jointPalpation. Palpación muscular: $musclePalpation.","Opening: $opening. Right excursion: $rightLat; left: $leftLat. Protrusion: $protrusion. Trajectory: $trajectory. TMJ palpation: $jointPalpation. Muscle palpation: $musclePalpation."))
                 }
             }
         }
+        item { NoticeCard(tr(lang,"La ficha ayuda a ordenar la exploración. El diagnóstico de TTM requiere historia, reproducción del dolor familiar cuando corresponda, exploración estandarizada y diagnóstico diferencial de dolor orofacial. Tinnitus u otalgia requieren considerar causas no odontológicas.","The sheet helps structure the examination. TMD diagnosis requires history, reproduction of familiar pain when applicable, standardized examination and orofacial-pain differential diagnosis. Tinnitus or ear pain require consideration of non-dental causes.")) }
     }
 }
 
