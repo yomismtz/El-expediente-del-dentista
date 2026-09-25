@@ -41,6 +41,7 @@ import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.BirdPaletteStyle
 import com.yomismtz.expedientedeldentista.settings.ClinicianTitle
+import com.yomismtz.expedientedeldentista.settings.CardShapeStyle
 import com.yomismtz.expedientedeldentista.settings.FontStyle
 import com.yomismtz.expedientedeldentista.settings.TextSizeStyle
 import com.yomismtz.expedientedeldentista.ui.theme.BirdPaletteChoices
@@ -138,6 +139,21 @@ private fun SettingsV19Screen(
                         Text(tr(lang,"Exploración odontológica · OD 36 · Hallazgos clínicos","Dental examination · Tooth 36 · Clinical findings"),style=MaterialTheme.typography.bodyLarge)
                         Text(tr(lang,"También respeta la escala de letra configurada en Android.","Android system font scaling is also respected."),style=MaterialTheme.typography.bodyMedium)
                     }
+                }
+            }
+
+            SettingCardV19(tr(lang,"Forma de tarjetas","Card shape")) {
+                AdaptiveGridV17(CardShapeStyle.entries.size, if(compact)1 else 3) { i ->
+                    val style=CardShapeStyle.entries[i]
+                    val label=when(style){ CardShapeStyle.SOFT->tr(lang,"Suave","Soft"); CardShapeStyle.ROUNDED->tr(lang,"Redondeada","Rounded"); CardShapeStyle.SQUARE->tr(lang,"Recta","Square") }
+                    FilterChip(preferences.cardShapeStyle==style,{onPreferencesChanged(preferences.copy(cardShapeStyle=style))},{Text(label)},modifier=Modifier.fillMaxWidth())
+                }
+            }
+
+            SettingCardV19(tr(lang,"Estados visuales","Visual status")) {
+                AdaptiveGridV17(3, if(compact)1 else 3) { i ->
+                    val label=when(i){0->"✓ ${tr(lang,"Completado","Completed")}";1->"● ${tr(lang,"En progreso","In progress")}";else->"○ ${tr(lang,"Pendiente","Pending")}" }
+                    Surface(color=when(i){0->MaterialTheme.colorScheme.secondaryContainer;1->MaterialTheme.colorScheme.primaryContainer;else->MaterialTheme.colorScheme.surfaceVariant},shape=MaterialTheme.shapes.medium){Text(label,Modifier.padding(10.dp),fontWeight=FontWeight.Bold)}
                 }
             }
 
