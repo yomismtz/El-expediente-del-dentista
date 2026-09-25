@@ -185,7 +185,6 @@ private fun PaletteCardV19(style:BirdPaletteStyle,lang:String,selected:Boolean,o
         Column(Modifier.fillMaxWidth().padding(9.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(6.dp)) {
             Text(mascotIconV19(style),style=MaterialTheme.typography.headlineMedium)
             Text(paletteDisplayName(style,lang),fontWeight=if(selected)FontWeight.Black else FontWeight.Medium,textAlign=TextAlign.Center)
-            Text(mascotPaletteLabelV19(style),style=MaterialTheme.typography.labelSmall,textAlign=TextAlign.Center)
             Row(horizontalArrangement=Arrangement.spacedBy(4.dp)) { paletteSwatches(style).forEach { c -> Box(Modifier.size(16.dp).background(c,CircleShape)) } }
             if(style==BirdPaletteStyle.AGAPORNI) Text(tr(lang,"Predeterminada","Default"),style=MaterialTheme.typography.labelSmall)
         }
@@ -202,14 +201,4 @@ private fun mascotIconV19(style:BirdPaletteStyle)=when(style){
  BirdPaletteStyle.PAVO_REAL->"🦚"; BirdPaletteStyle.COLIBRI->"🐦"; BirdPaletteStyle.MARTIN_PESCADOR->"🐦"; BirdPaletteStyle.QUETZAL->"🐦"; BirdPaletteStyle.DRAGON->"🐉"
  BirdPaletteStyle.BALLENA_AZUL->"🐋"; BirdPaletteStyle.RANA_VERDE->"🐸"; BirdPaletteStyle.MARIPOSA_MONARCA->"🦋"; BirdPaletteStyle.FLAMENCO_ROSA->"🦩"; BirdPaletteStyle.CABALLITO_TURQUESA->"🐠"
  BirdPaletteStyle.CANGREJO_CORAL->"🦀"; BirdPaletteStyle.MURCIELAGO_NOCHE->"🦇"; BirdPaletteStyle.PANDA_MONO->"🐼"; BirdPaletteStyle.ABEJA_CONTRASTE->"🐝"
-}
-private fun mascotPaletteLabelV19(style:BirdPaletteStyle)=when(style){
- BirdPaletteStyle.AGAPORNI->"Verde pastel + durazno"; BirdPaletteStyle.TUCAN->"Amarillo + negro"; BirdPaletteStyle.NINFA->"Gris + amarillo"; BirdPaletteStyle.BUHO->"Café + beige"; BirdPaletteStyle.CUERVO->"Morado + negro"
- BirdPaletteStyle.GUACAMAYA->"Rojo + azul"; BirdPaletteStyle.PUG->"Beige + café"; BirdPaletteStyle.POMERANIA->"Crema + dorado"; BirdPaletteStyle.GATO->"Gris + rosa"; BirdPaletteStyle.CONEJO->"Blanco + rosa"
- BirdPaletteStyle.ELEFANTE->"Gris + azul"; BirdPaletteStyle.CABALLO_CAFE->"Café + beige"; BirdPaletteStyle.SERPIENTE->"Verde hoja + lima"; BirdPaletteStyle.IGUANA->"Verde + lima"; BirdPaletteStyle.ARANA->"Negro + naranja"
- BirdPaletteStyle.TORTUGA->"Verde + café"; BirdPaletteStyle.PEZ_PAYASO->"Naranja + blanco"; BirdPaletteStyle.DELFIN->"Azul + celeste"; BirdPaletteStyle.TIBURON->"Gris + azul"; BirdPaletteStyle.AJOLOTE->"Rosa + morado"
- BirdPaletteStyle.PINGUINO->"Carbón + azul hielo"; BirdPaletteStyle.PATO_MANDARIN->"Naranja + turquesa"; BirdPaletteStyle.HAMSTER->"Caramelo + crema"; BirdPaletteStyle.FENIX->"Rojo fuego + dorado"; BirdPaletteStyle.ZORRO->"Naranja + crema"
- BirdPaletteStyle.PAVO_REAL->"Azul pavo + verde jade"; BirdPaletteStyle.COLIBRI->"Violeta + turquesa"; BirdPaletteStyle.MARTIN_PESCADOR->"Azul río + turquesa"; BirdPaletteStyle.QUETZAL->"Verde quetzal + jade"; BirdPaletteStyle.DRAGON->"Morado profundo + violeta + lila"
- BirdPaletteStyle.BALLENA_AZUL->"Azul clínico"; BirdPaletteStyle.RANA_VERDE->"Verde quirúrgico"; BirdPaletteStyle.MARIPOSA_MONARCA->"Naranja + café + negro"; BirdPaletteStyle.FLAMENCO_ROSA->"Rosa suave"; BirdPaletteStyle.CABALLITO_TURQUESA->"Turquesa"
- BirdPaletteStyle.CANGREJO_CORAL->"Coral"; BirdPaletteStyle.MURCIELAGO_NOCHE->"Azul noche"; BirdPaletteStyle.PANDA_MONO->"Monocromático"; BirdPaletteStyle.ABEJA_CONTRASTE->"Alto contraste"
 }
