@@ -32,8 +32,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
+import androidx.annotation.DrawableRes
+import com.yomismtz.expedientedeldentista.R
 
 private data class OcclusionTopic19(val es:String,val en:String,val bodyEs:String,val bodyEn:String)
 
@@ -83,22 +83,22 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
         "Resume las alteraciones oclusales visibles sin sustituir el diagnóstico ortodóncico completo."
     )
     val photos=listOf(
-        Pair("Dentición temporal · referencia real","https://commons.wikimedia.org/wiki/Special:Redirect/file/DentalSeperators.jpg"),
-        Pair("Plano terminal · apoyo esquemático",""),
-        Pair("Angle Clase I · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Angle_KL_1.JPG"),
-        Pair("Angle Clase II · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Class2division1malocclusion.jpg"),
-        Pair("Overjet y overbite · técnica de medición","https://commons.wikimedia.org/wiki/Special:Redirect/file/Overjet-overbite.png"),
-        Pair("Mordida abierta anterior · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Anterior_open_bite_malocclusion.jpg"),
-        Pair("Mordida cruzada · referencia clínica","https://commons.wikimedia.org/wiki/Special:Redirect/file/Patient_with_Apert_syndrome.jpg"),
-        Pair("Plano oclusal y asimetría · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Canted_occlusal_plane.jpg"),
-        Pair("Apiñamiento severo · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Sever_Crowding_of_teeth.jpg"),
-        Pair("Arcadas · valorar forma y simetría","https://commons.wikimedia.org/wiki/Special:Redirect/file/Sever_Crowding_of_teeth.jpg"),
-        Pair("Mordida profunda · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Moderate_crowding_with_deep_bite.jpg"),
-        Pair("Relación transversal · referencia clínica","https://commons.wikimedia.org/wiki/Special:Redirect/file/Patient_with_Apert_syndrome.jpg"),
-        Pair("Contactos oclusales · referencia clínica","https://commons.wikimedia.org/wiki/Special:Redirect/file/Angle_KL_1.JPG"),
-        Pair("Máxima intercuspidación · referencia clínica","https://commons.wikimedia.org/wiki/Special:Redirect/file/Angle_KL_1.JPG"),
-        Pair("Desgaste: inspección clínica","https://commons.wikimedia.org/wiki/Special:Redirect/file/Moderate_crowding_with_deep_bite.jpg"),
-        Pair("Diastema · fotografía clínica real","https://commons.wikimedia.org/wiki/Special:Redirect/file/Brian_diastema.png")
+        Pair("Dentición temporal · referencia real",R.drawable.occlusion_primary),
+        Pair("Plano terminal · apoyo esquemático",0),
+        Pair("Angle Clase I · fotografía clínica real",R.drawable.occlusion_angle1),
+        Pair("Angle Clase II · fotografía clínica real",R.drawable.occlusion_angle2),
+        Pair("Overjet y overbite · técnica de medición",R.drawable.occlusion_overjet),
+        Pair("Mordida abierta anterior · fotografía clínica real",R.drawable.occlusion_openbite),
+        Pair("Mordida cruzada · referencia clínica",R.drawable.occlusion_crossbite),
+        Pair("Plano oclusal y asimetría · fotografía clínica real",R.drawable.occlusion_canted),
+        Pair("Apiñamiento severo · fotografía clínica real",R.drawable.occlusion_crowding),
+        Pair("Arcadas · valorar forma y simetría",R.drawable.occlusion_crowding),
+        Pair("Mordida profunda · fotografía clínica real",R.drawable.occlusion_deepbite),
+        Pair("Relación transversal · referencia clínica",R.drawable.occlusion_crossbite),
+        Pair("Contactos oclusales · referencia clínica",R.drawable.occlusion_angle1),
+        Pair("Máxima intercuspidación · referencia clínica",R.drawable.occlusion_angle1),
+        Pair("Desgaste: inspección clínica",R.drawable.occlusion_deepbite),
+        Pair("Diastema · fotografía clínica real",R.drawable.occlusion_diastema)
     )
     ResponsiveScreenV17(tr(lang,"Examen clínico de oclusión","Clinical occlusal examination"),tr(lang,"Exploración por subapartados con registro seleccionable y apoyo visual.","Sectioned examination with selectable findings and visual support."),onBack) {
         ResponsiveSectionV17("Subapartados") {
@@ -109,8 +109,7 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
         ResponsiveSectionV17(sections[selected]) {
             Text(help[selected],fontWeight=FontWeight.SemiBold)
             val ph=photos[selected]
-            if(ph.second.isNotBlank()) OcclusionPhoto19(ph.first,ph.second)
-            else TerminalPlanes19(lang)
+            if(ph.second!=0) OcclusionPhoto19(ph.first,ph.second) else TerminalPlanes19(lang)
             Text("Registro clínico",fontWeight=FontWeight.Black)
             options[selected].forEach{o->FilterChip(choice==o,{choice=o},{Text(o)},modifier=Modifier.fillMaxWidth())}
             when(selected){
@@ -126,14 +125,8 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
     }
 }
 
-@Composable private fun OcclusionPhoto19(title:String,url:String){
-    Card(Modifier.fillMaxWidth(),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.35f))){
-        Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
-            Text(title,fontWeight=FontWeight.Black)
-            AsyncImage(model=url,contentDescription=title,modifier=Modifier.fillMaxWidth().heightIn(min=180.dp,max=300.dp),contentScale=ContentScale.Fit)
-            Text("Fuente visual: Wikimedia Commons · archivo de licencia abierta. Consultar atribución/licencia del archivo.",style=MaterialTheme.typography.bodySmall)
-        }
-    }
+@Composable private fun OcclusionPhoto19(title:String,@DrawableRes resource:Int){
+ LocalZoomableImageV21(title=title,resource=resource,attribution="Referencia educativa empaquetada dentro del APK · fuente original: Wikimedia Commons.")
 }
 
 @Composable
