@@ -71,6 +71,9 @@ fun paletteDisplayName(style: BirdPaletteStyle, lang: String = "es"): String = w
     BirdPaletteStyle.MURCIELAGO_NOCHE -> if(lang=="en") "Bat" else "Murciélago"
     BirdPaletteStyle.PANDA_MONO -> "Panda"
     BirdPaletteStyle.ABEJA_CONTRASTE -> if(lang=="en") "Bee" else "Abeja"
+    BirdPaletteStyle.CAMALEON -> if(lang=="en") "Chameleon" else "Camaleón"
+    BirdPaletteStyle.PERICO -> if(lang=="en") "Parakeet" else "Perico"
+    BirdPaletteStyle.GALLO -> if(lang=="en") "Rooster" else "Gallo"
 }
 
 fun birdPalette(style: BirdPaletteStyle): BirdPalette {
@@ -115,6 +118,9 @@ fun birdPalette(style: BirdPaletteStyle): BirdPalette {
         BirdPaletteStyle.MURCIELAGO_NOCHE -> BirdPalette(Color(0xFF243B66),Color.White,Color(0xFF536D9B),Color(0xFF7184AD),Color(0xFFEFF3FA),Color(0xFFF8FAFD),Color(0xFF17243D),Color(0xFFD9E2F1),Color(0xFFE4EAF4),Color(0xFF71809A))
         BirdPaletteStyle.PANDA_MONO -> BirdPalette(Color(0xFF303030),Color.White,Color(0xFF666666),Color(0xFF8A8A8A),Color(0xFFF5F5F5),Color.White,Color(0xFF1E1E1E),Color(0xFFE2E2E2),Color(0xFFECECEC),Color(0xFF777777))
         BirdPaletteStyle.ABEJA_CONTRASTE -> BirdPalette(Color(0xFF111111),Color.White,Color(0xFFFFD600),Color(0xFF005BBB),Color.White,Color.White,Color.Black,Color(0xFFFFE766),Color(0xFFDDEBFF),Color.Black)
+        BirdPaletteStyle.CAMALEON -> p(0xFF2E7D32,0xFF6A1B9A,0xFF7CB342,0xFFF2EDF8,0xFFB9D9A8,0xFFD5B7E8)
+        BirdPaletteStyle.PERICO -> p(0xFF1B7F3A,0xFFF7F7F2,0xFFC62828,0xFFF4FAF4,0xFFB9DFBE,0xFFF4C5C5)
+        BirdPaletteStyle.GALLO -> p(0xFF145DA0,0xFFF8FAFC,0xFFC62828,0xFFF1F6FB,0xFFB9D7EF,0xFFF2C2C2)
     }
 }
 
