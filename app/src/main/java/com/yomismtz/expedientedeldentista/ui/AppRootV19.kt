@@ -196,20 +196,20 @@ private fun PaletteCardV19(style:BirdPaletteStyle,lang:String,selected:Boolean,o
 private fun mascotIconV19(style:BirdPaletteStyle)=when(style){
  BirdPaletteStyle.AGAPORNI->"🐦"; BirdPaletteStyle.TUCAN->"🦜"; BirdPaletteStyle.NINFA->"🐤"; BirdPaletteStyle.BUHO->"🦉"; BirdPaletteStyle.CUERVO->"🐦‍⬛"
  BirdPaletteStyle.GUACAMAYA->"🦜"; BirdPaletteStyle.PUG->"🐶"; BirdPaletteStyle.POMERANIA->"🐕"; BirdPaletteStyle.GATO->"🐱"; BirdPaletteStyle.CONEJO->"🐰"
- BirdPaletteStyle.ELEFANTE->"🐘"; BirdPaletteStyle.CABALLO_CAFE->"🐴"; BirdPaletteStyle.CABALLO_PINTO->"🐎"; BirdPaletteStyle.IGUANA->"🦎"; BirdPaletteStyle.ARANA->"🕷️"
+ BirdPaletteStyle.ELEFANTE->"🐘"; BirdPaletteStyle.CABALLO_CAFE->"🐴"; BirdPaletteStyle.SERPIENTE->"🐍"; BirdPaletteStyle.IGUANA->"🦎"; BirdPaletteStyle.ARANA->"🕷️"
  BirdPaletteStyle.TORTUGA->"🐢"; BirdPaletteStyle.PEZ_PAYASO->"🐠"; BirdPaletteStyle.DELFIN->"🐬"; BirdPaletteStyle.TIBURON->"🦈"; BirdPaletteStyle.AJOLOTE->"🩷"
  BirdPaletteStyle.PINGUINO->"🐧"; BirdPaletteStyle.PATO_MANDARIN->"🦆"; BirdPaletteStyle.HAMSTER->"🐹"; BirdPaletteStyle.FENIX->"🔥"; BirdPaletteStyle.ZORRO->"🦊"
  BirdPaletteStyle.PAVO_REAL->"🦚"; BirdPaletteStyle.COLIBRI->"🐦"; BirdPaletteStyle.MARTIN_PESCADOR->"🐦"; BirdPaletteStyle.QUETZAL->"🐦"; BirdPaletteStyle.DRAGON->"🐉"
- BirdPaletteStyle.BALLENA_AZUL->"🐋"; BirdPaletteStyle.RANA_VERDE->"🐸"; BirdPaletteStyle.MARIPOSA_LAVANDA->"🦋"; BirdPaletteStyle.FLAMENCO_ROSA->"🦩"; BirdPaletteStyle.CABALLITO_TURQUESA->"🐠"
+ BirdPaletteStyle.BALLENA_AZUL->"🐋"; BirdPaletteStyle.RANA_VERDE->"🐸"; BirdPaletteStyle.MARIPOSA_MONARCA->"🦋"; BirdPaletteStyle.FLAMENCO_ROSA->"🦩"; BirdPaletteStyle.CABALLITO_TURQUESA->"🐠"
  BirdPaletteStyle.CANGREJO_CORAL->"🦀"; BirdPaletteStyle.MURCIELAGO_NOCHE->"🦇"; BirdPaletteStyle.PANDA_MONO->"🐼"; BirdPaletteStyle.ABEJA_CONTRASTE->"🐝"
 }
 private fun mascotPaletteLabelV19(style:BirdPaletteStyle)=when(style){
  BirdPaletteStyle.AGAPORNI->"Verde pastel + durazno"; BirdPaletteStyle.TUCAN->"Amarillo + negro"; BirdPaletteStyle.NINFA->"Gris + amarillo"; BirdPaletteStyle.BUHO->"Café + beige"; BirdPaletteStyle.CUERVO->"Morado + negro"
  BirdPaletteStyle.GUACAMAYA->"Rojo + azul"; BirdPaletteStyle.PUG->"Beige + café"; BirdPaletteStyle.POMERANIA->"Crema + dorado"; BirdPaletteStyle.GATO->"Gris + rosa"; BirdPaletteStyle.CONEJO->"Blanco + rosa"
- BirdPaletteStyle.ELEFANTE->"Gris + azul"; BirdPaletteStyle.CABALLO_CAFE->"Café + beige"; BirdPaletteStyle.CABALLO_PINTO->"Blanco + café"; BirdPaletteStyle.IGUANA->"Verde + lima"; BirdPaletteStyle.ARANA->"Negro + naranja"
+ BirdPaletteStyle.ELEFANTE->"Gris + azul"; BirdPaletteStyle.CABALLO_CAFE->"Café + beige"; BirdPaletteStyle.SERPIENTE->"Verde hoja + lima"; BirdPaletteStyle.IGUANA->"Verde + lima"; BirdPaletteStyle.ARANA->"Negro + naranja"
  BirdPaletteStyle.TORTUGA->"Verde + café"; BirdPaletteStyle.PEZ_PAYASO->"Naranja + blanco"; BirdPaletteStyle.DELFIN->"Azul + celeste"; BirdPaletteStyle.TIBURON->"Gris + azul"; BirdPaletteStyle.AJOLOTE->"Rosa + morado"
  BirdPaletteStyle.PINGUINO->"Carbón + azul hielo"; BirdPaletteStyle.PATO_MANDARIN->"Naranja + turquesa"; BirdPaletteStyle.HAMSTER->"Caramelo + crema"; BirdPaletteStyle.FENIX->"Rojo fuego + dorado"; BirdPaletteStyle.ZORRO->"Naranja + crema"
  BirdPaletteStyle.PAVO_REAL->"Azul pavo + verde jade"; BirdPaletteStyle.COLIBRI->"Violeta + turquesa"; BirdPaletteStyle.MARTIN_PESCADOR->"Azul río + turquesa"; BirdPaletteStyle.QUETZAL->"Verde quetzal + jade"; BirdPaletteStyle.DRAGON->"Morado profundo + violeta + lila"
- BirdPaletteStyle.BALLENA_AZUL->"Azul clínico"; BirdPaletteStyle.RANA_VERDE->"Verde quirúrgico"; BirdPaletteStyle.MARIPOSA_LAVANDA->"Lavanda"; BirdPaletteStyle.FLAMENCO_ROSA->"Rosa suave"; BirdPaletteStyle.CABALLITO_TURQUESA->"Turquesa"
+ BirdPaletteStyle.BALLENA_AZUL->"Azul clínico"; BirdPaletteStyle.RANA_VERDE->"Verde quirúrgico"; BirdPaletteStyle.MARIPOSA_MONARCA->"Naranja + café + negro"; BirdPaletteStyle.FLAMENCO_ROSA->"Rosa suave"; BirdPaletteStyle.CABALLITO_TURQUESA->"Turquesa"
  BirdPaletteStyle.CANGREJO_CORAL->"Coral"; BirdPaletteStyle.MURCIELAGO_NOCHE->"Azul noche"; BirdPaletteStyle.PANDA_MONO->"Monocromático"; BirdPaletteStyle.ABEJA_CONTRASTE->"Alto contraste"
 }
