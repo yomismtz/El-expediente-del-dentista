@@ -39,6 +39,8 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
  var doseMgKg by remember{mutableStateOf("")}
  var topicalAge by remember{mutableStateOf(0)}
  var topicalProduct by remember{mutableStateOf(0)}
+ var bmiWeight by remember{mutableStateOf("")}
+ var bmiHeightCm by remember{mutableStateOf("")}
  val w=weight.toDoubleOrNull()
  val limitPerKg=mgKg.toDoubleOrNull()
  val absolute=maxAbsolute.toDoubleOrNull()
@@ -50,6 +52,10 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
  val medDose=doseMgKg.toDoubleOrNull()
  val doseMg=if(w!=null&&medDose!=null)w*medDose else null
  val doseMl=if(doseMg!=null&&medConc!=null&&medConc>0)doseMg/medConc else null
+ val bmiW=bmiWeight.toDoubleOrNull()
+ val bmiH=bmiHeightCm.toDoubleOrNull()?.div(100.0)
+ val bmi=if(bmiW!=null&&bmiH!=null&&bmiH>0)bmiW/(bmiH*bmiH) else null
+ val bmiCategory=when{bmi==null->"";bmi<18.5->"Bajo peso";bmi<25.0->"Peso saludable";bmi<30.0->"Sobrepeso";bmi<35.0->"Obesidad clase 1";bmi<40.0->"Obesidad clase 2";else->"Obesidad clase 3 (severa)"}
 
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
   item{ScreenHeader("Calculadoras odontológicas",onBack,"Herramientas educativas separadas de los auxiliares de diagnóstico. No sustituyen prescripción, ficha técnica ni supervisión clínica.")}
@@ -57,7 +63,8 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
    FilterChip(tab==0,{tab=0},{Text("Anestésico local")},Modifier.weight(1f))
    FilterChip(tab==1,{tab=1},{Text("Medicamentos pediátricos")},Modifier.weight(1f))
    FilterChip(tab==2,{tab=2},{Text("Fluoruros / clorhexidina")},Modifier.weight(1f))
-   FilterChip(tab==3,{tab=3},{Text("Conversión y práctica")},Modifier.weight(1f))
+   FilterChip(tab==3,{tab=3},{Text("IMC")},Modifier.weight(1f))
+   FilterChip(tab==4,{tab=4},{Text("Conversión y práctica")},Modifier.weight(1f))
   }}
   if(tab==0){
    item{SectionCard("1 · Paciente"){
@@ -108,6 +115,17 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
     Text(guidance,fontWeight=FontWeight.Bold)
    }}
    item{NoticeCard("Fuentes del contenido: NOM-013-SSA2-2015 (Diario Oficial de la Federación) para fluoruros y documentación clínica mexicana/IMSS para clorhexidina al 0.12%. Verifica además la ficha técnica del producto concreto. Uso educativo; no sustituye valoración ni prescripción profesional.")}
+  }else if(tab==3){
+   item{SectionCard("Calculadora de índice de masa corporal (IMC)"){
+    Text("Para adultos de 20 años o más. Fórmula: peso (kg) ÷ estatura² (m).")
+    OutlinedTextField(bmiWeight,{bmiWeight=it.filter{x->x.isDigit()||x=='.'}.take(6)},label={Text("Peso (kg)")},modifier=Modifier.fillMaxWidth())
+    OutlinedTextField(bmiHeightCm,{bmiHeightCm=it.filter{x->x.isDigit()||x=='.'}.take(6)},label={Text("Estatura (cm)")},modifier=Modifier.fillMaxWidth())
+    Text(if(bmi==null)"Ingresa peso y estatura." else "IMC: %.1f kg/m² · %s".format(bmi,bmiCategory),fontWeight=FontWeight.Bold)
+   }}
+   item{SectionCard("Interpretación en adultos"){
+    Text("Bajo peso: <18.5\nPeso saludable: 18.5–24.9\nSobrepeso: 25.0–29.9\nObesidad clase 1: 30.0–34.9\nObesidad clase 2: 35.0–39.9\nObesidad clase 3 (severa): ≥40.0")
+   }}
+   item{NoticeCard("Fuente clínica: CDC. El IMC es una medida de detección, no un diagnóstico. Para pacientes de 2 a 19 años debe interpretarse mediante IMC por edad y sexo/percentiles; esta calculadora no aplica esas categorías de adulto.")}
   }else{
    item{SectionCard("Actividades de cálculo y conversión"){
     Text("Practica conversiones sin que la app prescriba tratamientos.",fontWeight=FontWeight.Bold)
