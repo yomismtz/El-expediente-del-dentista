@@ -1,6 +1,8 @@
 package com.yomismtz.expedientedeldentista
 
 import android.os.Bundle
+import android.media.AudioManager
+import android.media.ToneGenerator
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
@@ -21,6 +23,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val store = SettingsStore(this)
+        // Breve trino sintetizado: funciona 100% offline y no requiere archivo de audio ni permiso.
+        runCatching {
+            val tone = ToneGenerator(AudioManager.STREAM_MUSIC, 32)
+            tone.startTone(ToneGenerator.TONE_PROP_BEEP2, 90)
+            window.decorView.postDelayed({
+                tone.startTone(ToneGenerator.TONE_PROP_BEEP, 75)
+                window.decorView.postDelayed({ tone.release() }, 120)
+            }, 105)
+        }
 
         setContent {
             var preferences by remember { mutableStateOf(store.load()) }
@@ -36,7 +47,7 @@ class MainActivity : AppCompatActivity() {
                 fontStyle = preferences.fontStyle,
                 textSizeStyle = preferences.textSizeStyle
             ) {
-                Surface(modifier = Modifier.fillMaxSize()) {
+                Surface(modifier = Modifier.fillMaxSize(), color = androidx.compose.material3.MaterialTheme.colorScheme.background) {
                     Box(Modifier.fillMaxSize()) {
                         AppRootV19(
                             preferences = preferences,
