@@ -44,39 +44,83 @@ private data class E(val n:String,val d:String)
  }
 }
 @Composable fun HistoryReasonV38(lang:String,onBack:()->Unit){
- var reason by remember{mutableStateOf("")}
- var visitType by remember{mutableStateOf<String?>(null)}
- var translatorOpen by remember{mutableStateOf(false)}
- val selectedSymptoms=remember{mutableStateMapOf<String,Boolean>()}
- if(translatorOpen){ ColloquialDentalTranslatorV42{translatorOpen=false}; return }
- val visitTypes=listOf("Urgencia","Primera vez","Otra causa")
- val symptoms=listOf("Dolor","Inflamación / aumento de volumen","Secreción / exudado / pus","Fístula","Sangrado","Movilidad dental","Traumatismo / fractura","Fiebre o malestar referido","Dificultad para masticar","Sensibilidad a frío","Sensibilidad a calor","Sensibilidad a dulce","Dolor al masticar","Dolor nocturno","Otro")
- val guide=listOf(
-  E("Fecha de inicio","¿Cuándo comenzó? Registra fecha o tiempo aproximado. Evita inventar precisión si el paciente no la recuerda."),
-  E("Factor desencadenante","Pregunta qué estaba ocurriendo cuando inició: espontáneo, alimento, frío/calor, masticación, traumatismo, procedimiento previo u otro factor referido."),
-  E("Evolución","Aclara si ha aumentado, disminuido, permanece igual, aparece por episodios o cambió de características desde el inicio."),
-  E("Características de los síntomas","En dolor: localización, irradiación, intensidad referida, duración, espontáneo/provocado y estímulos. En otros síntomas describe tamaño, frecuencia, duración y cambios."),
-  E("Signos observables","Se registran después de explorar: aumento de volumen, cambio de color, fístula, exudado, sangrado, movilidad, fractura u otros hallazgos comprobados."),
-  E("Factores que alivian o agravan","Pregunta por frío, calor, masticación, postura, reposo, alimentos y cualquier medida que modifique el problema."),
-  E("Medicamentos usados","Pregunta qué tomó o aplicó, dosis/presentación si la conoce, frecuencia, desde cuándo y si produjo alivio. Registrar lo referido; no convertirlo en prescripción.")
+ data class ReasonDx(val reason:String,val dx:List<String>)
+ val catalog=listOf(
+  ReasonDx("Dolor dental espontáneo",listOf("Pulpitis reversible","Pulpitis irreversible sintomática","Necrosis pulpar con periodontitis apical","Fisura o fractura dental","Dolor referido no odontogénico")),
+  ReasonDx("Dolor al frío",listOf("Hipersensibilidad dentinaria","Caries dental","Pulpitis reversible","Restauración con filtración o defecto","Fisura dental")),
+  ReasonDx("Dolor al calor",listOf("Pulpitis irreversible sintomática","Necrosis pulpar parcial","Periodontitis apical sintomática","Fisura dental","Dolor referido")),
+  ReasonDx("Dolor al masticar",listOf("Periodontitis apical sintomática","Fisura o fractura dental","Trauma oclusal","Absceso apical agudo","Enfermedad periodontal localizada")),
+  ReasonDx("Dolor nocturno",listOf("Pulpitis irreversible sintomática","Periodontitis apical sintomática","Absceso apical agudo","Fisura dental","Dolor orofacial no odontogénico")),
+  ReasonDx("Dolor después de una restauración",listOf("Sensibilidad postoperatoria","Interferencia oclusal","Pulpitis reversible","Pulpitis irreversible sintomática","Filtración o defecto restaurador")),
+  ReasonDx("Dolor después de una extracción",listOf("Dolor postoperatorio esperado","Alveolitis","Infección posoperatoria","Trauma de tejidos blandos","Fragmento o cuerpo extraño a valorar")),
+  ReasonDx("Dolor en encía",listOf("Gingivitis localizada","Absceso periodontal","Trauma local","Lesión ulcerativa","Dolor de origen dental referido a encía")),
+  ReasonDx("Dolor en mandíbula o maxilar",listOf("Origen odontogénico","Trastorno temporomandibular","Sinusitis maxilar a valorar","Traumatismo","Dolor neuropático u otro dolor orofacial")),
+  ReasonDx("Dolor en ATM",listOf("Dolor articular temporomandibular","Dolor muscular masticatorio","Desplazamiento discal","Enfermedad articular degenerativa","Dolor referido")),
+  ReasonDx("Chasquido de ATM",listOf("Desplazamiento discal con reducción","Hipermovilidad articular","Alteración mecánica articular","Cambios degenerativos","Hallazgo articular sin dolor a correlacionar")),
+  ReasonDx("Limitación para abrir la boca",listOf("Trastorno temporomandibular","Espasmo o dolor muscular","Infección odontogénica","Pericoronitis","Traumatismo")),
+  ReasonDx("Inflamación de cara",listOf("Absceso odontogénico","Celulitis odontogénica","Infección periodontal","Pericoronitis","Origen no odontogénico a valorar")),
+  ReasonDx("Inflamación de encía",listOf("Gingivitis","Absceso periodontal","Absceso de origen endodóntico con drenaje","Pericoronitis","Trauma o irritación local")),
+  ReasonDx("Bolita en la encía",listOf("Trayecto sinusal de origen endodóntico","Absceso periodontal","Quiste o lesión reactiva","Fibroma irritativo","Otra lesión de tejidos blandos")),
+  ReasonDx("Salida de pus",listOf("Absceso apical","Absceso periodontal","Pericoronitis supurada","Trayecto sinusal odontogénico","Infección de tejidos blandos")),
+  ReasonDx("Sangrado de encías",listOf("Gingivitis inducida por biofilm","Periodontitis","Trauma por higiene","Inflamación local","Alteración sistémica o medicamentosa a valorar")),
+  ReasonDx("Mal aliento",listOf("Biofilm lingual","Gingivitis o periodontitis","Caries o retención alimentaria","Xerostomía","Origen extraoral a valorar")),
+  ReasonDx("Diente flojo",listOf("Periodontitis","Trauma dental","Trauma oclusal","Reabsorción fisiológica en diente temporal","Lesión periapical u otra causa")),
+  ReasonDx("Diente roto",listOf("Fractura coronaria","Fisura dental","Caries extensa con pérdida estructural","Fractura de restauración","Traumatismo dentoalveolar")),
+  ReasonDx("Se cayó una restauración",listOf("Falla restauradora","Caries recurrente","Fractura dental","Desgaste o pérdida de retención","Problema oclusal a valorar")),
+  ReasonDx("Se rompió una prótesis",listOf("Fractura protésica","Pérdida de retención","Desgaste de componentes","Cambio del soporte oral","Sobrecarga oclusal")),
+  ReasonDx("Corona floja o desprendida",listOf("Pérdida de cementación","Caries recurrente","Fractura del muñón o diente","Falla del material restaurador","Problema oclusal")),
+  ReasonDx("Implante con molestia",listOf("Mucositis periimplantaria","Periimplantitis","Sobrecarga oclusal","Problema protésico","Dolor de origen adyacente")),
+  ReasonDx("Diente oscuro",listOf("Necrosis pulpar","Cambio de color postraumático","Tinción intrínseca","Caries","Pigmentación o restauración previa")),
+  ReasonDx("Manchas blancas en dientes",listOf("Lesión inicial de caries","Fluorosis","Hipomineralización","Hipoplasia del esmalte","Desmineralización asociada a ortodoncia")),
+  ReasonDx("Manchas oscuras en dientes",listOf("Caries","Tinción extrínseca","Pigmentación de fosas y fisuras","Restauración pigmentada","Defecto estructural del esmalte")),
+  ReasonDx("Dientes amarillos",listOf("Color dental fisiológico","Tinción extrínseca","Cambios por edad","Alteración del esmalte o dentina","Cambio de color por medicamentos o exposición")),
+  ReasonDx("Quiero blanqueamiento",listOf("Tinción extrínseca","Tinción intrínseca","Cambio de color asociado a edad","Fluorosis a valorar","Discromía de diente no vital")),
+  ReasonDx("Dientes chuecos",listOf("Apiñamiento dental","Malposición dentaria","Discrepancia dentoalveolar","Alteración de erupción","Maloclusión")),
+  ReasonDx("Espacios entre dientes",listOf("Diastema fisiológico","Discrepancia dentoalveolar","Ausencia dental","Frenillo u otro factor local","Migración dental periodontal")),
+  ReasonDx("Mordida incorrecta",listOf("Maloclusión sagital","Mordida cruzada","Mordida abierta","Sobremordida aumentada","Desviación de línea media")),
+  ReasonDx("Dientes de adelante muy salidos",listOf("Overjet aumentado","Proinclinación incisiva","Maloclusión Clase II","Hábito oral asociado","Discrepancia esqueletal a valorar")),
+  ReasonDx("Mordida abierta",listOf("Mordida abierta dentoalveolar","Hábito de succión","Interposición lingual","Alteración eruptiva","Componente esqueletal a valorar")),
+  ReasonDx("Mordida cruzada",listOf("Mordida cruzada anterior","Mordida cruzada posterior unilateral","Mordida cruzada posterior bilateral","Desplazamiento funcional","Discrepancia esqueletal a valorar")),
+  ReasonDx("No sale un diente",listOf("Erupción tardía","Diente impactado","Agenesia dental","Obstáculo eruptivo","Erupción ectópica")),
+  ReasonDx("Salió un diente en otro lugar",listOf("Erupción ectópica","Malposición dentaria","Falta de espacio","Diente supernumerario","Alteración de trayectoria eruptiva")),
+  ReasonDx("Diente extra",listOf("Diente supernumerario","Mesiodens","Odontoma a descartar","Diente temporal retenido confundido con extra","Variación anatómica a valorar")),
+  ReasonDx("Falta un diente",listOf("Agenesia","Diente impactado","Pérdida dental previa","Retardo eruptivo","Diente retenido")),
+  ReasonDx("Diente de leche no se cae",listOf("Retención prolongada de temporal","Ausencia del sucesor permanente","Erupción ectópica del sucesor","Anquilosis","Alteración de cronología eruptiva")),
+  ReasonDx("Diente permanente salió detrás del de leche",listOf("Erupción lingual/palatina del sucesor","Retención de diente temporal","Falta de espacio","Erupción ectópica","Alteración de exfoliación")),
+  ReasonDx("Dolor por muela del juicio",listOf("Pericoronitis","Caries del tercer molar","Pulpitis","Periodontitis apical","Dolor periodontal o de segundo molar adyacente")),
+  ReasonDx("Quiero sacar una muela del juicio",listOf("Tercer molar impactado","Pericoronitis recurrente","Caries no restaurable","Patología periodontal distal","Indicación quirúrgica por lesión asociada a valorar")),
+  ReasonDx("Llaga en la boca",listOf("Úlcera traumática","Afta","Lesión herpética","Lesión inmunomediada","Lesión persistente que requiere estudio")),
+  ReasonDx("Ampollas en la boca",listOf("Lesión viral","Lesión inmunomediada","Trauma térmico o químico","Reacción medicamentosa","Otra enfermedad vesículo-ampollar")),
+  ReasonDx("Mancha en la boca",listOf("Pigmentación fisiológica","Lesión melanótica","Mácula vascular","Tatuaje por material","Lesión pigmentada que requiere valoración")),
+  ReasonDx("Bulto en la boca",listOf("Fibroma irritativo","Mucocele","Lesión inflamatoria reactiva","Quiste","Neoplasia benigna o maligna a descartar")),
+  ReasonDx("Lengua dolorosa o ardor",listOf("Trauma local","Candidiasis","Glositis","Xerostomía","Síndrome de boca ardiente a valorar")),
+  ReasonDx("Boca seca",listOf("Xerostomía medicamentosa","Hipofunción salival","Deshidratación","Enfermedad sistémica asociada","Respiración oral")),
+  ReasonDx("Muchísima saliva",listOf("Sialorrea funcional","Irritación oral","Problema de deglución","Efecto medicamentoso","Condición neurológica a valorar")),
+  ReasonDx("Dolor o aumento de volumen de glándula salival",listOf("Sialolitiasis","Sialadenitis","Obstrucción ductal","Quiste o lesión salival","Otra masa glandular a valorar")),
+  ReasonDx("Me truena o aprieto los dientes",listOf("Bruxismo referido","Apretamiento","Dolor muscular masticatorio","Desgaste dental","Trastorno temporomandibular asociado")),
+  ReasonDx("Desgaste de dientes",listOf("Atrición","Erosión","Abrasión","Abfracción a valorar","Bruxismo asociado")),
+  ReasonDx("Sensibilidad generalizada",listOf("Hipersensibilidad dentinaria","Recesión gingival","Erosión dental","Abrasión","Caries múltiples")),
+  ReasonDx("Comida se atora entre dientes",listOf("Contacto proximal abierto","Caries proximal","Migración dental","Defecto restaurador","Enfermedad periodontal")),
+  ReasonDx("Encía se bajó",listOf("Recesión gingival","Trauma por cepillado","Periodontitis","Malposición dental","Fenotipo periodontal y factores locales")),
+  ReasonDx("Quiero limpieza dental",listOf("Biofilm y cálculo supragingival","Gingivitis","Periodontitis a descartar","Tinciones extrínsecas","Necesidad preventiva sin enfermedad activa")),
+  ReasonDx("Quiero revisión general",listOf("Paciente aparentemente sano a confirmar","Caries dental","Gingivitis","Periodontitis","Alteraciones oclusales o mucosas a detectar")),
+  ReasonDx("Golpe en un diente",listOf("Conmoción o subluxación","Luxación dental","Fractura coronaria","Fractura radicular","Avulsión o lesión alveolar")),
+  ReasonDx("Diente se salió por un golpe",listOf("Avulsión de diente permanente","Avulsión de diente temporal","Lesión alveolar asociada","Lesión de tejidos blandos","Trauma de dientes vecinos")),
+  ReasonDx("Necesito prótesis porque me faltan dientes",listOf("Edentulismo parcial","Edentulismo total","Necesidad de prótesis removible","Necesidad de prótesis fija según caso","Rehabilitación implantosoportada a valorar"))
  )
- val examples=listOf(
-  "“Me duele una muela cuando tomo frío.” → conservar la frase; después caracterizar el dolor y realizar las pruebas correspondientes.",
-  "“Le salió una bolita en la encía a mi hijo y le sale agua blanca.” → conservar la frase; después describir clínicamente aumento de volumen, trayecto/fístula o exudado si realmente se observan.",
-  "“Tengo inflamado aquí y no puedo comer.” → precisar sitio, inicio, evolución, dolor, función, signos locales y síntomas generales.",
-  "“Se le rompió el diente.” → precisar mecanismo, tiempo, órgano dentario, tejidos comprometidos y síntomas."
- )
+ var selectedReason by remember{mutableStateOf(0)}
+ var selectedDx by remember{mutableStateOf<Int?>(null)}
+ val current=catalog[selectedReason]
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
-  item{ScreenHeader("Motivo de consulta y padecimiento actual",onBack,"El motivo se escribe literalmente con las palabras del paciente o tutor. El padecimiento actual se construye después, con interrogatorio y hallazgos clínicos.")}
-  item{SectionCard("1 · Tipo de consulta"){visitTypes.forEach{x->FilterChip(selected=visitType==x,onClick={visitType=x},label={Text(x)},modifier=Modifier.fillMaxWidth())}}}
-  item{SectionCard("2 · Motivo de consulta literal"){OutlinedTextField(reason,{reason=it.take(300)},modifier=Modifier.fillMaxWidth(),label={Text("Palabras exactas del paciente, mamá/papá o tutor")},placeholder={Text("Ej.: “Me duele una muela cuando tomo frío.”")},minLines=3);Text("Debe conservarse la expresión original. No escribas aquí un diagnóstico.",style=MaterialTheme.typography.bodySmall)}}
-  item{SectionCard("3 · Traductor coloquial → clínico"){Button(onClick={translatorOpen=true},modifier=Modifier.fillMaxWidth()){Text("Abrir traductor · 50 expresiones")};Spacer(Modifier.height(6.dp));examples.forEach{Text("• $it")}}}
-  item{Text("4 · Síntomas referidos · selecciona los presentes",fontWeight=FontWeight.Bold)}
-  items(symptoms.size){i->val x=symptoms[i];Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){Checkbox(selectedSymptoms[x]==true,{selectedSymptoms[x]=it});Text(x,Modifier.weight(1f))}}
-  item{Text("5 · Construcción del padecimiento actual",fontWeight=FontWeight.Bold)}
-  items(guide.size){i->val x=guide[i];Card(Modifier.fillMaxWidth()){Column(Modifier.padding(13.dp)){Text(x.n,fontWeight=FontWeight.Bold);Text(x.d)}}}
-  item{SectionCard("Resumen didáctico de lo seleccionado"){Text("Tipo: "+(visitType?:"sin seleccionar"));Text("Motivo literal: "+if(reason.isBlank())"sin escribir" else reason);val positives=selectedSymptoms.filterValues{it}.keys;Text("Síntomas: "+if(positives.isEmpty())"ninguno seleccionado" else positives.joinToString())}}
-  item{NoticeCard("La interpretación clínica no debe convertir automáticamente una frase coloquial en un diagnóstico definitivo. El diagnóstico requiere integrar interrogatorio, exploración y pruebas indicadas.")}
+  item{ScreenHeader("Motivo de consulta y padecimiento actual",onBack,"Módulo sin escritura libre: selecciona el motivo referido y revisa cinco diagnósticos diferenciales posibles. El motivo por sí solo no establece el diagnóstico.")}
+  item{NoticeCard("Los diagnósticos mostrados son posibilidades educativas. El diagnóstico clínico requiere integrar interrogatorio, exploración y pruebas indicadas.")}
+  item{SectionCard("1 · Motivo de consulta"){ChipChoices(catalog.mapIndexed{i,x->x.reason to (selectedReason==i)},{i->selectedReason=i;selectedDx=null},columns=5)}}
+  item{SectionCard("2 · Cinco diagnósticos diferenciales posibles"){ChipChoices(current.dx.mapIndexed{i,x->x to (selectedDx==i)},{selectedDx=it},columns=5)}}
+  item{SectionCard("3 · Selección para estudio"){
+   Text("Motivo: "+current.reason,fontWeight=FontWeight.Bold)
+   Text("Posibilidad diagnóstica seleccionada: "+(selectedDx?.let{current.dx[it]}?:"sin seleccionar"))
+   Text("Confirma o descarta mediante anamnesis dirigida, exploración clínica y auxiliares/pruebas que correspondan; no conviertas esta selección en diagnóstico definitivo.",style=MaterialTheme.typography.bodySmall)
+  }}
  }
 }
 
