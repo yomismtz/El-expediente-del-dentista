@@ -21,6 +21,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.Surface
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -164,4 +168,25 @@ internal fun CompletionBadgeV22(done:Boolean,inProgress:Boolean,lang:String) {
     val text=when { done -> "✓ "+tr(lang,"Completado","Completed"); inProgress -> "● "+tr(lang,"En progreso","In progress"); else -> "○ "+tr(lang,"Pendiente","Pending") }
     val color=when { done -> MaterialTheme.colorScheme.secondaryContainer; inProgress -> MaterialTheme.colorScheme.primaryContainer; else -> MaterialTheme.colorScheme.surfaceVariant }
     Surface(color=color,shape=MaterialTheme.shapes.small){ Text(text,Modifier.padding(horizontal=8.dp,vertical=4.dp),style=MaterialTheme.typography.labelMedium,fontWeight=FontWeight.Bold) }
+}
+
+
+@Composable
+internal fun ExpandableTeachingCardV22(title:String,summary:String,details:String,icon:String="💡") {
+    var expanded by remember { mutableStateOf(false) }
+    val bg by animateColorAsState(if(expanded) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface,animationSpec=tween(180),label="expandCard")
+    Card(Modifier.fillMaxWidth().clickable{expanded=!expanded},colors=CardDefaults.cardColors(containerColor=bg),shape=MaterialTheme.shapes.large,border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.32f))){
+        Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically){Text("$icon $title",Modifier.weight(1f),fontWeight=FontWeight.Bold);Text(if(expanded)"⌃" else "⌄")}
+            Text(summary,style=MaterialTheme.typography.bodyMedium)
+            AnimatedVisibility(expanded){Text(details,style=MaterialTheme.typography.bodySmall)}
+        }
+    }
+}
+
+@Composable
+internal fun FieldValidationBadgeV22(state:Int,lang:String){
+    val label=when(state){2->"✓ "+tr(lang,"Completo","Complete");1->"● "+tr(lang,"Revisar","Review");else->"○ "+tr(lang,"Pendiente","Pending")}
+    val bg=when(state){2->MaterialTheme.colorScheme.secondaryContainer;1->MaterialTheme.colorScheme.tertiaryContainer;else->MaterialTheme.colorScheme.surfaceVariant}
+    Surface(color=bg,shape=MaterialTheme.shapes.small){Text(label,Modifier.padding(horizontal=8.dp,vertical=4.dp),style=MaterialTheme.typography.labelSmall,fontWeight=FontWeight.Bold)}
 }
