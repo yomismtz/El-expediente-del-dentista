@@ -58,6 +58,15 @@ fun paletteDisplayName(style: BirdPaletteStyle, lang: String = "es"): String = w
     BirdPaletteStyle.MARTIN_PESCADOR -> if(lang=="en") "Kingfisher" else "Martín pescador"
     BirdPaletteStyle.QUETZAL -> "Quetzal"
     BirdPaletteStyle.DRAGON -> if(lang=="en") "Dragon" else "Dragón"
+    BirdPaletteStyle.BALLENA_AZUL -> if(lang=="en") "Clinical blue whale" else "Ballena azul clínica"
+    BirdPaletteStyle.RANA_VERDE -> if(lang=="en") "Surgical green frog" else "Rana verde quirúrgica"
+    BirdPaletteStyle.MARIPOSA_LAVANDA -> if(lang=="en") "Lavender butterfly" else "Mariposa lavanda"
+    BirdPaletteStyle.FLAMENCO_ROSA -> if(lang=="en") "Soft pink flamingo" else "Flamenco rosa suave"
+    BirdPaletteStyle.CABALLITO_TURQUESA -> if(lang=="en") "Turquoise seahorse" else "Caballito turquesa"
+    BirdPaletteStyle.CANGREJO_CORAL -> if(lang=="en") "Coral crab" else "Cangrejo coral"
+    BirdPaletteStyle.MURCIELAGO_NOCHE -> if(lang=="en") "Night blue bat" else "Murciélago azul noche"
+    BirdPaletteStyle.PANDA_MONO -> if(lang=="en") "Monochrome panda" else "Panda monocromático"
+    BirdPaletteStyle.ABEJA_CONTRASTE -> if(lang=="en") "High contrast bee" else "Abeja alto contraste"
 }
 
 fun birdPalette(style: BirdPaletteStyle): BirdPalette {
@@ -93,6 +102,15 @@ fun birdPalette(style: BirdPaletteStyle): BirdPalette {
         BirdPaletteStyle.MARTIN_PESCADOR -> p(0xFF2479B8,0xFF1BA9B5,0xFFF18A38,0xFFF0F8FC,0xFFD8ECFA,0xFFD5F2F4)
         BirdPaletteStyle.QUETZAL -> p(0xFF087C62,0xFF15A69B,0xFFC43E58,0xFFF0FAF6,0xFFD2F1E5,0xFFD4F4F0)
         BirdPaletteStyle.DRAGON -> BirdPalette(Color(0xFF4B176D),Color.White,Color(0xFF6D28A2),Color(0xFF9B59D0),Color(0xFFF7F0FC),Color(0xFFFFFBFF),Color(0xFF2D1538),Color(0xFFE6D2F2),Color(0xFFF0E2F8),Color(0xFF9D82AC))
+        BirdPaletteStyle.BALLENA_AZUL -> p(0xFF1769AA,0xFF58A6D6,0xFF244C66,0xFFF1F8FC,0xFFD9ECF7,0xFFE1F2FA)
+        BirdPaletteStyle.RANA_VERDE -> p(0xFF237A57,0xFF65A87A,0xFF315E46,0xFFF2F9F4,0xFFD8EBDD,0xFFE5F2E8)
+        BirdPaletteStyle.MARIPOSA_LAVANDA -> p(0xFF8064A8,0xFFB39DDB,0xFF665080,0xFFF8F5FC,0xFFE9E0F5,0xFFF0E9F8)
+        BirdPaletteStyle.FLAMENCO_ROSA -> p(0xFFC76F8D,0xFFF0A7BB,0xFF9A6075,0xFFFFF6F9,0xFFF8DDE6,0xFFFFEAF0)
+        BirdPaletteStyle.CABALLITO_TURQUESA -> p(0xFF168C8C,0xFF5BC2BE,0xFF397A7C,0xFFF0FBFA,0xFFD4F1EF,0xFFE1F7F5)
+        BirdPaletteStyle.CANGREJO_CORAL -> p(0xFFD96C5F,0xFFF09A86,0xFF9A5148,0xFFFFF6F3,0xFFFFDDD6,0xFFFFEAE5)
+        BirdPaletteStyle.MURCIELAGO_NOCHE -> BirdPalette(Color(0xFF243B66),Color.White,Color(0xFF536D9B),Color(0xFF7184AD),Color(0xFFEFF3FA),Color(0xFFF8FAFD),Color(0xFF17243D),Color(0xFFD9E2F1),Color(0xFFE4EAF4),Color(0xFF71809A))
+        BirdPaletteStyle.PANDA_MONO -> BirdPalette(Color(0xFF303030),Color.White,Color(0xFF666666),Color(0xFF8A8A8A),Color(0xFFF5F5F5),Color.White,Color(0xFF1E1E1E),Color(0xFFE2E2E2),Color(0xFFECECEC),Color(0xFF777777))
+        BirdPaletteStyle.ABEJA_CONTRASTE -> BirdPalette(Color(0xFF111111),Color.White,Color(0xFFFFD600),Color(0xFF005BBB),Color.White,Color.White,Color.Black,Color(0xFFFFE766),Color(0xFFDDEBFF),Color.Black)
     }
 }
 
