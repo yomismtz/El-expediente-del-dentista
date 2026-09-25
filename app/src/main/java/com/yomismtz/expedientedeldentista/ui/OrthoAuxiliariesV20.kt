@@ -57,7 +57,7 @@ fun OrthodonticAuxiliariesV20Screen(lang:String,onBack:()->Unit){
         OrthoV20Tab.FRONTAL to tr(lang,"Foto frontal","Frontal photo"),
         OrthoV20Tab.POWELL to "Powell",
         OrthoV20Tab.STEINER to "Steiner",
-        OrthoV20Tab.MODELS to tr(lang,"Moyers / Tanaka","Moyers / Tanaka"),
+        OrthoV20Tab.MODELS to tr(lang,"Moyers / Tanaka / Bolton","Moyers / Tanaka / Bolton"),
         OrthoV20Tab.PANORAMIC to tr(lang,"Panorámica / Nolla","Panoramic / Nolla")
     )
     ResponsiveScreenV17(tr(lang,"Análisis ortodóncicos interactivos","Interactive orthodontic analyses"),tr(lang,"Carga una imagen cuando aplique y marca manualmente los puntos. La app calcula proporciones/ángulos a partir de tus marcas; no identifica puntos anatómicos automáticamente.","Upload an image when applicable and mark landmarks manually. The app calculates ratios/angles from your marks; it does not automatically identify anatomy."),onBack){profile->
@@ -260,9 +260,10 @@ private fun MixedDentitionV20(lang:String){
     val teeth=listOf(42,41,31,32)
     val sum=teeth.mapNotNull{incisors[it]?.toDoubleOrNull()}.takeIf{it.size==4}?.sum()
     ResponsiveSectionV17(tr(lang,"Análisis de dentición mixta","Mixed dentition analysis"),tr(lang,"Mide el ancho mesiodistal máximo de 42, 41, 31 y 32. Después registra el espacio disponible de cada segmento canino–premolar.","Measure the maximum mesiodistal width of 42, 41, 31 and 32, then enter available space for each canine–premolar segment.")){
-        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
-            FilterChip(method==0,{method=0},{Text("Moyers 75%")},Modifier.weight(1f))
-            FilterChip(method==1,{method=1},{Text("Tanaka–Johnston")},Modifier.weight(1f))
+        ChipChoices(listOf("Moyers 75%" to (method==0),"Tanaka–Johnston" to (method==1),"Bolton" to (method==2)),{method=it},columns=3)
+        if(method==2){
+            Text(tr(lang,"Bolton compara la suma de anchos mesiodistales mandibulares con los maxilares. Relación total clásica = Σ12 inferiores / Σ12 superiores ×100 (≈91.3%); relación anterior = Σ6 inferiores / Σ6 superiores ×100 (≈77.2%). Mide cada diente de primer molar a primer molar para total y canino a canino para anterior. Una desviación orienta a discrepancia de tamaño dentario; debe comprobarse con mediciones completas y contexto ortodóncico.","Bolton compares summed mandibular and maxillary mesiodistal widths. Classic overall ratio = lower 12 / upper 12 ×100 (≈91.3%); anterior ratio = lower 6 / upper 6 ×100 (≈77.2%). Measure first molar to first molar for overall and canine to canine for anterior. Deviation suggests tooth-size discrepancy and requires complete measurements and orthodontic context."),fontWeight=FontWeight.Bold)
+            NoticeCard(tr(lang,"En esta pantalla Bolton se enseña como método y fórmula. No se calcula con los cuatro incisivos inferiores usados por Moyers/Tanaka; requiere las sumas dentarias correspondientes.","This screen teaches the Bolton method and formula. It cannot be calculated from the four lower incisors used for Moyers/Tanaka; the corresponding tooth sums are required."))
         }
         AdaptiveGridV17(4,2){i->
             val tooth=teeth[i]
@@ -272,7 +273,7 @@ private fun MixedDentitionV20(lang:String){
         val quadrants=listOf("SD","SI","ID","II")
         AdaptiveGridV17(4,2){i->OutlinedTextField(available[quadrants[i]].orEmpty(),{available[quadrants[i]]=numberOnlyV20(it)},label={Text("${tr(lang,"Disponible","Available")} ${quadrants[i]} mm")},modifier=Modifier.fillMaxWidth(),singleLine=true)}
 
-        if(sum!=null){
+        if(sum!=null && method!=2){
             if(method==0){
                 val up=moyersV20(sum,true);val low=moyersV20(sum,false)
                 Text("Moyers 75% · ${tr(lang,"fila usada por suma más cercana","nearest sum row used")}: ${up.first} mm",fontWeight=FontWeight.Bold)
