@@ -129,6 +129,8 @@ fun AppRoot(
             )
             AppScreen.PROSTHETIC -> ProstheticSheetScreen(preferences.languageTag, folderBack)
             AppScreen.SURGICAL -> SurgicalSheetScreen(preferences.languageTag, folderBack)
+            AppScreen.EMERGENCY -> EmergencyDentalSheetV43(preferences.languageTag, folderBack)
+            AppScreen.CLINICAL_PHOTO -> ClinicalPhotographySheetV43(preferences.languageTag, folderBack)
             AppScreen.CONSENT -> ConsentTeachingScreen(preferences.languageTag, folderBack)
             AppScreen.REQUEST -> SimpleEducationalSheet(
                 preferences.languageTag, "Solicitud de tratamiento", "Treatment request",
