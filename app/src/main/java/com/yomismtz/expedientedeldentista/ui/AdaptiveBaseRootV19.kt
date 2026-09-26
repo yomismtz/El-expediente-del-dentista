@@ -142,7 +142,7 @@ fun AdaptiveBaseRootV19(
     ) {
     when(screen) {
         AppScreen.HOME -> CoverV19(lang){navigate(AppScreen.FOLDER)}
-        AppScreen.FOLDER -> FolderV19(lang,{ selectedGroup=it; navigate(AppScreen.SECTION) },backPrevious)
+        AppScreen.FOLDER -> FolderV19(lang,{ group -> if(group==3) navigate(AppScreen.AUXILIARIES) else { selectedGroup=group; navigate(AppScreen.SECTION) } },backPrevious)
         AppScreen.SECTION -> SectionV19(lang,selectedGroup,{navigate(it)},backPrevious)
         AppScreen.SETTINGS -> ResponsiveScreenV17(tr(lang,"Configuración","Settings"),tr(lang,"Usa el botón de Configuración de la barra superior.","Use Settings in the top bar."),backPrevious){ }
         AppScreen.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
