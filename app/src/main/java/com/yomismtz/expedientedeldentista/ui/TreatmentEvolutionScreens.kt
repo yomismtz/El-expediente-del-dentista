@@ -2,6 +2,8 @@ package com.yomismtz.expedientedeldentista.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,9 +48,27 @@ fun TreatmentScreen(lang: String, session: EducationalSession, onSessionChanged:
         item { Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
             FilterChip(!primary,{primary=false},{Text(tr(lang,"Permanentes","Permanent"))});FilterChip(primary,{primary=true},{Text(tr(lang,"Temporales","Primary"))})
         } }
-        item { SectionCard(tr(lang,"1 · Elige el diente","1 · Choose the tooth")) { DentalArchSelector(shown,selectedTooth,{selectedTooth=it}){session.teeth[it]?.diagnosisId!=null} } }
+        item { SectionCard(tr(lang,"1 · Elige el diente","1 · Choose the tooth")) {
+            val qs = if(primary) listOf(listOf(55,54,53,52,51),listOf(61,62,63,64,65),listOf(85,84,83,82,81),listOf(71,72,73,74,75))
+                     else listOf(listOf(18,17,16,15,14,13,12,11),listOf(21,22,23,24,25,26,27,28),listOf(48,47,46,45,44,43,42,41),listOf(31,32,33,34,35,36,37,38))
+            Text(if(primary) "Q5  |  Q6" else "Q1  |  Q2",fontWeight=FontWeight.Bold)
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){
+                qs[0].let{q->Column(Modifier.weight(1f)){q.chunked(4).forEach{rr->Row(Modifier.fillMaxWidth()){rr.forEach{t->FilterChip(selectedTooth==t,{selectedTooth=t},{Text(t.toString())},modifier=Modifier.weight(1f))};repeat(4-rr.size){Spacer(Modifier.weight(1f))}}}}}
+                qs[1].let{q->Column(Modifier.weight(1f)){q.chunked(4).forEach{rr->Row(Modifier.fillMaxWidth()){rr.forEach{t->FilterChip(selectedTooth==t,{selectedTooth=t},{Text(t.toString())},modifier=Modifier.weight(1f))};repeat(4-rr.size){Spacer(Modifier.weight(1f))}}}}}
+            }
+            Text(if(primary) "Q8  |  Q7" else "Q4  |  Q3",fontWeight=FontWeight.Bold)
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){
+                qs[2].let{q->Column(Modifier.weight(1f)){q.chunked(4).forEach{rr->Row(Modifier.fillMaxWidth()){rr.forEach{t->FilterChip(selectedTooth==t,{selectedTooth=t},{Text(t.toString())},modifier=Modifier.weight(1f))};repeat(4-rr.size){Spacer(Modifier.weight(1f))}}}}}
+                qs[3].let{q->Column(Modifier.weight(1f)){q.chunked(4).forEach{rr->Row(Modifier.fillMaxWidth()){rr.forEach{t->FilterChip(selectedTooth==t,{selectedTooth=t},{Text(t.toString())},modifier=Modifier.weight(1f))};repeat(4-rr.size){Spacer(Modifier.weight(1f))}}}}}
+            }
+        } }
         item { SectionCard(tr(lang,"2 · Diagnóstico","2 · Diagnosis")) {
-            ClinicalContent.treatmentPlans.forEach { plan -> FilterChip(record.diagnosisId==plan.id,{updateRecord(record.copy(diagnosisId=plan.id,treatmentId=null))},{Text(if(lang=="en")plan.diagnosisEn else plan.diagnosisEs)},modifier=Modifier.fillMaxWidth()) }
+            val plans=ClinicalContent.treatmentPlans
+            val left=plans.filterIndexed{i,_->i%2==0}; val right=plans.filterIndexed{i,_->i%2==1}
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(8.dp)){left.forEach{plan->FilterChip(record.diagnosisId==plan.id,{updateRecord(record.copy(diagnosisId=plan.id,treatmentId=null))},{Text(if(lang=="en")plan.diagnosisEn else plan.diagnosisEs,softWrap=true)},modifier=Modifier.fillMaxWidth())}}
+                Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(8.dp)){right.forEach{plan->FilterChip(record.diagnosisId==plan.id,{updateRecord(record.copy(diagnosisId=plan.id,treatmentId=null))},{Text(if(lang=="en")plan.diagnosisEn else plan.diagnosisEs,softWrap=true)},modifier=Modifier.fillMaxWidth())}}
+            }
         } }
         if(selectedPlan!=null) item { SectionCard(tr(lang,"3 · Compara tres alternativas","3 · Compare three alternatives")) {
             selectedPlan.options.forEachIndexed { i,option ->
