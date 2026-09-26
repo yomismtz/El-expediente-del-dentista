@@ -82,7 +82,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
     var lesionHelp by remember{mutableStateOf(false)}
     var zoomHelpImage by remember{mutableStateOf(false)}
     var count by remember{mutableStateOf("Única")}
-    val selected=zones19.first{it.id==selectedId}
+    val selected=zones19.firstOrNull{it.id==selectedId} ?: zones19.first()
     val name=if(lang=="en")selected.en else selected.es
     val example=if(finding=="Normal") "$name: ${if(lang=="en")selected.normalEn else selected.normalEs}"
     else tr(lang,"$name: $finding; ${if(count=="Única")"lesión única" else "lesiones múltiples"}; tamaño ${sizeMm}; color $color; forma $shape; superficie $surface; borde $border; base $base; consistencia $consistency; movilidad $mobility; $symptoms; duración $duration; evolución $evolution${if(notes.isBlank())"" else "; $notes"}. Descripción clínica; correlacionar antes de diagnosticar.","$name: $finding; size ${if(sizeMm.isBlank())"not entered" else "$sizeMm mm"}; color $color; shape $shape; surface $surface; border $border; base $base; consistency $consistency; mobility $mobility; symptoms $symptoms; duration $duration; evolution $evolution. Clinical description; correlate before diagnosis.")
@@ -107,15 +107,11 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
             val detail=when(tab){1->if(lang=="en")selected.changesEn else selected.changesEs;2->if(lang=="en")selected.exploreEn else selected.exploreEs;else->if(lang=="en")selected.normalEn else selected.normalEs}
             Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) { Text(detail,Modifier.padding(12.dp)) }
         }
+        // Atlas visual se abre bajo demanda desde Ayuda para evitar cargar la lámina grande al entrar.
         ResponsiveSectionV17(tr(lang,"Atlas visual · lesiones elementales","Visual atlas · elementary lesions")) {
             Card(onClick={zoomHelpImage=true},modifier=Modifier.fillMaxWidth()){
                 Column(Modifier.padding(8.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
-                    Image(
-                        painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),
-                        contentDescription="Atlas visual de lesiones elementales de mucosa oral",
-                        modifier=Modifier.fillMaxWidth().height(360.dp),
-                        contentScale=ContentScale.Fit
-                    )
+                    Text("🖼️ "+tr(lang,"Lámina de lesiones elementales disponible","Elementary lesions chart available"),fontWeight=FontWeight.Bold)
                     Text("🔍 Toca la lámina para abrirla y ampliar con dos dedos.",fontWeight=FontWeight.Bold)
                     Text("Recurso interno de la app: funciona sin conexión.",style=MaterialTheme.typography.bodySmall)
                 }
