@@ -75,7 +75,7 @@ fun AppRootV7(
     Column(Modifier.fillMaxSize().navigationBarsPadding()) {
         GlobalBar19(lang,goToIntake,onOpenSettings)
         Box(Modifier.weight(1f).fillMaxWidth()) {
-            AdaptiveBaseRootV17(preferences,onPreferencesChanged,onLanguageChanged,session,onSessionChanged)
+            AdaptiveBaseRootV19(preferences,onPreferencesChanged,onLanguageChanged,session,onSessionChanged)
 
             if(overlay!=V7Overlay.NONE) {
                 Surface(Modifier.fillMaxSize().navigationBarsPadding(),tonalElevation=8.dp) {
