@@ -32,8 +32,8 @@ private val findingGroups15=listOf(
 "Maxilares" to listOf("Sin hallazgo aparente","Radiolucidez","Radiopacidad","Lesión mixta","Expansión/asimetría aparente","Alteración cortical aparente"),
 "Estructuras anatómicas" to listOf("Sin hallazgo aparente","Seno maxilar: cambio aparente","Canal mandibular: relación relevante","Foramen mentoniano identificado","ATM/cóndilo: asimetría aparente","Cavidad nasal: cambio aparente"))
 @Composable fun ImagingAuxiliariesV20Screen(lang:String,onBack:()->Unit){
- var study by remember{mutableStateOf(imagingTypes15.first().name)};var group by remember{mutableStateOf(findingGroups15.first().first)}
- val selected=remember{mutableStateMapOf<String,String>()}
+ var study by rememberRecordState("imaging.study",imagingTypes15.first().name);var group by rememberRecordState("imaging.group",findingGroups15.first().first)
+ val selected=rememberRecordStateMap<String,String>("imaging.selected")
  ResponsiveScreenV17("Imagenología dental · registro educativo","Selecciona el estudio y registra hallazgos mediante opciones. No se genera un diagnóstico automático.",onBack){profile->
   ResponsiveSectionV17("Tipo de estudio","Elige la modalidad que corresponde al estudio disponible."){
    AdaptiveGridV17(imagingTypes15.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 3){i->val x=imagingTypes15[i];FilterChip(study==x.name,{study=x.name},{Text(x.name)},Modifier.fillMaxWidth())}
