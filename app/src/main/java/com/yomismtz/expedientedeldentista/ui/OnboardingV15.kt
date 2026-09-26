@@ -330,6 +330,8 @@ private fun BirdPaletteCard(
 }
 
 private fun mascotEmoji(style: BirdPaletteStyle): String = when(style) {
+    BirdPaletteStyle.AZUL_TURQUESA -> "🩵"
+    BirdPaletteStyle.AZUL_MARINO -> "💙"
     BirdPaletteStyle.AGAPORNI -> "🐦"
     BirdPaletteStyle.TUCAN, BirdPaletteStyle.GUACAMAYA -> "🦜"
     BirdPaletteStyle.NINFA, BirdPaletteStyle.COLIBRI, BirdPaletteStyle.MARTIN_PESCADOR, BirdPaletteStyle.QUETZAL -> "🐦"
