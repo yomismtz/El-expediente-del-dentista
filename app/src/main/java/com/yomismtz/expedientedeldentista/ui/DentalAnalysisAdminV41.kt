@@ -21,6 +21,9 @@ import com.yomismtz.expedientedeldentista.clinical.EducationalSession
    "ihos"->IhosResponsiveV17Screen(lang,session,onSessionChanged,back)
    "oleary"->OlearyScreen(lang,session,onSessionChanged,back)
    "icdas"->IcdasScreen(lang,session,onSessionChanged,back)
+   "periodontogram"->PeriodontogramScreen(lang,session,onSessionChanged,back)
+   "pulpal"->PulpalPeriapicalInteractiveV2Screen(lang,session,onSessionChanged,{page="endo"},{page="endo"},back)
+   "endo"->EndodonticInteractiveV2Screen(lang,session,{page="pulpal"},{page="pulpal"},back)
   }
   return
  }
@@ -30,7 +33,9 @@ import com.yomismtz.expedientedeldentista.clinical.EducationalSession
   Triple("ipc","IPC","Índice periodontal comunitario."),
   Triple("ihos","IHOS","Índice de higiene oral simplificado."),
   Triple("oleary","O’Leary","Control de placa por superficies dentales."),
-  Triple("icdas","ICDAS","Registro visual estandarizado de lesiones de caries.")
+  Triple("icdas","ICDAS","Registro visual estandarizado de lesiones de caries."),
+  Triple("periodontogram","Periodontograma","Registro periodontal clínico por órgano dentario y sitios de sondaje."),
+  Triple("pulpal","Análisis pulpar y periapical","Pruebas y hallazgos para integrar el diagnóstico pulpar y periapical.")
  )
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
   item{ScreenHeader("Análisis dentales",onBack,"Selecciona el análisis que deseas realizar. Todos quedan concentrados dentro de este módulo.")}
