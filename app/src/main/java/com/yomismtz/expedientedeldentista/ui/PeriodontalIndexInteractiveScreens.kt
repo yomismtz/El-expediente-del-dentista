@@ -74,7 +74,7 @@ fun IpcInteractiveV2Screen(
     var selectedSextant by remember { mutableStateOf(0) }
     var selectedTooth by remember { mutableStateOf(ipcSextants.first().teeth.first()) }
     var selectedSite by remember { mutableStateOf(0) }
-    var siteCodes by remember { mutableStateOf<Map<Int, List<String>>>(emptyMap()) }
+    var siteCodes by rememberRecordState("ipc.siteCodes", emptyMap<Int, List<String>>())
 
     fun toothCodes(tooth: Int): List<String> = siteCodes[tooth] ?: List(6) { "0" }
     fun toothResult(tooth: Int): String = highestIpc(toothCodes(tooth))
@@ -259,10 +259,8 @@ fun IhosInteractiveV2Screen(
     onBack: () -> Unit
 ) {
     var selectedSlot by remember { mutableStateOf(0) }
-    var selections by remember {
-        mutableStateOf(ihosSlots.associate { it.indexTooth to it.indexTooth })
-    }
-    var excludedSlots by remember { mutableStateOf<Set<Int>>(emptySet()) }
+    var selections by rememberRecordState("ihos.selections", ihosSlots.associate { it.indexTooth to it.indexTooth })
+    var excludedSlots by rememberRecordState("ihos.excludedSlots", emptySet<Int>())
 
     val slot = ihosSlots[selectedSlot]
     val selectedTooth = selections[slot.indexTooth] ?: slot.indexTooth
