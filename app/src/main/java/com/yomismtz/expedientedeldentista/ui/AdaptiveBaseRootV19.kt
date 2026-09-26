@@ -50,26 +50,43 @@ import com.yomismtz.expedientedeldentista.settings.AppPreferences
 private data class TabV19(val screen:AppScreen,val icon:String,val es:String,val en:String,val group:Int)
 
 private val tabsV19=listOf(
-    TabV19(AppScreen.ACTIVITIES,"✍","Autorización de actividades","Activity authorization",0),
-    TabV19(AppScreen.TREATMENT,"📝","Diagnóstico y tratamiento","Diagnosis and treatment",0),
-    TabV19(AppScreen.SESSIONS,"🗓","Tratamiento por sesiones","Treatment by sessions",0),
-    TabV19(AppScreen.OLEARY,"🔴","O’Leary","O’Leary",0),
-    TabV19(AppScreen.CALCULATORS,"🧮","Calculadoras · anestésico y medicamentos pediátricos","Calculators · anesthetic and pediatric medication",0),
-    TabV19(AppScreen.SYSTEMIC_PROTOCOLS,"📚","Protocolos para enfermedades sistémicas","Systemic disease protocols",0),
+    // 1 · Expediente clínico
+    TabV19(AppScreen.HISTORY,"🩺","Historia clínica","Clinical history",0),
 
-    TabV19(AppScreen.HISTORY,"🩺","Historia clínica","Clinical history",1),
-    TabV19(AppScreen.AUXILIARIES,"🧪","Auxiliares de diagnóstico","Diagnostic aids",1),
-    TabV19(AppScreen.ODONTOGRAM,"🦷","Análisis dentales","Dental analyses",1),
-    TabV19(AppScreen.CONSENT,"✍","Consentimiento informado","Informed consent",1),
-    TabV19(AppScreen.REQUEST,"📨","Solicitud de tratamiento","Treatment request",1),
-    TabV19(AppScreen.BUDGET,"💰","Presupuesto","Budget",1),
-    TabV19(AppScreen.EVOLUTION,"📄","Notas de evolución","Progress notes",1),
+    // 2 · Exploración clínica
+    TabV19(AppScreen.VITALS,"❤️","Signos vitales","Vital signs",1),
+    TabV19(AppScreen.MUCOSA,"👄","Mucosa oral","Oral mucosa",1),
+    TabV19(AppScreen.OCCLUSION,"↔","Oclusión","Occlusion",1),
+    TabV19(AppScreen.POSTURE,"🧍","Postura","Posture",1),
 
-    TabV19(AppScreen.ENDO,"⚡","Ficha endodóntica","Endodontic sheet",2),
-    TabV19(AppScreen.PROSTHETIC,"👑","Ficha protésica","Prosthetic sheet",2),
-    TabV19(AppScreen.PERIODONTOGRAM,"📈","Ficha periodontal","Periodontal sheet",2),
-    TabV19(AppScreen.SURGICAL,"✚","Ficha quirúrgica","Surgical sheet",2),
-    TabV19(AppScreen.ATM,"◉","Ficha de diagnóstico de trastornos temporomandibulares","Temporomandibular disorder diagnostic sheet",2)
+    // 3 · Análisis dentales. El acceso abre el concentrador que conserva
+    // Odontograma, CPOD/ceod, IPC, IHOS, O’Leary e ICDAS.
+    TabV19(AppScreen.ODONTOGRAM,"🦷","Análisis dentales","Dental analyses",2),
+
+    // 4 · Auxiliares de diagnóstico
+    TabV19(AppScreen.AUXILIARIES,"🧪","Auxiliares de diagnóstico","Diagnostic aids",3),
+
+    // 5 · Diagnóstico y plan de tratamiento
+    TabV19(AppScreen.TREATMENT,"📝","Diagnóstico y tratamiento","Diagnosis and treatment",4),
+    TabV19(AppScreen.SESSIONS,"🗓","Tratamiento por sesiones","Treatment by sessions",4),
+
+    // 6 · Tratamiento y fichas clínicas
+    TabV19(AppScreen.ENDO,"⚡","Ficha endodóntica","Endodontic sheet",5),
+    TabV19(AppScreen.PROSTHETIC,"👑","Ficha protésica","Prosthetic sheet",5),
+    TabV19(AppScreen.PERIODONTOGRAM,"📈","Ficha periodontal","Periodontal sheet",5),
+    TabV19(AppScreen.SURGICAL,"✚","Ficha quirúrgica","Surgical sheet",5),
+    TabV19(AppScreen.ATM,"◉","Ficha de diagnóstico de trastornos temporomandibulares","Temporomandibular disorder diagnostic sheet",5),
+
+    // 7 · Herramientas administrativas
+    TabV19(AppScreen.ACTIVITIES,"✍","Autorización de actividades","Activity authorization",6),
+    TabV19(AppScreen.REQUEST,"📨","Solicitud de tratamiento","Treatment request",6),
+    TabV19(AppScreen.CONSENT,"✍","Consentimiento informado","Informed consent",6),
+    TabV19(AppScreen.BUDGET,"💰","Presupuesto","Budget",6),
+    TabV19(AppScreen.EVOLUTION,"📄","Notas de evolución","Progress notes",6),
+
+    // 8 · Herramientas clínicas
+    TabV19(AppScreen.CALCULATORS,"🧮","Calculadoras · anestésico y medicamentos pediátricos","Calculators · anesthetic and pediatric medication",7),
+    TabV19(AppScreen.SYSTEMIC_PROTOCOLS,"📚","Protocolos para enfermedades sistémicas","Systemic disease protocols",7)
 )
 
 @Composable
@@ -188,7 +205,16 @@ private fun FolderV19(lang:String,onNavigate:(AppScreen)->Unit,onClose:()->Unit)
     var groupReturn by remember { mutableStateOf<Int?>(null) }
     groupReturn?.let { group = it; groupReturn = null }
     ResponsiveScreenV17("YSM Expediente",tr(lang,"Elige una sección. La barra superior queda reservada y nunca tapa el contenido.","Choose a section. The top bar has reserved space and never covers content."),onClose) { profile ->
-        val names=listOf(tr(lang,"Acciones y herramientas","Actions and tools"),tr(lang,"Expediente clínico","Clinical record"),tr(lang,"Fichas","Sheets"))
+        val names=listOf(
+            tr(lang,"Expediente clínico","Clinical record"),
+            tr(lang,"Exploración clínica","Clinical examination"),
+            tr(lang,"Análisis dentales","Dental analyses"),
+            tr(lang,"Auxiliares de diagnóstico","Diagnostic aids"),
+            tr(lang,"Diagnóstico y plan de tratamiento","Diagnosis and treatment plan"),
+            tr(lang,"Tratamiento y fichas clínicas","Treatment and clinical sheets"),
+            tr(lang,"Herramientas administrativas","Administrative tools"),
+            tr(lang,"Herramientas clínicas","Clinical tools")
+        )
         OutlinedTextField(value=query,onValueChange={query=it},modifier=Modifier.fillMaxWidth(),singleLine=true,label={Text("🔎 "+tr(lang,"Buscar en el expediente","Search record"))},placeholder={Text(tr(lang,"Ej. bruxismo, CPOD, mucosa, presión arterial","e.g. bruxism, DMFT, mucosa, blood pressure"))})
         if(query.isNotBlank()) {
             val q=query.trim().lowercase()
@@ -201,7 +227,7 @@ private fun FolderV19(lang:String,onNavigate:(AppScreen)->Unit,onClose:()->Unit)
             ResponsiveSectionV17(tr(lang,"Resultados","Results")) { AdaptiveGridV17(results.size.coerceAtLeast(1),if(profile.width==ScreenWidthV17.EXPANDED)3 else 2){i-> if(results.isEmpty()) Text(tr(lang,"Sin coincidencias","No matches")) else { val r=results[i]; Card(onClick={onNavigate(r.first)},modifier=Modifier.fillMaxWidth(),shape=MaterialTheme.shapes.medium){Text("${r.second} ${r.third}",Modifier.padding(12.dp),fontWeight=FontWeight.Bold)} } } }
         }
         ResponsiveSectionV17(tr(lang,"Secciones del expediente","Record sections")) {
-            AdaptiveGridV17(3,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 3) { i ->
+            AdaptiveGridV17(names.size,when { profile.largeSystemText -> 1; profile.width==ScreenWidthV17.COMPACT -> 2; profile.width==ScreenWidthV17.MEDIUM -> 2; else -> 4 }) { i ->
                 FilterChip(group==i,{group=i},{Text(names[i])},modifier=Modifier.fillMaxWidth())
             }
         }
