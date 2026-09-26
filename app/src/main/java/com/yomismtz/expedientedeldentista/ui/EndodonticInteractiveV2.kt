@@ -407,8 +407,26 @@ fun EndodonticInteractiveV2Screen(
                 }
                 item {
                     SectionCard(tr(lang, "Restauración y control", "Restoration and follow-up")) {
-                        OutlinedTextField(value = restoration, onValueChange = { restoration = it }, label = { Text(tr(lang, "Restauración provisional/definitiva prevista", "Planned provisional/definitive restoration")) }, modifier = Modifier.fillMaxWidth())
-                        OutlinedTextField(value = notes, onValueChange = { notes = it }, label = { Text(tr(lang, "Indicaciones, control radiográfico o seguimiento", "Instructions, radiographic control or follow-up")) }, modifier = Modifier.fillMaxWidth(), minLines = 3)
+                        Text(tr(lang, "Restauración provisional/definitiva prevista", "Planned provisional/definitive restoration"), fontWeight = FontWeight.Bold)
+                        val restorationOptions = listOf(
+                            tr(lang, "Sellado provisional", "Provisional seal"),
+                            tr(lang, "Resina", "Composite resin"),
+                            tr(lang, "Ionómero de vidrio", "Glass ionomer"),
+                            tr(lang, "Incrustación", "Indirect restoration"),
+                            tr(lang, "Corona", "Crown"),
+                            tr(lang, "Pendiente de plan restaurador", "Restorative plan pending")
+                        )
+                        ChipChoices(restorationOptions.map { it to (restoration == it) }, { restoration = restorationOptions[it] }, columns = 2)
+                        Text(tr(lang, "Control y seguimiento", "Follow-up"), fontWeight = FontWeight.Bold)
+                        val followUpOptions = listOf(
+                            tr(lang, "Control clínico", "Clinical follow-up"),
+                            tr(lang, "Control clínico y radiográfico", "Clinical and radiographic follow-up"),
+                            tr(lang, "Revalorar síntomas", "Reassess symptoms"),
+                            tr(lang, "Continuar fase restauradora", "Continue restorative phase"),
+                            tr(lang, "Interconsulta o referencia", "Consultation or referral"),
+                            tr(lang, "Seguimiento según protocolo institucional", "Follow institutional follow-up protocol")
+                        )
+                        ChipChoices(followUpOptions.map { it to (notes == it) }, { notes = followUpOptions[it] }, columns = 2)
                     }
                 }
                 item {
