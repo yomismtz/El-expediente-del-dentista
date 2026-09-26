@@ -45,7 +45,9 @@ class MainActivity : AppCompatActivity() {
         setContent {
             var preferences by remember { mutableStateOf(store.load()) }
             var savedRecords by remember { mutableStateOf(recordStore.loadAll()) }
-            // Deliberately start with no active record after a process restart.\n            // Records are durable; the user explicitly chooses which one to load.\n            var activeRecordId by remember { mutableStateOf<String?>(null) }
+            // Deliberately start with no active record after a process restart.
+            // Records are durable; the user explicitly chooses which one to load.
+            var activeRecordId by remember { mutableStateOf<String?>(null) }
             var activeRecord by remember(activeRecordId) {
                 mutableStateOf(activeRecordId?.let { id -> recordStore.loadAll().firstOrNull { it.id == id } })
             }
