@@ -3,11 +3,20 @@ package com.yomismtz.expedientedeldentista.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.Image
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.content.Intent
+import android.graphics.BitmapFactory
+import android.net.Uri
 import androidx.annotation.DrawableRes
 import com.yomismtz.expedientedeldentista.R
 import com.yomismtz.expedientedeldentista.clinical.AppScreen
@@ -583,11 +592,10 @@ private data class E(val n:String,val d:String)
   "Resultado referido" to listOf("Estable","Recidiva leve","Recidiva moderada","Recidiva importante","Insatisfecho","No sabe/no recuerda")
  )
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Antecedentes ortodónticos y ortopédicos",onBack,"Registro guiado del tratamiento previo, aparatología, duración, retención y resultado referido.")}
-  item{Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(prior==false,{prior=false},{Text("No recibió")});FilterChip(prior==true,{prior=true},{Text("Sí recibió")})}}
+  item{ScreenHeader("Antecedentes ortodónticos y ortopédicos",onBack,"Registro guiado del tratamiento previo, aparatología, duración, retención y resultado referido. Las opciones se reorganizan de 2 a 4 celdas según el ancho disponible.")}
+  item{SectionCard("¿Recibió tratamiento previo?"){ChipChoices(listOf("No recibió" to (prior==false),"Sí recibió" to (prior==true)),{prior=it==1},columns=2)}}
   if(prior==true) sections.forEach{(name,opts)->
-   item{Text(name,fontWeight=FontWeight.Black)}
-   items(opts.size){i->val o=opts[i];FilterChip(selected[name]==o,{selected[name]=o},{Text(o)},modifier=Modifier.fillMaxWidth())}
+   item{SectionCard(name){ChipChoices(opts.map{o->o to (selected[name]==o)},{i->selected[name]=opts[i]},columns=4)}}
   }
   if(prior==true)item{ClinicalPhotoV38("Aparatología ortodóntica fija · referencia clínica real",R.drawable.clinical_braces,"Fotografía clínica real · Wikimedia Commons · referencia visual de aparatología fija; consultar autor/licencia del archivo.")}
   item{NoticeCard("El antecedente ortodóntico se registra según lo referido y lo observable. No asumir diagnóstico previo, indicación original ni estabilidad futura sin expediente, exploración y estudios.")}
@@ -595,7 +603,7 @@ private data class E(val n:String,val d:String)
 }
 
 @Composable fun HistoryDentalAlterationsV38(lang:String,onBack:()->Unit){
- var section by remember{mutableStateOf(0)}
+ var section by rememberRecordState("history.dentalAlterations.section",0)
  val selected=rememberRecordStateMap<String,String>("history.dentalAlterations.selected")
  val sections=listOf(
   "Número · disminución" to listOf("Sin alteración","Hipodoncia/agenesia","Oligodoncia","Anodoncia"),
@@ -608,30 +616,100 @@ private data class E(val n:String,val d:String)
   "Posición" to listOf("Sin alteración","Rotación","Versión/inclinación","Transposición","Desplazamiento vestibular","Desplazamiento lingual/palatino","Infraoclusión","Supraoclusión")
  )
  val photos=listOf(
-  R.drawable.clinical_hypodontia,
-  R.drawable.clinical_mesiodens,
-  R.drawable.clinical_microdontia,
-  R.drawable.clinical_gemination,
-  R.drawable.clinical_amelogenesis,
-  R.drawable.clinical_fluorosis,
-  R.drawable.clinical_impacted,
-  R.drawable.clinical_transposition
+  R.drawable.clinical_hypodontia,R.drawable.clinical_mesiodens,R.drawable.clinical_microdontia,R.drawable.clinical_gemination,
+  R.drawable.clinical_amelogenesis,R.drawable.clinical_fluorosis,R.drawable.clinical_impacted,R.drawable.clinical_transposition
  )
+ val safeSection=section.coerceIn(0,sections.lastIndex)
+ val current=sections[safeSection]
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Alteraciones y anomalías dentales",onBack,"Selecciona el grupo, revisa una referencia visual y registra el hallazgo. Describe primero; confirma con radiografía/estudios cuando corresponda.")}
-  item{LazyRow(horizontalArrangement=Arrangement.spacedBy(6.dp)){items(sections.size){i->FilterChip(section==i,{section=i},{Text(sections[i].first)})}}}
-  item{ClinicalPhotoV38(sections[section].first+" · referencia visual",photos[section],"Imagen clínica/radiográfica real de referencia · Wikimedia Commons. Verificar autor y licencia del archivo; no usar una imagen aislada para establecer diagnóstico.")}
-  item{Text("Hallazgo",fontWeight=FontWeight.Black)}
-  items(sections[section].second.size){i->val o=sections[section].second[i];FilterChip(selected[sections[section].first]==o,{selected[sections[section].first]=o},{Text(o)},modifier=Modifier.fillMaxWidth())}
-  item{Text("Extensión",fontWeight=FontWeight.Black)}
-  items(listOf("Un diente","Varios dientes","Localizado por cuadrante","Generalizado","No valorable").size){i->val o=listOf("Un diente","Varios dientes","Localizado por cuadrante","Generalizado","No valorable")[i];FilterChip(selected["Extensión"]==o,{selected["Extensión"]=o},{Text(o)},modifier=Modifier.fillMaxWidth())}
-  item{Text("Confirmación disponible",fontWeight=FontWeight.Black)}
-  items(listOf("Sólo clínica","Clínica + radiografía","Antecedente documentado","Requiere estudio complementario","No aplica").size){i->val o=listOf("Sólo clínica","Clínica + radiografía","Antecedente documentado","Requiere estudio complementario","No aplica")[i];FilterChip(selected["Confirmación"]==o,{selected["Confirmación"]=o},{Text(o)},modifier=Modifier.fillMaxWidth())}
+  item{ScreenHeader("Alteraciones y anomalías dentales",onBack,"Primero selecciona el grupo; debajo aparecen la referencia visual y los hallazgos. La rejilla usa 2–3 celdas en pantallas pequeñas y hasta 4 cuando hay espacio.")}
+  item{SectionCard("1 · Tipo de alteración"){ChipChoices(sections.mapIndexed{i,x->x.first to (safeSection==i)},{i->section=i},columns=4)}}
+  item{ClinicalPhotoV38(current.first+" · referencia visual",photos[safeSection],"Imagen clínica/radiográfica real de referencia · Wikimedia Commons. Verificar autor y licencia del archivo; no usar una imagen aislada para establecer diagnóstico.")}
+  item{SectionCard("2 · Hallazgo"){
+   ChipChoices(current.second.map{o->o to (selected[current.first]==o)},{i->selected[current.first]=current.second[i]},columns=4)
+  }}
+  val extension=listOf("Un diente","Varios dientes","Localizado por cuadrante","Generalizado","No valorable")
+  item{SectionCard("3 · Extensión"){ChipChoices(extension.map{o->o to (selected["Extensión"]==o)},{i->selected["Extensión"]=extension[i]},columns=4)}}
+  val confirmation=listOf("Sólo clínica","Clínica + radiografía","Antecedente documentado","Requiere estudio complementario","No aplica")
+  item{SectionCard("4 · Confirmación disponible"){ChipChoices(confirmation.map{o->o to (selected["Confirmación"]==o)},{i->selected["Confirmación"]=confirmation[i]},columns=4)}}
   item{NoticeCard("Registrar el órgano dentario específico se completa en el odontograma/análisis dental. Retención, inclusión e impactación pueden solaparse según la fuente; correlacionar clínica y radiografía antes de etiquetar.")}
  }
 }
 
-@Composable fun HistoryHabitsV38(lang:String,onBack:()->Unit)=explain("Hábitos y parafunciones",listOf(E("Succión digital","Pregunta dedo, frecuencia, duración e intensidad. Extraoral: postura labial/facial. Intraoral: incisivos, overjet, mordida abierta, arco y paladar."),E("Chupón o mamila prolongados","Registra edad y patrón. Extraoral: postura labial. Intraoral: mordida, arco y erupción."),E("Respiración oral","Pregunta respiración y sueño. Extraoral: labios entreabiertos/postura. Intraoral: sequedad, gingivitis y patrón oclusal; la causa respiratoria debe investigarse."),E("Interposición lingual / deglución atípica","Observa deglución, lengua y competencia labial; intraoralmente puede acompañarse de mordida abierta o espacios."),E("Onicofagia / mordisqueo","Extraoral: uñas/labios. Intraoral: desgaste, fracturas pequeñas, trauma mucoso o recesión localizada."),E("Bruxismo y apretamiento","Pregunta sueño/vigilia, fatiga y dolor. Extraoral: músculos. Intraoral: facetas, fracturas, restauraciones dañadas y línea alba; ningún signo aislado confirma el diagnóstico.")),onBack)
+@Composable fun HistoryHabitsV38(lang:String,onBack:()->Unit){
+ data class Habit38(val id:String,val name:String,val description:String,val observe:String)
+ val habits=listOf(
+  Habit38("suction","Succión digital","Introducción repetida de uno o más dedos en la boca. Registra dedo, edad de inicio, frecuencia, duración e intensidad.","Observa postura labial/facial, incisivos, overjet, mordida abierta, forma de arco y paladar."),
+  Habit38("pacifier","Chupón o mamila prolongados","Uso persistente de chupón o mamila más allá del periodo esperado para alimentación/consolación. Importan edad, duración diaria y si continúa durante el sueño.","Observa postura labial, relación incisiva, mordida abierta, forma de arco y patrón eruptivo."),
+  Habit38("mouthbreathing","Respiración oral","Patrón referido de respiración predominante por la boca. La app registra el hallazgo; la causa nasal, faríngea o funcional requiere valoración específica.","Observa labios entreabiertos, sequedad, gingivitis, postura y patrón oclusal."),
+  Habit38("tongue","Interposición lingual / deglución atípica","Posición o movimiento lingual que se interpone entre arcadas durante reposo o deglución. Debe valorarse funcionalmente, no sólo por apariencia.","Observa deglución, postura lingual, competencia labial, mordida abierta y espacios."),
+  Habit38("nail","Onicofagia / mordisqueo","Morder uñas, labios, carrillos u objetos de manera repetitiva. Registra frecuencia, momento del día y estructuras involucradas.","Observa uñas/labios, desgaste, microfracturas, trauma mucoso o recesión localizada."),
+  Habit38("bruxism","Bruxismo y apretamiento","Actividad masticatoria repetitiva referida durante sueño o vigilia, con rechinamiento, apretamiento o empuje mandibular. Ningún signo aislado confirma el diagnóstico.","Pregunta sueño/vigilia, fatiga y dolor; observa músculos, facetas, fracturas, restauraciones y línea alba.")
+ )
+ val present=rememberRecordStateMap<String,Boolean>("history.habits.present")
+ val frequency=rememberRecordStateMap<String,String>("history.habits.frequency")
+ val duration=rememberRecordStateMap<String,String>("history.habits.duration")
+ var openId by rememberRecordState("history.habits.open","")
+ val freqOpts=listOf("Ocasional","1–2 días/semana","3–4 días/semana","5–6 días/semana","Diario","Varias veces al día","No sabe")
+ val durationOpts=listOf("<1 mes","1–6 meses","7–12 meses","1–2 años","3–5 años",">5 años","Desde infancia","No sabe")
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
+  item{ScreenHeader("Hábitos y parafunciones",onBack,"Selecciona los hábitos presentes. Las opciones se organizan en 2–3 celdas y cada una incluye explicación, qué observar y una fotografía local opcional asociada al expediente.")}
+  item{SectionCard("Hábitos referidos"){
+   ChipChoices(habits.map{h->h.name to (present[h.id]==true)},{i->
+    val h=habits[i]
+    val newValue=!(present[h.id]?:false)
+    present[h.id]=newValue
+    openId=if(newValue)h.id else if(openId==h.id)"" else openId
+   },columns=3)
+  }}
+  habits.forEach{h->
+   if(present[h.id]==true){
+    item{Card(Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
+     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){
+      Text(h.name,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))
+      TextButton(onClick={openId=if(openId==h.id)"" else h.id}){Text(if(openId==h.id)"Ocultar" else "Ver detalles")}
+     }
+     if(openId==h.id){
+      Text("¿Qué es?",fontWeight=FontWeight.SemiBold);Text(h.description)
+      Text("¿Qué observar?",fontWeight=FontWeight.SemiBold);Text(h.observe)
+      Text("Frecuencia",fontWeight=FontWeight.SemiBold)
+      ChipChoices(freqOpts.map{x->x to (frequency[h.id]==x)},{i->frequency[h.id]=freqOpts[i]},columns=3)
+      Text("Tiempo de evolución / duración",fontWeight=FontWeight.SemiBold)
+      ChipChoices(durationOpts.map{x->x to (duration[h.id]==x)},{i->duration[h.id]=durationOpts[i]},columns=3)
+      HabitPhotoPickerV38(h.id,h.name)
+     }
+    }}}
+   }
+  }
+  item{NoticeCard("Las fotografías seleccionadas son archivos locales elegidos por el usuario y se asocian al expediente mediante su URI persistente. La fotografía documenta el aspecto observado; no sustituye exploración ni establece por sí sola un diagnóstico.")}
+ }
+}
+
+@Composable private fun HabitPhotoPickerV38(id:String,title:String){
+ val context=LocalContext.current
+ var uriString by rememberRecordState("history.habits.photo.$id","")
+ val launcher=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()){uri->
+  if(uri!=null){
+   runCatching{context.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)}
+   uriString=uri.toString()
+  }
+ }
+ val bitmap=remember(uriString){
+  if(uriString.isBlank()) null else runCatching{
+   context.contentResolver.openInputStream(Uri.parse(uriString)).use{input->BitmapFactory.decodeStream(input)?.asImageBitmap()}
+  }.getOrNull()
+ }
+ SectionCard("Fotografía local · $title"){
+  Text("Puedes vincular una fotografía clínica tomada/guardada en el dispositivo para documentar cómo se observa este hábito.",style=MaterialTheme.typography.bodySmall)
+  Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
+   Button(onClick={launcher.launch(arrayOf("image/*"))}){Text(if(uriString.isBlank())"Seleccionar foto" else "Cambiar foto")}
+   if(uriString.isNotBlank())OutlinedButton(onClick={uriString=""}){Text("Quitar")}
+  }
+  bitmap?.let{Image(it,"Fotografía local de $title",Modifier.fillMaxWidth().heightIn(min=160.dp,max=320.dp),contentScale=ContentScale.Fit)}
+  if(uriString.isNotBlank() && bitmap==null)Text("La imagen vinculada no está disponible actualmente en el dispositivo.",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.error)
+ }
+}
+
 @Composable fun HistoryOralExamV38(lang:String,onBack:()->Unit){
  val sites=listOf(
   E("Piel peribucal","Normal: piel íntegra, sin lesiones evidentes y simetría conservada. Selección de hallazgos: eritema/cambio de color, descamación, costra, fisura, úlcera, vesícula/ampolla, pápula/nódulo, aumento de volumen, cicatriz, pigmentación o asimetría. Describir antes de diagnosticar."),
