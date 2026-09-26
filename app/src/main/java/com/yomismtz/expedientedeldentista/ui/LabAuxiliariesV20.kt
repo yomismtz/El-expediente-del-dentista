@@ -131,18 +131,24 @@ private fun labStatusV20(value:Double?,p:LabParamV20,male:Boolean,lang:String):P
 
 @Composable
 fun LaboratoryAuxiliariesV20Screen(lang:String,onBack:()->Unit){
- var tab by remember{mutableStateOf(0)}; var male by rememberRecordState("lab.male",true)
+ var tab by rememberRecordState("lab.tab",0); var male by rememberRecordState("lab.male",true)
  val values=rememberRecordStateMap<String,String>("lab.values")
  val units=rememberRecordStateMap<String,String>("lab.units")
  val refMin=rememberRecordStateMap<String,String>("lab.refMin")
  val refMax=rememberRecordStateMap<String,String>("lab.refMax")
- val tabs=listOf(tr(lang,"Biometría","CBC"),tr(lang,"Química 18","Chemistry 18"),tr(lang,"Tiroides","Thyroid"),tr(lang,"Coagulación","Coagulation"),tr(lang,"Histología","Histology"),tr(lang,"Microbiología","Microbiology"),"CAMBRA")
+ val tabs=listOf(tr(lang,"Biometría","CBC"),tr(lang,"Química 18","Chemistry 18"),"HbA1c",tr(lang,"Tiroides","Thyroid"),tr(lang,"Coagulación","Coagulation"),tr(lang,"Histología","Histology"),tr(lang,"Microbiología","Microbiology"),"CAMBRA")
  ResponsiveScreenV17(tr(lang,"Laboratorio e histopatología","Laboratory & histopathology"),tr(lang,"Captura el valor, la unidad y, cuando esté disponible, el intervalo de referencia impreso por el laboratorio. Ese intervalo tiene prioridad sobre el ejemplo educativo. No se suben archivos en este módulo.","Enter the value, unit and, when available, the reference interval printed by the laboratory. That interval takes priority over the teaching example. Files are not uploaded in this module."),onBack){profile->
   val tabCols=when{profile.largeSystemText->3;profile.width==ScreenWidthV17.COMPACT->3;profile.width==ScreenWidthV17.MEDIUM->4;else->5}
   AdaptiveGridV17(tabs.size,tabCols){i->FilterChip(tab==i,{tab=i},{Text(tabs[i])},Modifier.fillMaxWidth())}
-  if(tab<4){
+  if(tab<5){
    ResponsiveSectionV17(tr(lang,"Sexo para intervalos que cambian","Sex for intervals that differ")){ChipChoices(listOf(tr(lang,"Hombre","Male") to male,tr(lang,"Mujer","Female") to !male),{male=it==0},columns=3)}
-   val params=when(tab){0->cbcV20;1->chemistryV20;2->thyroidV23;else->coagV20}
+   val params=when(tab){
+    0->cbcV20
+    1->chemistryV20
+    2->listOf(LabParamV20("hba1c","Hemoglobina glucosilada (HbA1c)","Glycated hemoglobin (HbA1c)","%",4.0,5.6,4.0,5.6,"Un valor bajo requiere revisar método, recambio eritrocitario y contexto clínico.","Un valor elevado refleja mayor exposición glucémica previa; debe interpretarse con criterios clínicos y de laboratorio.","A low value requires review of assay, red-cell turnover and clinical context.","An elevated value reflects greater prior glycemic exposure and requires clinical/laboratory interpretation.","Resume la exposición glucémica aproximada de los últimos 2–3 meses; ciertas alteraciones hematológicas pueden modificarla.","Se registra para seguimiento metabólico y para contextualizar riesgos sistémicos relevantes antes y durante la atención odontológica."))
+    3->thyroidV23
+    else->coagV20
+   }
    params.forEach{p->
     val teachingMin=if(male)p.maleMin else p.femaleMin; val teachingMax=if(male)p.maleMax else p.femaleMax
     val raw=values[p.key].orEmpty()
@@ -174,8 +180,8 @@ fun LaboratoryAuxiliariesV20Screen(lang:String,onBack:()->Unit){
      Text(tr(lang,"Intervalo usado: ","Interval used: ")+"${formatLabV20(min)}–${formatLabV20(max)} $unit",style=MaterialTheme.typography.bodySmall)
     }
    }
-   if(tab==3) NoticeCard(tr(lang,"Los objetivos de INR cambian en pacientes con anticoagulación. Estas opciones enseñan interpretación; no autorizan procedimientos ni cambios de medicamentos.","INR targets differ in anticoagulated patients. These options teach interpretation; they do not clear procedures or medication changes."))
-  }else when(tab){4->HistopathologyV20(lang);5->MicrobiologyV23(lang);else->CambraV23(lang)}
+   if(tab==4) NoticeCard(tr(lang,"Los objetivos de INR cambian en pacientes con anticoagulación. Estas opciones enseñan interpretación; no autorizan procedimientos ni cambios de medicamentos.","INR targets differ in anticoagulated patients. These options teach interpretation; they do not clear procedures or medication changes."))
+  }else when(tab){5->HistopathologyV20(lang);6->MicrobiologyV23(lang);else->CambraV23(lang)}
   NoticeCard(tr(lang,"Los resultados capturados quedan asociados al expediente activo. La comparación con un intervalo sirve como apoyo educativo y no diagnostica por sí sola; integra síntomas, antecedentes, medicamentos y el reporte del laboratorio.","Entered results remain associated with the active record. Comparison with an interval is educational support and does not diagnose by itself; integrate symptoms, history, medications and the laboratory report."))
  }
 }
