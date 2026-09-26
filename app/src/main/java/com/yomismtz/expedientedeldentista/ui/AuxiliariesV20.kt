@@ -34,15 +34,45 @@ fun AuxiliariesV20Screen(lang:String,onBack:()->Unit){
             var method by rememberRecordState("saliva.method","No estimulada")
             var volume by rememberRecordState("saliva.volumeMl","")
             var minutes by rememberRecordState("saliva.minutes","")
+            var time by rememberRecordState("saliva.time","")
+            var intake by rememberRecordState("saliva.intake","No valorado")
+            var xerostomia by rememberRecordState("saliva.xerostomia","No valorado")
+            var meds by rememberRecordState("saliva.medications","")
+            var conditions by rememberRecordState("saliva.conditions","")
+            var observations by rememberRecordState("saliva.observations","")
             val v=volume.replace(',','.').toDoubleOrNull()
             val t=minutes.replace(',','.').toDoubleOrNull()
             val flow=if(v!=null && t!=null && v>=0.0 && t>0.0) v/t else null
             SectionCard("Registro por expediente"){
-                Text("Selecciona el método y registra volumen y tiempo medidos. El cálculo se guarda a partir de estos datos; no genera un diagnóstico automático.")
+                Text("La sialometría cuantifica el flujo salival. Registra las condiciones de toma porque hidratación, ingesta, hora, estimulación y medicamentos pueden modificar el resultado.")
                 ChipChoices(listOf("No estimulada","Estimulada").map{it to (method==it)},{method=listOf("No estimulada","Estimulada")[it]},columns=2)
                 OutlinedTextField(volume,{volume=it.filter{c->c.isDigit()||c=='.'||c==','}},label={Text("Volumen recolectado (mL)")},modifier=Modifier.fillMaxWidth())
                 OutlinedTextField(minutes,{minutes=it.filter{c->c.isDigit()||c=='.'||c==','}},label={Text("Tiempo de recolección (min)")},modifier=Modifier.fillMaxWidth())
+                OutlinedTextField(time,{time=it.take(20)},label={Text("Hora de la toma")},modifier=Modifier.fillMaxWidth())
                 Text(if(flow!=null)"Flujo calculado: %.2f mL/min".format(flow) else "Flujo calculado: completa volumen y tiempo válidos.",fontWeight=FontWeight.Bold)
+            }
+            SectionCard("Condiciones de la toma"){
+                Text("Ayuno / ingesta reciente",fontWeight=FontWeight.Bold)
+                val intakeOptions=listOf("Ayuno referido","Ingesta reciente","Sin ayuno","No valorado")
+                ChipChoices(intakeOptions.map{it to (intake==it)},{intake=intakeOptions[it]},columns=2)
+                OutlinedTextField(conditions,{conditions=it},label={Text("Condiciones: hidratación, estímulo, reposo, tabaco u otras")},modifier=Modifier.fillMaxWidth())
+                OutlinedTextField(meds,{meds=it},label={Text("Medicamentos relevantes referidos")},modifier=Modifier.fillMaxWidth())
+            }
+            SectionCard("Síntoma de xerostomía"){
+                Text("Xerostomía significa sensación subjetiva de boca seca; se registra separada del flujo medido.",style=MaterialTheme.typography.bodySmall)
+                val dryOptions=listOf("No valorado","Referida","No referida")
+                ChipChoices(dryOptions.map{it to (xerostomia==it)},{xerostomia=dryOptions[it]},columns=3)
+                OutlinedTextField(observations,{observations=it},label={Text("Observaciones clínicas")},modifier=Modifier.fillMaxWidth())
+            }
+            SectionCard("Resultado objetivo"){
+                val objective=when {
+                    flow==null -> "Sin resultado objetivo calculable."
+                    method=="No estimulada" && flow<=0.1 -> "Flujo no estimulado en o por debajo del punto de corte educativo de 0.1 mL/min usado para hiposalivación."
+                    method=="Estimulada" && flow<0.5 -> "Flujo estimulado por debajo de 0.5 mL/min; interpretar con el método y contexto."
+                    else -> "Flujo medido: %.2f mL/min. Interpretar con técnica, condiciones y contexto clínico.".format(flow)
+                }
+                Text(objective,fontWeight=FontWeight.Bold)
+                Text("Este resultado describe una medición y no genera por sí solo un diagnóstico ni equipara hiposalivación con xerostomía.",style=MaterialTheme.typography.bodySmall)
             }
             SectionCard("Métodos de obtención"){
                 Text("No estimulada: drenaje pasivo, escupido, succión o papel absorbente. Estimulada: parafina/base de goma sin sabor o estímulo gustativo, con recolección cronometrada.")

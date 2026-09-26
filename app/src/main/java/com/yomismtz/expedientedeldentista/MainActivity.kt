@@ -26,6 +26,7 @@ import com.yomismtz.expedientedeldentista.ui.LocalRecordFieldStore
 import com.yomismtz.expedientedeldentista.ui.LocalRecordFieldChanged
 import com.yomismtz.expedientedeldentista.ui.RecordFieldStore
 import com.yomismtz.expedientedeldentista.ui.theme.ExpedienteTheme
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -117,6 +118,20 @@ class MainActivity : AppCompatActivity() {
                                         session = EducationalSession()
                                     }
                                     savedRecords = recordStore.loadAll()
+                                },
+                                onExportRecord = { id ->
+                                    recordStore.exportRecordJson(id)?.also { root ->
+                                        root.put("fields", fieldStore.exportRecord(id))
+                                    }?.toString(2)
+                                },
+                                onImportRecord = { raw ->
+                                    runCatching {
+                                        val root=JSONObject(raw)
+                                        val imported=recordStore.importRecordJson(root)
+                                        root.optJSONObject("fields")?.let { fieldStore.importRecord(imported.id,it) }
+                                        savedRecords=recordStore.loadAll()
+                                        imported
+                                    }.getOrNull()
                                 }
                             )
                         }

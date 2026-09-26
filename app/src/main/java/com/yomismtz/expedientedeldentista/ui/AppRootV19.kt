@@ -1,6 +1,9 @@
 package com.yomismtz.expedientedeldentista.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -70,7 +73,9 @@ fun AppRootV19(
     activeRecordId: String?,
     onNewRecord: (PatientProfile) -> Unit,
     onLoadRecord: (SavedRecord) -> Unit,
-    onDeleteRecord: (String) -> Unit
+    onDeleteRecord: (String) -> Unit,
+    onExportRecord: (String) -> String?,
+    onImportRecord: (String) -> SavedRecord?
 ) {
     var settingsOpen by rememberSaveable { mutableStateOf(false) }
     var recordMenuOpen by rememberSaveable { mutableStateOf(activeRecordId == null) }
@@ -87,7 +92,7 @@ fun AppRootV19(
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                 RecordMenuV19(savedRecords, activeRecordId, { profile ->
                     onNewRecord(profile); recordMenuOpen = false
-                }, { r -> onLoadRecord(r); recordMenuOpen = false }, onDeleteRecord)
+                }, { r -> onLoadRecord(r); recordMenuOpen = false }, onDeleteRecord, onExportRecord, { raw -> onImportRecord(raw)?.also { saved -> onLoadRecord(saved); recordMenuOpen=false } })
             }
         }
         if (settingsOpen) {
@@ -244,8 +249,26 @@ private fun RecordMenuV19(
     activeId: String?,
     onNew: (PatientProfile) -> Unit,
     onLoad: (SavedRecord) -> Unit,
-    onDelete: (String) -> Unit
+    onDelete: (String) -> Unit,
+    onExport: (String) -> String?,
+    onImport: (String) -> SavedRecord?
 ) {
+    val context=LocalContext.current
+    var exportPayload by remember { mutableStateOf<String?>(null) }
+    var status by remember { mutableStateOf("") }
+    val exportLauncher=rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        if(uri!=null) runCatching {
+            context.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { it.write(exportPayload.orEmpty()) }
+        }.onSuccess { status="Respaldo exportado en el archivo seleccionado." }.onFailure { status="No se pudo exportar el respaldo." }
+        exportPayload=null
+    }
+    val importLauncher=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if(uri!=null) runCatching {
+            context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }.orEmpty()
+        }.mapCatching { raw -> onImport(raw) ?: error("Respaldo no compatible") }
+         .onSuccess { status="Respaldo restaurado como un expediente nuevo." }
+         .onFailure { status="No se pudo restaurar: archivo inválido o incompatible." }
+    }
     var mode by rememberSaveable { mutableStateOf("home") }
     var initials by rememberSaveable { mutableStateOf("") }
     var age by rememberSaveable { mutableStateOf("") }
@@ -273,7 +296,33 @@ private fun RecordMenuV19(
                     Text("Consulta y continúa una práctica guardada anteriormente.")
                 }
             }
+            Card(onClick={mode="backup"}, modifier=Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(22.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){
+                    Text("💾 EXPORTAR / RESTAURAR",style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black)
+                    Text("Crea o abre un respaldo local. La app no lo envía a internet.")
+                }
+            }
             NoticeCard("Uso exclusivamente didáctico. Esta función organiza ejercicios y permite consultar datos de prácticas previas; no sustituye un expediente clínico institucional.")
+        }
+
+        if(mode=="backup") {
+            OutlinedButton(onClick={mode="home"}) { Text("‹ Volver") }
+            Text("💾 Respaldo local",style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black)
+            NoticeCard("Privacidad: el archivo puede contener información clínica del expediente. Guárdalo sólo en una ubicación segura y compártelo únicamente cuando corresponda. La exportación y restauración funcionan sin internet.")
+            Text("Exportar un expediente",fontWeight=FontWeight.Bold)
+            if(records.isEmpty()) Text("No hay expedientes para exportar.") else records.forEach { record ->
+                OutlinedButton(onClick={
+                    val raw=onExport(record.id)
+                    if(raw!=null){
+                        exportPayload=raw
+                        val label=record.session.profile.patientInitials.ifBlank { "respaldo" }
+                        exportLauncher.launch("expediente-"+label+".json")
+                    } else status="No se pudo preparar el respaldo."
+                },modifier=Modifier.fillMaxWidth()){Text("💾 "+record.session.profile.patientInitials.ifBlank { record.title })}
+            }
+            Button(onClick={importLauncher.launch(arrayOf("application/json","text/plain"))},modifier=Modifier.fillMaxWidth()){Text("📂 Restaurar desde archivo")}
+            Text("Al restaurar se crea un expediente nuevo para evitar sobrescribir accidentalmente uno existente.",style=MaterialTheme.typography.bodySmall)
+            if(status.isNotBlank()) Text(status,fontWeight=FontWeight.Bold)
         }
 
         if(mode=="new") {

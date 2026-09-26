@@ -43,6 +43,24 @@ class ClinicalRecordStore(context: Context) {
 
     fun delete(id: String) = write(loadAll().filterNot { it.id == id })
 
+    fun exportRecordJson(id: String): JSONObject? = loadAll().firstOrNull { it.id == id }?.let { record ->
+        JSONObject()
+            .put("format", "YSM_DENTAL_RECORD")
+            .put("version", 1)
+            .put("exportedAt", System.currentTimeMillis())
+            .put("record", recordToJson(record))
+    }
+
+    fun importRecordJson(root: JSONObject): SavedRecord {
+        require(root.optString("format") == "YSM_DENTAL_RECORD") { "Formato de respaldo no reconocido" }
+        require(root.optInt("version", 0) == 1) { "Versión de respaldo no compatible" }
+        val source = recordFromJson(root.getJSONObject("record"))
+        val now = System.currentTimeMillis()
+        val imported = source.copy(id = UUID.randomUUID().toString(), updatedAt = now)
+        save(imported)
+        return loadAll().first { it.id == imported.id }
+    }
+
     private fun write(records: List<SavedRecord>) {
         val a = JSONArray()
         records.forEach { a.put(recordToJson(it)) }

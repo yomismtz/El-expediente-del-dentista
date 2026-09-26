@@ -18,6 +18,7 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.io.Serializable
 import java.util.HashMap
+import org.json.JSONObject
 
 class RecordFieldStore(context: Context) {
     private val prefs = context.getSharedPreferences("clinical_record_fields_v1", Context.MODE_PRIVATE)
@@ -41,6 +42,25 @@ class RecordFieldStore(context: Context) {
             prefs.edit().putString(storageKey, encoded).apply()
             true
         }.getOrDefault(false)
+    }
+
+    fun exportRecord(recordId: String): JSONObject {
+        val prefix = "$recordId::"
+        val values = JSONObject()
+        prefs.all.forEach { (key, value) ->
+            if (key.startsWith(prefix) && value is String) values.put(key.removePrefix(prefix), value)
+        }
+        return values
+    }
+
+    fun importRecord(recordId: String, values: JSONObject) {
+        val editor = prefs.edit()
+        val keys = values.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            editor.putString("$recordId::$key", values.optString(key))
+        }
+        editor.apply()
     }
 
     fun deleteRecord(recordId: String) {
