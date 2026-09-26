@@ -72,6 +72,7 @@ fun AppRootV2(
     BackHandler(enabled = true) {
         screen = when (screen) {
             AppScreen.HOME -> AppScreen.HOME
+            AppScreen.SECTION -> AppScreen.FOLDER
             AppScreen.FOLDER -> AppScreen.HOME
             else -> AppScreen.FOLDER
         }
