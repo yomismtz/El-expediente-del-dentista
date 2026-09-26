@@ -202,15 +202,15 @@ fun AtmScreen(lang: String, onBack: () -> Unit) {
         AtmFinding("parafunction","Bruxismo/apretamiento referido","Reported bruxism/clenching"),
         AtmFinding("trauma","Antecedente de traumatismo mandibular/ATM","History of mandibular/TMJ trauma")
     )
-    val checked=remember { mutableStateMapOf<String,Boolean>() }
+    val checked=rememberRecordStateMap<String,Boolean>("atm.checked")
     fun on(key:String)=checked[key]==true
-    var opening by remember { mutableStateOf("No medida") }
-    var rightLat by remember { mutableStateOf("No medida") }
-    var leftLat by remember { mutableStateOf("No medida") }
-    var protrusion by remember { mutableStateOf("No medida") }
-    var trajectory by remember { mutableStateOf("Recta / sin desviación evidente") }
-    var jointPalpation by remember { mutableStateOf("Sin dolor reproducible") }
-    var musclePalpation by remember { mutableStateOf("Sin dolor reproducible") }
+    var opening by rememberRecordState("atm.opening","No medida")
+    var rightLat by rememberRecordState("atm.rightLat","No medida")
+    var leftLat by rememberRecordState("atm.leftLat","No medida")
+    var protrusion by rememberRecordState("atm.protrusion","No medida")
+    var trajectory by rememberRecordState("atm.trajectory","Recta / sin desviación evidente")
+    var jointPalpation by rememberRecordState("atm.jointPalpation","Sin dolor reproducible")
+    var musclePalpation by rememberRecordState("atm.musclePalpation","Sin dolor reproducible")
 
     val orientation=when {
         on("lockOpen") -> tr(lang,"Luxación mandibular: situación que requiere valoración clínica inmediata","Mandibular dislocation: situation requiring prompt clinical assessment")
