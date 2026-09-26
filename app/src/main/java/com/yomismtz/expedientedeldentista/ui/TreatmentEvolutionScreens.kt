@@ -214,21 +214,21 @@ private fun supplementalNoteLibraryV39():List<NoteTemplate> = listOf(
 
 @Composable
 fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Unit) {
-    var selected by remember { mutableStateOf<Int?>(null) }
-    var siteChosen by remember { mutableStateOf(false) }
-    var statusChosen by remember { mutableStateOf(false) }
-    var anesthesiaChosen by remember { mutableStateOf(false) }
-    var incidentsChosen by remember { mutableStateOf(false) }
-    var instructionsChosen by remember { mutableStateOf(false) }
-    var followUpChosen by remember { mutableStateOf(false) }
-    var supervisionChosen by remember { mutableStateOf(false) }
-    var site by remember { mutableStateOf("OD / zona seleccionada") }
-    var status by remember { mutableStateOf("Paciente estable y cooperador") }
-    var anesthesia by remember { mutableStateOf("No requerida") }
-    var incidents by remember { mutableStateOf("Sin incidentes") }
-    var instructions by remember { mutableStateOf("Indicaciones generales y signos de alarma") }
-    var followUp by remember { mutableStateOf("Control programado") }
-    var supervision by remember { mutableStateOf("Realizado bajo supervisión docente") }
+    var selected by rememberRecordState<Int?>("evolution.selected",null)
+    var siteChosen by rememberRecordState("evolution.siteChosen",false)
+    var statusChosen by rememberRecordState("evolution.statusChosen",false)
+    var anesthesiaChosen by rememberRecordState("evolution.anesthesiaChosen",false)
+    var incidentsChosen by rememberRecordState("evolution.incidentsChosen",false)
+    var instructionsChosen by rememberRecordState("evolution.instructionsChosen",false)
+    var followUpChosen by rememberRecordState("evolution.followUpChosen",false)
+    var supervisionChosen by rememberRecordState("evolution.supervisionChosen",false)
+    var site by rememberRecordState("evolution.site","OD / zona seleccionada")
+    var status by rememberRecordState("evolution.status","Paciente estable y cooperador")
+    var anesthesia by rememberRecordState("evolution.anesthesia","No requerida")
+    var incidents by rememberRecordState("evolution.incidents","Sin incidentes")
+    var instructions by rememberRecordState("evolution.instructions","Indicaciones generales y signos de alarma")
+    var followUp by rememberRecordState("evolution.followUp","Control programado")
+    var supervision by rememberRecordState("evolution.supervision","Realizado bajo supervisión docente")
     val newTreatments=listOf(
         NoteTemplate("Toma de impresiones diagnósticas","Diagnostic impressions","Registrar indicación, arcada, material de impresión, selección de cubeta, calidad de la impresión, desinfección/manejo conforme al protocolo y destino para modelo de estudio.","Record indication, arch, impression material, tray selection, impression quality, disinfection/handling per protocol and destination for study cast."),
         NoteTemplate("Análisis de modelos","Model analysis","Registrar modelos analizados, dentición, mediciones efectuadas, discrepancias de espacio y hallazgos relevantes; documentar el método empleado.","Record casts analyzed, dentition, measurements, space discrepancies and relevant findings; document the method used."),
