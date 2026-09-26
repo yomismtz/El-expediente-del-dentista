@@ -158,7 +158,7 @@ fun AdaptiveBaseRootV19(
         AppScreen.HISTORY_ORTHO -> HistoryOrthoV38(lang,backPrevious)
         AppScreen.HISTORY_DENTAL_ALTERATIONS -> HistoryDentalAlterationsV38(lang,backPrevious)
         AppScreen.HISTORY_HABITS -> HistoryHabitsV38(lang,backPrevious)
-        AppScreen.HISTORY_ORAL_EXAM -> HistoryOralExamV38(lang,backPrevious)
+        AppScreen.HISTORY_ORAL_EXAM -> MucosaInteractiveV19Screen(lang,backPrevious)
         AppScreen.SYSTEMIC_PROTOCOLS -> SystemicProtocols37Screen(lang,backPrevious)
         AppScreen.INTAKE -> IntakeNoteScreen(lang,session,backPrevious)
         AppScreen.ACTIVITIES -> ActivitiesScreen(lang,backPrevious)
@@ -274,7 +274,7 @@ private fun SectionV19(lang:String,group:Int,onNavigate:(AppScreen)->Unit,onBack
         tr(lang,"7 · Herramientas administrativas","7 · Administrative tools"),
         tr(lang,"8 · Herramientas clínicas","8 · Clinical tools")
     )
-    var query by remember(group) { mutableStateOf("") }
+    var query by rememberSaveable(group) { mutableStateOf("") }
     ResponsiveScreenV17(
         names[group],
         tr(lang,"Selecciona el apartado que deseas abrir.","Select the item you want to open."),
