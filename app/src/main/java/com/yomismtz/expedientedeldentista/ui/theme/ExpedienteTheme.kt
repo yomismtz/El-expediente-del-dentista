@@ -130,7 +130,7 @@ fun birdPalette(style: BirdPaletteStyle): BirdPalette {
 
 fun paletteSwatches(style: BirdPaletteStyle): List<Color> {
     val p = birdPalette(style)
-    return if(style == BirdPaletteStyle.AGAPORNI) listOf(p.primary, p.secondary, p.tertiary, Color(0xFF008C95), Color(0xFF173B63), p.primaryContainer, p.secondaryContainer, p.background) else listOf(p.primary, p.secondary, p.tertiary, p.primaryContainer, p.secondaryContainer, p.background)
+    return if(style == BirdPaletteStyle.AGAPORNI) listOf(p.primary, p.secondary, p.tertiary, Color(0xFF008C95), Color(0xFF173B63), Color(0xFFE98CA5), p.primaryContainer, p.secondaryContainer, p.background) else listOf(p.primary, p.secondary, p.tertiary, p.primaryContainer, p.secondaryContainer, p.background, p.surface, p.outline)
 }
 
 fun fontDisplayName(style: FontStyle, lang: String = "es"): String = when (style) {
