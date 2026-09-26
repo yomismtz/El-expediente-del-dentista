@@ -81,6 +81,7 @@ fun AppRootV2(
     val folderBack = { screen = AppScreen.FOLDER }
     Crossfade(targetState = screen, label = "folder_v05") { target ->
         when (target) {
+            AppScreen.SECTION -> FolderSpreadV2(preferences.languageTag, { screen = it }, { screen = AppScreen.FOLDER }, { screen = AppScreen.SETTINGS })
             AppScreen.HOME -> FolderCoverV2(
                 lang = preferences.languageTag,
                 title = preferences.clinicianTitle,
