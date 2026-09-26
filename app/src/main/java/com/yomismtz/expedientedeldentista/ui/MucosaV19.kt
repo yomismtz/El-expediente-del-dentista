@@ -64,24 +64,24 @@ private val zones19=listOf(
 
 @Composable
 fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
-    var selectedId by remember{mutableStateOf("lengua")}
+    var selectedId by rememberRecordState("mucosa.selectedId","lengua")
     var tab by remember{mutableStateOf(0)}
-    var finding by remember{mutableStateOf("Normal")}
-    var sizeMm by remember{mutableStateOf("5 mm")}
-    var notes by remember{mutableStateOf("Sin observaciones adicionales")}
-    var color by remember{mutableStateOf("Rosado")}
-    var shape by remember{mutableStateOf("Redonda/oval")}
-    var surface by remember{mutableStateOf("Lisa")}
-    var border by remember{mutableStateOf("Regular/definido")}
-    var base by remember{mutableStateOf("Sésil")}
-    var consistency by remember{mutableStateOf("Blanda")}
-    var mobility by remember{mutableStateOf("Móvil")}
-    var symptoms by remember{mutableStateOf("Asintomática")}
-    var duration by remember{mutableStateOf("No referido")}
-    var evolution by remember{mutableStateOf("No referida")}
+    var finding by rememberRecordState("mucosa.finding","Normal")
+    var sizeMm by rememberRecordState("mucosa.sizeMm","5 mm")
+    var notes by rememberRecordState("mucosa.notes","Sin observaciones adicionales")
+    var color by rememberRecordState("mucosa.color","Rosado")
+    var shape by rememberRecordState("mucosa.shape","Redonda/oval")
+    var surface by rememberRecordState("mucosa.surface","Lisa")
+    var border by rememberRecordState("mucosa.border","Regular/definido")
+    var base by rememberRecordState("mucosa.base","Sésil")
+    var consistency by rememberRecordState("mucosa.consistency","Blanda")
+    var mobility by rememberRecordState("mucosa.mobility","Móvil")
+    var symptoms by rememberRecordState("mucosa.symptoms","Asintomática")
+    var duration by rememberRecordState("mucosa.duration","No referido")
+    var evolution by rememberRecordState("mucosa.evolution","No referida")
     var lesionHelp by remember{mutableStateOf(false)}
     var zoomHelpImage by remember{mutableStateOf(false)}
-    var count by remember{mutableStateOf("Única")}
+    var count by rememberRecordState("mucosa.count","Única")
     val selected=zones19.firstOrNull{it.id==selectedId} ?: zones19.first()
     val name=if(lang=="en")selected.en else selected.es
     val example=if(finding=="Normal") "$name: ${if(lang=="en")selected.normalEn else selected.normalEs}"
