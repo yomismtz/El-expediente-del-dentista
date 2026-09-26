@@ -72,6 +72,43 @@ private fun presetTreatments37(d:Disease37):List<String> = when(d.protocol){
  }
 }
 @Composable fun SystemicProtocols37Screen(lang:String,onBack:()->Unit){
- val p=listOf("Enfermedad de Paget ósea" to "Confirmar diagnóstico, huesos afectados, tratamiento y seguimiento; valorar repercusión maxilofacial y coordinar procedimientos invasivos cuando corresponda.","Osteogénesis imperfecta / fragilidad ósea" to "Registrar fracturas, tratamiento, movilidad y medicamentos; planear transferencias, posicionamiento y procedimientos con precaución y supervisión.","Deficiencias vitamínicas / anemia" to "Precisar diagnóstico, causa, tratamiento y estudios recientes cuando estén indicados; correlacionar con fatiga, mucosa, sangrado/cicatrización sin atribuir hallazgos aislados a una sola causa.","VIH / inmunocompromiso" to "Registrar control médico y tratamiento referido; valorar infecciones/lesiones orales, interacciones y estudios sólo cuando estén clínicamente indicados. Evitar estigma y mantener confidencialidad.","Diabetes mellitus" to "Confirmar control, medicamentos y episodios de hipoglucemia; coordinar alimentación/horario y reconocer urgencias. En pediatría integrar al cuidador y plan médico.","Hipertensión arterial" to "Confirmar diagnóstico, tratamiento, control y signos vitales; valorar interconsulta antes de atención electiva según hallazgos y riesgo.","Trastornos tiroideos" to "Precisar hipo/hipertiroidismo, control y tratamiento; identificar descompensación antes de atención electiva. En menores integrar crecimiento y seguimiento médico.","Asma / EPOC" to "Identificar desencadenantes, gravedad, control, inhaladores y exacerbaciones recientes.","Cardiopatía / anticoagulación" to "Precisar diagnóstico, capacidad funcional y fármacos. No suspender antiagregantes o anticoagulantes por cuenta propia.","Enfermedad renal o hepática" to "Precisar función, diálisis/trasplante, sangrado y medicamentos; revisar estudios pertinentes y coordinar cuando corresponda.","Osteoporosis / antirresortivos" to "Documentar fármaco, vía, duración e indicación antes de procedimientos óseos invasivos.","Epilepsia" to "Registrar control, última crisis, desencadenantes y fármacos; preparar medidas de seguridad.","Cáncer / inmunosupresión" to "Identificar tratamiento activo, alteraciones hematológicas cuando apliquen, radioterapia de cabeza/cuello y coordinación oncológica.")
- LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){item{ScreenHeader("Protocolos para pacientes con enfermedades sistémicas",onBack,"Guía educativa de valoración odontológica; no sustituye interconsulta, juicio clínico ni protocolos institucionales.")};items(p){x->Card(Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){Text(x.first,fontWeight=FontWeight.Black);Text(x.second);Text("Revisar: historia → medicamentos → signos vitales/estudios → control → riesgo → interconsulta → ASA orientativa.",color=MaterialTheme.colorScheme.primary)}}}}
+ var selected by remember{mutableStateOf<Pair<String,String>?>(null)}
+ val p=listOf(
+  "Diabetes mellitus" to "Confirmar tipo, tratamiento, control referido, alimentación y antecedentes de hipoglucemia.",
+  "Hipertensión / cardiopatía" to "Confirmar diagnóstico, tratamiento, control, signos vitales, capacidad funcional y anticoagulación/antiagregación cuando corresponda.",
+  "Asma / EPOC" to "Identificar control, desencadenantes, inhaladores, exacerbaciones recientes y capacidad respiratoria.",
+  "Enfermedad renal / diálisis" to "Precisar función renal, diálisis o trasplante, medicamentos, sangrado y coordinación médica cuando corresponda.",
+  "Enfermedad hepática" to "Precisar diagnóstico, función hepática, medicamentos y antecedentes de sangrado o descompensación.",
+  "Trastornos hematológicos" to "Precisar diagnóstico, gravedad, tratamiento, antecedentes de sangrado/trombosis y estudios indicados para el procedimiento.",
+  "VIH / inmunodeficiencia" to "Registrar control médico, tratamiento referido, infecciones o lesiones orales e interacciones; mantener confidencialidad y evitar estigma.",
+  "Trastornos tiroideos" to "Precisar hipo/hipertiroidismo, tratamiento, control y datos de descompensación.",
+  "Osteoporosis / antirresortivos" to "Documentar fármaco, vía, indicación, duración y antecedentes de procedimientos óseos antes de cirugía dentoalveolar.",
+  "Epilepsia" to "Registrar control, última crisis, desencadenantes y tratamiento; preparar medidas de seguridad.",
+  "Cáncer / inmunosupresión" to "Identificar tratamiento activo, radioterapia de cabeza/cuello, estado hematológico cuando corresponda y coordinación oncológica.",
+  "Alergias / anafilaxia" to "Confirmar sustancia, reacción, gravedad, fecha, atención requerida y alternativas seguras."
+ )
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
+  item{ScreenHeader("Protocolos para pacientes sistémicos",onBack,"Selecciona una condición. El protocolo se abre por apartados; no es una lista estática.")}
+  if(selected==null){
+   item{NoticeCard("Guía educativa. La condición sistémica no genera automáticamente antibiótico, suspensión de anticoagulantes ni autorización para tratar. La decisión depende del control, procedimiento, medicamentos, hallazgos e indicaciones médicas vigentes.")}
+   items(p.chunked(2)){row->
+    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp)){
+     row.forEach{x->Card(onClick={selected=x},modifier=Modifier.weight(1f)){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){Text(x.first,fontWeight=FontWeight.Black);Text("Abrir protocolo ›",color=MaterialTheme.colorScheme.primary)}}}
+     if(row.size==1)Spacer(Modifier.weight(1f))
+    }
+   }
+  }else{
+   val x=selected!!
+   item{OutlinedButton(onClick={selected=null}){Text("← Condiciones")}}
+   item{Text(x.first,style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black)}
+   item{ResponsiveSectionV17("1 · Signos, síntomas y control","Qué confirmar antes de decidir el manejo"){Text(x.second);Text("Selecciona y confirma el estado clínico en la historia; no asumir control sólo por el nombre del diagnóstico.")}}
+   item{ResponsiveSectionV17("2 · Estudios y marcadores","Solicitar o revisar sólo cuando cambien la seguridad o la conducta clínica"){Text("Revisar estudios recientes pertinentes al diagnóstico y al procedimiento. No existe un panel universal para todos los pacientes sistémicos; usar protocolo institucional e interconsulta cuando esté indicada.")}}
+   item{ResponsiveSectionV17("3 · Atención odontológica","Decidir tratar, modificar, posponer o interconsultar"){ChipChoices(listOf("Atención habitual si está estable" to false,"Modificar plan / cita" to false,"Posponer atención electiva" to false,"Interconsulta médica" to false),{},2)}}
+   item{ResponsiveSectionV17("4 · Anestesia","La elección depende de enfermedad, control, medicamentos y procedimiento"){Text("Comprobar anestésico, vasoconstrictor, dosis máxima aplicable, interacciones y contraindicaciones antes de administrar. Evitar reglas universales por diagnóstico.")}}
+   item{ResponsiveSectionV17("5 · Analgesia y antiinflamatorios","Seleccionar según antecedentes y tratamiento actual"){Text("Revisar riesgo renal, hepático, gastrointestinal, cardiovascular, hemorrágico e interacciones. No indicar AINE automáticamente.")}}
+   item{ResponsiveSectionV17("6 · Antibióticos","No se indican por el solo hecho de tener una enfermedad sistémica"){Text("Usar antibiótico sólo cuando exista una indicación independiente o profilaxis específicamente indicada por una guía vigente. Verificar alergias, función renal/hepática e interacciones.")}}
+   item{ResponsiveSectionV17("7 · Procedimientos y urgencias","Plan de seguridad"){Text("Definir qué procedimientos son apropiados según estabilidad, invasividad y riesgo; reconocer signos de descompensación y contar con plan de urgencias e interconsulta.")}}
+   item{NoticeCard("Antes de usar este protocolo en un paciente real, confirmar diagnóstico, control, medicamentos y recomendaciones institucionales vigentes.")}
+  }
+ }
 }
