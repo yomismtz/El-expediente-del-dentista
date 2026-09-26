@@ -50,11 +50,11 @@ private data class ExplainField(val n:String,val why:String,val examples:String)
  }
 }
 @Composable fun TreatmentRequestTeachingV41(lang:String,onBack:()->Unit){
- var service by remember{mutableStateOf("Valoración")}
- var site by remember{mutableStateOf("Órgano dentario")}
- var priority by remember{mutableStateOf("Programable")}
- var reason by remember{mutableStateOf("Dolor / síntomas")}
- var destination by remember{mutableStateOf("Clínica integral")}
+ var service by rememberRecordState("request.service","Valoración")
+ var site by rememberRecordState("request.site","Órgano dentario")
+ var priority by rememberRecordState("request.priority","Programable")
+ var reason by rememberRecordState("request.reason","Dolor / síntomas")
+ var destination by rememberRecordState("request.destination","Clínica integral")
  val services=listOf("Valoración","Estudio radiográfico","Endodoncia","Periodoncia","Cirugía / extracción","Restauración","Prótesis","Ortodoncia","Medicina bucal")
  val sites=listOf("Órgano dentario","Cuadrante","Arcada","Región periapical","Periodonto","Mucosa oral","ATM","Maxilar / mandíbula")
  val priorities=listOf("Urgente","Prioritaria","Programable","Control")
@@ -73,11 +73,11 @@ private data class ExplainField(val n:String,val why:String,val examples:String)
 }
 
 @Composable fun BudgetTeachingV41(lang:String,onBack:()->Unit){
- var procedure by remember{mutableStateOf("Valoración")}
- var qty by remember{mutableStateOf(1)}
- var costBand by remember{mutableStateOf("Por cotizar")}
- var lab by remember{mutableStateOf("No aplica")}
- var status by remember{mutableStateOf("Borrador")}
+ var procedure by rememberRecordState("budget.procedure","Valoración")
+ var qty by rememberRecordState("budget.qty",1)
+ var costBand by rememberRecordState("budget.costBand","Por cotizar")
+ var lab by rememberRecordState("budget.lab","No aplica")
+ var status by rememberRecordState("budget.status","Borrador")
  val procedures=listOf("Valoración","Radiografía / imagen","Profilaxis","Restauración","Endodoncia","Extracción","Corona","Prótesis removible","Férula / aparato","Otro concepto institucional")
  val procedureDescriptions=mapOf(
   "Valoración" to "Consulta de evaluación clínica para integrar antecedentes, exploración, hallazgos y necesidades de atención.",
