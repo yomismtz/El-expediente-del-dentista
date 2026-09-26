@@ -14,6 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
+import com.yomismtz.expedientedeldentista.clinical.ClinicalRecordStore
+import com.yomismtz.expedientedeldentista.clinical.SavedRecord
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.SettingsStore
 import com.yomismtz.expedientedeldentista.ui.AppRootV19
@@ -23,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val store = SettingsStore(this)
+        val recordStore = ClinicalRecordStore(this)
         // Breve trino sintetizado: funciona 100% offline y no requiere archivo de audio ni permiso.
         runCatching {
             val tone = ToneGenerator(AudioManager.STREAM_MUSIC, 32)
@@ -35,7 +38,9 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             var preferences by remember { mutableStateOf(store.load()) }
+            var activeRecord by remember { mutableStateOf<SavedRecord?>(null) }
             var session by remember { mutableStateOf(EducationalSession()) }
+            var savedRecords by remember { mutableStateOf(recordStore.loadAll()) }
 
             val savePreferences: (AppPreferences) -> Unit = { updated ->
                 preferences = updated
@@ -57,7 +62,35 @@ class MainActivity : AppCompatActivity() {
                                 savePreferences(preferences.copy(languageTag = tag))
                             },
                             session = session,
-                            onSessionChanged = { session = it }
+                            onSessionChanged = { updated ->
+                                session = updated
+                                activeRecord?.let { current ->
+                                    val saved = current.copy(session = updated)
+                                    recordStore.save(saved)
+                                    activeRecord = recordStore.loadAll().firstOrNull { it.id == current.id } ?: saved
+                                    savedRecords = recordStore.loadAll()
+                                }
+                            },
+                            savedRecords = savedRecords,
+                            activeRecordId = activeRecord?.id,
+                            onNewRecord = {
+                                val created = recordStore.create()
+                                activeRecord = created
+                                session = created.session
+                                savedRecords = recordStore.loadAll()
+                            },
+                            onLoadRecord = { record ->
+                                activeRecord = record
+                                session = record.session
+                            },
+                            onDeleteRecord = { id ->
+                                recordStore.delete(id)
+                                if (activeRecord?.id == id) {
+                                    activeRecord = null
+                                    session = EducationalSession()
+                                }
+                                savedRecords = recordStore.loadAll()
+                            }
                         )
                     }
                 }
