@@ -362,7 +362,12 @@ private data class E(val n:String,val d:String)
  var weight by remember{mutableStateOf("")};var height by remember{mutableStateOf("")}
  @Composable fun Pick(title:String,options:List<String>,note:String=""){
   val longest=options.maxOfOrNull{it.length}?:0
-  val cols=when{longest>28->2;options.size>=9->4;options.size>=6->3;else->2}
+  // Clinical option labels must stay readable on phones; never trade legibility for density.
+  val cols=when{
+   longest>18->2
+   options.size>=6->3
+   else->2
+  }
   SectionCard(title){
    ChipChoices(options.map{x->x to (selected[title]==x)},{i->selected[title]=options[i]},columns=cols)
    if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)
