@@ -103,7 +103,7 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
         "CAMBRA · valoración de riesgo de caries","Índice de placa O’Leary","CPO-D / ceo-d","ICDAS","IPC","IHOS","Exploración de mucosas",
         "Mantenedor de espacio","Mantenedor banda y ansa","Mantenedor corona y ansa","Arco lingual como mantenedor","Botón de Nance","Arco transpalatino","Zapatilla distal",
         "Recuperador de espacio","Extracciones seriadas",
-        "Pulpotomía en dentición temporal","Pulpectomía en dentición temporal","Corona de acero cromo en odontopediatría",
+        "Pulpotomía en dentición temporal","Pulpectomía instrumentada en dentición temporal","Terapia pulpar no instrumentada con pasta CTZ","Recubrimiento pulpar indirecto en odontopediatría","Recubrimiento pulpar directo en odontopediatría","Corona de acero cromo en odontopediatría","Corona estética pediátrica","Diamino fluoruro de plata","Infiltración de resina","Restauración provisional con Cavit",
         "Ajuste oclusal","Guarda oclusal","Valoración de ATM","Urgencia odontológica",
         "Interconsulta médica","Alta y mantenimiento"
     )
@@ -129,7 +129,7 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
         "Cirugía" to listOf("extracción","exodon","cirugía","sutura","biopsia"),
         "Prótesis" to listOf("impresión","prótesis","protes","corona","provisional"),
         "Ortodoncia / ortopedia" to listOf("ortodon","mantenedor","espacio","aparat","nance","transpalatino","zapatilla distal","extracciones seriadas"),
-        "Odontopediatría" to listOf("odontopedi","dentición temporal","pulpotom","pulpectom","acero cromo","mantenedor","zapatilla distal"),
+        "Odontopediatría" to listOf("odontopedi","dentición temporal","pulpotom","pulpectom","ctz","recubrimiento pulpar","acero cromo","corona estética pediátrica","diamino fluoruro","infiltración de resina","cavit","mantenedor","zapatilla distal"),
         "Diagnóstico" to listOf("radiograf","explor","fotograf","signos vitales","índice","periodontograma","impresiones diagnósticas","modelos","steiner","cambra","o’leary","cpo-d","ceo-d","icdas","ipc","ihos","mucosas","ficha endodóntica","ficha quirúrgica","ficha protésica","ficha periodontal")
     )
     fun matchesSpecialty(a:ActivityGuide):Boolean {
