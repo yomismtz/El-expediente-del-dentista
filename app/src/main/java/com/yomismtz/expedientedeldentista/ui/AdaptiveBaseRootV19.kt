@@ -52,15 +52,17 @@ private data class TabV19(val screen:AppScreen,val icon:String,val es:String,val
 private val tabsV19=listOf(
     // 1 · Expediente clínico
     TabV19(AppScreen.HISTORY,"🩺","Historia clínica","Clinical history",0),
+    TabV19(AppScreen.INTAKE,"📋","Nota de ingreso","Intake note",0),
 
     // 2 · Exploración clínica
     TabV19(AppScreen.VITALS,"❤️","Signos vitales","Vital signs",1),
+    TabV19(AppScreen.POSTURE,"🧍","Postura","Posture",1),
+    TabV19(AppScreen.ATM,"◉","ATM y trastornos temporomandibulares","TMJ and temporomandibular disorders",1),
     TabV19(AppScreen.MUCOSA,"👄","Mucosa oral","Oral mucosa",1),
     TabV19(AppScreen.OCCLUSION,"↔","Oclusión","Occlusion",1),
-    TabV19(AppScreen.POSTURE,"🧍","Postura","Posture",1),
 
-    // 3 · Análisis dentales. El acceso abre el concentrador que conserva
-    // Odontograma, CPOD/ceod, IPC, IHOS, O’Leary e ICDAS.
+    // 3 · Análisis dentales. El concentrador conserva juntos todos los
+    // análisis odontológicos: odontograma, caries, higiene y periodoncia.
     TabV19(AppScreen.ODONTOGRAM,"🦷","Análisis dentales","Dental analyses",2),
 
     // 4 · Auxiliares de diagnóstico
@@ -73,19 +75,17 @@ private val tabsV19=listOf(
     // 6 · Tratamiento y fichas clínicas
     TabV19(AppScreen.ENDO,"⚡","Ficha endodóntica","Endodontic sheet",5),
     TabV19(AppScreen.PROSTHETIC,"👑","Ficha protésica","Prosthetic sheet",5),
-    TabV19(AppScreen.PERIODONTOGRAM,"📈","Ficha periodontal","Periodontal sheet",5),
     TabV19(AppScreen.SURGICAL,"✚","Ficha quirúrgica","Surgical sheet",5),
-    TabV19(AppScreen.ATM,"◉","Ficha de diagnóstico de trastornos temporomandibulares","Temporomandibular disorder diagnostic sheet",5),
 
     // 7 · Herramientas administrativas
     TabV19(AppScreen.ACTIVITIES,"✍","Autorización de actividades","Activity authorization",6),
     TabV19(AppScreen.REQUEST,"📨","Solicitud de tratamiento","Treatment request",6),
-    TabV19(AppScreen.CONSENT,"✍","Consentimiento informado","Informed consent",6),
+    TabV19(AppScreen.CONSENT,"📑","Consentimiento informado","Informed consent",6),
     TabV19(AppScreen.BUDGET,"💰","Presupuesto","Budget",6),
     TabV19(AppScreen.EVOLUTION,"📄","Notas de evolución","Progress notes",6),
 
     // 8 · Herramientas clínicas
-    TabV19(AppScreen.CALCULATORS,"🧮","Calculadoras · anestésico y medicamentos pediátricos","Calculators · anesthetic and pediatric medication",7),
+    TabV19(AppScreen.CALCULATORS,"🧮","Calculadoras clínicas","Clinical calculators",7),
     TabV19(AppScreen.SYSTEMIC_PROTOCOLS,"📚","Protocolos para enfermedades sistémicas","Systemic disease protocols",7)
 )
 
