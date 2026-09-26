@@ -20,6 +20,12 @@ private val dentalAnestheticsV40=listOf(
 )
 
 private data class DrugOptionV40(val name:String,val presentation:String,val note:String)
+private data class WeightDoseV40(val drug:String,val presentation:String,val mgPerMl:Double,val mgKgDay:List<Double>,val intervals:List<Int>,val maxMgDay:Double?,val source:String)
+private val verifiedWeightDosesV40=listOf(
+ WeightDoseV40("Amoxicilina","Suspensión oral 500 mg/5 mL",100.0,listOf(90.0,100.0),listOf(8),4500.0,"IMSS GPC 120GER · indicación documentada: neumonía adquirida en la comunidad pediátrica"),
+ WeightDoseV40("Amoxicilina / ácido clavulánico","Suspensión 125 mg/31.25 mg por 5 mL",25.0,listOf(20.0,40.0),listOf(8),null,"Listado Institucional IMSS · dosis expresada según componente amoxicilina"),
+ WeightDoseV40("Ibuprofeno","Suspensión oral 2 g/100 mL (100 mg/5 mL)",20.0,listOf(20.0,30.0,40.0),listOf(6,8),null,"Listado Institucional IMSS: 5–10 mg/kg por dosis cada 6–8 h; los valores diarios se muestran sólo como equivalencias matemáticas compatibles")
+)
 private data class DrugGroupV40(val title:String,val drugs:List<DrugOptionV40>)
 private val drugGroupsV40=listOf(
  DrugGroupV40("Antibióticos",listOf(
@@ -64,6 +70,10 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
  var medGroup by remember{mutableStateOf<Int?>(null)}
  var medDrug by remember{mutableStateOf<Int?>(null)}
  var medChecks by remember{mutableStateOf(setOf<Int>())}
+ var medWeight by remember{mutableStateOf("")}
+ var medPresentation by remember{mutableStateOf<Int?>(null)}
+ var medDoseDay by remember{mutableStateOf<Double?>(null)}
+ var medInterval by remember{mutableStateOf<Int?>(null)}
  var topicalAge by remember{mutableStateOf(0)}
  var topicalProduct by remember{mutableStateOf(0)}
  var bmiWeight by remember{mutableStateOf("")}
@@ -117,12 +127,12 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
    }}
   }else if(tab==1){
    item{SectionCard("1 · Selecciona grupo farmacológico"){
-    ChipChoices(drugGroupsV40.mapIndexed{i,g->g.title to (medGroup==i)},{i->medGroup=i;medDrug=null;medChecks=emptySet()},2)
+    ChipChoices(drugGroupsV40.mapIndexed{i,g->g.title to (medGroup==i)},{i->medGroup=i;medDrug=null;medChecks=emptySet();medPresentation=null;medDoseDay=null;medInterval=null},2)
    }}
    if(medGroup!=null){
     item{SectionCard("2 · Selecciona medicamento"){
      val g=drugGroupsV40[medGroup!!]
-     ChipChoices(g.drugs.mapIndexed{i,d->d.name to (medDrug==i)},{i->medDrug=i;medChecks=emptySet()},2)
+     ChipChoices(g.drugs.mapIndexed{i,d->d.name to (medDrug==i)},{i->medDrug=i;medChecks=emptySet();medPresentation=null;medDoseDay=null;medInterval=null},2)
     }}
    }
    if(medGroup!=null&&medDrug!=null){
@@ -133,7 +143,50 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
      Text(d.note)
      Text("El alumno selecciona opciones; no tiene que escribir dosis ni concentración en este apartado.")
     }}
-    item{SectionCard("4 · Antes de calcular una pauta"){
+    val currentDrug=drugGroupsV40[medGroup!!].drugs[medDrug!!]
+    val protocols=verifiedWeightDosesV40.filter{it.drug==currentDrug.name}
+    item{SectionCard("4 · Peso del paciente"){
+     OutlinedTextField(medWeight,{medWeight=it.filter{x->x.isDigit()||x=='.'}.take(6)},label={Text("Peso medido (kg)")},modifier=Modifier.fillMaxWidth())
+    }}
+    item{SectionCard("5 · Presentación"){
+     if(protocols.isEmpty()) Text("Todavía no hay una pauta por peso verificada para este medicamento. No se habilita el cálculo.")
+     else ChipChoices(protocols.mapIndexed{i,p->p.presentation to (medPresentation==i)},{i->medPresentation=i;medDoseDay=null;medInterval=null},1)
+    }}
+    if(medPresentation!=null&&protocols.isNotEmpty()){
+     val p=protocols[medPresentation!!.coerceIn(0,protocols.lastIndex)]
+     item{SectionCard("6 · Pauta documentada por peso"){
+      Text(p.source)
+      ChipChoices(p.mgKgDay.map{v->"${v.toInt()} mg/kg/día" to (medDoseDay==v)},{i->medDoseDay=p.mgKgDay[i];medInterval=null},2)
+      Text("La pauta sólo debe seleccionarse cuando corresponda a la indicación y población de la fuente.",fontWeight=FontWeight.Bold)
+     }}
+     if(medDoseDay!=null&&medWeight.toDoubleOrNull()!=null){
+      val rawDaily=medWeight.toDouble()*medDoseDay!!
+      val daily=if(p.maxMgDay!=null) minOf(rawDaily,p.maxMgDay) else rawDaily
+      item{SectionCard("7 · Cálculo por día"){
+       Text("Peso × pauta = %.1f mg/día".format(rawDaily),fontWeight=FontWeight.Bold)
+       if(p.maxMgDay!=null&&rawDaily>p.maxMgDay) Text("Se aplica el máximo documentado: %.0f mg/día".format(p.maxMgDay),fontWeight=FontWeight.Bold)
+      }}
+      item{SectionCard("8 · Intervalo"){
+       ChipChoices(p.intervals.map{h->"Cada $h horas" to (medInterval==h)},{i->medInterval=p.intervals[i]},2)
+      }}
+      if(medInterval!=null){
+       val doses=24.0/medInterval!!
+       val perDose=daily/doses
+       val mlDose=perDose/p.mgPerMl
+       item{SectionCard("9 · Esquema calculado"){
+        Text(currentDrug.name,style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black)
+        Text("Peso: ${medWeight} kg")
+        Text("Pauta seleccionada: ${medDoseDay!!.toInt()} mg/kg/día")
+        Text("Total calculado: %.1f mg/día".format(daily))
+        Text("Frecuencia: cada ${medInterval} horas (%.0f administraciones/día)".format(doses))
+        Text("Presentación: ${p.presentation}")
+        Text("Equivalencia matemática: %.1f mg = %.2f mL por administración".format(perDose,mlDose),fontWeight=FontWeight.Bold)
+        Text("La duración no se infiere: debe corresponder a la indicación y protocolo seleccionado.")
+       }}
+      }
+     }
+    }
+    item{SectionCard("10 · Comprobaciones de seguridad"){
      val checks=listOf("Confirmar peso medido","Confirmar indicación","Revisar alergias","Función renal/hepática","Interacciones","Ficha técnica / protocolo"); ChipChoices(checks.mapIndexed{i,x->x to medChecks.contains(i)},{i->medChecks=if(medChecks.contains(i)) medChecks-i else medChecks+i},2); Text("${medChecks.size}/${checks.size} comprobaciones marcadas",fontWeight=FontWeight.Bold)
     }}
    }
