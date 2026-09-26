@@ -284,7 +284,7 @@ fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Uni
             Text(tr(lang,"Especialidad / tipo de tratamiento","Specialty / treatment type"),fontWeight=FontWeight.Bold)
             ChipChoices(specialties.keys.map{x->x to (specialty==x)},{i-> specialty=specialties.keys.elementAt(i); selected=0 },columns=3)
             Text(tr(lang,"Tratamiento / actividad","Treatment / activity"),fontWeight=FontWeight.Bold)
-            ChipChoices(visibleLibrary.map{(idx,x)->(if(lang=="en")x.titleEn else x.titleEs) to (effectiveSelected==idx)},{i->selected=visibleLibrary[i].index),columns=3)
+            ChipChoices(visibleLibrary.map{(idx,x)->(if(lang=="en")x.titleEn else x.titleEs) to (effectiveSelected==idx)},{i->selected=visibleLibrary[i].index},columns=3)
         }}
         item { SectionCard(tr(lang,"2 · OD o zona","2 · Tooth or site")) { ChipChoices(sites.map{it to (site==it)},{site=sites[it]},columns=4) } }
         item { SectionCard(tr(lang,"3 · Estado durante la cita","3 · Appointment status")) { ChipChoices(states.map{it to (status==it)},{status=states[it]},columns=4) } }
