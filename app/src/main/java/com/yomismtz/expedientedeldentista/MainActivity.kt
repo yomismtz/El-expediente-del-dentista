@@ -23,6 +23,7 @@ import com.yomismtz.expedientedeldentista.settings.SettingsStore
 import com.yomismtz.expedientedeldentista.ui.AppRootV19
 import com.yomismtz.expedientedeldentista.ui.LocalActiveRecordId
 import com.yomismtz.expedientedeldentista.ui.LocalRecordFieldStore
+import com.yomismtz.expedientedeldentista.ui.LocalRecordFieldChanged
 import com.yomismtz.expedientedeldentista.ui.RecordFieldStore
 import com.yomismtz.expedientedeldentista.ui.theme.ExpedienteTheme
 
@@ -69,7 +70,11 @@ class MainActivity : AppCompatActivity() {
                     Box(Modifier.fillMaxSize()) {
                         CompositionLocalProvider(
                             LocalActiveRecordId provides activeRecord?.id,
-                            LocalRecordFieldStore provides fieldStore
+                            LocalRecordFieldStore provides fieldStore,
+                            LocalRecordFieldChanged provides { id ->
+                                recordStore.touch(id)
+                                savedRecords = recordStore.loadAll()
+                            }
                         ) {
                             AppRootV19(
                                 preferences = preferences,
