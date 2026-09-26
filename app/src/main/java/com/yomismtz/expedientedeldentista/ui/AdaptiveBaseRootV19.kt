@@ -51,27 +51,32 @@ private data class TabV19(val screen:AppScreen,val icon:String,val es:String,val
 
 private val tabsV19=listOf(
     // 1 · Expediente clínico
-    TabV19(AppScreen.HISTORY,"🩺","Historia clínica","Clinical history",0),
-    TabV19(AppScreen.INTAKE,"📋","Interrogatorio clínico guiado","Guided clinical intake",0),
-    TabV19(AppScreen.INTAKE,"📋","Nota de ingreso","Intake note",0),
+    // Conserva aquí el interrogatorio y todos los antecedentes de la historia clínica.
+    TabV19(AppScreen.HISTORY,"🩺","Historia clínica completa","Complete clinical history",0),
+    TabV19(AppScreen.INTAKE,"📋","Interrogatorio y nota de ingreso","Guided intake and intake note",0),
 
     // 2 · Exploración clínica
+    // Hallazgos del paciente: signos vitales, postura, ATM, tejidos blandos y oclusión.
     TabV19(AppScreen.VITALS,"❤️","Signos vitales","Vital signs",1),
-    TabV19(AppScreen.POSTURE,"🧍","Postura","Posture",1),
+    TabV19(AppScreen.POSTURE,"🧍","Postura y evaluación extraoral","Posture and extraoral assessment",1),
     TabV19(AppScreen.ATM,"◉","ATM y trastornos temporomandibulares","TMJ and temporomandibular disorders",1),
     TabV19(AppScreen.MUCOSA,"👄","Mucosa oral","Oral mucosa",1),
     TabV19(AppScreen.OCCLUSION,"↔","Oclusión","Occlusion",1),
 
-    // 3 · Análisis dentales. El concentrador conserva juntos todos los
-    // análisis odontológicos: odontograma, caries, higiene y periodoncia.
-    TabV19(AppScreen.ODONTOGRAM,"🦷","Análisis dentales","Dental analyses",2),
+    // 3 · Análisis dentales
+    // El concentrador mantiene juntos odontograma, caries, higiene y periodoncia.
+    TabV19(AppScreen.ODONTOGRAM,"🦷","Odontograma e índices dentales","Odontogram and dental indices",2),
+    TabV19(AppScreen.PERIODONTOGRAM,"📈","Periodontograma","Periodontogram",2),
+    TabV19(AppScreen.PULPAL,"⚡","Análisis pulpar y periapical","Pulpal and periapical analysis",2),
 
     // 4 · Auxiliares de diagnóstico
-    TabV19(AppScreen.AUXILIARIES,"🧪","Auxiliares de diagnóstico","Diagnostic aids",3),
+    // El concentrador existente conserva imagenología, radiografías, modelos,
+    // cefalometría, fotografía, laboratorio, histología, microbiología y CAMBRA.
+    TabV19(AppScreen.AUXILIARIES,"🔬","Auxiliares de diagnóstico","Diagnostic aids",3),
 
     // 5 · Diagnóstico y plan de tratamiento
-    TabV19(AppScreen.TREATMENT,"📝","Diagnóstico y tratamiento","Diagnosis and treatment",4),
-    TabV19(AppScreen.SESSIONS,"🗓","Tratamiento por sesiones","Treatment by sessions",4),
+    TabV19(AppScreen.TREATMENT,"📝","Diagnóstico y tratamiento por diente","Diagnosis and treatment by tooth",4),
+    TabV19(AppScreen.SESSIONS,"🗓","Plan de tratamiento por sesiones","Treatment plan by sessions",4),
 
     // 6 · Tratamiento y fichas clínicas
     TabV19(AppScreen.ENDO,"⚡","Ficha endodóntica","Endodontic sheet",5),
@@ -87,7 +92,7 @@ private val tabsV19=listOf(
 
     // 8 · Herramientas clínicas
     TabV19(AppScreen.CALCULATORS,"🧮","Calculadoras clínicas","Clinical calculators",7),
-    TabV19(AppScreen.SYSTEMIC_PROTOCOLS,"📚","Protocolos para enfermedades sistémicas","Systemic disease protocols",7)
+    TabV19(AppScreen.SYSTEMIC_PROTOCOLS,"📚","Protocolos sistémicos y atención especial","Systemic and special-care protocols",7)
 )
 
 @Composable
@@ -207,14 +212,14 @@ private fun FolderV19(lang:String,onNavigate:(AppScreen)->Unit,onClose:()->Unit)
     groupReturn?.let { group = it; groupReturn = null }
     ResponsiveScreenV17("YSM Expediente",tr(lang,"Elige una sección. La barra superior queda reservada y nunca tapa el contenido.","Choose a section. The top bar has reserved space and never covers content."),onClose) { profile ->
         val names=listOf(
-            tr(lang,"Expediente clínico","Clinical record"),
-            tr(lang,"Exploración clínica","Clinical examination"),
-            tr(lang,"Análisis dentales","Dental analyses"),
-            tr(lang,"Auxiliares de diagnóstico","Diagnostic aids"),
-            tr(lang,"Diagnóstico y plan de tratamiento","Diagnosis and treatment plan"),
-            tr(lang,"Tratamiento y fichas clínicas","Treatment and clinical sheets"),
-            tr(lang,"Herramientas administrativas","Administrative tools"),
-            tr(lang,"Herramientas clínicas","Clinical tools")
+            tr(lang,"1 · Expediente clínico","1 · Clinical record"),
+            tr(lang,"2 · Exploración clínica","2 · Clinical examination"),
+            tr(lang,"3 · Análisis dentales","3 · Dental analyses"),
+            tr(lang,"4 · Auxiliares de diagnóstico","4 · Diagnostic aids"),
+            tr(lang,"5 · Diagnóstico y plan de tratamiento","5 · Diagnosis and treatment plan"),
+            tr(lang,"6 · Tratamiento y fichas clínicas","6 · Treatment and clinical sheets"),
+            tr(lang,"7 · Herramientas administrativas","7 · Administrative tools"),
+            tr(lang,"8 · Herramientas clínicas","8 · Clinical tools")
         )
         OutlinedTextField(value=query,onValueChange={query=it},modifier=Modifier.fillMaxWidth(),singleLine=true,label={Text("🔎 "+tr(lang,"Buscar en el expediente","Search record"))},placeholder={Text(tr(lang,"Ej. bruxismo, CPOD, mucosa, presión arterial","e.g. bruxism, DMFT, mucosa, blood pressure"))})
         if(query.isNotBlank()) {
