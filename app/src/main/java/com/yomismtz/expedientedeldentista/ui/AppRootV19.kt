@@ -35,6 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.graphicsLayer
@@ -245,10 +246,10 @@ private fun RecordMenuV19(
     onLoad: (SavedRecord) -> Unit,
     onDelete: (String) -> Unit
 ) {
-    var mode by remember { mutableStateOf("home") }
-    var initials by remember { mutableStateOf("") }
-    var age by remember { mutableStateOf("") }
-    var sex by remember { mutableStateOf("") }
+    var mode by rememberSaveable { mutableStateOf("home") }
+    var initials by rememberSaveable { mutableStateOf("") }
+    var age by rememberSaveable { mutableStateOf("") }
+    var sex by rememberSaveable { mutableStateOf("") }
     var deleteTarget by remember { mutableStateOf<SavedRecord?>(null) }
 
     Column(
@@ -282,9 +283,20 @@ private fun RecordMenuV19(
             OutlinedTextField(initials,{initials=it.uppercase().filter{ch->ch.isLetter()}.take(5)},label={Text("Iniciales")},singleLine=true,modifier=Modifier.fillMaxWidth())
             OutlinedTextField(age,{age=it.filter(Char::isDigit).take(3)},label={Text("Edad")},singleLine=true,modifier=Modifier.fillMaxWidth())
             Text("Sexo", fontWeight=FontWeight.Bold)
-            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                listOf("Femenino","Masculino","Otro / no especificado").forEach { option ->
-                    FilterChip(selected=sex==option,onClick={sex=option},label={Text(option)},modifier=Modifier.weight(1f))
+            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                val compactSex = maxWidth < 520.dp || LocalDensity.current.fontScale >= 1.20f
+                if (compactSex) {
+                    Column(Modifier.fillMaxWidth(), verticalArrangement=Arrangement.spacedBy(6.dp)) {
+                        listOf("Femenino","Masculino","Otro / no especificado").forEach { option ->
+                            FilterChip(selected=sex==option,onClick={sex=option},label={Text(option)},modifier=Modifier.fillMaxWidth())
+                        }
+                    }
+                } else {
+                    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                        listOf("Femenino","Masculino","Otro / no especificado").forEach { option ->
+                            FilterChip(selected=sex==option,onClick={sex=option},label={Text(option)},modifier=Modifier.weight(1f))
+                        }
+                    }
                 }
             }
             val valid=initials.isNotBlank() && age.toIntOrNull() in 0..120 && sex.isNotBlank()
