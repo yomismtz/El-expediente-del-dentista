@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -107,6 +108,7 @@ fun AdaptiveBaseRootV19(
     var screen by remember { mutableStateOf(AppScreen.HOME) }
     var completedCount by remember { mutableStateOf(0) }
     var celebrate by remember { mutableStateOf(false) }
+    var selectedGroup by remember { mutableStateOf(0) }
     val history = remember { mutableStateListOf<AppScreen>() }
     val lang=preferences.languageTag
 
@@ -133,7 +135,8 @@ fun AdaptiveBaseRootV19(
     ) {
     when(screen) {
         AppScreen.HOME -> CoverV19(lang){navigate(AppScreen.FOLDER)}
-        AppScreen.FOLDER -> FolderV19(lang,{navigate(it)},backPrevious)
+        AppScreen.FOLDER -> FolderV19(lang,{ selectedGroup=it; navigate(AppScreen.SECTION) },backPrevious)
+        AppScreen.SECTION -> SectionV19(lang,selectedGroup,{navigate(it)},backPrevious)
         AppScreen.SETTINGS -> ResponsiveScreenV17(tr(lang,"Configuración","Settings"),tr(lang,"Usa el botón de Configuración de la barra superior.","Use Settings in the top bar."),backPrevious){ }
         AppScreen.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
         AppScreen.HISTORY -> ClinicalHistoryHubV38(lang,{navigate(it)},backPrevious)
@@ -206,48 +209,104 @@ private fun CoverV19(lang:String,onOpen:()->Unit) {
 }
 
 @Composable
-private fun FolderV19(lang:String,onNavigate:(AppScreen)->Unit,onClose:()->Unit) {
-    var group by remember { mutableStateOf(0) }
-    var query by remember { mutableStateOf("") }
-    var groupReturn by remember { mutableStateOf<Int?>(null) }
-    groupReturn?.let { group = it; groupReturn = null }
-    ResponsiveScreenV17("YSM Expediente",tr(lang,"Elige una sección. La barra superior queda reservada y nunca tapa el contenido.","Choose a section. The top bar has reserved space and never covers content."),onClose) { profile ->
-        val names=listOf(
-            tr(lang,"1 · Expediente clínico","1 · Clinical record"),
-            tr(lang,"2 · Exploración clínica","2 · Clinical examination"),
-            tr(lang,"3 · Análisis dentales","3 · Dental analyses"),
-            tr(lang,"4 · Auxiliares de diagnóstico","4 · Diagnostic aids"),
-            tr(lang,"5 · Diagnóstico y plan de tratamiento","5 · Diagnosis and treatment plan"),
-            tr(lang,"6 · Tratamiento y fichas clínicas","6 · Treatment and clinical sheets"),
-            tr(lang,"7 · Herramientas administrativas","7 · Administrative tools"),
-            tr(lang,"8 · Herramientas clínicas","8 · Clinical tools")
+private fun FolderV19(lang:String,onOpenGroup:(Int)->Unit,onClose:()->Unit) {
+    ResponsiveScreenV17(
+        "YSM Expediente",
+        tr(lang,"Elige uno de los 8 rubros para abrirlo.","Choose one of the 8 sections to open it."),
+        onClose
+    ) { profile ->
+        val groups=listOf(
+            Triple("📋",tr(lang,"1 · Expediente clínico","1 · Clinical record"),Color(0xFFD7EEF8)),
+            Triple("🩺",tr(lang,"2 · Exploración clínica","2 · Clinical examination"),Color(0xFFDDF3E4)),
+            Triple("🦷",tr(lang,"3 · Análisis dentales","3 · Dental analyses"),Color(0xFFFFE6C9)),
+            Triple("🔬",tr(lang,"4 · Auxiliares de diagnóstico","4 · Diagnostic aids"),Color(0xFFE9E0F8)),
+            Triple("🧠",tr(lang,"5 · Diagnóstico y plan de tratamiento","5 · Diagnosis and treatment plan"),Color(0xFFFFE1E8)),
+            Triple("🩹",tr(lang,"6 · Tratamiento y fichas clínicas","6 · Treatment and clinical sheets"),Color(0xFFDFF0EC)),
+            Triple("🗂️",tr(lang,"7 · Herramientas administrativas","7 · Administrative tools"),Color(0xFFFFF0C9)),
+            Triple("🧮",tr(lang,"8 · Herramientas clínicas","8 · Clinical tools"),Color(0xFFE1E8FF))
         )
-        OutlinedTextField(value=query,onValueChange={query=it},modifier=Modifier.fillMaxWidth(),singleLine=true,label={Text("🔎 "+tr(lang,"Buscar en el expediente","Search record"))},placeholder={Text(tr(lang,"Ej. bruxismo, CPOD, mucosa, presión arterial","e.g. bruxism, DMFT, mucosa, blood pressure"))})
-        if(query.isNotBlank()) {
-            val q=query.trim().lowercase()
-            val special=listOf(
-                Triple(AppScreen.HISTORY_HABITS,"🦷",tr(lang,"Hábitos · bruxismo","Habits · bruxism")),
-                Triple(AppScreen.CPOD,"➕","CPOD / ceod"), Triple(AppScreen.MUCOSA,"👄",tr(lang,"Mucosa oral","Oral mucosa")),
-                Triple(AppScreen.VITALS,"❤️",tr(lang,"Signos vitales · presión arterial","Vital signs · blood pressure")),
-                Triple(AppScreen.OCCLUSION,"↔",tr(lang,"Oclusión","Occlusion")), Triple(AppScreen.ATM,"◉","ATM"), Triple(AppScreen.PERIODONTOGRAM,"📈",tr(lang,"Periodoncia","Periodontics")))
-            val results=special.filter{it.third.lowercase().contains(q)||(q.contains("brux")&&it.first==AppScreen.HISTORY_HABITS)||(q.contains("pres")&&it.first==AppScreen.VITALS)||(q.contains("cpod")&&it.first==AppScreen.CPOD)}
-            ResponsiveSectionV17(tr(lang,"Resultados","Results")) { AdaptiveGridV17(results.size.coerceAtLeast(1),if(profile.width==ScreenWidthV17.EXPANDED)3 else 2){i-> if(results.isEmpty()) Text(tr(lang,"Sin coincidencias","No matches")) else { val r=results[i]; Card(onClick={onNavigate(r.first)},modifier=Modifier.fillMaxWidth(),shape=MaterialTheme.shapes.medium){Text("${r.second} ${r.third}",Modifier.padding(12.dp),fontWeight=FontWeight.Bold)} } } }
-        }
         ResponsiveSectionV17(tr(lang,"Secciones del expediente","Record sections")) {
-            AdaptiveGridV17(names.size,when { profile.largeSystemText -> 1; profile.width==ScreenWidthV17.COMPACT -> 2; profile.width==ScreenWidthV17.MEDIUM -> 2; else -> 4 }) { i ->
-                FilterChip(group==i,{group=i},{Text(names[i])},modifier=Modifier.fillMaxWidth())
+            AdaptiveGridV17(groups.size,when {
+                profile.largeSystemText -> 1
+                profile.width==ScreenWidthV17.COMPACT -> 2
+                profile.width==ScreenWidthV17.MEDIUM -> 2
+                else -> 4
+            }) { i ->
+                val item=groups[i]
+                Card(
+                    onClick={onOpenGroup(i)},
+                    modifier=Modifier.fillMaxWidth(),
+                    colors=CardDefaults.cardColors(containerColor=item.third),
+                    border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.25f)),
+                    shape=RoundedCornerShape(22.dp)
+                ) {
+                    Column(
+                        Modifier.fillMaxWidth().padding(horizontal=14.dp,vertical=20.dp),
+                        horizontalAlignment=Alignment.CenterHorizontally,
+                        verticalArrangement=Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(item.first,style=MaterialTheme.typography.headlineMedium)
+                        Text(item.second,fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium,textAlign=TextAlign.Center)
+                        Text(tr(lang,"Toca para abrir","Tap to open"),style=MaterialTheme.typography.bodyMedium)
+                    }
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun SectionV19(lang:String,group:Int,onNavigate:(AppScreen)->Unit,onBack:()->Unit) {
+    val names=listOf(
+        tr(lang,"1 · Expediente clínico","1 · Clinical record"),
+        tr(lang,"2 · Exploración clínica","2 · Clinical examination"),
+        tr(lang,"3 · Análisis dentales","3 · Dental analyses"),
+        tr(lang,"4 · Auxiliares de diagnóstico","4 · Diagnostic aids"),
+        tr(lang,"5 · Diagnóstico y plan de tratamiento","5 · Diagnosis and treatment plan"),
+        tr(lang,"6 · Tratamiento y fichas clínicas","6 · Treatment and clinical sheets"),
+        tr(lang,"7 · Herramientas administrativas","7 · Administrative tools"),
+        tr(lang,"8 · Herramientas clínicas","8 · Clinical tools")
+    )
+    var query by remember(group) { mutableStateOf("") }
+    ResponsiveScreenV17(
+        names[group],
+        tr(lang,"Selecciona el apartado que deseas abrir.","Select the item you want to open."),
+        onBack
+    ) { profile ->
+        OutlinedTextField(
+            value=query,
+            onValueChange={query=it},
+            modifier=Modifier.fillMaxWidth(),
+            singleLine=true,
+            label={Text("🔎 "+tr(lang,"Buscar en esta sección","Search this section"))}
+        )
+        val q=query.trim().lowercase()
+        val items=tabsV19.filter {
+            it.group==group && (q.isBlank() || it.es.lowercase().contains(q) || it.en.lowercase().contains(q))
+        }
         ResponsiveSectionV17(names[group]) {
-            val items=tabsV19.filter{it.group==group}
-            AdaptiveGridV17(items.size,when { profile.largeSystemText -> 1; profile.width==ScreenWidthV17.COMPACT -> 2; profile.width==ScreenWidthV17.MEDIUM -> 2; else -> 3 }) { i ->
-                val tab=items[i]
-                val cardColor by animateColorAsState(MaterialTheme.colorScheme.primaryContainer.copy(alpha=.55f),animationSpec=tween(220),label="menuCard")
-                Card(onClick={groupReturn=group; onNavigate(tab.screen)},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=cardColor),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.30f)),shape=RoundedCornerShape(16.dp)) {
-                    Column(Modifier.fillMaxWidth().padding(13.dp),verticalArrangement=Arrangement.spacedBy(3.dp)) {
-                        Text("${tab.icon} ${if(lang=="en")tab.en else tab.es}",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
-                        Text(tr(lang,"Toca para abrir","Tap to open"),style=MaterialTheme.typography.bodyMedium)
-                        CompletionBadgeV22(done=false,inProgress=false,lang=lang)
+            AdaptiveGridV17(items.size.coerceAtLeast(1),when {
+                profile.largeSystemText -> 1
+                profile.width==ScreenWidthV17.COMPACT -> 2
+                profile.width==ScreenWidthV17.MEDIUM -> 2
+                else -> 3
+            }) { i ->
+                if(items.isEmpty()) {
+                    Text(tr(lang,"Sin coincidencias","No matches"))
+                } else {
+                    val tab=items[i]
+                    Card(
+                        onClick={onNavigate(tab.screen)},
+                        modifier=Modifier.fillMaxWidth(),
+                        colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer.copy(alpha=.55f)),
+                        border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.30f)),
+                        shape=RoundedCornerShape(16.dp)
+                    ) {
+                        Column(Modifier.fillMaxWidth().padding(14.dp),verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                            Text("${tab.icon} ${if(lang=="en")tab.en else tab.es}",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
+                            Text(tr(lang,"Toca para abrir","Tap to open"),style=MaterialTheme.typography.bodyMedium)
+                            CompletionBadgeV22(done=false,inProgress=false,lang=lang)
+                        }
                     }
                 }
             }
