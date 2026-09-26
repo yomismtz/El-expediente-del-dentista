@@ -86,7 +86,13 @@ private fun presetTreatments37(d:Disease37):List<String> = when(d.protocol){
   "Osteoporosis / antirresortivos" to "Documentar fármaco, vía, indicación, duración y antecedentes de procedimientos óseos antes de cirugía dentoalveolar.",
   "Epilepsia" to "Registrar control, última crisis, desencadenantes y tratamiento; preparar medidas de seguridad.",
   "Cáncer / inmunosupresión" to "Identificar tratamiento activo, radioterapia de cabeza/cuello, estado hematológico cuando corresponda y coordinación oncológica.",
-  "Alergias / anafilaxia" to "Confirmar sustancia, reacción, gravedad, fecha, atención requerida y alternativas seguras."
+  "Alergias / anafilaxia" to "Confirmar sustancia, reacción, gravedad, fecha, atención requerida y alternativas seguras.",
+  "TDAH" to "Confirmar diagnóstico y tratamiento referido, horario y duración habitual de la cita, capacidad de atención, impulsividad, ansiedad, experiencias odontológicas previas y estrategias que facilitan la cooperación. Preferir instrucciones breves, secuenciales, refuerzo positivo y un plan individualizado.",
+  "Trastorno del espectro autista (TEA)" to "Preguntar directamente al paciente o cuidador sobre comunicación preferida, sensibilidad a luz, sonido, tacto, sabores u olores, desencadenantes, rutinas y estrategias que funcionan. Considerar desensibilización, apoyos visuales, ambiente sensorial adaptado y citas individualizadas.",
+  "Discapacidad intelectual / del desarrollo" to "Valorar comunicación, comprensión, autonomía para higiene oral, apoyos necesarios, consentimiento o asentimiento cuando corresponda, medicación y comorbilidades. Adaptar instrucciones y prevención al nivel funcional individual.",
+  "Síndrome de Down" to "Revisar antecedentes médicos y cardiacos, vía aérea y apnea del sueño, función tiroidea, medicación, capacidad de cooperación y necesidades de apoyo. No asumir riesgos ni limitaciones sólo por el diagnóstico; individualizar el manejo.",
+  "Parálisis cerebral / trastorno motor" to "Identificar movilidad, postura y transferencia seguras, control cefálico, deglución, riesgo de aspiración, reflejos, comunicación, medicación y apoyo del cuidador. Adaptar posición, tiempos y dispositivos a la función individual.",
+  "Trastornos de ansiedad / fobia dental" to "Identificar desencadenantes, experiencias previas, estrategias de afrontamiento y preferencias del paciente. Considerar comunicación anticipatoria, tell-show-do, respiración, distracción, desensibilización y otras técnicas de guía de conducta según necesidad."
  )
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
   item{ScreenHeader("Protocolos para pacientes sistémicos",onBack,"Selecciona una condición. El protocolo se abre por apartados; no es una lista estática.")}
