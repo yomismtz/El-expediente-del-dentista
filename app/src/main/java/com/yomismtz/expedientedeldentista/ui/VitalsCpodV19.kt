@@ -97,6 +97,9 @@ fun VitalsInteractiveV19Screen(lang:String,onBack:()->Unit) {
         VitalBand19(tr(lang,"Adulto","Adult"),12,20,60,100,100,140,60,90)
     )
     var bandIndex by remember{mutableStateOf(5)}
+    var age by remember{mutableStateOf("")}
+    var sex by remember{mutableStateOf("Femenino")}
+    var spo2 by remember{mutableStateOf("")}
     var rr by remember{mutableStateOf("")}; var hr by remember{mutableStateOf("")}
     var sys by remember{mutableStateOf("")}; var dia by remember{mutableStateOf("")}
     var temp by remember{mutableStateOf("")}; var glucose by remember{mutableStateOf("")}
@@ -106,12 +109,19 @@ fun VitalsInteractiveV19Screen(lang:String,onBack:()->Unit) {
     val bmi=run { val w=weight.toDoubleOrNull(); val h=height.toDoubleOrNull()?.div(100.0); if(w!=null&&h!=null&&h>0)w/h.pow(2) else null }
 
     ResponsiveScreenV17(tr(lang,"Signos vitales y glucosa","Vital signs and glucose"),tr(lang,"Registra valores y compáralos con referencias educativas; confirma cualquier valor anormal.","Record values and compare with teaching references; confirm any abnormal value."),onBack) { profile ->
-        ResponsiveSectionV17(tr(lang,"1 · Grupo de edad","1 · Age group")) {
+        ResponsiveSectionV17(tr(lang,"1 · Edad y sexo","1 · Age and sex")) {
+            OutlinedTextField(age,{age=it.filter(Char::isDigit).take(3)},label={Text(tr(lang,"Edad en años","Age in years"))},modifier=Modifier.fillMaxWidth())
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                listOf("Femenino","Masculino").forEach { s -> FilterChip(sex==s,{sex=s},{Text(if(lang=="en" && s=="Femenino") "Female" else if(lang=="en") "Male" else s)}) }
+            }
+            Text(tr(lang,"Selecciona también el grupo etario de referencia. En pediatría, TA e IMC requieren edad, sexo y, según el parámetro, talla/percentiles.","Also select the reference age group. In pediatrics, BP and BMI require age, sex and, depending on the parameter, height/percentiles."),style=MaterialTheme.typography.bodySmall)
+        }
+        ResponsiveSectionV17(tr(lang,"2 · Grupo de edad de referencia","2 · Reference age group")) {
             AdaptiveGridV17(bands.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 3) { i ->
                 FilterChip(bandIndex==i,{bandIndex=i},{Text(bands[i].label)},modifier=Modifier.fillMaxWidth())
             }
         }
-        ResponsiveSectionV17(tr(lang,"2 · FR, FC y presión arterial","2 · RR, HR and blood pressure")) {
+        ResponsiveSectionV17(tr(lang,"3 · FR, FC y presión arterial","3 · RR, HR and blood pressure")) {
             val cols=if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2
             AdaptiveGridV17(4,cols) { i -> when(i) {
                 0 -> OutlinedTextField(rr,{rr=it.filter(Char::isDigit).take(3)},label={Text("FR /min")},modifier=Modifier.fillMaxWidth())
@@ -124,24 +134,29 @@ fun VitalsInteractiveV19Screen(lang:String,onBack:()->Unit) {
             Text("TA sistólica ${b.sysMin}–${b.sysMax}: ${vitalRange19(sys.toDoubleOrNull(),b.sysMin.toDouble(),b.sysMax.toDouble(),lang)}")
             Text("TA diastólica ${b.diaMin}–${b.diaMax}: ${vitalRange19(dia.toDoubleOrNull(),b.diaMin.toDouble(),b.diaMax.toDouble(),lang)}")
         }
-        ResponsiveSectionV17(tr(lang,"3 · Temperatura","3 · Temperature")) {
+        ResponsiveSectionV17(tr(lang,"4 · Temperatura y saturación de oxígeno","4 · Temperature and oxygen saturation")) {
             OutlinedTextField(temp,{temp=it.filter{c->c.isDigit()||c=='.'}.take(5)},label={Text("°C")},modifier=Modifier.fillMaxWidth())
             ResultCard19(temperature19(temp.toDoubleOrNull(),lang))
             Text(tr(lang,"Referencia resumida: alrededor de 37 °C es habitual; ≥38 °C suele considerarse fiebre; ≤35 °C es muy baja. Sitio y método modifican la lectura.","Summary reference: around 37 °C is common; ≥38 °C is usually fever; ≤35 °C is very low. Site and method affect the reading."),style=MaterialTheme.typography.bodySmall)
+            OutlinedTextField(spo2,{spo2=it.filter(Char::isDigit).take(3)},label={Text("SpO₂ %")},modifier=Modifier.fillMaxWidth())
+            val s=spo2.toIntOrNull()
+            ResultCard19(when { s==null -> tr(lang,"Escribe la SpO₂ para interpretarla.","Enter SpO₂ for interpretation."); s>100 -> tr(lang,"Valor no válido: SpO₂ no puede superar 100 %.","Invalid value: SpO₂ cannot exceed 100%."); s>=95 -> tr(lang,"95–100 %: intervalo habitual en la mayoría de personas sanas.","95–100%: usual range for most healthy individuals."); else -> tr(lang,"SpO₂ menor de 95 %: repite y confirma la medición y valora síntomas, antecedentes, altitud y contexto clínico.","SpO₂ below 95%: repeat and confirm the measurement and assess symptoms, history, altitude and clinical context.") })
+            Text(tr(lang,"La pulsioximetría es una estimación. Perfusión deficiente, temperatura de la piel, esmalte de uñas, pigmentación cutánea y otros factores pueden afectar la precisión.","Pulse oximetry is an estimate. Poor circulation, skin temperature, nail polish, skin pigmentation and other factors can affect accuracy."),style=MaterialTheme.typography.bodySmall)
         }
-        ResponsiveSectionV17(tr(lang,"4 · Glucosa capilar","4 · Capillary glucose")) {
+        ResponsiveSectionV17(tr(lang,"5 · Glucosa capilar","5 · Capillary glucose")) {
             OutlinedTextField(glucose,{glucose=it.filter(Char::isDigit).take(4)},label={Text("mg/dL")},modifier=Modifier.fillMaxWidth())
             GlucoseContext19.entries.forEach { ctx -> FilterChip(glucoseContext==ctx,{glucoseContext=ctx},{Text(glucoseContext19(ctx,lang))},modifier=Modifier.fillMaxWidth()) }
             ResultCard19(glucose19(glucose.toIntOrNull(),glucoseContext,lang))
             Text(tr(lang,"Los umbrales diagnósticos corresponden a pruebas estandarizadas de plasma/laboratorio y requieren confirmación. La lectura capilar sirve aquí como alerta educativa.","Diagnostic thresholds refer to standardized plasma/laboratory tests and require confirmation. Capillary readings here are an educational alert."),style=MaterialTheme.typography.bodySmall)
         }
-        ResponsiveSectionV17("IMC / BMI") {
+        ResponsiveSectionV17(tr(lang,"6 · Peso, talla e IMC","6 · Weight, height and BMI")) {
             val cols=if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2
             AdaptiveGridV17(2,cols) { i -> if(i==0)
                 OutlinedTextField(weight,{weight=it.filter{c->c.isDigit()||c=='.'}.take(6)},label={Text("kg")},modifier=Modifier.fillMaxWidth())
             else OutlinedTextField(height,{height=it.filter{c->c.isDigit()||c=='.'}.take(6)},label={Text("cm")},modifier=Modifier.fillMaxWidth()) }
             Text(if(bmi==null)tr(lang,"IMC = peso / talla²","BMI = weight / height²") else "IMC = ${"%.1f".format(bmi)} kg/m²",fontWeight=FontWeight.Bold)
-            Text(tr(lang,"En niños y adolescentes, interpreta IMC por edad y sexo.","For children and adolescents, interpret BMI by age and sex."))
+            val a=age.toIntOrNull()
+            Text(when { bmi==null -> tr(lang,"Introduce peso y talla para calcular el IMC.","Enter weight and height to calculate BMI."); a!=null && a in 2..19 -> tr(lang,"IMC pediátrico: debe clasificarse por percentil de IMC para edad y sexo (CDC); el valor de IMC aislado no debe clasificarse con límites de adulto.","Pediatric BMI: classify using BMI-for-age and sex percentile (CDC); the BMI value alone should not use adult cutoffs."); a!=null && a>=20 -> when { bmi<18.5 -> tr(lang,"IMC adulto: bajo peso (<18.5).","Adult BMI: underweight (<18.5)."); bmi<25 -> tr(lang,"IMC adulto: peso saludable (18.5–24.9).","Adult BMI: healthy weight (18.5–24.9)."); bmi<30 -> tr(lang,"IMC adulto: sobrepeso (25.0–29.9).","Adult BMI: overweight (25.0–29.9)."); else -> tr(lang,"IMC adulto: rango de obesidad (≥30).","Adult BMI: obesity range (≥30).") }; else -> tr(lang,"Indica la edad para interpretar el IMC correctamente.","Enter age to interpret BMI correctly.") })
         }
         NoticeCard(tr(lang,"Fuentes educativas resumidas: NHS para temperatura; MedlinePlus, CDC y ADA para glucosa. El protocolo institucional y la valoración clínica prevalecen.","Teaching sources summarized: NHS for temperature; MedlinePlus, CDC and ADA for glucose. Institutional protocol and clinical assessment prevail."))
     }
