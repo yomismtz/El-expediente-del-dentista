@@ -156,10 +156,9 @@ internal fun ResponsiveSectionV17(
 }
 
 internal fun responsiveColumnsV17(profile: ScreenProfileV17, preferredExpanded: Int = 3): Int = when {
-    profile.largeSystemText -> 1
-    profile.width == ScreenWidthV17.COMPACT -> 1
-    profile.width == ScreenWidthV17.MEDIUM -> 2
-    else -> preferredExpanded.coerceAtLeast(2)
+    profile.width == ScreenWidthV17.COMPACT -> if(profile.largeSystemText) 1 else 2
+    profile.width == ScreenWidthV17.MEDIUM -> if(profile.largeSystemText) 2 else preferredExpanded.coerceIn(2,3)
+    else -> if(profile.largeSystemText) preferredExpanded.coerceIn(2,4) else preferredExpanded.coerceIn(3,5)
 }
 
 
