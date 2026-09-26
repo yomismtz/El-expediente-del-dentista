@@ -72,8 +72,8 @@ fun AppRootV19(
     onLoadRecord: (SavedRecord) -> Unit,
     onDeleteRecord: (String) -> Unit
 ) {
-    var settingsOpen by remember { mutableStateOf(false) }
-    var recordMenuOpen by remember { mutableStateOf(activeRecordId == null) }
+    var settingsOpen by rememberSaveable { mutableStateOf(false) }
+    var recordMenuOpen by rememberSaveable { mutableStateOf(activeRecordId == null) }
     Box(Modifier.fillMaxSize()) {
         if (!recordMenuOpen && activeRecordId != null) AppRootV7(
             preferences = preferences,
