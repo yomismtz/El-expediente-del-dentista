@@ -193,7 +193,6 @@ private fun PaletteCardV19(style:BirdPaletteStyle,lang:String,selected:Boolean,o
             Text(mascotIconV19(style),style=MaterialTheme.typography.headlineMedium,modifier=Modifier.graphicsLayer { val k=motion.value; when(mascotMotionV19(style)){0->{translationY=-18f*k; scaleX=1f+.12f*k; scaleY=1f+.12f*k};1->{rotationZ=14f*k; scaleX=1f+.08f*k};2->{translationX=12f*k; rotationZ=-10f*k};else->{scaleX=1f+.16f*k; scaleY=1f-.10f*k} } })
             Text(paletteDisplayName(style,lang),fontWeight=if(selected)FontWeight.Black else FontWeight.Medium,textAlign=TextAlign.Center)
             Row(horizontalArrangement=Arrangement.spacedBy(4.dp)) { paletteSwatches(style).forEach { c -> Box(Modifier.size(16.dp).background(c,CircleShape)) } }
-            if(style==BirdPaletteStyle.AGAPORNI) Text(tr(lang,"Predeterminada","Default"),style=MaterialTheme.typography.labelSmall)
         }
     }
 }
