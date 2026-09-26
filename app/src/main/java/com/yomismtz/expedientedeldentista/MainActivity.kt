@@ -18,14 +18,14 @@ import com.yomismtz.expedientedeldentista.clinical.ClinicalRecordStore
 import com.yomismtz.expedientedeldentista.clinical.SavedRecord
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.SettingsStore
-import com.yomismtz.expedientedeldentista.ui.AppRootV19
+import com.yomismtz.expedientedeldentista.ui.AppRootV19\nimport com.yomismtz.expedientedeldentista.ui.RecordFieldStore\nimport com.yomismtz.expedientedeldentista.ui.LocalActiveRecordId\nimport com.yomismtz.expedientedeldentista.ui.LocalRecordFieldStore\nimport androidx.compose.runtime.CompositionLocalProvider
 import com.yomismtz.expedientedeldentista.ui.theme.ExpedienteTheme
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val store = SettingsStore(this)
-        val recordStore = ClinicalRecordStore(this)
+        val recordStore = ClinicalRecordStore(this)\n        val fieldStore = RecordFieldStore(this)
         // Breve trino sintetizado: funciona 100% offline y no requiere archivo de audio ni permiso.
         runCatching {
             val tone = ToneGenerator(AudioManager.STREAM_MUSIC, 32)
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 Surface(modifier = Modifier.fillMaxSize(), color = androidx.compose.material3.MaterialTheme.colorScheme.background) {
                     Box(Modifier.fillMaxSize()) {
-                        AppRootV19(
+                        CompositionLocalProvider(LocalActiveRecordId provides activeRecord?.id, LocalRecordFieldStore provides fieldStore) {\n                        AppRootV19(
                             preferences = preferences,
                             onPreferencesChanged = savePreferences,
                             onLanguageChanged = { tag ->
