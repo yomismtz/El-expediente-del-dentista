@@ -43,7 +43,7 @@ fun AuxiliariesV20Screen(lang:String,onBack:()->Unit){
         }
         AuxV20Page.HOME->ResponsiveScreenV17(
             tr(lang,"Auxiliares de diagnóstico","Diagnostic aids"),
-            tr(lang,"Pantalla inicial de auxiliares: Laboratorio, Ortodoncia, Imagenología y Sialometría. Los colores se derivan de la paleta activa y todo funciona localmente.","Diagnostic aids home: Laboratory, Orthodontics, Imaging and Sialometry. Colors are derived from the active palette and everything works locally."),
+            tr(lang,"Pantalla inicial de auxiliares: Laboratorio, Ortodoncia, Imagenología y Sialometría. Los colores se derivan de la paleta activa y todo funciona localmente. Acceso directo desde el rubro 4.","Diagnostic aids home: Laboratory, Orthodontics, Imaging and Sialometry. Colors are derived from the active palette and everything works locally. Direct access from section 4."),
             onBack
         ){profile->
             val columns=when {
