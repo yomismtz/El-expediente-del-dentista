@@ -121,12 +121,12 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 6->Crossbite19(lang)
             }
         }
-        NoticeCard("Las fotografías son referencias educativas de archivos con licencia abierta en Wikimedia Commons; se conserva atribución. Los esquemas de medición se identifican como esquemas y no como fotografías clínicas. Registrar hallazgos no equivale a emitir automáticamente un diagnóstico.")
+        NoticeCard(tr(lang,"Los espacios visuales clínicos están preparados para recursos locales del APK. Mientras un recurso siga pendiente de integración, no debe interpretarse el marcador visual como fotografía clínica. Los esquemas de medición se identifican como esquemas. Registrar hallazgos no equivale a emitir automáticamente un diagnóstico.","Clinical visual slots are prepared for local APK resources. While a resource is still pending integration, its visual placeholder must not be interpreted as a clinical photograph. Measurement diagrams are identified as diagrams. Recording findings does not automatically establish a diagnosis."))
     }
 }
 
 @Composable private fun OcclusionPhoto19(title:String,@DrawableRes resource:Int){
- LocalZoomableImageV21(title=title,resource=resource,attribution="Referencia educativa empaquetada dentro del APK · fuente original: Wikimedia Commons.")
+ LocalZoomableImageV21(title=title,resource=resource,attribution="Recurso visual local del APK · verificar imagen clínica definitiva antes de uso docente.")
 }
 
 @Composable
