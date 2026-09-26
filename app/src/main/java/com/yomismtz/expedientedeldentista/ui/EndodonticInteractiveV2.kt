@@ -70,14 +70,14 @@ fun EndodonticInteractiveV2Screen(
 ) {
     val result = ClinicalEngines.pulpalDiagnosis(session.pulpal)
     var tab by remember { mutableStateOf(0) }
-    var selectedTooth by remember { mutableStateOf(session.pulpal.tooth.takeIf { it > 0 } ?: 36) }
-    var dentition by remember { mutableStateOf("mature") }
-    var procedure by remember { mutableStateOf("root_canal") }
-    var restoration by remember { mutableStateOf("") }
-    var referencePoint by remember { mutableStateOf("Cúspide vestibular reproducible") }
-    var notes by remember { mutableStateOf("Sin observaciones adicionales") }
-    var canals by remember { mutableStateOf(defaultCanals(selectedTooth)) }
-    val completed = remember { mutableStateMapOf<String, Boolean>() }
+    var selectedTooth by rememberRecordState("endo.selectedTooth",session.pulpal.tooth.takeIf { it > 0 } ?: 36)
+    var dentition by rememberRecordState("endo.dentition","mature")
+    var procedure by rememberRecordState("endo.procedure","root_canal")
+    var restoration by rememberRecordState("endo.restoration","")
+    var referencePoint by rememberRecordState("endo.referencePoint","Cúspide vestibular reproducible")
+    var notes by rememberRecordState("endo.notes","Sin observaciones adicionales")
+    var canals by rememberRecordState("endo.canals",defaultCanals(selectedTooth))
+    val completed = rememberRecordStateMap<String,Boolean>("endo.completed")
 
     val pulpal = if (lang == "en") result.pulpalEn else result.pulpalEs
     val apical = if (lang == "en") result.apicalEn else result.apicalEs
