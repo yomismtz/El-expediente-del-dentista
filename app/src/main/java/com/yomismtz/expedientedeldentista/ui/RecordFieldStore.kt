@@ -30,16 +30,17 @@ class RecordFieldStore(context: Context) {
         }.getOrNull()
     }
 
-    fun save(recordId: String?, key: String, value: Any?) {
-        if (recordId.isNullOrBlank() || value !is Serializable) return
-        runCatching {
+    fun save(recordId: String?, key: String, value: Any?): Boolean {
+        if (recordId.isNullOrBlank() || value !is Serializable) return false
+        return runCatching {
             val out = ByteArrayOutputStream()
             ObjectOutputStream(out).use { it.writeObject(value) }
-            prefs.edit().putString(
-                "$recordId::$key",
-                Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP)
-            ).apply()
-        }
+            val encoded = Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP)
+            val storageKey = "$recordId::$key"
+            if (prefs.getString(storageKey, null) == encoded) return@runCatching false
+            prefs.edit().putString(storageKey, encoded).apply()
+            true
+        }.getOrDefault(false)
     }
 
     fun deleteRecord(recordId: String) {
@@ -64,8 +65,8 @@ fun <T> rememberRecordState(key: String, initial: T): MutableState<T> {
         mutableStateOf((store?.load(id, key) as? T) ?: initial)
     }
     LaunchedEffect(id, key, state.value) {
-        store?.save(id, key, state.value)
-        if (!id.isNullOrBlank()) changed.value(id)
+        val didChange = store?.save(id, key, state.value) == true
+        if (didChange && !id.isNullOrBlank()) changed.value(id)
     }
     return state
 }
@@ -83,8 +84,8 @@ fun <K, V> rememberRecordStateMap(key: String): SnapshotStateMap<K, V> {
     }
     val snapshot = map.toMap()
     LaunchedEffect(id, key, snapshot) {
-        store?.save(id, key, HashMap(snapshot))
-        if (!id.isNullOrBlank()) changed.value(id)
+        val didChange = store?.save(id, key, HashMap(snapshot)) == true
+        if (didChange && !id.isNullOrBlank()) changed.value(id)
     }
     return map
 }
