@@ -162,7 +162,7 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
                 ChipChoices(specialties.map{it.first to (specialty==it.first)},{i-> specialty=specialties[i].first; selected=0 },columns=4)
                 Text(tr(lang,"Actividad","Activity"),fontWeight=FontWeight.Bold)
                 if(visibleGuides.isEmpty()) Text(tr(lang,"No hay actividades de esta especialidad en la biblioteca actual.","No activities from this specialty are in the current library."))
-                else ChipChoices(visibleGuides.map{(idx,a)->(if(lang=="en")a.nameEn else a.nameEs) to (effectiveSelected==idx)},{i->selected=visibleGuides[i].index},columns=3)
+                else ChipChoices(visibleGuides.map{(idx,a)->(if(lang=="en")a.nameEn else a.nameEs) to (effectiveSelected==idx)},{i->selected=visibleGuides[i].index},columns=2)
             }
         }
         item { SectionCard(tr(lang,"2 · ¿En qué consiste?","2 · What does it involve?")) { Text(if(lang=="en")g.purposeEn else g.purposeEs) } }
