@@ -214,7 +214,14 @@ private fun supplementalNoteLibraryV39():List<NoteTemplate> = listOf(
 
 @Composable
 fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Unit) {
-    var selected by remember { mutableStateOf(0) }
+    var selected by remember { mutableStateOf<Int?>(null) }
+    var siteChosen by remember { mutableStateOf(false) }
+    var statusChosen by remember { mutableStateOf(false) }
+    var anesthesiaChosen by remember { mutableStateOf(false) }
+    var incidentsChosen by remember { mutableStateOf(false) }
+    var instructionsChosen by remember { mutableStateOf(false) }
+    var followUpChosen by remember { mutableStateOf(false) }
+    var supervisionChosen by remember { mutableStateOf(false) }
     var site by remember { mutableStateOf("OD / zona seleccionada") }
     var status by remember { mutableStateOf("Paciente estable y cooperador") }
     var anesthesia by remember { mutableStateOf("No requerida") }
@@ -282,8 +289,8 @@ fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Uni
         return specialties[specialty].orEmpty().any{hay.contains(it)}
     }
     val visibleLibrary=library.withIndex().filter{matchesSpecialty(it.value)}
-    val effectiveSelected = if (visibleLibrary.any { it.index == selected }) selected else visibleLibrary.firstOrNull()?.index ?: 0
-    val n=library[effectiveSelected]
+    val effectiveSelected = selected?.takeIf { sel -> visibleLibrary.any { it.index == sel } }
+    val n=effectiveSelected?.let { library[it] }
     val sites=listOf("OD / zona seleccionada","Cuadrante","Arcada","Mucosa oral","Periodonto","ATM / región craneofacial")
     val states=listOf("Paciente estable y cooperador","Paciente ansioso pero cooperador","Requiere reevaluación antes de continuar","Procedimiento diferido")
     val anesthesias=listOf("No requerida","Anestesia local según protocolo","Anestesia tópica según protocolo","Dato no aplicable")
@@ -291,7 +298,7 @@ fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Uni
     val instructionOptions=listOf("Indicaciones generales y signos de alarma","Higiene oral reforzada","Cuidados posoperatorios","Cuidados de restauración / prótesis","Remisión e indicaciones del servicio")
     val followOptions=listOf("Control programado","Continuar tratamiento por fases","Revaloración clínica","Control radiográfico indicado","Remisión a otro servicio","Alta del procedimiento")
     val supervisionOptions=listOf("Realizado bajo supervisión docente","Revisado por docente","Pendiente de revisión docente")
-    val procedure=if(lang=="en") n.titleEn else n.titleEs
+    val procedure=n?.let { if(lang=="en") it.titleEn else it.titleEs }.orEmpty()
     val generated=if(lang=="en")
         "$site. $status. Procedure: $procedure. Anesthesia: $anesthesia. Incidents: $incidents. Instructions: $instructions. Follow-up: $followUp. $supervision."
     else "$site. $status. Procedimiento realizado: $procedure. Anestesia: $anesthesia. Incidentes: $incidents. Indicaciones: $instructions. Seguimiento: $followUp. $supervision."
@@ -302,18 +309,18 @@ fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Uni
         item { NoticeCard(tr(lang,"La nota debe corresponder al expediente real: fecha/hora institucional, diagnóstico, procedimiento, materiales y datos clínicos deben verificarse antes de firmar.","The note must match the real record: institutional date/time, diagnosis, procedure, materials and clinical data must be verified before signing.")) }
         item { SectionCard(tr(lang,"1 · Procedimiento realizado","1 · Procedure performed")) {
             Text(tr(lang,"Especialidad / tipo de tratamiento","Specialty / treatment type"),fontWeight=FontWeight.Bold)
-            ChipChoices(specialties.keys.map{x->x to (specialty==x)},{i-> specialty=specialties.keys.elementAt(i); selected=0 },columns=3)
+            ChipChoices(specialties.keys.map{x->x to (specialty==x)},{i-> specialty=specialties.keys.elementAt(i); selected=null; siteChosen=false; statusChosen=false; anesthesiaChosen=false; incidentsChosen=false; instructionsChosen=false; followUpChosen=false; supervisionChosen=false },columns=3)
             Text(tr(lang,"Tratamiento / actividad","Treatment / activity"),fontWeight=FontWeight.Bold)
-            ChipChoices(visibleLibrary.map{(idx,x)->(if(lang=="en")x.titleEn else x.titleEs) to (effectiveSelected==idx)},{i->selected=visibleLibrary[i].index},columns=3)
+            ChipChoices(visibleLibrary.map{(idx,x)->(if(lang=="en")x.titleEn else x.titleEs) to (selected==idx)},{i->selected=visibleLibrary[i].index; siteChosen=false; statusChosen=false; anesthesiaChosen=false; incidentsChosen=false; instructionsChosen=false; followUpChosen=false; supervisionChosen=false},columns=3)
         }}
-        item { SectionCard(tr(lang,"2 · OD o zona","2 · Tooth or site")) { ChipChoices(sites.map{it to (site==it)},{site=sites[it]},columns=4) } }
-        item { SectionCard(tr(lang,"3 · Estado durante la cita","3 · Appointment status")) { ChipChoices(states.map{it to (status==it)},{status=states[it]},columns=4) } }
-        item { SectionCard(tr(lang,"4 · Anestesia","4 · Anesthesia")) { ChipChoices(anesthesias.map{it to (anesthesia==it)},{anesthesia=anesthesias[it]},columns=4) } }
-        item { SectionCard(tr(lang,"5 · Incidentes","5 · Incidents")) { ChipChoices(incidentOptions.map{it to (incidents==it)},{incidents=incidentOptions[it]},columns=4) } }
-        item { SectionCard(tr(lang,"6 · Indicaciones","6 · Instructions")) { ChipChoices(instructionOptions.map{it to (instructions==it)},{instructions=instructionOptions[it]},columns=4) } }
-        item { SectionCard(tr(lang,"7 · Seguimiento","7 · Follow-up")) { ChipChoices(followOptions.map{it to (followUp==it)},{followUp=followOptions[it]},columns=4) } }
-        item { SectionCard(tr(lang,"8 · Supervisión","8 · Supervision")) { ChipChoices(supervisionOptions.map{it to (supervision==it)},{supervision=supervisionOptions[it]},columns=3) } }
-        item { SectionCard(tr(lang,"Qué debe llevar esta nota","What this note should contain")) { Text(if(lang=="en")n.textEn else n.textEs) } }
+        if(selected!=null) item { SectionCard(tr(lang,"2 · OD o zona","2 · Tooth or site")) { ChipChoices(sites.map{it to (siteChosen&&site==it)},{site=sites[it];siteChosen=true},columns=3) } }
+        if(siteChosen) item { SectionCard(tr(lang,"3 · Estado durante la cita","3 · Appointment status")) { ChipChoices(states.map{it to (statusChosen&&status==it)},{status=states[it];statusChosen=true},columns=3) } }
+        if(statusChosen) item { SectionCard(tr(lang,"4 · Anestesia","4 · Anesthesia")) { ChipChoices(anesthesias.map{it to (anesthesiaChosen&&anesthesia==it)},{anesthesia=anesthesias[it];anesthesiaChosen=true},columns=3) } }
+        if(anesthesiaChosen) item { SectionCard(tr(lang,"5 · Incidentes","5 · Incidents")) { ChipChoices(incidentOptions.map{it to (incidentsChosen&&incidents==it)},{incidents=incidentOptions[it];incidentsChosen=true},columns=3) } }
+        if(incidentsChosen) item { SectionCard(tr(lang,"6 · Indicaciones","6 · Instructions")) { ChipChoices(instructionOptions.map{it to (instructionsChosen&&instructions==it)},{instructions=instructionOptions[it];instructionsChosen=true},columns=3) } }
+        if(instructionsChosen) item { SectionCard(tr(lang,"7 · Seguimiento","7 · Follow-up")) { ChipChoices(followOptions.map{it to (followUpChosen&&followUp==it)},{followUp=followOptions[it];followUpChosen=true},columns=3) } }
+        if(followUpChosen) item { SectionCard(tr(lang,"8 · Supervisión","8 · Supervision")) { ChipChoices(supervisionOptions.map{it to (supervisionChosen&&supervision==it)},{supervision=supervisionOptions[it];supervisionChosen=true},columns=3) } }
+        if(supervisionChosen&&n!=null) item { SectionCard(tr(lang,"Qué debe llevar esta nota","What this note should contain")) { Text(if(lang=="en")n.textEn else n.textEs) } }
         item { SectionCard(tr(lang,"Ejemplo redactado","Written example")) {
             Text(generated,fontWeight=FontWeight.Bold)
             Text(tr(lang,
