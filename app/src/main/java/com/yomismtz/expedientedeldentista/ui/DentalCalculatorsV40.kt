@@ -19,12 +19,36 @@ private val dentalAnestheticsV40=listOf(
  LocalAnesthetic("Bupivacaína 0.5% + epinefrina","5 mg/mL","Anestésico de acción prolongada; requiere selección clínica específica.")
 )
 
-private data class DrugGroup(val title:String,val examples:String)
-private val pediatricDrugGroupsV40=listOf(
- DrugGroup("Antibióticos","Amoxicilina; amoxicilina/ácido clavulánico; azitromicina; clindamicina cuando esté indicada según protocolo."),
- DrugGroup("Antiinflamatorios / analgésicos","Ibuprofeno; paracetamol/acetaminofén. La selección depende de edad, antecedentes, indicación y contraindicaciones."),
- DrugGroup("Antimicóticos","Nistatina; fluconazol cuando exista indicación y prescripción profesional."),
- DrugGroup("Antivirales","Aciclovir; valaciclovir cuando exista una indicación clínica compatible y prescripción profesional.")
+private data class DrugOptionV40(val name:String,val presentation:String,val note:String)
+private data class DrugGroupV40(val title:String,val drugs:List<DrugOptionV40>)
+private val drugGroupsV40=listOf(
+ DrugGroupV40("Antibióticos",listOf(
+  DrugOptionV40("Amoxicilina","Suspensión oral 500 mg/5 mL; cápsula 500 mg","Presentaciones documentadas en el Listado Institucional IMSS. La pauta depende de la infección y del protocolo."),
+  DrugOptionV40("Amoxicilina / ácido clavulánico","Suspensión 125 mg/31.25 mg por 5 mL; tableta 500 mg/125 mg","Seleccionar según indicación, edad/peso, alergias y función renal."),
+  DrugOptionV40("Azitromicina","Tableta o suspensión según presentación disponible","Verificar presentación y pauta vigente antes de calcular."),
+  DrugOptionV40("Clindamicina","Cápsula o solución según presentación disponible","No usar como sustitución automática por alergia; confirmar indicación y guía vigente.")
+ )),
+ DrugGroupV40("Antiinflamatorios / analgésicos",listOf(
+  DrugOptionV40("Paracetamol / acetaminofén","Tableta y solución/suspensión oral según presentación","Comprobar dosis indicada, máximo diario y función hepática."),
+  DrugOptionV40("Ibuprofeno","Tableta y suspensión oral según presentación","Revisar edad, función renal, riesgo gastrointestinal/cardiovascular e interacciones."),
+  DrugOptionV40("Naproxeno","Tableta o suspensión según presentación","Usar sólo cuando esté indicado y comprobar contraindicaciones de AINE.")
+ )),
+ DrugGroupV40("Antivirales",listOf(
+  DrugOptionV40("Aciclovir","Tableta y suspensión oral según presentación","La pauta cambia por diagnóstico, edad y función renal."),
+  DrugOptionV40("Valaciclovir","Tableta según presentación","Confirmar indicación y ajuste renal.")
+ )),
+ DrugGroupV40("Nitroimidazoles",listOf(
+  DrugOptionV40("Metronidazol","Tableta 500 mg; suspensión oral 250 mg/5 mL","Presentaciones documentadas por IMSS. No es antibiótico automático para todo cuadro odontógeno; confirmar indicación.")
+ )),
+ DrugGroupV40("Antimicóticos",listOf(
+  DrugOptionV40("Nistatina","Suspensión oral; presentación IMSS con 2,400,000 UI para 24 mL","Indicada en fuentes IMSS para candidiasis bucofaríngea; verificar pauta y producto."),
+  DrugOptionV40("Fluconazol","Cápsula/tableta o suspensión según presentación","Revisar interacciones, función hepática/renal e indicación.")
+ )),
+ DrugGroupV40("Vitaminas",listOf(
+  DrugOptionV40("Ácido fólico","Tableta según presentación","Usar sólo ante indicación clínica; no sustituye el diagnóstico de la causa de anemia/deficiencia."),
+  DrugOptionV40("Vitamina B12","Presentación oral o parenteral según producto e indicación","Confirmar deficiencia, causa y esquema médico."),
+  DrugOptionV40("Vitamina D","Presentaciones variables","No calcular como tratamiento odontológico rutinario; confirmar indicación y esquema médico.")
+ ))
 )
 
 @Composable
@@ -37,6 +61,8 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
  var selected by remember{mutableStateOf(0)}
  var concentration by remember{mutableStateOf("")}
  var doseMgKg by remember{mutableStateOf("")}
+ var medGroup by remember{mutableStateOf<Int?>(null)}
+ var medDrug by remember{mutableStateOf<Int?>(null)}
  var topicalAge by remember{mutableStateOf(0)}
  var topicalProduct by remember{mutableStateOf(0)}
  var bmiWeight by remember{mutableStateOf("")}
@@ -83,18 +109,28 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
     Text(if(cartridges==null)"Completa los datos para estimar cartuchos." else "Equivalencia matemática: %.2f cartuchos".format(cartridges),fontWeight=FontWeight.Bold)
    }}
   }else if(tab==1){
-   item{SectionCard("1 · Grupo farmacológico"){
-    pediatricDrugGroupsV40.forEach{g->Text(g.title,fontWeight=FontWeight.Bold);Text(g.examples);Spacer(Modifier.height(6.dp))}
+   item{SectionCard("1 · Selecciona grupo farmacológico"){
+    ChipChoices(drugGroupsV40.mapIndexed{i,g->g.title to (medGroup==i)},{i->medGroup=i;medDrug=null},2)
    }}
-   item{SectionCard("2 · Cálculo desde una prescripción/protocolo"){
-    Text("Introduce la dosis mg/kg ya indicada por una fuente clínica autorizada. La calculadora solo convierte matemáticamente; no decide qué fármaco, dosis, intervalo ni duración debe recibir el paciente.")
-    OutlinedTextField(weight,{weight=it.filter{x->x.isDigit()||x=='.'}.take(6)},label={Text("Peso (kg)")},modifier=Modifier.fillMaxWidth())
-    OutlinedTextField(doseMgKg,{doseMgKg=it.filter{x->x.isDigit()||x=='.'}.take(7)},label={Text("Dosis indicada (mg/kg por dosis)")},modifier=Modifier.fillMaxWidth())
-    OutlinedTextField(concentration,{concentration=it.filter{x->x.isDigit()||x=='.'}.take(8)},label={Text("Concentración de la presentación (mg/mL)")},modifier=Modifier.fillMaxWidth())
-    Text(if(doseMg==null)"Completa peso y dosis indicada." else "Resultado: %.1f mg por dosis".format(doseMg),fontWeight=FontWeight.Bold)
-    Text(if(doseMl==null)"Captura mg/mL para convertir a volumen." else "Volumen matemático: %.2f mL por dosis".format(doseMl),fontWeight=FontWeight.Bold)
-   }}
-   item{NoticeCard("Verifica edad, alergias, función renal/hepática, interacciones, contraindicaciones, concentración comercial, máximo diario y pauta con el docente/profesional antes de usar cualquier resultado.")}
+   if(medGroup!=null){
+    item{SectionCard("2 · Selecciona medicamento"){
+     val g=drugGroupsV40[medGroup!!]
+     ChipChoices(g.drugs.mapIndexed{i,d->d.name to (medDrug==i)},{i->medDrug=i},2)
+    }}
+   }
+   if(medGroup!=null&&medDrug!=null){
+    item{SectionCard("3 · Datos de la opción seleccionada"){
+     val d=drugGroupsV40[medGroup!!].drugs[medDrug!!]
+     Text(d.name,style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black)
+     Text("Presentación: "+d.presentation,fontWeight=FontWeight.Bold)
+     Text(d.note)
+     Text("El alumno selecciona opciones; no tiene que escribir dosis ni concentración en este apartado.")
+    }}
+    item{SectionCard("4 · Antes de calcular una pauta"){
+     ChipChoices(listOf("Confirmar peso medido" to false,"Confirmar indicación" to false,"Revisar alergias" to false,"Función renal/hepática" to false,"Interacciones" to false,"Ficha técnica / protocolo" to false),{},2)
+    }}
+   }
+   item{NoticeCard("La selección muestra datos educativos y presentaciones de referencia; no prescribe automáticamente. Para antibióticos, antivirales, nitroimidazoles y antimicóticos la indicación, dosis, frecuencia y duración deben corresponder al diagnóstico y a una fuente clínica vigente.")}
   }else if(tab==2){
    item{SectionCard("1 · Edad del paciente"){
     Text("Selecciona el grupo de edad. Para productos tópicos no se aplica una fórmula mg/kg cuando la norma o ficha técnica no los dosifica por peso.")
