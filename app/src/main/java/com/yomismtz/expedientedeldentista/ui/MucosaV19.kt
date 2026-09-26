@@ -122,7 +122,8 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 "Frenillo labial inferior" to "Observar inserción, integridad y tensión sobre tejidos; registrar prominencia, trauma, ulceración, inflamación u otro hallazgo."
             )
             var detailedOpen by remember { mutableStateOf<Int?>(null) }
-            detailedSites.forEachIndexed { index, item ->
+            AdaptiveGridV17(detailedSites.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 3) { index ->
+                val item=detailedSites[index]
                 Card(onClick={detailedOpen=if(detailedOpen==index)null else index},modifier=Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)) {
                         Text(item.first,fontWeight=FontWeight.Bold)
