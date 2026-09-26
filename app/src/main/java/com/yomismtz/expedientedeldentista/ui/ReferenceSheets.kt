@@ -118,6 +118,18 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
         )
     }
     val allGuides = guides + extraGuides
+    fun rescueOptions(a:ActivityGuide):List<String> {
+        val n=a.nameEs.lowercase()
+        return when {
+            listOf("endod","conduct","pulpect","pulpotom","recubrimiento pulpar","ctz").any{n.contains(it)} -> listOf("Reevaluar diagnóstico, restaurabilidad y control del problema; corregir o completar el procedimiento conservador si es predecible.","Si existe fracaso persistente o complicación corregible, valorar retratamiento o terapia de rescate indicada y documentar la iatrogenia/hallazgo.","Si el caso excede la competencia, el pronóstico es incierto o no es conservable, suspender y remitir; valorar alternativa quirúrgica o extracción sólo con nueva indicación.")
+            listOf("extracción","exodon","cirugía","sutura","biopsia","alveol").any{n.contains(it)} -> listOf("Detener, controlar el evento inmediato y reevaluar clínica/radiográficamente antes de continuar.","Corregir la complicación local cuando esté dentro del protocolo autorizado y programar control.","Ante lesión de estructuras, hemorragia no controlada, infección progresiva u otra complicación fuera del alcance, remitir oportunamente.")
+            listOf("prótesis","corona","impresión","cementación","intermaxilar","estructura protésica","prueba de dientes").any{n.contains(it)} -> listOf("Identificar la causa del problema de ajuste, soporte, retención, contactos u oclusión y corregirla si es reversible.","Reparar, rebasar, recementar, ajustar o repetir la fase/restauración cuando sea predecible.","Si existe daño biológico, fracaso del pilar o diseño no corregible, suspender esa vía y replantear la rehabilitación o remitir.")
+            listOf("periodon","raspado","destartraje","gingiv","ipc","ihos","o’leary").any{n.contains(it)} -> listOf("Reevaluar control de biofilm, inflamación, sondaje y factores locales; reforzar medidas etiológicas.","Si persisten sitios activos, completar la terapia periodontal indicada y establecer reevaluación.","Ante progresión, defecto complejo o respuesta insuficiente, remitir a Periodoncia para valorar terapia avanzada.")
+            listOf("mantenedor","espacio","nance","transpalatino","zapatilla","ortodon","aparato").any{n.contains(it)} -> listOf("Suspender o ajustar el aparato si produce trauma, interferencia o movimiento no deseado; reevaluar espacio y oclusión.","Reparar, recementar, sustituir o rediseñar el aparato cuando sea predecible.","Si hay pérdida de espacio, alteración eruptiva o complicación no corregible, replantear el plan y remitir.")
+            listOf("resina","sellador","ionómero","incrustación","restaur","cavit","infiltración").any{n.contains(it)} -> listOf("Reevaluar diagnóstico, profundidad, sellado, contactos y oclusión; corregir defectos localizados cuando sea predecible.","Reparar o reemplazar la restauración si existe falla del material, contaminación, fractura o caries que lo justifique.","Si aparece compromiso pulpar, fractura extensa o pérdida de restaurabilidad, detener y cambiar el plan según diagnóstico o remitir.")
+            else -> listOf("Detener y reevaluar diagnóstico, hallazgo o posible iatrogenia antes de continuar; documentar lo ocurrido.","Corregir o repetir la fase sólo cuando exista una alternativa conservadora, predecible y autorizada bajo supervisión.","Si empeora, excede el alcance o el pronóstico cambia, suspender y remitir o replantear el tratamiento.")
+        }
+    }
     var selected by remember { mutableStateOf(0) }
     var specialty by remember { mutableStateOf("Todas") }
     val specialties = listOf(
@@ -161,7 +173,9 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
                 Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
                     Text("⚠️ "+tr(lang,"4 · Si encuentro esto, ¿a qué actividad puede cambiar?","4 · If I find this, what can the activity change to?"),fontWeight=FontWeight.Bold)
                     (if(lang=="en")g.changesEn else g.changesEs).forEach { Text("• $it") }
-                    Text(tr(lang,"El cambio se decide por diagnóstico y supervisión clínica; una complicación aislada no determina automáticamente un procedimiento.","The change is based on diagnosis and clinical supervision; an isolated complication does not automatically determine a procedure."),style=MaterialTheme.typography.bodySmall)
+                    Text(tr(lang,"3 opciones de rescate educativo","3 educational rescue options"),fontWeight=FontWeight.Bold)
+                    rescueOptions(g).forEachIndexed { i,opt -> Text("${i+1}. $opt") }
+                    Text(tr(lang,"Son rutas educativas, no instrucciones automáticas: primero identifica causa y gravedad, controla cualquier urgencia, documenta el evento y solicita supervisión antes de corregir, cambiar el plan o remitir.","These are educational pathways, not automatic instructions: first identify cause and severity, control any emergency, document the event and obtain supervision before correction, plan change or referral."),style=MaterialTheme.typography.bodySmall)
                 }
             }
         }
