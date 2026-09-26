@@ -26,6 +26,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.AlertDialog
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
@@ -43,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.clinical.SavedRecord
+import com.yomismtz.expedientedeldentista.clinical.PatientProfile
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.BirdPaletteStyle
 import com.yomismtz.expedientedeldentista.settings.ClinicianTitle
@@ -64,7 +67,7 @@ fun AppRootV19(
     onSessionChanged: (EducationalSession) -> Unit,
     savedRecords: List<SavedRecord>,
     activeRecordId: String?,
-    onNewRecord: () -> Unit,
+    onNewRecord: (PatientProfile) -> Unit,
     onLoadRecord: (SavedRecord) -> Unit,
     onDeleteRecord: (String) -> Unit
 ) {
@@ -81,8 +84,8 @@ fun AppRootV19(
         )
         if (recordMenuOpen) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                RecordMenuV19(savedRecords, activeRecordId, {
-                    onNewRecord(); recordMenuOpen = false
+                RecordMenuV19(savedRecords, activeRecordId, { profile ->
+                    onNewRecord(profile); recordMenuOpen = false
                 }, { r -> onLoadRecord(r); recordMenuOpen = false }, onDeleteRecord)
             }
         }
@@ -238,35 +241,87 @@ private fun mascotMotionV19(style:BirdPaletteStyle)=when(style){
 private fun RecordMenuV19(
     records: List<SavedRecord>,
     activeId: String?,
-    onNew: () -> Unit,
+    onNew: (PatientProfile) -> Unit,
     onLoad: (SavedRecord) -> Unit,
     onDelete: (String) -> Unit
 ) {
+    var mode by remember { mutableStateOf("home") }
+    var initials by remember { mutableStateOf("") }
+    var age by remember { mutableStateOf("") }
+    var sex by remember { mutableStateOf("") }
+    var deleteTarget by remember { mutableStateOf<SavedRecord?>(null) }
+
     Column(
         Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(18.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         Text("🦷 YSM Expediente", style=MaterialTheme.typography.headlineMedium, fontWeight=FontWeight.Black)
-        Text("Selecciona cómo quieres comenzar.", style=MaterialTheme.typography.titleMedium)
-        Card(onClick=onNew, modifier=Modifier.fillMaxWidth(), colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) {
-            Column(Modifier.padding(20.dp)) {
-                Text("✨ Nuevo expediente", style=MaterialTheme.typography.titleLarge, fontWeight=FontWeight.Black)
-                Text("Comienza un paciente nuevo. Se guardará automáticamente en este dispositivo.")
-            }
-        }
-        Text("📚 Cargar expediente", style=MaterialTheme.typography.titleLarge, fontWeight=FontWeight.Black)
-        if(records.isEmpty()) {
-            Card(Modifier.fillMaxWidth()) { Text("Todavía no hay expedientes guardados.", Modifier.padding(18.dp)) }
-        } else records.forEach { record ->
-            Card(onClick={onLoad(record)}, modifier=Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(14.dp), verticalArrangement=Arrangement.spacedBy(6.dp)) {
-                    Text((if(record.id==activeId)"▶ " else "📁 ")+record.title, fontWeight=FontWeight.Bold)
-                    val date=remember(record.updatedAt){java.text.SimpleDateFormat("dd/MM/yyyy · HH:mm",java.util.Locale.getDefault()).format(java.util.Date(record.updatedAt))}
-                    Text("Última modificación: $date", style=MaterialTheme.typography.bodySmall)
-                    OutlinedButton(onClick={onDelete(record.id)}) { Text("Eliminar expediente") }
+        Text("Simulador didáctico · los datos se conservan localmente para continuar prácticas previas.", style=MaterialTheme.typography.bodyMedium)
+
+        if(mode=="home") {
+            Text("Selecciona cómo quieres comenzar.", style=MaterialTheme.typography.titleMedium)
+            Card(onClick={mode="new"}, modifier=Modifier.fillMaxWidth(), colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) {
+                Column(Modifier.padding(22.dp), verticalArrangement=Arrangement.spacedBy(5.dp)) {
+                    Text("✨ NUEVO EXPEDIENTE", style=MaterialTheme.typography.titleLarge, fontWeight=FontWeight.Black)
+                    Text("Inicia una práctica nueva.")
                 }
             }
+            Card(onClick={mode="load"}, modifier=Modifier.fillMaxWidth(), colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)) {
+                Column(Modifier.padding(22.dp), verticalArrangement=Arrangement.spacedBy(5.dp)) {
+                    Text("📚 CARGAR EXPEDIENTE", style=MaterialTheme.typography.titleLarge, fontWeight=FontWeight.Black)
+                    Text("Consulta y continúa una práctica guardada anteriormente.")
+                }
+            }
+            NoticeCard("Uso exclusivamente didáctico. Esta función organiza ejercicios y permite consultar datos de prácticas previas; no sustituye un expediente clínico institucional.")
         }
-        NoticeCard("Los expedientes se almacenan únicamente en el dispositivo y funcionan sin conexión. Elimina un expediente solo cuando estés seguro de que ya no lo necesitas.")
+
+        if(mode=="new") {
+            OutlinedButton(onClick={mode="home"}) { Text("‹ Volver") }
+            Text("✨ Nuevo expediente didáctico", style=MaterialTheme.typography.titleLarge, fontWeight=FontWeight.Black)
+            Text("Identifica la práctica sin registrar el nombre completo de una persona.")
+            OutlinedTextField(initials,{initials=it.uppercase().filter{ch->ch.isLetter()}.take(5)},label={Text("Iniciales")},singleLine=true,modifier=Modifier.fillMaxWidth())
+            OutlinedTextField(age,{age=it.filter(Char::isDigit).take(3)},label={Text("Edad")},singleLine=true,modifier=Modifier.fillMaxWidth())
+            Text("Sexo", fontWeight=FontWeight.Bold)
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                listOf("Femenino","Masculino","Otro / no especificado").forEach { option ->
+                    FilterChip(selected=sex==option,onClick={sex=option},label={Text(option)},modifier=Modifier.weight(1f))
+                }
+            }
+            val valid=initials.isNotBlank() && age.toIntOrNull() in 0..120 && sex.isNotBlank()
+            Button(onClick={onNew(PatientProfile(patientInitials=initials,age=age,sex=sex))},enabled=valid,modifier=Modifier.fillMaxWidth()) {
+                Text("Crear y abrir expediente")
+            }
+            if(!valid) Text("Completa iniciales, una edad válida y sexo para comenzar.",style=MaterialTheme.typography.bodySmall)
+        }
+
+        if(mode=="load") {
+            OutlinedButton(onClick={mode="home"}) { Text("‹ Volver") }
+            Text("📚 Expedientes guardados", style=MaterialTheme.typography.titleLarge, fontWeight=FontWeight.Black)
+            if(records.isEmpty()) {
+                Card(Modifier.fillMaxWidth()) { Text("Todavía no hay prácticas guardadas.", Modifier.padding(18.dp)) }
+            } else records.forEach { record ->
+                Card(onClick={onLoad(record)}, modifier=Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(14.dp), verticalArrangement=Arrangement.spacedBy(6.dp)) {
+                        val p=record.session.profile
+                        Text((if(record.id==activeId)"▶ " else "📁 ")+(p.patientInitials.ifBlank{record.title}),fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
+                        Text("Edad: "+p.age.ifBlank{"—"}+" · Sexo: "+p.sex.ifBlank{"—"})
+                        val date=remember(record.updatedAt){java.text.SimpleDateFormat("dd/MM/yyyy · HH:mm",java.util.Locale.getDefault()).format(java.util.Date(record.updatedAt))}
+                        Text("Última consulta: $date", style=MaterialTheme.typography.bodySmall)
+                        OutlinedButton(onClick={deleteTarget=record}) { Text("Eliminar práctica") }
+                    }
+                }
+            }
+            NoticeCard("Los ejercicios se guardan únicamente en este dispositivo para poder consultarlos y continuarlos después.")
+        }
+    }
+
+    deleteTarget?.let { target ->
+        AlertDialog(
+            onDismissRequest={deleteTarget=null},
+            title={Text("¿Eliminar esta práctica?")},
+            text={Text("Se eliminará del dispositivo y no podrá recuperarse.")},
+            confirmButton={Button(onClick={onDelete(target.id);deleteTarget=null}){Text("Eliminar")}},
+            dismissButton={OutlinedButton(onClick={deleteTarget=null}){Text("Cancelar")}}
+        )
     }
 }
