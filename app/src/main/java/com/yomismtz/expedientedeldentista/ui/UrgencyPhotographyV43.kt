@@ -46,7 +46,7 @@ fun EmergencyDentalSheetV43(lang:String,onBack:()->Unit){
             AdaptiveGridV17(labels.size,if(profile.largeSystemText)1 else if(profile.width==ScreenWidthV17.COMPACT)2 else 4){i->
                 val (label,value)=labels[i]
                 FilterChip(value=="Presente",{
-                    val next=if(value=="Presente")"Ausente" else "Presente"
+                    val next=when(value){"No valorado"->"Presente";"Presente"->"Ausente";else->"No valorado"}
                     when(i){0->swelling=next;1->bleeding=next;2->trauma=next;else->fever=next}
                 },{Text("$label: $value")},Modifier.fillMaxWidth())
             }
@@ -67,11 +67,11 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     var view by rememberRecordState("photo.view","Frontal extraoral")
     var purpose by rememberRecordState("photo.purpose","Documentación inicial")
     var notes by rememberRecordState("photo.notes","")
-    var uriText by rememberRecordState("photo.uri","")
+    val photoUris=rememberRecordStateMap<String,String>("photo.uris")
     val launcher=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()){uri:Uri?->
         if(uri!=null){
             runCatching{context.contentResolver.takePersistableUriPermission(uri,android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)}
-            uriText=uri.toString()
+            photoUris[view]=uri.toString()
         }
     }
     val views=listOf("Frontal extraoral","Perfil derecho","Perfil izquierdo","Sonrisa","Frontal intraoral","Lateral derecha","Lateral izquierda","Oclusal superior","Oclusal inferior","Detalle de lesión / procedimiento")
@@ -86,8 +86,9 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
             val purposes=listOf("Documentación inicial","Diagnóstico / seguimiento","Antes del tratamiento","Durante el tratamiento","Después del tratamiento","Comunicación / interconsulta")
             AdaptiveGridV17(purposes.size,if(profile.largeSystemText)1 else if(profile.width==ScreenWidthV17.COMPACT)2 else 3){i->FilterChip(purpose==purposes[i],{purpose=purposes[i]},{Text(purposes[i])},Modifier.fillMaxWidth())}
             Button(onClick={launcher.launch(arrayOf("image/*"))},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Seleccionar fotografía local","Select local photograph"),fontWeight=FontWeight.Bold)}
+            val uriText=photoUris[view].orEmpty()
             if(uriText.isNotBlank()){
-                Text(tr(lang,"Fotografía local vinculada al expediente.","Local photograph linked to the record."),fontWeight=FontWeight.Bold)
+                Text(tr(lang,"Fotografía local vinculada a esta vista del expediente.","Local photograph linked to this record view."),fontWeight=FontWeight.Bold)
                 Text(tr(lang,"Archivo local conservado mediante permiso persistente. Puede reemplazarse seleccionando otra fotografía.","Local file retained through persistent permission. It can be replaced by selecting another photograph."),style=androidx.compose.material3.MaterialTheme.typography.bodySmall)
             }
             OutlinedTextField(notes,{notes=it},Modifier.fillMaxWidth(),label={Text(tr(lang,"Hallazgos, calidad, orientación o notas","Findings, quality, orientation or notes"))})
