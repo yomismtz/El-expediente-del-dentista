@@ -60,24 +60,24 @@ private val drugGroupsV40=listOf(
 @Composable
 fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
  var tab by remember{mutableStateOf(0)}
- var weight by remember{mutableStateOf("")}
- var mgKg by remember{mutableStateOf("")}
- var maxAbsolute by remember{mutableStateOf("")}
- var cartridgeMl by remember{mutableStateOf("1.8")}
- var selected by remember{mutableStateOf(0)}
- var concentration by remember{mutableStateOf("")}
- var doseMgKg by remember{mutableStateOf("")}
- var medGroup by remember{mutableStateOf<Int?>(null)}
- var medDrug by remember{mutableStateOf<Int?>(null)}
- var medChecks by remember{mutableStateOf(setOf<Int>())}
- var medWeight by remember{mutableStateOf("")}
- var medPresentation by remember{mutableStateOf<Int?>(null)}
- var medDoseDay by remember{mutableStateOf<Double?>(null)}
- var medInterval by remember{mutableStateOf<Int?>(null)}
- var topicalAge by remember{mutableStateOf(0)}
- var topicalProduct by remember{mutableStateOf(0)}
- var bmiWeight by remember{mutableStateOf("")}
- var bmiHeightCm by remember{mutableStateOf("")}
+ var weight by rememberRecordState("calculators.anesthetic.weight","")
+ var mgKg by rememberRecordState("calculators.anesthetic.mgKg","")
+ var maxAbsolute by rememberRecordState("calculators.anesthetic.maxAbsolute","")
+ var cartridgeMl by rememberRecordState("calculators.anesthetic.cartridgeMl","1.8")
+ var selected by rememberRecordState("calculators.anesthetic.selected",0)
+ var concentration by rememberRecordState("calculators.concentration","")
+ var doseMgKg by rememberRecordState("calculators.doseMgKg","")
+ var medGroup by rememberRecordState<Int?>("calculators.medGroup",null)
+ var medDrug by rememberRecordState<Int?>("calculators.medDrug",null)
+ var medChecks by rememberRecordState("calculators.medChecks",setOf<Int>())
+ var medWeight by rememberRecordState("calculators.medWeight","")
+ var medPresentation by rememberRecordState<Int?>("calculators.medPresentation",null)
+ var medDoseDay by rememberRecordState<Double?>("calculators.medDoseDay",null)
+ var medInterval by rememberRecordState<Int?>("calculators.medInterval",null)
+ var topicalAge by rememberRecordState("calculators.topicalAge",0)
+ var topicalProduct by rememberRecordState("calculators.topicalProduct",0)
+ var bmiWeight by rememberRecordState("calculators.bmiWeight","")
+ var bmiHeightCm by rememberRecordState("calculators.bmiHeightCm","")
  val w=weight.toDoubleOrNull()
  val limitPerKg=mgKg.toDoubleOrNull()
  val absolute=maxAbsolute.toDoubleOrNull()
