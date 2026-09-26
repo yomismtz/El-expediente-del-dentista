@@ -359,7 +359,12 @@ private data class E(val n:String,val d:String)
  val selected=remember{mutableStateMapOf<String,String>()}
  var weight by remember{mutableStateOf("")};var height by remember{mutableStateOf("")}
  @Composable fun Pick(title:String,options:List<String>,note:String=""){
-  SectionCard(title){options.forEach{x->FilterChip(selected[title]==x,{selected[title]=x},{Text(x)},modifier=Modifier.fillMaxWidth())};if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)}
+  val longest=options.maxOfOrNull{it.length}?:0
+  val cols=when{longest>28->2;options.size>=9->4;options.size>=6->3;else->2}
+  SectionCard(title){
+   ChipChoices(options.map{x->x to (selected[title]==x)},{i->selected[title]=options[i]},columns=cols)
+   if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)
+  }
  }
  val w=weight.toDoubleOrNull();val h=height.toDoubleOrNull();val bmi=if(w!=null&&h!=null&&h>0) w/((h/100)*(h/100)) else null
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
