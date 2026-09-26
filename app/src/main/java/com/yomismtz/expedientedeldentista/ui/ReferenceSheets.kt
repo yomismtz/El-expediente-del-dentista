@@ -106,7 +106,8 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
         "Recuperador de espacio","Extracciones seriadas",
         "Pulpotomía en dentición temporal","Pulpectomía instrumentada en dentición temporal","Terapia pulpar no instrumentada con pasta CTZ","Recubrimiento pulpar indirecto en odontopediatría","Recubrimiento pulpar directo en odontopediatría","Corona de acero cromo en odontopediatría","Corona estética pediátrica","Diamino fluoruro de plata","Infiltración de resina","Restauración provisional con Cavit",
         "Ajuste oclusal","Guarda oclusal","Valoración de ATM","Urgencia odontológica",
-        "Interconsulta médica","Alta y mantenimiento"
+        "Interconsulta médica","Alta y mantenimiento",
+        "Tratamiento de ortodoncia y ortopedia maxilofacial · nivel pregrado"
     )
     val extraGuides = extraNames.map { name ->
         ActivityGuide(name,name,
