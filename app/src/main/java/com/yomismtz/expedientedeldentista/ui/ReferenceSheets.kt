@@ -151,17 +151,18 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
         return keys.any{hay.contains(it)}
     }
     val visibleGuides=allGuides.withIndex().filter{matchesSpecialty(it.value)}
-    val g = allGuides[selected]
+    val effectiveSelected = if (visibleGuides.any { it.index == selected }) selected else visibleGuides.firstOrNull()?.index ?: 0
+    val g = allGuides[effectiveSelected]
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { ScreenHeader(tr(lang,"Autorización y registro de actividades","Activity authorization and record"),onBack,
             tr(lang,"Selecciona una actividad para estudiar qué se planea, cómo se realiza y qué hallazgos pueden obligar a cambiar el procedimiento.","Select an activity to study what is planned, how it is performed and which findings may require changing the procedure.")) }
         item {
             SectionCard(tr(lang,"1 · Actividad planeada por especialidad","1 · Planned activity by specialty")) {
                 Text(tr(lang,"Especialidad","Specialty"),fontWeight=FontWeight.Bold)
-                ChipChoices(specialties.map{it.first to (specialty==it.first)},{i->specialty=specialties[i].first},columns=4)
+                ChipChoices(specialties.map{it.first to (specialty==it.first)},{i-> specialty=specialties[i].first; selected=0 },columns=4)
                 Text(tr(lang,"Actividad","Activity"),fontWeight=FontWeight.Bold)
                 if(visibleGuides.isEmpty()) Text(tr(lang,"No hay actividades de esta especialidad en la biblioteca actual.","No activities from this specialty are in the current library."))
-                else ChipChoices(visibleGuides.map{(idx,a)->(if(lang=="en")a.nameEn else a.nameEs) to (selected==idx)},{i->selected=visibleGuides[i].index},columns=3)
+                else ChipChoices(visibleGuides.map{(idx,a)->(if(lang=="en")a.nameEn else a.nameEs) to (effectiveSelected==idx)},{i->selected=visibleGuides[i].index),columns=3)
             }
         }
         item { SectionCard(tr(lang,"2 · ¿En qué consiste?","2 · What does it involve?")) { Text(if(lang=="en")g.purposeEn else g.purposeEs) } }
