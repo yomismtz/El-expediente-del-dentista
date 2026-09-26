@@ -189,10 +189,10 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
 private data class AtmFinding(val key: String, val es: String, val en: String)
 
 @Composable
-fun AtmScreen(lang: String, onBack: () -> Unit) {
-    val findings = listOf(
+fun AtmScreen(lang:String,onBack:()->Unit) {
+    val findings=listOf(
         AtmFinding("painJoint","Dolor localizado en ATM que aumenta con función","Localized TMJ pain increased by function"),
-        AtmFinding("muscle","Dolor/sensibilidad en maseteros o temporales","Masseter/temporalis pain or tenderness"),
+        AtmFinding("muscle","Dolor/sensibilidad en músculos masticatorios","Masticatory muscle pain/tenderness"),
         AtmFinding("click","Chasquido reproducible","Reproducible click"),
         AtmFinding("crepitus","Crepitación","Crepitus"),
         AtmFinding("headache","Cefalea modificada por masticación o función mandibular","Headache modified by chewing or jaw function"),
@@ -204,6 +204,15 @@ fun AtmScreen(lang: String, onBack: () -> Unit) {
     )
     val checked=rememberRecordStateMap<String,Boolean>("atm.checked")
     fun on(key:String)=checked[key]==true
+    var painIntensity by rememberRecordState("atm.painIntensity","0")
+    var painSite by rememberRecordState("atm.painSite","Sin dolor")
+    var laterality by rememberRecordState("atm.laterality","No aplica")
+    var onset by rememberRecordState("atm.onset","No referido")
+    var duration by rememberRecordState("atm.duration","No referida")
+    var frequency by rememberRecordState("atm.frequency","No referida")
+    var radiation by rememberRecordState("atm.radiation","Sin irradiación")
+    var trigger by rememberRecordState("atm.trigger","No identificado")
+    var functionImpact by rememberRecordState("atm.functionImpact","Sin limitación referida")
     var opening by rememberRecordState("atm.opening","No medida")
     var rightLat by rememberRecordState("atm.rightLat","No medida")
     var leftLat by rememberRecordState("atm.leftLat","No medida")
@@ -211,41 +220,57 @@ fun AtmScreen(lang: String, onBack: () -> Unit) {
     var trajectory by rememberRecordState("atm.trajectory","Recta / sin desviación evidente")
     var jointPalpation by rememberRecordState("atm.jointPalpation","Sin dolor reproducible")
     var musclePalpation by rememberRecordState("atm.musclePalpation","Sin dolor reproducible")
+    var followup by rememberRecordState("atm.followup","Sin seguimiento registrado")
 
     val orientation=when {
-        on("lockOpen") -> tr(lang,"Luxación mandibular: situación que requiere valoración clínica inmediata","Mandibular dislocation: situation requiring prompt clinical assessment")
-        opening=="<35 mm" && on("locking") -> tr(lang,"Limitación con bloqueo: requiere exploración diferencial del trastorno intraarticular","Limited opening with locking: differential examination for intra-articular disorder required")
-        on("crepitus") && on("painJoint") -> tr(lang,"Hallazgos articulares con crepitación y dolor; correlacionar clínicamente y valorar cambios degenerativos","Joint findings with crepitus and pain; correlate clinically and assess for degenerative changes")
-        on("muscle") && !on("painJoint") -> tr(lang,"Patrón de dolor muscular masticatorio; completar palpación y diagnóstico diferencial","Masticatory muscle pain pattern; complete palpation and differential diagnosis")
-        on("painJoint") -> tr(lang,"Patrón de dolor articular de ATM; completar criterios clínicos y diagnóstico diferencial","TMJ joint-pain pattern; complete clinical criteria and differential diagnosis")
-        on("click") -> tr(lang,"Chasquido articular reproducible; caracterizar durante apertura y cierre","Reproducible joint click; characterize during opening and closing")
-        else -> tr(lang,"Sin patrón suficiente para orientación: completar exploración funcional","Insufficient pattern for orientation: complete functional examination")
+        on("lockOpen") -> tr(lang,"Boca abierta sin poder cerrar: requiere valoración clínica inmediata y diagnóstico diferencial.","Open mouth unable to close: prompt clinical assessment and differential diagnosis are required.")
+        opening=="<35 mm" && on("locking") -> tr(lang,"Limitación con bloqueo referido: completar exploración intraarticular y diagnóstico diferencial.","Limited opening with reported locking: complete intra-articular examination and differential diagnosis.")
+        on("crepitus") && on("painJoint") -> tr(lang,"Dolor articular con crepitación: correlacionar con exploración estandarizada y valorar indicación de estudios.","Joint pain with crepitus: correlate with standardized examination and consider whether imaging is indicated.")
+        on("muscle") && !on("painJoint") -> tr(lang,"Patrón compatible con dolor muscular masticatorio; confirmar reproducción del dolor familiar y descartar otras fuentes.","Pattern compatible with masticatory muscle pain; confirm familiar-pain reproduction and exclude other sources.")
+        on("painJoint") -> tr(lang,"Patrón de dolor articular de ATM; completar criterios clínicos y diagnóstico diferencial.","TMJ joint-pain pattern; complete clinical criteria and differential diagnosis.")
+        else -> tr(lang,"La información registrada no establece por sí sola un diagnóstico de TTM o dolor orofacial.","Recorded information alone does not establish a TMD or orofacial-pain diagnosis.")
     }
 
-    @Composable fun Pick(title:String,values:List<String>,selected:String,set:(String)->Unit) {
-        SectionCard(title) { ChipChoices(values.map { v -> v to (selected==v) }, { i -> set(values[i]) }, columns=2) }
+    @Composable fun Pick(title:String,help:String,values:List<String>,selected:String,set:(String)->Unit) {
+        SectionCard(title) {
+            Text(help,style=MaterialTheme.typography.bodySmall)
+            ChipChoices(values.map{v->v to (selected==v)},{i->set(values[i])},columns=3)
+        }
     }
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-        item { ScreenHeader(tr(lang,"Ficha de ATM y trastornos temporomandibulares","TMJ and temporomandibular disorders sheet"),onBack,tr(lang,"Exploración educativa estructurada de dolor, músculos, ruidos y movimientos. La orientación generada no sustituye el diagnóstico clínico.","Structured educational examination of pain, muscles, sounds and movement. Generated orientation does not replace clinical diagnosis.")) }
-        item { SectionCard(tr(lang,"1 · Síntomas y antecedentes","1 · Symptoms and history")) { findings.forEach { f -> Row(Modifier.fillMaxWidth().clickable { checked[f.key]=!on(f.key) },verticalAlignment=androidx.compose.ui.Alignment.CenterVertically) { Checkbox(on(f.key),{checked[f.key]=it});Text(if(lang=="en")f.en else f.es,modifier=Modifier.weight(1f)) } } } }
-        item { Pick(tr(lang,"2 · Apertura máxima interincisal","2 · Maximum interincisal opening"),listOf("No medida","<35 mm","35–39 mm","40–44 mm","45–50 mm",">50 mm"),opening){opening=it} }
-        item { Pick(tr(lang,"3 · Lateralidad derecha","3 · Right lateral excursion"),listOf("No medida","<4 mm","4–6 mm","7–9 mm","≥10 mm"),rightLat){rightLat=it} }
-        item { Pick(tr(lang,"4 · Lateralidad izquierda","4 · Left lateral excursion"),listOf("No medida","<4 mm","4–6 mm","7–9 mm","≥10 mm"),leftLat){leftLat=it} }
-        item { Pick(tr(lang,"5 · Protrusión","5 · Protrusion"),listOf("No medida","<4 mm","4–5 mm","6–8 mm","≥9 mm"),protrusion){protrusion=it} }
-        item { Pick(tr(lang,"6 · Trayectoria de apertura","6 · Opening trajectory"),listOf("Recta / sin desviación evidente","Desviación a derecha","Desviación a izquierda","Deflexión a derecha","Deflexión a izquierda","Bloqueo durante movimiento"),trajectory){trajectory=it} }
-        item { Pick(tr(lang,"7 · Palpación articular","7 · Joint palpation"),listOf("Sin dolor reproducible","Dolor derecho","Dolor izquierdo","Dolor bilateral"),jointPalpation){jointPalpation=it} }
-        item { Pick(tr(lang,"8 · Palpación muscular","8 · Muscle palpation"),listOf("Sin dolor reproducible","Masetero derecho","Masetero izquierdo","Temporal derecho","Temporal izquierdo","Dolor bilateral/múltiples músculos"),musclePalpation){musclePalpation=it} }
-        item {
-            Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) {
-                Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(7.dp)) {
-                    Text("🧠 "+tr(lang,"Orientación clínica educativa","Educational clinical orientation"),fontWeight=FontWeight.Bold)
-                    Text(orientation,style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Bold)
-                    Text(tr(lang,"Apertura: $opening. Lateralidad D: $rightLat; I: $leftLat. Protrusión: $protrusion. Trayectoria: $trajectory. Palpación ATM: $jointPalpation. Palpación muscular: $musclePalpation.","Opening: $opening. Right excursion: $rightLat; left: $leftLat. Protrusion: $protrusion. Trajectory: $trajectory. TMJ palpation: $jointPalpation. Muscle palpation: $musclePalpation."))
-                }
-            }
-        }
-        item { NoticeCard(tr(lang,"La ficha ayuda a ordenar la exploración. El diagnóstico de TTM requiere historia, reproducción del dolor familiar cuando corresponda, exploración estandarizada y diagnóstico diferencial de dolor orofacial. Tinnitus u otalgia requieren considerar causas no odontológicas.","The sheet helps structure the examination. TMD diagnosis requires history, reproduction of familiar pain when applicable, standardized examination and orofacial-pain differential diagnosis. Tinnitus or ear pain require consideration of non-dental causes.")) }
+        item{ScreenHeader(tr(lang,"ATM + dolor orofacial","TMJ + orofacial pain"),onBack,tr(lang,"Ficha interactiva de síntomas, características del dolor, función, movimientos y palpación. Cada dato queda asociado al expediente.","Interactive sheet for symptoms, pain characteristics, function, movements and palpation. Each item is associated with the record."))}
+        item{SectionCard(tr(lang,"1 · Síntomas y antecedentes","1 · Symptoms and history")){
+            Text(tr(lang,"Marca los hallazgos referidos. Se muestran en 2–3 celdas según el espacio disponible.","Mark reported findings. They display in 2–3 cells according to available space."),style=MaterialTheme.typography.bodySmall)
+            ChipChoices(findings.map{f->(if(lang=="en")f.en else f.es) to on(f.key)},{i->val f=findings[i];checked[f.key]=!on(f.key)},columns=3)
+        }}
+        item{Pick(tr(lang,"2 · Intensidad del dolor · EVA/NRS 0–10","2 · Pain intensity · 0–10 NRS"),tr(lang,"0 significa ausencia de dolor y 10 el peor dolor imaginable referido. La cifra describe intensidad, no la causa.","0 means no pain and 10 the worst pain imaginable as reported. The number describes intensity, not cause."),(0..10).map(Int::toString),painIntensity){painIntensity=it}}
+        item{Pick(tr(lang,"3 · Localización principal","3 · Main location"),tr(lang,"Registra dónde se percibe principalmente el dolor; una localización puede tener fuentes diferentes.","Record where pain is mainly perceived; one location may have different sources."),listOf("Sin dolor","ATM/preauricular","Masetero","Temporal","Mandíbula","Maxilar","Diente/alvéolo","Oído referido","Cabeza/cara","Difuso/otro"),painSite){painSite=it}}
+        item{Pick(tr(lang,"4 · Lateralidad","4 · Laterality"),tr(lang,"Indica lado predominante o bilateralidad.","Record the predominant side or bilaterality."),listOf("No aplica","Derecha","Izquierda","Bilateral","Alternante"),laterality){laterality=it}}
+        item{Pick(tr(lang,"5 · Inicio","5 · Onset"),tr(lang,"Ayuda a distinguir un cuadro reciente de uno persistente y a relacionarlo con eventos desencadenantes.","Helps distinguish recent from persistent symptoms and relate them to triggering events."),listOf("No referido","Hoy/<24 h","2–7 días","1–4 semanas","1–3 meses",">3 meses","Súbito","Gradual"),onset){onset=it}}
+        item{Pick(tr(lang,"6 · Duración de cada episodio","6 · Episode duration"),tr(lang,"Registra cuánto dura típicamente un episodio, no sólo desde cuándo existe el problema.","Record typical episode length, not only how long the problem has existed."),listOf("No referida","Segundos","Minutos","<1 hora","Horas","Continua"),duration){duration=it}}
+        item{Pick(tr(lang,"7 · Frecuencia","7 · Frequency"),tr(lang,"Describe cuántas veces aparece el dolor o si permanece continuo.","Describe how often pain occurs or whether it is continuous."),listOf("No referida","<1/semana","1–3/semana","4–6/semana","Diario","Varias veces/día","Continuo"),frequency){frequency=it}}
+        item{Pick(tr(lang,"8 · Irradiación","8 · Radiation"),tr(lang,"La irradiación describe hacia dónde se extiende la sensación desde el sitio principal.","Radiation describes where the sensation spreads from its main site."),listOf("Sin irradiación","Oído","Sien","Mandíbula","Cuello","Dientes","Cara","Otro"),radiation){radiation=it}}
+        item{Pick(tr(lang,"9 · Desencadenante/modificador","9 · Trigger/modifier"),tr(lang,"Pregunta si masticar, abrir, apretar u otras actividades modifican el dolor. La asociación no demuestra por sí sola la causa.","Ask whether chewing, opening, clenching or other activities modify pain. Association alone does not prove cause."),listOf("No identificado","Masticar","Apertura amplia","Apretar/bruxismo","Hablar","Bostezar","Al despertar","Estrés referido","Frío/calor","Otro"),trigger){trigger=it}}
+        item{Pick(tr(lang,"10 · Repercusión funcional","10 · Functional impact"),tr(lang,"Documenta si el síntoma limita alimentación, apertura, habla o actividades habituales.","Document whether symptoms limit eating, opening, speech or usual activities."),listOf("Sin limitación referida","Dificulta alimentos duros","Dificulta masticación general","Limita apertura","Dificulta hablar","Interfiere sueño","Interfiere actividades"),functionImpact){functionImpact=it}}
+        item{Pick(tr(lang,"11 · Apertura máxima interincisal","11 · Maximum interincisal opening"),tr(lang,"Registra la medición interincisal. Los rangos son descriptivos; edad, tamaño corporal, dolor y técnica influyen.","Record interincisal measurement. Ranges are descriptive; age, body size, pain and technique affect it."),listOf("No medida","<35 mm","35–39 mm","40–44 mm","45–50 mm",">50 mm"),opening){opening=it}}
+        item{Pick(tr(lang,"12 · Lateralidad derecha","12 · Right excursion"),tr(lang,"Movimiento mandibular hacia la derecha medido clínicamente.","Clinically measured mandibular movement to the right."),listOf("No medida","<4 mm","4–6 mm","7–9 mm","≥10 mm"),rightLat){rightLat=it}}
+        item{Pick(tr(lang,"13 · Lateralidad izquierda","13 · Left excursion"),tr(lang,"Movimiento mandibular hacia la izquierda medido clínicamente.","Clinically measured mandibular movement to the left."),listOf("No medida","<4 mm","4–6 mm","7–9 mm","≥10 mm"),leftLat){leftLat=it}}
+        item{Pick(tr(lang,"14 · Protrusión","14 · Protrusion"),tr(lang,"Movimiento anterior de la mandíbula.","Forward movement of the mandible."),listOf("No medida","<4 mm","4–5 mm","6–8 mm","≥9 mm"),protrusion){protrusion=it}}
+        item{Pick(tr(lang,"15 · Trayectoria de apertura","15 · Opening trajectory"),tr(lang,"Desviación regresa hacia la línea media durante la apertura; deflexión permanece hacia un lado al final. Registra lo observado sin asumir etiología.","Deviation returns toward midline during opening; deflection remains to one side at the end. Record what is observed without assuming etiology."),listOf("Recta / sin desviación evidente","Desviación a derecha","Desviación a izquierda","Deflexión a derecha","Deflexión a izquierda","Bloqueo durante movimiento"),trajectory){trajectory=it}}
+        item{Pick(tr(lang,"16 · Palpación articular","16 · Joint palpation"),tr(lang,"Registra si la palpación reproduce el dolor familiar del paciente y el lado.","Record whether palpation reproduces the patient's familiar pain and the side."),listOf("Sin dolor reproducible","Dolor derecho","Dolor izquierdo","Dolor bilateral","Dolor familiar reproducido"),jointPalpation){jointPalpation=it}}
+        item{Pick(tr(lang,"17 · Palpación muscular","17 · Muscle palpation"),tr(lang,"Explora de forma comparable maseteros y temporales. Dolor a la palpación aislado no establece diagnóstico.","Examine masseters and temporalis comparably. Isolated palpation pain does not establish diagnosis."),listOf("Sin dolor reproducible","Masetero derecho","Masetero izquierdo","Temporal derecho","Temporal izquierdo","Bilateral/múltiples","Dolor familiar reproducido"),musclePalpation){musclePalpation=it}}
+        item{SectionCard(tr(lang,"18 · Seguimiento","18 · Follow-up")){
+            Text(tr(lang,"Registra la evolución clínica en controles posteriores; no sustituye las notas de evolución.","Record clinical evolution at subsequent visits; it does not replace progress notes."),style=MaterialTheme.typography.bodySmall)
+            OutlinedTextField(followup,{followup=it.take(500)},label={Text(tr(lang,"Evolución / observaciones","Evolution / notes"))},modifier=Modifier.fillMaxWidth(),minLines=3)
+        }}
+        item{Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(7.dp)){
+            Text("🧠 "+tr(lang,"Orientación clínica educativa","Educational clinical orientation"),fontWeight=FontWeight.Bold)
+            Text(orientation,style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Bold)
+            Text(tr(lang,"Dolor $painIntensity/10 · $painSite · $laterality. Inicio: $onset. Duración: $duration. Frecuencia: $frequency. Irradiación: $radiation. Modificador: $trigger. Función: $functionImpact.","Pain $painIntensity/10 · $painSite · $laterality. Onset: $onset. Duration: $duration. Frequency: $frequency. Radiation: $radiation. Modifier: $trigger. Function: $functionImpact."))
+            Text(tr(lang,"Apertura: $opening. Lateralidad D: $rightLat; I: $leftLat. Protrusión: $protrusion. Trayectoria: $trajectory. ATM: $jointPalpation. Músculos: $musclePalpation.","Opening: $opening. Right excursion: $rightLat; left: $leftLat. Protrusion: $protrusion. Trajectory: $trajectory. TMJ: $jointPalpation. Muscles: $musclePalpation."))
+        }}}
+        item{NoticeCard(tr(lang,"Dolor orofacial puede ser odontógeno, musculoesquelético, neuropático, neurovascular u originarse en estructuras vecinas. Dolor intenso súbito, traumatismo importante, fiebre/infección, déficit neurológico, alteración visual, bloqueo abierto o síntomas atípicos requieren valoración apropiada según el contexto. La ficha organiza hallazgos y no emite un diagnóstico automático.","Orofacial pain may be odontogenic, musculoskeletal, neuropathic, neurovascular or arise from neighboring structures. Sudden severe pain, major trauma, fever/infection, neurologic deficit, visual changes, open lock or atypical symptoms require appropriate assessment according to context. This sheet structures findings and does not issue an automatic diagnosis."))}
     }
 }
 
