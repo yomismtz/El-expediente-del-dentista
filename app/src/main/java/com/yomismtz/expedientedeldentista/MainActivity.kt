@@ -73,8 +73,8 @@ class MainActivity : AppCompatActivity() {
                             },
                             savedRecords = savedRecords,
                             activeRecordId = activeRecord?.id,
-                            onNewRecord = {
-                                val created = recordStore.create()
+                            onNewRecord = { profile ->
+                                val created = recordStore.create(EducationalSession(profile = profile))
                                 activeRecord = created
                                 session = created.session
                                 savedRecords = recordStore.loadAll()
