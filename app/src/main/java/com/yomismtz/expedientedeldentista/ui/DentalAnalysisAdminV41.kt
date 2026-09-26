@@ -22,7 +22,7 @@ import com.yomismtz.expedientedeldentista.clinical.EducationalSession
    "oleary"->OlearyScreen(lang,session,onSessionChanged,back)
    "icdas"->IcdasScreen(lang,session,onSessionChanged,back)
    "periodontogram"->PeriodontogramScreen(lang,session,onSessionChanged,back)
-   "pulpal"->PulpalPeriapicalInteractiveV2Screen(lang,session,onSessionChanged,{page="endo"},{page="endo"},back)
+   "pulpal"->PulpalPeriapicalInteractiveV2Screen(lang,session,onSessionChanged,{page="endo"},back)
    "endo"->EndodonticInteractiveV2Screen(lang,session,{page="pulpal"},{page="pulpal"},back)
   }
   return
