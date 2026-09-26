@@ -85,13 +85,19 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
 
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
   item{ScreenHeader("Calculadoras odontológicas",onBack,"Herramientas educativas separadas de los auxiliares de diagnóstico. No sustituyen prescripción, ficha técnica ni supervisión clínica.")}
-  item{Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
-   FilterChip(tab==0,{tab=0},{Text("Anestésico local")},Modifier.weight(1f))
-   FilterChip(tab==1,{tab=1},{Text("Medicamentos pediátricos")},Modifier.weight(1f))
-   FilterChip(tab==2,{tab=2},{Text("Fluoruros / clorhexidina")},Modifier.weight(1f))
-   FilterChip(tab==3,{tab=3},{Text("IMC")},Modifier.weight(1f))
-   FilterChip(tab==4,{tab=4},{Text("Conversión y práctica")},Modifier.weight(1f))
-  }}
+  item{
+   ChipChoices(
+    listOf(
+     "Anestésico local" to (tab==0),
+     "Medicamentos" to (tab==1),
+     "Fluoruros / clorhexidina" to (tab==2),
+     "IMC" to (tab==3),
+     "Conversión y práctica" to (tab==4)
+    ),
+    { tab=it },
+    columns=3
+   )
+  }
   if(tab==0){
    item{SectionCard("1 · Paciente"){
     OutlinedTextField(weight,{weight=it.filter{x->x.isDigit()||x=='.'}.take(6)},label={Text("Peso (kg)")},modifier=Modifier.fillMaxWidth())
