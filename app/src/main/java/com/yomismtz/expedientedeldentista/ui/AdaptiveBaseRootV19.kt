@@ -54,7 +54,7 @@ private val tabsV19=listOf(
     // 1 · Expediente clínico
     // Conserva aquí el interrogatorio y todos los antecedentes de la historia clínica.
     TabV19(AppScreen.HISTORY,"🩺","Historia clínica completa","Complete clinical history",0),
-    TabV19(AppScreen.INTAKE,"📋","Interrogatorio y nota de ingreso","Guided intake and intake note",0),
+    TabV19(AppScreen.INTAKE,"📋","Nota de ingreso","Intake note",0),
 
     // 2 · Exploración clínica
     // Hallazgos del paciente: signos vitales, postura, ATM, tejidos blandos y oclusión.
