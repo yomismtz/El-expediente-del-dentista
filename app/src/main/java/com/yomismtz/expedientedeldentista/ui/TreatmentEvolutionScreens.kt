@@ -262,7 +262,8 @@ fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Uni
         return specialties[specialty].orEmpty().any{hay.contains(it)}
     }
     val visibleLibrary=library.withIndex().filter{matchesSpecialty(it.value)}
-    val n=library[selected]
+    val effectiveSelected = if (visibleLibrary.any { it.index == selected }) selected else visibleLibrary.firstOrNull()?.index ?: 0
+    val n=library[effectiveSelected]
     val sites=listOf("OD / zona seleccionada","Cuadrante","Arcada","Mucosa oral","Periodonto","ATM / región craneofacial")
     val states=listOf("Paciente estable y cooperador","Paciente ansioso pero cooperador","Requiere reevaluación antes de continuar","Procedimiento diferido")
     val anesthesias=listOf("No requerida","Anestesia local según protocolo","Anestesia tópica según protocolo","Dato no aplicable")
@@ -281,9 +282,9 @@ fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Uni
         item { NoticeCard(tr(lang,"La nota debe corresponder al expediente real: fecha/hora institucional, diagnóstico, procedimiento, materiales y datos clínicos deben verificarse antes de firmar.","The note must match the real record: institutional date/time, diagnosis, procedure, materials and clinical data must be verified before signing.")) }
         item { SectionCard(tr(lang,"1 · Procedimiento realizado","1 · Procedure performed")) {
             Text(tr(lang,"Especialidad / tipo de tratamiento","Specialty / treatment type"),fontWeight=FontWeight.Bold)
-            ChipChoices(specialties.keys.map{x->x to (specialty==x)},{i->specialty=specialties.keys.elementAt(i)},columns=3)
+            ChipChoices(specialties.keys.map{x->x to (specialty==x)},{i-> specialty=specialties.keys.elementAt(i); selected=0 },columns=3)
             Text(tr(lang,"Tratamiento / actividad","Treatment / activity"),fontWeight=FontWeight.Bold)
-            ChipChoices(visibleLibrary.map{(idx,x)->(if(lang=="en")x.titleEn else x.titleEs) to (selected==idx)},{i->selected=visibleLibrary[i].index},columns=3)
+            ChipChoices(visibleLibrary.map{(idx,x)->(if(lang=="en")x.titleEn else x.titleEs) to (effectiveSelected==idx)},{i->selected=visibleLibrary[i].index),columns=3)
         }}
         item { SectionCard(tr(lang,"2 · OD o zona","2 · Tooth or site")) { ChipChoices(sites.map{it to (site==it)},{site=sites[it]},columns=4) } }
         item { SectionCard(tr(lang,"3 · Estado durante la cita","3 · Appointment status")) { ChipChoices(states.map{it to (status==it)},{status=states[it]},columns=4) } }
