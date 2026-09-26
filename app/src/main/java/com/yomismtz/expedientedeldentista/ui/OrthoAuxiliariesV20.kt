@@ -184,7 +184,7 @@ private fun FacialFrontalV20(lang:String){
 private fun PowellV20(lang:String){
     var bitmap by remember{mutableStateOf<ImageBitmap?>(null)}
     val points=remember{mutableStateListOf<Offset>()}
-    var male by remember{mutableStateOf(false)}
+    var male by rememberRecordState("ortho.male",false)
     ResponsiveSectionV17(tr(lang,"Fotografía lateral · análisis de Powell","Lateral photograph · Powell analysis"),tr(lang,"Marca G’, N’, Prn, Pg’ y punto cervical. Los ángulos dependen de la exactitud de tus puntos y de una fotografía lateral estandarizada.","Mark G’, N’, Prn, Pg’ and a cervical point. Angles depend on accurate landmarks and a standardized lateral photograph.")){
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
             FilterChip(!male,{male=false},{Text(tr(lang,"Mujer","Female"))},Modifier.weight(1f))
@@ -254,9 +254,9 @@ private fun moyersV20(sum:Double,upper:Boolean):Pair<Double,Double>{
 
 @Composable
 private fun MixedDentitionV20(lang:String){
-    var method by remember{mutableStateOf(0)}
-    val incisors=remember{mutableStateMapOf<Int,String>()}
-    val available=remember{mutableStateMapOf<String,String>()}
+    var method by rememberRecordState("ortho.method",0)
+    val incisors=rememberRecordStateMap<Int,String>("ortho.incisors")
+    val available=rememberRecordStateMap<String,String>("ortho.available")
     val teeth=listOf(42,41,31,32)
     val sum=teeth.mapNotNull{incisors[it]?.toDoubleOrNull()}.takeIf{it.size==4}?.sum()
     ResponsiveSectionV17(tr(lang,"Análisis de dentición mixta","Mixed dentition analysis"),tr(lang,"Mide el ancho mesiodistal máximo de 42, 41, 31 y 32. Después registra el espacio disponible de cada segmento canino–premolar.","Measure the maximum mesiodistal width of 42, 41, 31 and 32, then enter available space for each canine–premolar segment.")){
@@ -314,8 +314,8 @@ private fun PanoramicNollaV20(lang:String,profile:ScreenProfileV17){
     var bitmap by remember{mutableStateOf<ImageBitmap?>(null)}
     val points=remember{mutableStateListOf<Offset>()}
     var selectedTooth by remember{mutableStateOf(16)}
-    val stages=remember{mutableStateMapOf<Int,Int>()}
-    val checks=remember{mutableStateMapOf<String,Boolean>()}
+    val stages=rememberRecordStateMap<Int,Int>("ortho.stages")
+    val checks=rememberRecordStateMap<String,Boolean>("ortho.checks")
     val upper=listOf(18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28)
     val lower=listOf(48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38)
     val review=listOf("Calidad y posicionamiento","Dentición presente/ausente y supernumerarios","Desarrollo dental y erupción","Caries/restauraciones visibles","Lesiones periapicales","Nivel óseo periodontal","Raíces, reabsorciones y dilaceraciones","Retenidos/impactados y terceros molares","Radiolucideces/radiopacidades/lesiones quísticas","Senos maxilares y cavidad nasal","Cóndilos/ATM, ramas, cuerpos y ángulos mandibulares","Canal mandibular, forámenes mentonianos y asimetrías")
