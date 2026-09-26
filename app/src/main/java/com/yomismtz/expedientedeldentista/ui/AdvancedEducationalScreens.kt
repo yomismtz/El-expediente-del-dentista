@@ -311,17 +311,17 @@ private fun KennedyArchRow(teeth: List<Int>, present: Set<Int>, onTap: (Int) -> 
 
 @Composable
 fun SurgicalSheetScreen(lang: String, onBack: () -> Unit) {
-    var procedure by remember { mutableStateOf("Exodoncia simple") }
-    var site by remember { mutableStateOf("Órgano dentario seleccionado") }
-    var preop by remember { mutableStateOf("Valoración preoperatoria completa") }
-    var anesthesia by remember { mutableStateOf("Anestesia local según protocolo") }
-    var technique by remember { mutableStateOf("Técnica convencional autorizada") }
-    var finding by remember { mutableStateOf("Sin hallazgos inesperados") }
-    var hemostasis by remember { mutableStateOf("Hemostasia lograda") }
-    var suture by remember { mutableStateOf("No requerida") }
-    var incident by remember { mutableStateOf("Sin incidentes") }
-    var postop by remember { mutableStateOf("Indicaciones posoperatorias y signos de alarma") }
-    var followup by remember { mutableStateOf("Control programado") }
+    var procedure by rememberRecordState("surgical.procedure","Exodoncia simple")
+    var site by rememberRecordState("surgical.site","Órgano dentario seleccionado")
+    var preop by rememberRecordState("surgical.preop","Valoración preoperatoria completa")
+    var anesthesia by rememberRecordState("surgical.anesthesia","Anestesia local según protocolo")
+    var technique by rememberRecordState("surgical.technique","Técnica convencional autorizada")
+    var finding by rememberRecordState("surgical.finding","Sin hallazgos inesperados")
+    var hemostasis by rememberRecordState("surgical.hemostasis","Hemostasia lograda")
+    var suture by rememberRecordState("surgical.suture","No requerida")
+    var incident by rememberRecordState("surgical.incident","Sin incidentes")
+    var postop by rememberRecordState("surgical.postop","Indicaciones posoperatorias y signos de alarma")
+    var followup by rememberRecordState("surgical.followup","Control programado")
 
     val procedures=listOf("Exodoncia simple","Retiro de resto radicular seleccionado","Exodoncia quirúrgica autorizada","Biopsia / cirugía menor autorizada","Sutura","Retiro de sutura","Control posoperatorio")
     val sites=listOf("Órgano dentario seleccionado","Cuadrante","Región posterior maxilar","Región posterior mandibular","Mucosa oral / tejido blando","Zona de biopsia")
