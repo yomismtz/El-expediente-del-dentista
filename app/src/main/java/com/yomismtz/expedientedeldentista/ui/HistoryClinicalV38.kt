@@ -108,19 +108,21 @@ private data class E(val n:String,val d:String)
   ReasonDx("Diente se salió por un golpe",listOf("Avulsión de diente permanente","Avulsión de diente temporal","Lesión alveolar asociada","Lesión de tejidos blandos","Trauma de dientes vecinos")),
   ReasonDx("Necesito prótesis porque me faltan dientes",listOf("Edentulismo parcial","Edentulismo total","Necesidad de prótesis removible","Necesidad de prótesis fija según caso","Rehabilitación implantosoportada a valorar"))
  )
- var selectedReason by remember{mutableStateOf(0)}
+ var selectedReason by remember{mutableStateOf<Int?>(null)}
  var selectedDx by remember{mutableStateOf<Int?>(null)}
- val current=catalog[selectedReason]
+ val current=selectedReason?.let{catalog[it]}
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
   item{ScreenHeader("Motivo de consulta y padecimiento actual",onBack,"Módulo sin escritura libre: selecciona el motivo referido y revisa cinco diagnósticos diferenciales posibles. El motivo por sí solo no establece el diagnóstico.")}
   item{NoticeCard("Los diagnósticos mostrados son posibilidades educativas. El diagnóstico clínico requiere integrar interrogatorio, exploración y pruebas indicadas.")}
   item{SectionCard("1 · Motivo de consulta"){ChipChoices(catalog.mapIndexed{i,x->x.reason to (selectedReason==i)},{i->selectedReason=i;selectedDx=null},columns=5)}}
-  item{SectionCard("2 · Cinco diagnósticos diferenciales posibles"){ChipChoices(current.dx.mapIndexed{i,x->x to (selectedDx==i)},{selectedDx=it},columns=5)}}
-  item{SectionCard("3 · Selección para estudio"){
-   Text("Motivo: "+current.reason,fontWeight=FontWeight.Bold)
-   Text("Posibilidad diagnóstica seleccionada: "+(selectedDx?.let{current.dx[it]}?:"sin seleccionar"))
-   Text("Confirma o descarta mediante anamnesis dirigida, exploración clínica y auxiliares/pruebas que correspondan; no conviertas esta selección en diagnóstico definitivo.",style=MaterialTheme.typography.bodySmall)
-  }}
+  current?.let { reason ->
+   item{SectionCard("2 · Cinco diagnósticos diferenciales posibles"){ChipChoices(reason.dx.mapIndexed{i,x->x to (selectedDx==i)},{selectedDx=it},columns=5)}}
+   item{SectionCard("3 · Selección para estudio"){
+    Text("Motivo: "+reason.reason,fontWeight=FontWeight.Bold)
+    Text("Posibilidad diagnóstica seleccionada: "+(selectedDx?.let{reason.dx[it]}?:"sin seleccionar"))
+    Text("Confirma o descarta mediante anamnesis dirigida, exploración clínica y auxiliares/pruebas que correspondan; no conviertas esta selección en diagnóstico definitivo.",style=MaterialTheme.typography.bodySmall)
+   }}
+  }
  }
 }
 
