@@ -98,6 +98,7 @@ fun AppRootV5(
 
     PageTurnV5(screen) { target ->
         when (target) {
+            AppScreen.SECTION -> AppScreenPlaceholder(preferences.languageTag, folderBack)
             AppScreen.HOME -> CoverV5(preferences.languageTag, { screen = AppScreen.FOLDER }, { screen = AppScreen.SETTINGS })
             AppScreen.FOLDER -> FolderV5(preferences.languageTag, { screen = it }, { screen = AppScreen.HOME }, { screen = AppScreen.SETTINGS })
             AppScreen.SETTINGS -> SettingsV5(preferences, onPreferencesChanged, onLanguageChanged, { onSessionChanged(EducationalSession()) }, folderBack)
