@@ -82,6 +82,7 @@ private val tabsV19=listOf(
     TabV19(AppScreen.PROSTHETIC,"👑","Ficha protésica","Prosthetic sheet",5),
     TabV19(AppScreen.SURGICAL,"✚","Ficha quirúrgica","Surgical sheet",5),
     TabV19(AppScreen.PERIODONTOGRAM,"📈","Periodontograma","Periodontogram",5),
+    TabV19(AppScreen.ATM,"◉","Ficha de trastornos temporomandibulares","Temporomandibular disorders sheet",5),
 
     // 7 · Herramientas administrativas
     TabV19(AppScreen.ACTIVITIES,"✍","Autorización de actividades","Activity authorization",6),
