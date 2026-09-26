@@ -88,7 +88,7 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
             Button(onClick={launcher.launch(arrayOf("image/*"))},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Seleccionar fotografía local","Select local photograph"),fontWeight=FontWeight.Bold)}
             if(uriText.isNotBlank()){
                 Text(tr(lang,"Fotografía local vinculada al expediente.","Local photograph linked to the record."),fontWeight=FontWeight.Bold)
-                LocalImageViewerV21(uriText,tr(lang,"Fotografía clínica seleccionada","Selected clinical photograph"))
+                Text(tr(lang,"Archivo local conservado mediante permiso persistente. Puede reemplazarse seleccionando otra fotografía.","Local file retained through persistent permission. It can be replaced by selecting another photograph."),style=androidx.compose.material3.MaterialTheme.typography.bodySmall)
             }
             OutlinedTextField(notes,{notes=it},Modifier.fillMaxWidth(),label={Text(tr(lang,"Hallazgos, calidad, orientación o notas","Findings, quality, orientation or notes"))})
         }
