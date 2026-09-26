@@ -199,6 +199,7 @@ private fun PaletteCardV19(style:BirdPaletteStyle,lang:String,selected:Boolean,o
 
 
 private fun mascotIconV19(style:BirdPaletteStyle)=when(style){
+ BirdPaletteStyle.AZUL_TURQUESA->"🩵"; BirdPaletteStyle.AZUL_MARINO->"💙";
  BirdPaletteStyle.AGAPORNI->"🐦"; BirdPaletteStyle.TUCAN->"🦜"; BirdPaletteStyle.NINFA->"🐤"; BirdPaletteStyle.BUHO->"🦉"; BirdPaletteStyle.CUERVO->"🐦‍⬛"
  BirdPaletteStyle.GUACAMAYA->"🦜"; BirdPaletteStyle.PUG->"🐶"; BirdPaletteStyle.POMERANIA->"🐕"; BirdPaletteStyle.GATO->"🐱"; BirdPaletteStyle.CONEJO->"🐰"
  BirdPaletteStyle.ELEFANTE->"🐘"; BirdPaletteStyle.CABALLO_CAFE->"🐴"; BirdPaletteStyle.SERPIENTE->"🐍"; BirdPaletteStyle.IGUANA->"🦎"; BirdPaletteStyle.ARANA->"🕷️"
@@ -211,6 +212,7 @@ private fun mascotIconV19(style:BirdPaletteStyle)=when(style){
 }
 
 private fun mascotMotionV19(style:BirdPaletteStyle)=when(style){
+ BirdPaletteStyle.AZUL_TURQUESA,BirdPaletteStyle.AZUL_MARINO->3
  BirdPaletteStyle.AGAPORNI,BirdPaletteStyle.NINFA,BirdPaletteStyle.CONEJO,BirdPaletteStyle.RANA_VERDE,BirdPaletteStyle.PINGUINO->0
  BirdPaletteStyle.TUCAN,BirdPaletteStyle.GUACAMAYA,BirdPaletteStyle.PERICO,BirdPaletteStyle.GALLO,BirdPaletteStyle.COLIBRI,BirdPaletteStyle.MARIPOSA_MONARCA,BirdPaletteStyle.MURCIELAGO_NOCHE->1
  BirdPaletteStyle.SERPIENTE,BirdPaletteStyle.IGUANA,BirdPaletteStyle.CAMALEON,BirdPaletteStyle.CANGREJO_CORAL,BirdPaletteStyle.PEZ_PAYASO,BirdPaletteStyle.DELFIN,BirdPaletteStyle.CABALLITO_TURQUESA->2
