@@ -48,7 +48,7 @@ private val prostUpper = listOf(17,16,15,14,13,12,11,21,22,23,24,25,26,27)
 private val prostLower = listOf(47,46,45,44,43,42,41,31,32,33,34,35,36,37)
 
 private enum class ProstTab { DIAGNOSIS, RPD, COMPLETE, FIXED }
-private enum class DesignMark { REST_M, REST_D, CINGULUM, DIRECT, INDIRECT, GUIDE, BASE, PONTIC, ABUTMENT }
+private enum class DesignMark : java.io.Serializable { REST_M, REST_D, CINGULUM, DIRECT, INDIRECT, GUIDE, BASE, PONTIC, ABUTMENT }
 
 private data class KennedyResult(
     val classNumber: Int,
@@ -113,16 +113,16 @@ private fun kennedyResult(arch: List<Int>, present: Set<Int>, lang: String): Ken
 @Composable
 fun ProstheticInteractiveV2Screen(lang: String, onBack: () -> Unit) {
     var tab by remember { mutableStateOf(ProstTab.DIAGNOSIS) }
-    var upperPresent by remember { mutableStateOf(prostUpper.toSet()) }
-    var lowerPresent by remember { mutableStateOf(prostLower.toSet()) }
-    var designUpper by remember { mutableStateOf<Map<Int, Set<DesignMark>>>(emptyMap()) }
-    var designLower by remember { mutableStateOf<Map<Int, Set<DesignMark>>>(emptyMap()) }
+    var upperPresent by rememberRecordState("prosthetic.v2.upperPresent", prostUpper.toSet())
+    var lowerPresent by rememberRecordState("prosthetic.v2.lowerPresent", prostLower.toSet())
+    var designUpper by rememberRecordState("prosthetic.v2.designUpper", emptyMap<Int, Set<DesignMark>>())
+    var designLower by rememberRecordState("prosthetic.v2.designLower", emptyMap<Int, Set<DesignMark>>())
     var upperDesign by remember { mutableStateOf(true) }
     var designTool by remember { mutableStateOf(DesignMark.REST_M) }
-    var rpdMaterial by remember { mutableStateOf("metal-acrylic") }
-    var majorConnector by remember { mutableStateOf("AP palatal") }
-    var fixedMaterial by remember { mutableStateOf("zirconia") }
-    var ponticType by remember { mutableStateOf("modified-ridge-lap") }
+    var rpdMaterial by rememberRecordState("prosthetic.v2.rpdMaterial", "metal-acrylic")
+    var majorConnector by rememberRecordState("prosthetic.v2.majorConnector", "AP palatal")
+    var fixedMaterial by rememberRecordState("prosthetic.v2.fixedMaterial", "zirconia")
+    var ponticType by rememberRecordState("prosthetic.v2.ponticType", "modified-ridge-lap")
     var fixedUpper by remember { mutableStateOf(true) }
 
     val upperK = kennedyResult(prostUpper, upperPresent, lang)
