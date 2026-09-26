@@ -127,9 +127,9 @@ fun IntakeInteractiveV3Screen(
     onProsthetic: () -> Unit,
     onBack: () -> Unit
 ) {
-    var selectedAsa by remember { mutableStateOf(1) }
-    var selectedMedication by remember { mutableStateOf(medicationGuides.first()) }
-    var selectedSchedule by remember { mutableStateOf(selectedMedication.schedulesEs.first()) }
+    var selectedAsa by rememberRecordState("intake.selectedAsa",1)
+    var selectedMedication by rememberRecordState("intake.selectedMedication",medicationGuides.first())
+    var selectedSchedule by rememberRecordState("intake.selectedSchedule",selectedMedication.schedulesEs.first())
 
     fun schedules() = if (lang == "en") selectedMedication.schedulesEn else selectedMedication.schedulesEs
 
