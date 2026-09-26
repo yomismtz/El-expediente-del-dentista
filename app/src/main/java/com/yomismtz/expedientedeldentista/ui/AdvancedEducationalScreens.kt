@@ -251,8 +251,8 @@ private fun kennedyClass(present: Set<Int>, upper: Boolean, lang: String): Strin
 fun ProstheticSheetScreen(lang: String, onBack: () -> Unit) {
     val upper = listOf(17,16,15,14,13,12,11,21,22,23,24,25,26,27)
     val lower = listOf(47,46,45,44,43,42,41,31,32,33,34,35,36,37)
-    var presentUpper by remember { mutableStateOf(upper.toSet()) }
-    var presentLower by remember { mutableStateOf(lower.toSet()) }
+    var presentUpper by rememberRecordState("prosthetic.sheet.presentUpper", upper.toSet())
+    var presentLower by rememberRecordState("prosthetic.sheet.presentLower", lower.toSet())
     val sections = listOf(
         TeachingItem("Modelos de estudio", "Study models", "Permiten analizar espacios edéntulos, migraciones, forma de arcada, relación oclusal y zonas candidatas a soporte protésico.", "Allow analysis of edentulous spaces, migration, arch form, occlusion and potential prosthetic support."),
         TeachingItem("Análisis radiográfico y periodontal", "Radiographic and periodontal analysis", "Valora lesiones periapicales, tratamientos previos, soporte óseo, relación corona-raíz, ligamento periodontal y pronóstico de posibles pilares.", "Assesses periapical disease, previous treatment, bone support, crown-root relation, periodontal ligament and prognosis of potential abutments."),
