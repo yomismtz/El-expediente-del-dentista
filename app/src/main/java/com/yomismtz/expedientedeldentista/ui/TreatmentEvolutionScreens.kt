@@ -202,7 +202,52 @@ fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Uni
     var instructions by remember { mutableStateOf("Indicaciones generales y signos de alarma") }
     var followUp by remember { mutableStateOf("Control programado") }
     var supervision by remember { mutableStateOf("Realizado bajo supervisión docente") }
-    val library=noteLibrary()+supplementalNoteLibraryV39()
+    val newTreatments=listOf(
+        NoteTemplate("Toma de impresiones diagnósticas","Diagnostic impressions","Registrar indicación, arcada, material de impresión, selección de cubeta, calidad de la impresión, desinfección/manejo conforme al protocolo y destino para modelo de estudio.","Record indication, arch, impression material, tray selection, impression quality, disinfection/handling per protocol and destination for study cast."),
+        NoteTemplate("Análisis de modelos","Model analysis","Registrar modelos analizados, dentición, mediciones efectuadas, discrepancias de espacio y hallazgos relevantes; documentar el método empleado.","Record casts analyzed, dentition, measurements, space discrepancies and relevant findings; document the method used."),
+        NoteTemplate("Análisis radiográfico","Radiographic analysis","Registrar tipo de estudio, fecha, calidad diagnóstica, estructuras evaluadas, hallazgos y correlación clínica; no emitir conclusiones fuera del alcance del estudio.","Record imaging type, date, diagnostic quality, evaluated structures, findings and clinical correlation."),
+        NoteTemplate("Análisis fotográfico","Photographic analysis","Registrar vistas obtenidas, estandarización disponible, hallazgos faciales/intraorales y correlación con la exploración clínica.","Record views obtained, available standardization, facial/intraoral findings and clinical correlation."),
+        NoteTemplate("Análisis cefalométrico de Steiner","Steiner cephalometric analysis","Registrar trazado y puntos utilizados, SNA, SNB, ANB y GoGn-SN, calidad del estudio e interpretación dentro del contexto clínico.","Record tracing/landmarks, SNA, SNB, ANB and GoGn-SN, study quality and interpretation in clinical context."),
+        NoteTemplate("CAMBRA · riesgo de caries","CAMBRA caries risk","Registrar factores de enfermedad, riesgo y protección seleccionados, categoría obtenida y plan preventivo individualizado; reevaluar según evolución.","Record selected disease, risk and protective factors, resulting category and individualized preventive plan; reassess over time."),
+        NoteTemplate("Índice de placa O’Leary","O’Leary plaque index","Registrar superficies reveladas/evaluadas, superficies con placa, cálculo del porcentaje e instrucciones de higiene derivadas del hallazgo.","Record disclosed/evaluated surfaces, plaque-positive surfaces, percentage calculation and hygiene instruction based on findings."),
+        NoteTemplate("CPO-D / ceo-d","DMFT / dmft","Registrar dentición evaluada y componentes cariados, perdidos por caries y obturados conforme al índice utilizado, además del resultado calculado.","Record evaluated dentition and decayed, missing due to caries and filled components according to the selected index, plus calculated result."),
+        NoteTemplate("ICDAS","ICDAS","Registrar superficies limpias y evaluables, código seleccionado por superficie y condiciones de examen; correlacionar con actividad/riesgo antes del plan.","Record clean/evaluable surfaces, selected surface code and examination conditions; correlate with activity/risk before planning."),
+        NoteTemplate("IPC","CPI","Registrar sextantes evaluables, hallazgos/códigos obtenidos y necesidad de completar valoración periodontal cuando corresponda.","Record assessable sextants, findings/codes and need for complete periodontal assessment when indicated."),
+        NoteTemplate("IHOS","OHI-S","Registrar dientes/superficies índice evaluadas, depósitos blandos y cálculo conforme al índice, resultado y orientación de higiene.","Record index teeth/surfaces, debris and calculus according to the index, result and hygiene guidance."),
+        NoteTemplate("Exploración de mucosas","Oral mucosa examination","Registrar sitios examinados, aspecto de mucosas, lesiones o ausencia de ellas, localización, características y conducta de seguimiento/remisión cuando proceda.","Record examined sites, mucosal appearance, lesions or absence, location, characteristics and follow-up/referral when indicated."),
+        NoteTemplate("Mantenedor banda y ansa","Band-and-loop space maintainer","Registrar indicación por pérdida prematura, diente/espacio, evaluación clínica y radiográfica, adaptación, cementación, oclusión, higiene y control.","Record indication after premature loss, tooth/space, clinical/radiographic assessment, fit, cementation, occlusion, hygiene and follow-up."),
+        NoteTemplate("Mantenedor corona y ansa","Crown-and-loop space maintainer","Registrar indicación, diente pilar, restauración/corona, ansa, adaptación, cementación, oclusión y seguimiento de erupción.","Record indication, abutment tooth, crown/restoration, loop, fit, cementation, occlusion and eruption follow-up."),
+        NoteTemplate("Arco lingual como mantenedor","Lingual arch space maintainer","Registrar indicación, dentición, dientes pilares, adaptación del arco, cementación, oclusión, tejidos y controles.","Record indication, dentition, abutments, arch fit, cementation, occlusion, tissues and follow-up."),
+        NoteTemplate("Botón de Nance","Nance appliance","Registrar indicación, anclaje, adaptación, estado de mucosa palatina, cementación, higiene y controles.","Record indication, anchorage, fit, palatal mucosal status, cementation, hygiene and follow-up."),
+        NoteTemplate("Arco transpalatino","Transpalatal arch","Registrar indicación, molares pilares, adaptación, cementación, relación con tejidos, oclusión y seguimiento.","Record indication, molar abutments, fit, cementation, tissue relationship, occlusion and follow-up."),
+        NoteTemplate("Zapatilla distal","Distal shoe space maintainer","Registrar indicación y evaluación radiográfica, diente pilar, relación con el sucesor, procedimiento autorizado, control clínico/radiográfico y plan de sustitución cuando corresponda.","Record indication and imaging assessment, abutment, successor relationship, authorized procedure, clinical/radiographic follow-up and replacement plan when applicable."),
+        NoteTemplate("Recuperador de espacio","Space regainer","Registrar pérdida de espacio diagnosticada, análisis previo, aparato seleccionado, activación realizada bajo supervisión, respuesta y controles.","Record diagnosed space loss, prior analysis, selected appliance, supervised activation, response and follow-up."),
+        NoteTemplate("Extracciones seriadas","Serial extraction","Registrar diagnóstico ortodóncico, análisis de espacio, secuencia indicada y autorizada, pieza intervenida, evolución eruptiva y controles; no registrar como procedimiento aislado sin planificación ortodóncica.","Record orthodontic diagnosis, space analysis, indicated/authorized sequence, treated tooth, eruption progress and follow-up; do not record as an isolated procedure without orthodontic planning."),
+        NoteTemplate("Pulpotomía en dentición temporal","Primary-tooth pulpotomy","Registrar diagnóstico pulpar/periapical, restaurabilidad, aislamiento, procedimiento, control de hemorragia, biomaterial, sellado/restauración y seguimiento.","Record pulpal/periapical diagnosis, restorability, isolation, procedure, bleeding control, biomaterial, seal/restoration and follow-up."),
+        NoteTemplate("Pulpectomía en dentición temporal","Primary-tooth pulpectomy","Registrar diagnóstico, restaurabilidad, aislamiento, longitud de trabajo según protocolo, preparación/irrigación segura, material obturador apropiado, restauración y seguimiento.","Record diagnosis, restorability, isolation, working length per protocol, safe preparation/irrigation, appropriate filling material, restoration and follow-up."),
+        NoteTemplate("Corona de acero cromo en odontopediatría","Pediatric stainless-steel crown","Registrar diente e indicación, preparación, selección y adaptación de corona, cementación, contactos/oclusión, tejidos e indicaciones de control.","Record tooth and indication, preparation, crown selection/fit, cementation, contacts/occlusion, tissues and follow-up instructions.")
+    )
+    val library=noteLibrary()+supplementalNoteLibraryV39()+newTreatments
+    var specialty by remember { mutableStateOf("Todas") }
+    val specialties=linkedMapOf(
+        "Todas" to listOf<String>(),
+        "Diagnóstico" to listOf("ingreso","radiograf","fotograf","impresiones diagnósticas","modelos","steiner","cambra","o’leary","cpo-d","ceo-d","icdas","ipc","ihos","mucosas"),
+        "Preventiva" to listOf("profilaxis","sellador","flúor","higiene","preventiva"),
+        "Operatoria / restauradora" to listOf("resina","amalgama","ionómero","incrustación","onlay","restaur","corona definitiva","corona provisional"),
+        "Periodoncia" to listOf("periodon","raspado","destartraje","gingiv"),
+        "Endodoncia" to listOf("conductos","endod"),
+        "Cirugía" to listOf("exodoncia","extracción","cirugía","sutura","biopsia","alveol"),
+        "Prótesis" to listOf("prótesis","impresión para prótesis","intermaxilar","estructura protésica","prueba de dientes","cementación"),
+        "Ortodoncia / ortopedia" to listOf("mantenedor","banda y ansa","corona y ansa","arco lingual","nance","transpalatino","zapatilla distal","recuperador de espacio","extracciones seriadas","ortodon","férula","aparato"),
+        "Odontopediatría" to listOf("dentición temporal","acero cromo","pulpotomía","pulpectomía","mantenedor","zapatilla distal"),
+        "Administrativa / seguimiento" to listOf("alta","baja","inasistencia","remisión","interconsulta")
+    )
+    fun matchesSpecialty(x:NoteTemplate):Boolean {
+        if(specialty=="Todas") return true
+        val hay=(x.titleEs+" "+x.titleEn).lowercase()
+        return specialties[specialty].orEmpty().any{hay.contains(it)}
+    }
+    val visibleLibrary=library.withIndex().filter{matchesSpecialty(it.value)}
     val n=library[selected]
     val sites=listOf("OD / zona seleccionada","Cuadrante","Arcada","Mucosa oral","Periodonto","ATM / región craneofacial")
     val states=listOf("Paciente estable y cooperador","Paciente ansioso pero cooperador","Requiere reevaluación antes de continuar","Procedimiento diferido")
@@ -221,7 +266,10 @@ fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Uni
             tr(lang,"Selecciona únicamente lo que realmente ocurrió durante la cita. La app construye la redacción clínica sin que el alumno tenga que escribirla.","Select only what actually occurred during the appointment. The app builds the clinical wording without requiring free text.")) }
         item { NoticeCard(tr(lang,"La nota debe corresponder al expediente real: fecha/hora institucional, diagnóstico, procedimiento, materiales y datos clínicos deben verificarse antes de firmar.","The note must match the real record: institutional date/time, diagnosis, procedure, materials and clinical data must be verified before signing.")) }
         item { SectionCard(tr(lang,"1 · Procedimiento realizado","1 · Procedure performed")) {
-            ChipChoices(library.mapIndexed{i,x->(if(lang=="en")x.titleEn else x.titleEs) to (selected==i)},{selected=it},columns=5)
+            Text(tr(lang,"Especialidad / tipo de tratamiento","Specialty / treatment type"),fontWeight=FontWeight.Bold)
+            ChipChoices(specialties.keys.map{x->x to (specialty==x)},{i->specialty=specialties.keys.elementAt(i)},columns=3)
+            Text(tr(lang,"Tratamiento / actividad","Treatment / activity"),fontWeight=FontWeight.Bold)
+            ChipChoices(visibleLibrary.map{(idx,x)->(if(lang=="en")x.titleEn else x.titleEs) to (selected==idx)},{i->selected=visibleLibrary[i].index},columns=3)
         }}
         item { SectionCard(tr(lang,"2 · OD o zona","2 · Tooth or site")) { ChipChoices(sites.map{it to (site==it)},{site=sites[it]},columns=4) } }
         item { SectionCard(tr(lang,"3 · Estado durante la cita","3 · Appointment status")) { ChipChoices(states.map{it to (status==it)},{status=states[it]},columns=4) } }
