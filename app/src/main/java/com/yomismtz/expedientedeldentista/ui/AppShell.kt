@@ -134,6 +134,8 @@ fun AppRoot(
             AppScreen.PERIODONTAL_FOLLOWUP -> PeriodontalFollowupV44(preferences.languageTag, folderBack)
             AppScreen.IMPLANTOLOGY -> ImplantologySheetV44(preferences.languageTag, folderBack)
             AppScreen.DENTOMAXILLARY_ORTHOPEDICS -> DentomaxillaryOrthopedicsV44(preferences.languageTag, folderBack)
+            AppScreen.PEDIATRIC_DENTISTRY -> PediatricDentistryV45(preferences.languageTag, folderBack)
+            AppScreen.CARIES_RISK -> CariesRiskV45(preferences.languageTag, folderBack)
             AppScreen.CONSENT -> ConsentTeachingScreen(preferences.languageTag, folderBack)
             AppScreen.REQUEST -> SimpleEducationalSheet(
                 preferences.languageTag, "Solicitud de tratamiento", "Treatment request",
