@@ -92,6 +92,48 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
             Text(tr(lang,"❓ Ayuda · Lesiones elementales básicas","❓ Help · Basic elementary lesions"),fontWeight=FontWeight.Black)
         }
         Text(tr(lang,"Abre la guía rápida para identificar y describir lesiones antes de registrarlas.","Open the quick guide to identify and describe lesions before recording them."),style=MaterialTheme.typography.bodySmall)
+        ResponsiveSectionV17(tr(lang,"Exploración peribucal e intrabucal por sitio anatómico","Perioral and intraoral examination by anatomical site")) {
+            Text(tr(lang,
+                "Secuencia sugerida: piel peribucal → labios y comisuras → mucosa labial y frenillos → carrillos → encía → paladares → orofaringe, úvula, pilares y amígdalas → lengua → frenillo lingual → piso de boca.",
+                "Suggested sequence: perioral skin → lips and commissures → labial mucosa and frenula → cheeks → gingiva → palate → oropharynx, uvula, pillars and tonsils → tongue → lingual frenum → floor of mouth."
+            ), fontWeight=FontWeight.Bold)
+            val detailedSites = listOf(
+                "Piel peribucal" to "Normal: piel íntegra, sin lesiones evidentes y simetría conservada. Observar eritema o cambio de color, descamación, costra, fisura, úlcera, vesícula/ampolla, pápula/nódulo, aumento de volumen, cicatriz, pigmentación o asimetría.",
+                "Labio superior" to "Explorar piel, bermellón y mucosa labial superior: color, hidratación, simetría, integridad y superficie. Observar resequedad, fisura, costra, erosión/úlcera, placa o mancha blanca/roja, pigmentación, vesículas, aumento de volumen o lesión palpable.",
+                "Labio inferior" to "Explorar piel, bermellón y mucosa labial inferior con los mismos criterios; registrar sitio, tamaño, color, superficie, consistencia y síntomas.",
+                "Comisura derecha" to "Normal: continuidad e integridad sin fisura ni ulceración. Observar fisura, eritema, maceración, costra, erosión/úlcera, lesión blanca/roja o aumento de volumen.",
+                "Comisura izquierda" to "Comparar bilateralmente. Describir el hallazgo observable antes de atribuir una causa.",
+                "Carrillo derecho / mucosa bucal" to "Inspeccionar mucosa y desembocadura de Stensen. Observar línea alba, mordisqueo, placa/mancha blanca, eritema, úlcera/erosión, pigmentación, pápula/nódulo, vesícula/ampolla, aumento de volumen o lesión palpable.",
+                "Carrillo izquierdo / mucosa bucal" to "Aplicar los mismos criterios y comparar bilateralmente; registrar alteraciones sin asumir etiología.",
+                "Encía" to "Valorar firmeza, contorno y color considerando pigmentación fisiológica. Observar eritema, edema, sangrado, ulceración, recesión, hiperplasia, pigmentación, lesión blanca/roja o masa.",
+                "Piso de boca" to "Inspeccionar con la lengua elevada y palpar cuando corresponda. Observar aumento de volumen, induración, úlcera/erosión, cambios blanco/rojo, pigmentación, lesión quística aparente, asimetría o alteraciones salivales.",
+                "Paladar duro" to "Valorar mucosa masticatoria firme y queratinizada. Observar cambio de color, úlcera, erosión, placa/mancha, pigmentación, petequias, aumento de volumen, torus/variación anatómica o masa.",
+                "Paladar blando" to "Valorar mucosa flexible y móvil. Observar eritema, petequias, úlcera/erosión, placa/mancha, asimetría, aumento de volumen o alteración del movimiento.",
+                "Orofaringe / pared posterior" to "Examinar con buena iluminación y depresor cuando sea necesario. Registrar aspecto, eritema, exudado, lesión, aumento de volumen o asimetría.",
+                "Úvula" to "Valorar posición y movilidad al fonar. Observar desviación, edema, eritema, lesión superficial o alteración del movimiento.",
+                "Pilares amigdalinos" to "Inspeccionar pilares anterior y posterior bilateralmente; valorar simetría, eritema, lesión, ulceración, exudado o aumento de volumen.",
+                "Amígdala derecha" to "Registrar tamaño/aspecto, simetría, eritema, exudado, lesión o aumento de volumen; la apariencia aislada no establece etiología.",
+                "Amígdala izquierda" to "Comparar con el lado derecho y registrar los mismos criterios.",
+                "Lengua · dorso" to "Valorar papilas y superficie. Observar saburra, depapilación, patrón geográfico, fisuras, placa/mancha, pigmentación, úlcera, aumento de volumen o lesión.",
+                "Lengua · bordes laterales" to "Inspeccionar y palpar bilateralmente. Observar úlcera/erosión, placa/mancha blanca o roja, induración, masa, trauma aparente, pigmentación o asimetría.",
+                "Lengua · cara ventral" to "Reconocer vasos visibles como variante frecuente. Observar lesión blanca/roja, úlcera, masa, induración o alteración vascular aparente.",
+                "Frenillo lingual" to "Registrar inserción, movilidad lingual y aspecto. La apariencia aislada no basta para diagnosticar limitación funcional.",
+                "Frenillo labial superior" to "Observar inserción, grosor, integridad y relación con encía/diastema; registrar prominencia, inserción baja, trauma, ulceración o inflamación.",
+                "Frenillo labial inferior" to "Observar inserción, integridad y tensión sobre tejidos; registrar prominencia, trauma, ulceración, inflamación u otro hallazgo."
+            )
+            var detailedOpen by remember { mutableStateOf<Int?>(null) }
+            detailedSites.forEachIndexed { index, item ->
+                Card(onClick={detailedOpen=if(detailedOpen==index)null else index},modifier=Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                        Text(item.first,fontWeight=FontWeight.Bold)
+                        if(detailedOpen==index) {
+                            Text(item.second)
+                            Text("□ Normal / sin alteración evidente   □ Hallazgo presente   □ No valorable",style=MaterialTheme.typography.bodySmall)
+                        } else Text(tr(lang,"Toca para explorar","Tap to examine"),style=MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+        }
         ResponsiveSectionV17(tr(lang,"1 · Boca abierta: toca una zona","1 · Open mouth: tap a region")) {
             OpenMouthMap19(selectedId){selectedId=it}
             Text("${tr(lang,"Zona seleccionada","Selected region")}: $name",fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
