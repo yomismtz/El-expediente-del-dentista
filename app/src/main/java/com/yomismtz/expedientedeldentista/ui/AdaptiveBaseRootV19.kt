@@ -66,7 +66,6 @@ private val tabsV19=listOf(
     // 3 · Análisis dentales
     // El concentrador mantiene juntos odontograma, caries, higiene y periodoncia.
     TabV19(AppScreen.ODONTOGRAM,"🦷","Odontograma e índices dentales","Odontogram and dental indices",2),
-    TabV19(AppScreen.PERIODONTOGRAM,"📈","Periodontograma","Periodontogram",2),
     TabV19(AppScreen.PULPAL,"⚡","Análisis pulpar y periapical","Pulpal and periapical analysis",2),
 
     // 4 · Auxiliares de diagnóstico
@@ -82,6 +81,7 @@ private val tabsV19=listOf(
     TabV19(AppScreen.ENDO,"⚡","Ficha endodóntica","Endodontic sheet",5),
     TabV19(AppScreen.PROSTHETIC,"👑","Ficha protésica","Prosthetic sheet",5),
     TabV19(AppScreen.SURGICAL,"✚","Ficha quirúrgica","Surgical sheet",5),
+    TabV19(AppScreen.PERIODONTOGRAM,"📈","Periodontograma","Periodontogram",5),
 
     // 7 · Herramientas administrativas
     TabV19(AppScreen.ACTIVITIES,"✍","Autorización de actividades","Activity authorization",6),
