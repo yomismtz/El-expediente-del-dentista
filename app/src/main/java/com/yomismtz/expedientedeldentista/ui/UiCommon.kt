@@ -93,10 +93,22 @@ fun ChipChoices(
         val longestLabel = labels.maxOfOrNull { it.first.length } ?: 0
         val requested = columns.coerceIn(1, 5)
         val responsiveColumns = when {
-            maxWidth < 360.dp -> if (largeText || longestLabel > 22) 1 else requested.coerceAtMost(2)
-            maxWidth < 600.dp -> if (largeText || longestLabel > 30) requested.coerceAtMost(2) else requested.coerceAtMost(3)
-            maxWidth < 900.dp -> if (largeText || longestLabel > 34) requested.coerceAtMost(3) else requested.coerceAtMost(4)
-            else -> if (largeText || longestLabel > 38) requested.coerceAtMost(4) else requested
+            maxWidth < 360.dp -> if (longestLabel > 26 || largeText && longestLabel > 18) 1 else requested.coerceAtMost(2)
+            maxWidth < 600.dp -> when {
+                longestLabel > 32 -> 1
+                longestLabel > 16 || largeText -> requested.coerceAtMost(2)
+                else -> requested.coerceAtMost(3)
+            }
+            maxWidth < 900.dp -> when {
+                longestLabel > 38 -> requested.coerceAtMost(2)
+                longestLabel > 22 || largeText -> requested.coerceAtMost(3)
+                else -> requested.coerceAtMost(4)
+            }
+            else -> when {
+                longestLabel > 42 -> requested.coerceAtMost(3)
+                largeText -> requested.coerceAtMost(4)
+                else -> requested
+            }
         }.coerceAtLeast(1)
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             labels.chunked(responsiveColumns).forEachIndexed { rowIndex, row ->
