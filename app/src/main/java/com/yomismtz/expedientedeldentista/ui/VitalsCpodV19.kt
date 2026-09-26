@@ -98,7 +98,6 @@ fun VitalsInteractiveV19Screen(lang:String,onBack:()->Unit) {
         VitalBand19(tr(lang,"Adulto","Adult"),12,20,60,100,100,140,60,90)
     )
     var bandIndex by rememberRecordState("vitals.bandIndex",5)
-    var age by rememberRecordState("vitals.age","")
     var sex by rememberRecordState("vitals.sex","Femenino")
     var spo2 by rememberRecordState("vitals.spo2","")
     var rr by rememberRecordState("vitals.rr",""); var hr by rememberRecordState("vitals.hr","")
@@ -110,12 +109,11 @@ fun VitalsInteractiveV19Screen(lang:String,onBack:()->Unit) {
     val bmi=run { val w=weight.toDoubleOrNull(); val h=height.toDoubleOrNull()?.div(100.0); if(w!=null&&h!=null&&h>0)w/h.pow(2) else null }
 
     ResponsiveScreenV17(tr(lang,"Signos vitales y glucosa","Vital signs and glucose"),tr(lang,"Registra valores y compáralos con referencias educativas; confirma cualquier valor anormal.","Record values and compare with teaching references; confirm any abnormal value."),onBack) { profile ->
-        ResponsiveSectionV17(tr(lang,"1 · Edad y sexo","1 · Age and sex")) {
-            OutlinedTextField(age,{age=it.filter(Char::isDigit).take(3)},label={Text(tr(lang,"Edad en años","Age in years"))},modifier=Modifier.fillMaxWidth())
+        ResponsiveSectionV17(tr(lang,"1 · Sexo y referencia etaria","1 · Sex and age reference")) {
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                 listOf("Femenino","Masculino").forEach { s -> FilterChip(sex==s,{sex=s},{Text(if(lang=="en" && s=="Femenino") "Female" else if(lang=="en") "Male" else s)}) }
             }
-            Text(tr(lang,"Selecciona también el grupo etario de referencia. En pediatría, TA e IMC requieren edad, sexo y, según el parámetro, talla/percentiles.","Also select the reference age group. In pediatrics, BP and BMI require age, sex and, depending on the parameter, height/percentiles."),style=MaterialTheme.typography.bodySmall)
+            Text(tr(lang,"La edad exacta ya se captura en la identificación del expediente, por lo que aquí no se repite. Conserva el sexo y selecciona abajo el grupo etario de referencia. En pediatría, TA e IMC requieren edad exacta, sexo y, según el parámetro, talla/percentiles; esta pantalla no automatiza todavía esos percentiles.","Exact age is already recorded in patient identification, so it is not repeated here. Keep sex and select the reference age group below. Pediatric BP and BMI require exact age, sex and, depending on the parameter, height/percentiles; this screen does not yet automate those percentiles."),style=MaterialTheme.typography.bodySmall)
         }
         ResponsiveSectionV17(tr(lang,"2 · Grupo de edad de referencia","2 · Reference age group")) {
             AdaptiveGridV17(bands.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 3) { i ->
@@ -156,8 +154,7 @@ fun VitalsInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 OutlinedTextField(weight,{weight=it.filter{c->c.isDigit()||c=='.'}.take(6)},label={Text("kg")},modifier=Modifier.fillMaxWidth())
             else OutlinedTextField(height,{height=it.filter{c->c.isDigit()||c=='.'}.take(6)},label={Text("cm")},modifier=Modifier.fillMaxWidth()) }
             Text(if(bmi==null)tr(lang,"IMC = peso / talla²","BMI = weight / height²") else "IMC = ${"%.1f".format(bmi)} kg/m²",fontWeight=FontWeight.Bold)
-            val a=age.toIntOrNull()
-            Text(when { bmi==null -> tr(lang,"Introduce peso y talla para calcular el IMC.","Enter weight and height to calculate BMI."); a!=null && a in 2..19 -> tr(lang,"IMC pediátrico: debe clasificarse por percentil de IMC para edad y sexo (CDC); el valor de IMC aislado no debe clasificarse con límites de adulto.","Pediatric BMI: classify using BMI-for-age and sex percentile (CDC); the BMI value alone should not use adult cutoffs."); a!=null && a>=20 -> when { bmi<18.5 -> tr(lang,"IMC adulto: bajo peso (<18.5).","Adult BMI: underweight (<18.5)."); bmi<25 -> tr(lang,"IMC adulto: peso saludable (18.5–24.9).","Adult BMI: healthy weight (18.5–24.9)."); bmi<30 -> tr(lang,"IMC adulto: sobrepeso (25.0–29.9).","Adult BMI: overweight (25.0–29.9)."); else -> tr(lang,"IMC adulto: rango de obesidad (≥30).","Adult BMI: obesity range (≥30).") }; else -> tr(lang,"Indica la edad para interpretar el IMC correctamente.","Enter age to interpret BMI correctly.") })
+            Text(when { bmi==null -> tr(lang,"Introduce peso y talla para calcular el IMC.","Enter weight and height to calculate BMI."); bandIndex<5 -> tr(lang,"IMC pediátrico/adolescente: debe clasificarse con edad exacta y sexo mediante percentil de IMC para la edad. El grupo etario seleccionado aquí es sólo una referencia y no sustituye el percentil.","Pediatric/adolescent BMI: classify using exact age and sex with BMI-for-age percentile. The age band selected here is only a reference and does not replace the percentile."); else -> when { bmi<18.5 -> tr(lang,"IMC adulto: bajo peso (<18.5).","Adult BMI: underweight (<18.5)."); bmi<25 -> tr(lang,"IMC adulto: peso saludable (18.5–24.9).","Adult BMI: healthy weight (18.5–24.9)."); bmi<30 -> tr(lang,"IMC adulto: sobrepeso (25.0–29.9).","Adult BMI: overweight (25.0–29.9)."); else -> tr(lang,"IMC adulto: rango de obesidad (≥30).","Adult BMI: obesity range (≥30).") } })
         }
         NoticeCard(tr(lang,"Fuentes educativas resumidas: NHS para temperatura; MedlinePlus, CDC y ADA para glucosa. El protocolo institucional y la valoración clínica prevalecen.","Teaching sources summarized: NHS for temperature; MedlinePlus, CDC and ADA for glucose. Institutional protocol and clinical assessment prevail."))
     }
