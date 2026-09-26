@@ -85,6 +85,8 @@ private val tabsV19=listOf(
     TabV19(AppScreen.SURGICAL,"✚","Ficha quirúrgica","Surgical sheet",5),
     TabV19(AppScreen.PERIODONTOGRAM,"📈","Periodontograma","Periodontogram",5),
     TabV19(AppScreen.ATM,"◉","Ficha de trastornos temporomandibulares","Temporomandibular disorders sheet",5),
+    TabV19(AppScreen.EMERGENCY,"🚨","Ficha de Urgencias Odontológicas","Dental Emergency Sheet",5),
+    TabV19(AppScreen.CLINICAL_PHOTO,"📷","Ficha de Fotografía Clínica","Clinical Photography Sheet",5),
 
     // 7 · Herramientas administrativas
     TabV19(AppScreen.ACTIVITIES,"✍","Autorización de actividades","Activity authorization",6),
@@ -187,6 +189,8 @@ fun AdaptiveBaseRootV19(
         AppScreen.ENDO -> EndodonticInteractiveV2Screen(lang,session,{navigate(AppScreen.PULPAL)},{navigate(AppScreen.PULPAL)},backPrevious)
         AppScreen.PROSTHETIC -> ProstheticResponsiveV17Screen(lang,backPrevious)
         AppScreen.SURGICAL -> SurgicalSheetScreen(lang,backPrevious)
+        AppScreen.EMERGENCY -> EmergencyDentalSheetV43(lang,backPrevious)
+        AppScreen.CLINICAL_PHOTO -> ClinicalPhotographySheetV43(lang,backPrevious)
         AppScreen.CONSENT -> ConsentTeachingScreen(lang,backPrevious)
         AppScreen.REQUEST -> TreatmentRequestTeachingV41(lang,backPrevious)
         AppScreen.BUDGET -> BudgetTeachingV41(lang,backPrevious)
