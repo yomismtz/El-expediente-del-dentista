@@ -63,6 +63,7 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
  var doseMgKg by remember{mutableStateOf("")}
  var medGroup by remember{mutableStateOf<Int?>(null)}
  var medDrug by remember{mutableStateOf<Int?>(null)}
+ var medChecks by remember{mutableStateOf(setOf<Int>())}
  var topicalAge by remember{mutableStateOf(0)}
  var topicalProduct by remember{mutableStateOf(0)}
  var bmiWeight by remember{mutableStateOf("")}
@@ -116,12 +117,12 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
    }}
   }else if(tab==1){
    item{SectionCard("1 · Selecciona grupo farmacológico"){
-    ChipChoices(drugGroupsV40.mapIndexed{i,g->g.title to (medGroup==i)},{i->medGroup=i;medDrug=null},2)
+    ChipChoices(drugGroupsV40.mapIndexed{i,g->g.title to (medGroup==i)},{i->medGroup=i;medDrug=null;medChecks=emptySet()},2)
    }}
    if(medGroup!=null){
     item{SectionCard("2 · Selecciona medicamento"){
      val g=drugGroupsV40[medGroup!!]
-     ChipChoices(g.drugs.mapIndexed{i,d->d.name to (medDrug==i)},{i->medDrug=i},2)
+     ChipChoices(g.drugs.mapIndexed{i,d->d.name to (medDrug==i)},{i->medDrug=i;medChecks=emptySet()},2)
     }}
    }
    if(medGroup!=null&&medDrug!=null){
@@ -133,7 +134,7 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
      Text("El alumno selecciona opciones; no tiene que escribir dosis ni concentración en este apartado.")
     }}
     item{SectionCard("4 · Antes de calcular una pauta"){
-     ChipChoices(listOf("Confirmar peso medido" to false,"Confirmar indicación" to false,"Revisar alergias" to false,"Función renal/hepática" to false,"Interacciones" to false,"Ficha técnica / protocolo" to false),{},2)
+     val checks=listOf("Confirmar peso medido","Confirmar indicación","Revisar alergias","Función renal/hepática","Interacciones","Ficha técnica / protocolo"); ChipChoices(checks.mapIndexed{i,x->x to medChecks.contains(i)},{i->medChecks=if(medChecks.contains(i)) medChecks-i else medChecks+i},2); Text("${medChecks.size}/${checks.size} comprobaciones marcadas",fontWeight=FontWeight.Bold)
     }}
    }
    item{NoticeCard("La selección muestra datos educativos y presentaciones de referencia; no prescribe automáticamente. Para antibióticos, antivirales, nitroimidazoles y antimicóticos la indicación, dosis, frecuencia y duración deben corresponder al diagnóstico y a una fuente clínica vigente.")}
