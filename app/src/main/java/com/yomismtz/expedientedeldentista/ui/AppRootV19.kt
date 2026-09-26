@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
+import com.yomismtz.expedientedeldentista.clinical.SavedRecord
 import com.yomismtz.expedientedeldentista.settings.AppPreferences
 import com.yomismtz.expedientedeldentista.settings.BirdPaletteStyle
 import com.yomismtz.expedientedeldentista.settings.ClinicianTitle
@@ -60,11 +61,17 @@ fun AppRootV19(
     onPreferencesChanged: (AppPreferences) -> Unit,
     onLanguageChanged: (String) -> Unit,
     session: EducationalSession,
-    onSessionChanged: (EducationalSession) -> Unit
+    onSessionChanged: (EducationalSession) -> Unit,
+    savedRecords: List<SavedRecord>,
+    activeRecordId: String?,
+    onNewRecord: () -> Unit,
+    onLoadRecord: (SavedRecord) -> Unit,
+    onDeleteRecord: (String) -> Unit
 ) {
     var settingsOpen by remember { mutableStateOf(false) }
+    var recordMenuOpen by remember { mutableStateOf(activeRecordId == null) }
     Box(Modifier.fillMaxSize()) {
-        AppRootV7(
+        if (!recordMenuOpen && activeRecordId != null) AppRootV7(
             preferences = preferences,
             onPreferencesChanged = onPreferencesChanged,
             onLanguageChanged = onLanguageChanged,
@@ -72,6 +79,13 @@ fun AppRootV19(
             onSessionChanged = onSessionChanged,
             onOpenSettings = { settingsOpen = true }
         )
+        if (recordMenuOpen) {
+            Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                RecordMenuV19(savedRecords, activeRecordId, {
+                    onNewRecord(); recordMenuOpen = false
+                }, { r -> onLoadRecord(r); recordMenuOpen = false }, onDeleteRecord)
+            }
+        }
         if (settingsOpen) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                 SettingsV19Screen(preferences, onPreferencesChanged) { settingsOpen = false }
@@ -217,4 +231,42 @@ private fun mascotMotionV19(style:BirdPaletteStyle)=when(style){
  BirdPaletteStyle.TUCAN,BirdPaletteStyle.GUACAMAYA,BirdPaletteStyle.PERICO,BirdPaletteStyle.GALLO,BirdPaletteStyle.COLIBRI,BirdPaletteStyle.MARIPOSA_MONARCA,BirdPaletteStyle.MURCIELAGO_NOCHE->1
  BirdPaletteStyle.SERPIENTE,BirdPaletteStyle.IGUANA,BirdPaletteStyle.CAMALEON,BirdPaletteStyle.CANGREJO_CORAL,BirdPaletteStyle.PEZ_PAYASO,BirdPaletteStyle.DELFIN,BirdPaletteStyle.CABALLITO_TURQUESA->2
  else->3
+}
+
+
+@Composable
+private fun RecordMenuV19(
+    records: List<SavedRecord>,
+    activeId: String?,
+    onNew: () -> Unit,
+    onLoad: (SavedRecord) -> Unit,
+    onDelete: (String) -> Unit
+) {
+    Column(
+        Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(18.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        Text("🦷 YSM Expediente", style=MaterialTheme.typography.headlineMedium, fontWeight=FontWeight.Black)
+        Text("Selecciona cómo quieres comenzar.", style=MaterialTheme.typography.titleMedium)
+        Card(onClick=onNew, modifier=Modifier.fillMaxWidth(), colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) {
+            Column(Modifier.padding(20.dp)) {
+                Text("✨ Nuevo expediente", style=MaterialTheme.typography.titleLarge, fontWeight=FontWeight.Black)
+                Text("Comienza un paciente nuevo. Se guardará automáticamente en este dispositivo.")
+            }
+        }
+        Text("📚 Cargar expediente", style=MaterialTheme.typography.titleLarge, fontWeight=FontWeight.Black)
+        if(records.isEmpty()) {
+            Card(Modifier.fillMaxWidth()) { Text("Todavía no hay expedientes guardados.", Modifier.padding(18.dp)) }
+        } else records.forEach { record ->
+            Card(onClick={onLoad(record)}, modifier=Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(14.dp), verticalArrangement=Arrangement.spacedBy(6.dp)) {
+                    Text((if(record.id==activeId)"▶ " else "📁 ")+record.title, fontWeight=FontWeight.Bold)
+                    val date=remember(record.updatedAt){java.text.SimpleDateFormat("dd/MM/yyyy · HH:mm",java.util.Locale.getDefault()).format(java.util.Date(record.updatedAt))}
+                    Text("Última modificación: $date", style=MaterialTheme.typography.bodySmall)
+                    OutlinedButton(onClick={onDelete(record.id)}) { Text("Eliminar expediente") }
+                }
+            }
+        }
+        NoticeCard("Los expedientes se almacenan únicamente en el dispositivo y funcionan sin conexión. Elimina un expediente solo cuando estés seguro de que ya no lo necesitas.")
+    }
 }
