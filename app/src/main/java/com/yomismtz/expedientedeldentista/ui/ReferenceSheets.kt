@@ -99,7 +99,12 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
         "Destartraje supragingival","Control periodontal","Mantenimiento periodontal","Ferulización periodontal",
         "Exodoncia quirúrgica","Sutura","Retiro de sutura","Control posoperatorio","Manejo de alveolitis bajo supervisión",
         "Biopsia","Toma radiográfica periapical","Toma radiográfica bitewing","Fotografía clínica","Modelos de estudio",
-        "Mantenedor de espacio","Colocación de banda y ansa","Ajuste oclusal","Guarda oclusal","Valoración de ATM","Urgencia odontológica",
+        "Toma de impresiones diagnósticas","Análisis de modelos","Análisis radiográfico","Análisis fotográfico","Análisis cefalométrico de Steiner",
+        "CAMBRA · valoración de riesgo de caries","Índice de placa O’Leary","CPO-D / ceo-d","ICDAS","IPC","IHOS","Exploración de mucosas",
+        "Mantenedor de espacio","Mantenedor banda y ansa","Mantenedor corona y ansa","Arco lingual como mantenedor","Botón de Nance","Arco transpalatino","Zapatilla distal",
+        "Recuperador de espacio","Extracciones seriadas",
+        "Pulpotomía en dentición temporal","Pulpectomía en dentición temporal","Corona de acero cromo en odontopediatría",
+        "Ajuste oclusal","Guarda oclusal","Valoración de ATM","Urgencia odontológica",
         "Interconsulta médica","Alta y mantenimiento"
     )
     val extraGuides = extraNames.map { name ->
@@ -123,8 +128,9 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
         "Endodoncia" to listOf("pulpotom","pulpectom","endod","conducto"),
         "Cirugía" to listOf("extracción","exodon","cirugía","sutura","biopsia"),
         "Prótesis" to listOf("impresión","prótesis","protes","corona","provisional"),
-        "Ortodoncia / ortopedia" to listOf("ortodon","mantenedor","espacio","aparat"),
-        "Diagnóstico" to listOf("radiograf","explor","fotograf","signos vitales","índice","periodontograma")
+        "Ortodoncia / ortopedia" to listOf("ortodon","mantenedor","espacio","aparat","nance","transpalatino","zapatilla distal","extracciones seriadas"),
+        "Odontopediatría" to listOf("odontopedi","dentición temporal","pulpotom","pulpectom","acero cromo","mantenedor","zapatilla distal"),
+        "Diagnóstico" to listOf("radiograf","explor","fotograf","signos vitales","índice","periodontograma","impresiones diagnósticas","modelos","steiner","cambra","o’leary","cpo-d","ceo-d","icdas","ipc","ihos","mucosas")
     )
     fun matchesSpecialty(a:ActivityGuide):Boolean {
         if(specialty=="Todas") return true
