@@ -177,11 +177,11 @@ private data class E(val n:String,val d:String)
 }
 
 @Composable fun HistoryNonPathV38(lang:String,onBack:()->Unit){
- var section by remember{mutableStateOf("Vivienda")}
+ var section by remember{mutableStateOf<String?>(null)}
  var sub by remember{mutableStateOf("")}
  val chosen=remember{mutableStateMapOf<String,String>()}
  val multi=remember{mutableStateMapOf<String,Boolean>()}
- val sections=listOf("Vivienda","Higiene","Alimentación","Inmunizaciones","Tabaquismo","Alcohol","Drogas","Perforaciones","Tatuajes")
+ val sections=listOf("Vivienda","Higiene","Alimentación","Inmunizaciones","Hábitos")
  fun optionsCard(title:String,options:List<String>,note:String="")=@Composable{
   SectionCard(title){if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall);options.forEach{x->FilterChip(chosen[title]==x,{chosen[title]=x},{Text(x)},modifier=Modifier.fillMaxWidth())}}
  }
@@ -204,7 +204,7 @@ private data class E(val n:String,val d:String)
  )
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Antecedentes personales no patológicos",onBack,"Todo se responde seleccionando opciones predeterminadas. El estudiante no necesita escribir texto libre.")}
-  item{sections.forEach{x->FilterChip(section==x,{section=x;sub=""},{Text(x)},modifier=Modifier.fillMaxWidth())}}
+  item{SectionCard("Categorías"){ChipChoices(sections.map{x->x to (section==x)},{i->section=sections[i];sub=""},columns=2)}}
   if(section=="Vivienda"){
    item{optionsCard("Número de cuartos",listOf("1","2","3","4","5","6 o más"))}
    item{optionsCard("Número de habitantes",listOf("1","2","3","4","5","6","7 o más"),"Permite contextualizar posible hacinamiento junto con el número de habitaciones.")}
@@ -217,10 +217,11 @@ private data class E(val n:String,val d:String)
    items(listOf("Agua entubada","Drenaje","Electricidad","Gas","Internet","Recolección de basura").size){i->val x=listOf("Agua entubada","Drenaje","Electricidad","Gas","Internet","Recolección de basura")[i];FilterChip(multi["serv|$x"]==true,{multi["serv|$x"]=! (multi["serv|$x"]?:false)},{Text(x)},modifier=Modifier.fillMaxWidth())}
   }
   if(section=="Higiene"){
-   item{optionsCard("Baño corporal",listOf("Menos de 1 vez/semana","1–2/semana","3–4/semana","5–6/semana","Diario","2 o más/día"))}
-   item{optionsCard("Cepillado dental",listOf("No se cepilla","Menos de 1 vez/día","1 vez/día","2 veces/día","3 veces/día","4 o más/día"))}
-   item{optionsCard("Hilo/interdental",listOf("Nunca","Ocasional","1–3 veces/semana","4–6 veces/semana","Diario"))}
-   item{optionsCard("Cambio de ropa",listOf("Menos de 1/semana","1–2/semana","3–4/semana","5–6/semana","Diario","Más de 1/día"))}
+   item{optionsCard("Higiene general · baño corporal",listOf("Menos de 1 vez/semana","1–2/semana","3–4/semana","5–6/semana","Diario","2 o más/día"))}
+   item{optionsCard("Higiene bucal · cepillado dental",listOf("No se cepilla","Menos de 1 vez/día","1 vez/día","2 veces/día","3 veces/día","4 o más/día"))}
+   item{optionsCard("Higiene bucal · tipo de pasta",listOf("Pasta comercial regulada/etiquetada","Pasta comercial · no sabe","Producto naturista","Producto alternativo/casero","No usa pasta","No sabe"),"Registrar lo referido. Naturista o alternativo no equivale automáticamente a seguro, eficaz ni a una pasta fluorada.")}
+   item{optionsCard("Higiene bucal · hilo/interdental",listOf("Nunca","Ocasional","1–3 veces/semana","4–6 veces/semana","Diario"))}
+   item{optionsCard("Higiene general · cambio de ropa",listOf("Menos de 1/semana","1–2/semana","3–4/semana","5–6/semana","Diario","Más de 1/día"))}
   }
   if(section=="Alimentación"){
    item{NoticeCard("Se registra frecuencia, no una calificación automática de la dieta. En odontología importa especialmente cuántas veces se expone la boca a azúcares y bebidas azucaradas.")}
@@ -232,30 +233,34 @@ private data class E(val n:String,val d:String)
    item{NoticeCard("Listado educativo basado en vacunas vigentes/relevantes del esquema mexicano. Selecciona: aplicada, no aplicada o no sabe. La indicación depende de edad, embarazo, antecedentes y riesgo.")}
    items(vaccines.entries.toList().size){i->val v=vaccines.entries.toList()[i];Card(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp)){Text(v.key,fontWeight=FontWeight.Bold);Text(v.value,style=MaterialTheme.typography.bodySmall);Row(horizontalArrangement=Arrangement.spacedBy(4.dp)){listOf("Sí","No","No sabe").forEach{x->FilterChip(chosen["vac|"+v.key]==x,{chosen["vac|"+v.key]=x},{Text(x)})}}}}}
   }
-  if(section=="Tabaquismo"){
+  if(section=="Hábitos"){
+   item{SectionCard("Tipo de hábito"){ChipChoices(listOf("Tabaquismo","Alcohol","Drogas","Tatuajes","Perforaciones").map{x->x to (sub==x)},{i->sub=listOf("Tabaquismo","Alcohol","Drogas","Tatuajes","Perforaciones")[i]},columns=2)}}
+  }
+  if(section=="Hábitos" && sub=="Tabaquismo"){
    item{optionsCard("Tabaquismo · estado",listOf("Nunca","Exfumador","Actual","Exposición pasiva","No sabe"))}
    item{optionsCard("Tabaco · frecuencia",listOf("Ocasional","1–5 cigarrillos/día","6–10/día","11–20/día","Más de 20/día","No sabe"))}
    item{optionsCard("Tabaco · tiempo",listOf("<1 año","1–5 años","6–10 años","11–20 años",">20 años","No sabe"))}
    item{optionsCard("Producto",listOf("Cigarrillo","Puro","Pipa","Tabaco sin humo","Vapeador/cigarrillo electrónico","Más de uno","Otro/no sabe"))}
   }
-  if(section=="Alcohol"){
+  if(section=="Hábitos" && sub=="Alcohol"){
    item{optionsCard("Alcohol · estado",listOf("Nunca","Anteriormente","Actual","No sabe"))}
    item{optionsCard("Alcohol · frecuencia",listOf("Menos de 1/mes","1–3/mes","1/semana","2–3/semana","4–6/semana","Diario","No sabe"))}
    item{optionsCard("Alcohol · cantidad por ocasión",listOf("1 bebida","2 bebidas","3–4 bebidas","5–6 bebidas","7 o más","No sabe"))}
    item{optionsCard("Tipo habitual",listOf("Cerveza","Vino","Destilados","Bebidas preparadas","Varios","Otro/no sabe"))}
   }
-  if(section=="Drogas"){
+  if(section=="Hábitos" && sub=="Drogas"){
    item{optionsCard("Sustancia referida",listOf("Ninguna","Cannabis","Cocaína/crack","Metanfetaminas/estimulantes","Opioides","Alucinógenos","Inhalables","Sedantes sin indicación referida","Varias","Otra/no sabe"))}
    item{optionsCard("Frecuencia",listOf("Nunca","Una vez/experimental","Menos de 1/mes","1–3/mes","1–6/semana","Diario","No sabe"))}
    item{optionsCard("Vía",listOf("Fumada/vaporizada","Oral","Intranasal","Inyectada","Inhalada","Otra/no sabe"))}
    item{optionsCard("Último consumo",listOf("<24 h","1–7 días","1–4 semanas","1–12 meses",">1 año","No recuerda/no sabe"))}
   }
-  if(section=="Perforaciones"){
-   item{optionsCard("Perforaciones",listOf("Ninguna","Oreja","Nariz","Labio","Lengua","Mejilla","Ceja","Otra","Múltiples"))}
+  if(section=="Hábitos" && sub=="Perforaciones"){
+   item{NoticeCard("Selecciona la localización referida. En perforaciones orales o periorales registra también trauma dental/gingival, inflamación, sangrado, secreción e irritación.")}
+   item{optionsCard("Localización de perforación",listOf("Ninguna","Lóbulo de oreja","Cartílago de oreja","Nariz · aleta","Nariz · septum","Ceja","Labio","Lengua","Mejilla","Ombligo","Pezón","Otra","Múltiples"))}
    item{optionsCard("Antigüedad",listOf("<1 mes","1–6 meses","7–12 meses","1–5 años",">5 años","No sabe"))}
    item{optionsCard("Complicaciones referidas",listOf("Ninguna","Dolor","Inflamación","Sangrado","Infección/secreción","Trauma dental/gingival","Alergia/irritación","Otra/no sabe"))}
   }
-  if(section=="Tatuajes"){
+  if(section=="Hábitos" && sub=="Tatuajes"){
    item{optionsCard("Número de tatuajes",listOf("Ninguno","1","2–3","4–5","6 o más"))}
    item{optionsCard("Antigüedad del más reciente",listOf("<1 mes","1–6 meses","7–12 meses","1–5 años",">5 años","No sabe"))}
    item{optionsCard("Lugar de realización",listOf("Estudio establecido","Servicio sanitario/profesional referido","Domicilio/no profesional","Centro penitenciario","Otro","No sabe"))}
