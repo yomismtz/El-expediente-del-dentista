@@ -18,6 +18,7 @@ enum class ToothStatus {
 
 data class PatientProfile(
     val exerciseName: String = "",
+    val patientInitials: String = "",
     val age: String = "",
     val sex: String = "",
     val birthDate: String = "",
