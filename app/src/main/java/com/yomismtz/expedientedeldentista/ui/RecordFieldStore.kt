@@ -2,7 +2,7 @@ package com.yomismtz.expedientedeldentista.ui
 
 import android.content.Context
 import android.util.Base64
-import androidx.compose.runtime.*
+import androidx.compose.runtime.*\nimport androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.platform.LocalContext
 import java.io.*
 
@@ -45,4 +45,19 @@ fun <T> rememberRecordState(key: String, initial: T): MutableState<T> {
     val state=remember(id,key) { mutableStateOf((store?.load(id,key) as? T) ?: initial) }
     LaunchedEffect(id,key,state.value) { store?.save(id,key,state.value) }
     return state
+}
+
+@Composable
+fun <K, V> rememberRecordStateMap(key: String): SnapshotStateMap<K, V> {
+    val id=LocalActiveRecordId.current
+    val store=LocalRecordFieldStore.current
+    @Suppress("UNCHECKED_CAST")
+    val map=remember(id,key) {
+        mutableStateMapOf<K,V>().also { target ->
+            (store?.load(id,key) as? Map<K,V>)?.let { target.putAll(it) }
+        }
+    }
+    val snapshot=map.toMap()
+    LaunchedEffect(id,key,snapshot) { store?.save(id,key,HashMap(snapshot)) }
+    return map
 }
