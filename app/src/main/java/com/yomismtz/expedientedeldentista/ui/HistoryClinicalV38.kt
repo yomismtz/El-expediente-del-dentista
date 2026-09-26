@@ -105,8 +105,8 @@ private data class E(val n:String,val d:String)
   ReasonDx("Diente se salió por un golpe",listOf("Avulsión de diente permanente","Avulsión de diente temporal","Lesión alveolar asociada","Lesión de tejidos blandos","Trauma de dientes vecinos")),
   ReasonDx("Necesito prótesis porque me faltan dientes",listOf("Edentulismo parcial","Edentulismo total","Necesidad de prótesis removible","Necesidad de prótesis fija según caso","Rehabilitación implantosoportada a valorar"))
  )
- var selectedReason by remember{mutableStateOf<Int?>(null)}
- var selectedDx by remember{mutableStateOf<Int?>(null)}
+ var selectedReason by rememberRecordState<Int?>("history.reason.selectedReason",null)
+ var selectedDx by rememberRecordState<Int?>("history.reason.selectedDx",null)
  val current=selectedReason?.let{catalog[it]}
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
   item{ScreenHeader("Motivo de consulta y padecimiento actual",onBack,"Módulo sin escritura libre: selecciona el motivo referido y revisa cinco diagnósticos diferenciales posibles. El motivo por sí solo no establece el diagnóstico.")}
@@ -135,10 +135,10 @@ private data class E(val n:String,val d:String)
   "ETS / infecciosos relevantes" to listOf("VIH referido","Sífilis","Hepatitis B","Herpes genital referido","VPH referido","Otra infección referida"),
   "Otros" to listOf("Psoriasis","Enfermedad renal","Enfermedad ósea/hereditaria","Alteración congénita","Enfermedad autoinmune","Otra")
  )
- var relative by remember{mutableStateOf(0)}
+ var relative by rememberRecordState("history.hereditary.relative",0)
  var category by remember{mutableStateOf<String?>(null)}
- val selected=remember{mutableStateMapOf<String,Boolean>()}
- val status=remember{mutableStateMapOf<String,String>()}
+ val selected=rememberRecordStateMap<String,Boolean>("history.hereditary.selected")
+ val status=rememberRecordStateMap<String,String>("history.hereditary.status")
  var openHelp by remember{mutableStateOf(false)}
  val current=relatives[relative]
  val diseases=category?.let{categories[it]}?:emptyList()
@@ -176,8 +176,8 @@ private data class E(val n:String,val d:String)
 @Composable fun HistoryNonPathV38(lang:String,onBack:()->Unit){
  var section by remember{mutableStateOf<String?>(null)}
  var sub by remember{mutableStateOf("")}
- val chosen=remember{mutableStateMapOf<String,String>()}
- val multi=remember{mutableStateMapOf<String,Boolean>()}
+ val chosen=rememberRecordStateMap<String,String>("history.nonpath.chosen")
+ val multi=rememberRecordStateMap<String,Boolean>("history.nonpath.multi")
  val sections=listOf("Vivienda","Higiene","Alimentación","Inmunizaciones","Hábitos")
  fun optionsCard(title:String,options:List<String>,note:String="")=@Composable{
   SectionCard(title){if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall);options.forEach{x->FilterChip(chosen[title]==x,{chosen[title]=x},{Text(x)},modifier=Modifier.fillMaxWidth())}}
@@ -267,8 +267,8 @@ private data class E(val n:String,val d:String)
 }
 
 @Composable fun HistoryGynecoV38(lang:String,onBack:()->Unit){
- var sex by remember{mutableStateOf("")}
- val chosen=remember{mutableStateMapOf<String,String>()}
+ var sex by rememberRecordState("history.gyneco.sex","")
+ val chosen=rememberRecordStateMap<String,String>("history.gyneco.chosen")
  val nums=listOf("0","1","2","3","4","5 o más")
  @Composable fun OptionsCard(title:String,options:List<String>,note:String=""){
   SectionCard(title){
@@ -311,7 +311,7 @@ private data class E(val n:String,val d:String)
 
 @Composable fun HistorySurgicalTraumaV38(lang:String,onBack:()->Unit){
  var section by remember{mutableStateOf("Cirugías")}
- val chosen=remember{mutableStateMapOf<String,String>()}
+ val chosen=rememberRecordStateMap<String,String>("history.surgical.chosen")
  val sections=listOf("Cirugías","Hospitalizaciones","Transfusiones","Donación de sangre","Trasplantes","Traumatismos")
  @Composable fun OptionsCard(title:String,options:List<String>,note:String=""){
   SectionCard(title){
@@ -372,8 +372,8 @@ private data class E(val n:String,val d:String)
 
 @Composable fun HistoryPhysicalV38(lang:String,onBack:()->Unit){
  var section by remember{mutableStateOf("Signos vitales")}
- val selected=remember{mutableStateMapOf<String,String>()}
- var weight by remember{mutableStateOf("")};var height by remember{mutableStateOf("")}
+ val selected=rememberRecordStateMap<String,String>("history.physical.selected")
+ var weight by rememberRecordState("history.physical.weight","");var height by rememberRecordState("history.physical.height","")
  @Composable fun Pick(title:String,options:List<String>,note:String=""){
   val longest=options.maxOfOrNull{it.length}?:0
   // Clinical option labels must stay readable on phones; never trade legibility for density.
@@ -484,8 +484,8 @@ private data class E(val n:String,val d:String)
 }
 
 @Composable fun HistoryOrthoV38(lang:String,onBack:()->Unit){
- var prior by remember{mutableStateOf<Boolean?>(null)}
- val selected=remember{mutableStateMapOf<String,String>()}
+ var prior by rememberRecordState<Boolean?>("history.ortho.prior",null)
+ val selected=rememberRecordStateMap<String,String>("history.ortho.selected")
  val sections=listOf(
   "Tratamiento previo" to listOf("Sin tratamiento previo","Brackets metálicos","Brackets estéticos","Alineadores transparentes","Aparato removible","Expansor palatino","Mantenedor de espacio","Aparato funcional/ortopédico","Cirugía ortognática asociada"),
   "Edad al tratamiento" to listOf("<6 años","6–8","9–11","12–14","15–17","18–25",">25","No recuerda"),
@@ -509,7 +509,7 @@ private data class E(val n:String,val d:String)
 
 @Composable fun HistoryDentalAlterationsV38(lang:String,onBack:()->Unit){
  var section by remember{mutableStateOf(0)}
- val selected=remember{mutableStateMapOf<String,String>()}
+ val selected=rememberRecordStateMap<String,String>("history.dentalAlterations.selected")
  val sections=listOf(
   "Número · disminución" to listOf("Sin alteración","Hipodoncia/agenesia","Oligodoncia","Anodoncia"),
   "Número · aumento" to listOf("Sin alteración","Supernumerario","Mesiodens","Paramolar","Distomolar"),
