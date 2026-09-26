@@ -61,7 +61,7 @@ private val tabsV19=listOf(
     TabV19(AppScreen.VITALS,"❤️","Signos vitales","Vital signs",1),
     TabV19(AppScreen.POSTURE,"🧍","Postura y evaluación extraoral","Posture and extraoral assessment",1),
     TabV19(AppScreen.ATM,"◉","ATM y trastornos temporomandibulares","TMJ and temporomandibular disorders",1),
-    TabV19(AppScreen.MUCOSA,"👄","Mucosa oral","Oral mucosa",1),
+    TabV19(AppScreen.MUCOSA,"👄","Examen peribucal, intrabucal y mucosas","Perioral, intraoral and mucosal exam",1),
     TabV19(AppScreen.OCCLUSION,"↔","Oclusión","Occlusion",1),
 
     // 3 · Análisis dentales
