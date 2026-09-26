@@ -534,10 +534,10 @@ fun ProstheticResponsiveV17Screen(lang: String, onBack: () -> Unit) {
         ProstheticInteractiveV2Screen(lang) { fullModule = false }
         return
     }
-    var upperPresent by remember { mutableStateOf(upperArchV17.toSet()) }
-    var lowerPresent by remember { mutableStateOf(lowerArchV17.toSet()) }
-    var upperIgnored by remember { mutableStateOf<Set<Int>>(emptySet()) }
-    var lowerIgnored by remember { mutableStateOf<Set<Int>>(emptySet()) }
+    var upperPresent by rememberRecordState("prosthetic.upperPresent",upperArchV17.toSet())
+    var lowerPresent by rememberRecordState("prosthetic.lowerPresent",lowerArchV17.toSet())
+    var upperIgnored by rememberRecordState<Set<Int>>("prosthetic.upperIgnored",emptySet())
+    var lowerIgnored by rememberRecordState<Set<Int>>("prosthetic.lowerIgnored",emptySet())
 
     val upperResult = kennedyV17(upperArchV17, upperPresent, upperIgnored, lang)
     val lowerResult = kennedyV17(lowerArchV17, lowerPresent, lowerIgnored, lang)
