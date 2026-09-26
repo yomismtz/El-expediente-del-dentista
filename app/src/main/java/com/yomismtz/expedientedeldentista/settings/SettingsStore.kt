@@ -9,6 +9,7 @@ enum class PaletteStyle { WOOD, CLINICAL_GREEN, DENTAL_BLUE, WINE, SAGE, MONO }
 
 /** Paletas nuevas de la interfaz YSM. */
 enum class BirdPaletteStyle {
+    AZUL_TURQUESA, AZUL_MARINO,
     AGAPORNI, TUCAN, NINFA, BUHO, CUERVO,
     GUACAMAYA, PUG, POMERANIA, GATO, CONEJO,
     ELEFANTE, CABALLO_CAFE, SERPIENTE, IGUANA, ARANA,
