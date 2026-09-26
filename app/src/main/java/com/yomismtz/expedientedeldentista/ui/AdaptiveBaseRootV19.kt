@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -105,23 +106,31 @@ fun AdaptiveBaseRootV19(
     session:EducationalSession,
     onSessionChanged:(EducationalSession)->Unit
 ) {
-    var screen by remember { mutableStateOf(AppScreen.HOME) }
-    var completedCount by remember { mutableStateOf(0) }
-    var celebrate by remember { mutableStateOf(false) }
-    var selectedGroup by remember { mutableStateOf(0) }
-    val history = remember { mutableStateListOf<AppScreen>() }
+    var screenName by rememberSaveable { mutableStateOf(AppScreen.HOME.name) }
+    var screen: AppScreen
+        get() = AppScreen.valueOf(screenName)
+        set(value) { screenName = value.name }
+    var completedCount by rememberSaveable { mutableStateOf(0) }
+    var celebrate by rememberSaveable { mutableStateOf(false) }
+    var selectedGroup by rememberSaveable { mutableStateOf(0) }
+    var historyNames by rememberSaveable { mutableStateOf(listOf<String>()) }
     val lang=preferences.languageTag
 
     fun navigate(next: AppScreen) {
         if (next == screen) return
         if(screen != AppScreen.HOME && screen != AppScreen.FOLDER) completedCount++
         if(completedCount >= 8) celebrate=true
-        history.add(screen)
+        historyNames = historyNames + screen.name
         screen = next
     }
 
     fun goBack() {
-        screen = if (history.isNotEmpty()) history.removeAt(history.lastIndex) else AppScreen.HOME
+        if (historyNames.isNotEmpty()) {
+            screen = AppScreen.valueOf(historyNames.last())
+            historyNames = historyNames.dropLast(1)
+        } else {
+            screen = AppScreen.HOME
+        }
     }
 
     val backPrevious = { goBack() }
