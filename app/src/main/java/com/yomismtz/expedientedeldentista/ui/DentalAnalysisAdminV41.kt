@@ -76,12 +76,28 @@ private data class ExplainField(val n:String,val why:String,val examples:String)
  var lab by remember{mutableStateOf("No aplica")}
  var status by remember{mutableStateOf("Borrador")}
  val procedures=listOf("Valoración","Radiografía / imagen","Profilaxis","Restauración","Endodoncia","Extracción","Corona","Prótesis removible","Férula / aparato","Otro concepto institucional")
+ val procedureDescriptions=mapOf(
+  "Valoración" to "Consulta de evaluación clínica para integrar antecedentes, exploración, hallazgos y necesidades de atención.",
+  "Radiografía / imagen" to "Estudio de imagen indicado como auxiliar diagnóstico; el tipo debe corresponder a la necesidad clínica.",
+  "Profilaxis" to "Procedimiento preventivo de remoción de biofilm y depósitos supragingivales según valoración.",
+  "Restauración" to "Tratamiento restaurador de un diente; material, superficies y extensión dependen del diagnóstico y plan autorizado.",
+  "Endodoncia" to "Tratamiento del sistema de conductos radiculares cuando existe una indicación endodóntica confirmada.",
+  "Extracción" to "Remoción de un órgano dentario cuando está clínicamente indicada y autorizada.",
+  "Corona" to "Restauración de cobertura coronaria; requiere valoración del diente, soporte y plan protésico.",
+  "Prótesis removible" to "Rehabilitación protésica removible para sustituir dientes ausentes según diseño y diagnóstico.",
+  "Férula / aparato" to "Dispositivo indicado para una finalidad clínica específica; su diseño depende del diagnóstico.",
+  "Otro concepto institucional" to "Concepto autorizado por la institución que no corresponde a las categorías anteriores."
+ )
  val costs=listOf("Por cotizar","Tarifa institucional baja","Tarifa institucional media","Tarifa institucional alta")
  val labs=listOf("No aplica","Incluido","Laboratorio por separado","Pendiente de cotización")
  val states=listOf("Borrador","Explicado al paciente","Pendiente de autorización","Autorizado","Requiere actualización")
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
   item{ScreenHeader("Presupuesto",onBack,"Ejercicio educativo sin cobros reales. Todo se selecciona mediante opciones predefinidas.")}
-  item{SectionCard("1 · Procedimiento"){procedures.forEach{FilterChip(procedure==it,{procedure=it},{Text(it)},Modifier.fillMaxWidth())}}}
+  item{SectionCard("1 · Procedimiento"){
+   ChipChoices(procedures.map{x->x to (procedure==x)},{i->procedure=procedures[i]},columns=3)
+   Spacer(Modifier.height(8.dp))
+   Text(procedureDescriptions[procedure]?:"",style=MaterialTheme.typography.bodyMedium)
+  }}
   item{SectionCard("2 · Cantidad"){Row(horizontalArrangement=Arrangement.spacedBy(6.dp)){(1..5).forEach{FilterChip(qty==it,{qty=it},{Text(it.toString())})}}}}
   item{SectionCard("3 · Costo institucional"){costs.forEach{FilterChip(costBand==it,{costBand=it},{Text(it)},Modifier.fillMaxWidth())};Text("La app no inventa precios: el importe monetario debe provenir del tarifario autorizado de la institución.")}}
   item{SectionCard("4 · Laboratorio"){labs.forEach{FilterChip(lab==it,{lab=it},{Text(it)},Modifier.fillMaxWidth())}}}
