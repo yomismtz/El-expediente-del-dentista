@@ -33,7 +33,9 @@ private data class LabParamV20(
     val lowEs:String,
     val highEs:String,
     val lowEn:String=lowEs,
-    val highEn:String=highEs
+    val highEn:String=highEs,
+    val whatEs:String="Parámetro de laboratorio que se interpreta junto con el resto del estudio y el contexto clínico.",
+    val whyEs:String="Se registra para conservar el resultado y compararlo con el intervalo de referencia informado."
 )
 
 private val cbcV20=listOf(
@@ -131,26 +133,50 @@ private fun labStatusV20(value:Double?,p:LabParamV20,male:Boolean,lang:String):P
 fun LaboratoryAuxiliariesV20Screen(lang:String,onBack:()->Unit){
  var tab by remember{mutableStateOf(0)}; var male by rememberRecordState("lab.male",true)
  val values=rememberRecordStateMap<String,String>("lab.values")
+ val units=rememberRecordStateMap<String,String>("lab.units")
+ val refMin=rememberRecordStateMap<String,String>("lab.refMin")
+ val refMax=rememberRecordStateMap<String,String>("lab.refMax")
  val tabs=listOf(tr(lang,"Biometría","CBC"),tr(lang,"Química 18","Chemistry 18"),tr(lang,"Tiroides","Thyroid"),tr(lang,"Coagulación","Coagulation"),tr(lang,"Histología","Histology"),tr(lang,"Microbiología","Microbiology"),"CAMBRA")
- ResponsiveScreenV17(tr(lang,"Laboratorio e histopatología","Laboratory & histopathology"),tr(lang,"El alumno no escribe ni sube archivos o resultados en este módulo. La carga de archivos se reserva exclusivamente para los módulos de análisis de imágenes radiográficas, imagenología y cefalometría. Selecciona valores educativos y la app explica qué significan; todo debe comprobarse con el reporte real y el contexto clínico.","The student does not type or upload files or results in this module. File upload is reserved exclusively for radiographic image analysis, imaging and cephalometric modules. Select teaching values and the app explains their meaning; everything must be verified against the actual report and clinical context."),onBack){profile->
+ ResponsiveScreenV17(tr(lang,"Laboratorio e histopatología","Laboratory & histopathology"),tr(lang,"Captura el valor, la unidad y, cuando esté disponible, el intervalo de referencia impreso por el laboratorio. Ese intervalo tiene prioridad sobre el ejemplo educativo. No se suben archivos en este módulo.","Enter the value, unit and, when available, the reference interval printed by the laboratory. That interval takes priority over the teaching example. Files are not uploaded in this module."),onBack){profile->
   val tabCols=when{profile.largeSystemText->3;profile.width==ScreenWidthV17.COMPACT->3;profile.width==ScreenWidthV17.MEDIUM->4;else->5}
   AdaptiveGridV17(tabs.size,tabCols){i->FilterChip(tab==i,{tab=i},{Text(tabs[i])},Modifier.fillMaxWidth())}
   if(tab<4){
    ResponsiveSectionV17(tr(lang,"Sexo para intervalos que cambian","Sex for intervals that differ")){ChipChoices(listOf(tr(lang,"Hombre","Male") to male,tr(lang,"Mujer","Female") to !male),{male=it==0},columns=3)}
    val params=when(tab){0->cbcV20;1->chemistryV20;2->thyroidV23;else->coagV20}
    params.forEach{p->
-    val min=if(male)p.maleMin else p.femaleMin; val max=if(male)p.maleMax else p.femaleMax
-    val low=if(min<=0.0)0.0 else min*.8; val mid=(min+max)/2.0; val high=max+(max-min).coerceAtLeast(max*.1)
-    val examples=listOf(low,min,mid,max,high).distinct().sorted(); val raw=values[p.key].orEmpty(); val result=labStatusV20(raw.toDoubleOrNull(),p,male,lang)
-    ResponsiveSectionV17(if(lang=="en")p.en else p.es,"${tr(lang,"Referencia educativa","Teaching reference")}: ${formatLabV20(min)}–${formatLabV20(max)} ${p.unit}"){
-     Text(tr(lang,"Selecciona un valor de ejemplo. No hay captura libre.","Select an example value. There is no free-form entry."),style=MaterialTheme.typography.bodySmall)
-     ChipChoices(examples.map{v->"${formatLabV20(v)} ${p.unit}".trim() to (raw==v.toString())},{i->values[p.key]=examples[i].toString()},columns=5)
-     if(raw.isNotBlank()){Text(result.first,fontWeight=FontWeight.Black,color=if(raw.toDouble()<min||raw.toDouble()>max)MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary);Text(result.second)}
+    val teachingMin=if(male)p.maleMin else p.femaleMin; val teachingMax=if(male)p.maleMax else p.femaleMax
+    val raw=values[p.key].orEmpty()
+    val unit=units[p.key].orEmpty().ifBlank { p.unit }
+    val labMin=refMin[p.key].orEmpty().toDoubleOrNull()
+    val labMax=refMax[p.key].orEmpty().toDoubleOrNull()
+    val min=if(labMin!=null&&labMax!=null&&labMin<=labMax)labMin else teachingMin
+    val max=if(labMin!=null&&labMax!=null&&labMin<=labMax)labMax else teachingMax
+    val value=raw.replace(',','.').toDoubleOrNull()
+    val result=when {
+     value==null -> tr(lang,"Sin resultado numérico","No numeric result") to ""
+     value<min -> tr(lang,"↓ Bajo","↓ Low") to if(lang=="en")p.lowEn else p.lowEs
+     value>max -> tr(lang,"↑ Alto","↑ High") to if(lang=="en")p.highEn else p.highEs
+     else -> tr(lang,"✓ En referencia","✓ In reference") to tr(lang,"El resultado cae dentro del intervalo usado para esta comparación. Esto no establece ni descarta un diagnóstico por sí solo.","The result falls within the interval used for this comparison. This alone neither establishes nor excludes a diagnosis.")
+    }
+    ResponsiveSectionV17(if(lang=="en")p.en else p.es,"${tr(lang,"Referencia educativa por sexo","Sex-dependent teaching reference")}: ${formatLabV20(teachingMin)}–${formatLabV20(teachingMax)} ${p.unit}"){
+     Text(tr(lang,p.whatEs,"Laboratory parameter interpreted with the rest of the study and clinical context."),style=MaterialTheme.typography.bodyMedium)
+     Text(tr(lang,p.whyEs,"Recorded to preserve the result and compare it with the reported reference interval."),style=MaterialTheme.typography.bodySmall)
+     AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
+      if(i==0) OutlinedTextField(raw,{values[p.key]=it},Modifier.fillMaxWidth(),label={Text(tr(lang,"Resultado","Result"))},singleLine=true)
+      else OutlinedTextField(unit,{units[p.key]=it},Modifier.fillMaxWidth(),label={Text(tr(lang,"Unidad","Unit"))},singleLine=true)
+     }
+     Text(tr(lang,"Intervalo del laboratorio (opcional). Si se captura completo, tiene prioridad sobre el intervalo educativo.","Laboratory interval (optional). When entered completely, it takes priority over the teaching interval."),fontWeight=FontWeight.Bold)
+     AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
+      if(i==0) OutlinedTextField(refMin[p.key].orEmpty(),{refMin[p.key]=it},Modifier.fillMaxWidth(),label={Text(tr(lang,"Mínimo del laboratorio","Laboratory minimum"))},singleLine=true)
+      else OutlinedTextField(refMax[p.key].orEmpty(),{refMax[p.key]=it},Modifier.fillMaxWidth(),label={Text(tr(lang,"Máximo del laboratorio","Laboratory maximum"))},singleLine=true)
+     }
+     if(value!=null){Text(result.first,fontWeight=FontWeight.Black,color=if(value<min||value>max)MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary);Text(result.second)}
+     Text(tr(lang,"Intervalo usado: ","Interval used: ")+"${formatLabV20(min)}–${formatLabV20(max)} $unit",style=MaterialTheme.typography.bodySmall)
     }
    }
    if(tab==3) NoticeCard(tr(lang,"Los objetivos de INR cambian en pacientes con anticoagulación. Estas opciones enseñan interpretación; no autorizan procedimientos ni cambios de medicamentos.","INR targets differ in anticoagulated patients. These options teach interpretation; they do not clear procedures or medication changes."))
   }else when(tab){4->HistopathologyV20(lang);5->MicrobiologyV23(lang);else->CambraV23(lang)}
-  NoticeCard(tr(lang,"Valores y resultados son ejemplos educativos seleccionables. El alumno no sube archivos ni escribe resultados en este módulo. Un valor seleccionado no equivale a un resultado real ni a un diagnóstico.","Values and results are selectable teaching examples. The student does not upload files or type results in this module. A selected value is not an actual result or a diagnosis."))
+  NoticeCard(tr(lang,"Los resultados capturados quedan asociados al expediente activo. La comparación con un intervalo sirve como apoyo educativo y no diagnostica por sí sola; integra síntomas, antecedentes, medicamentos y el reporte del laboratorio.","Entered results remain associated with the active record. Comparison with an interval is educational support and does not diagnose by itself; integrate symptoms, history, medications and the laboratory report."))
  }
 }
 
