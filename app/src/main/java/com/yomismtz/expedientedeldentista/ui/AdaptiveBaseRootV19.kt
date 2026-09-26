@@ -107,9 +107,7 @@ fun AdaptiveBaseRootV19(
     onSessionChanged:(EducationalSession)->Unit
 ) {
     var screenName by rememberSaveable { mutableStateOf(AppScreen.HOME.name) }
-    var screen: AppScreen
-        get() = AppScreen.valueOf(screenName)
-        set(value) { screenName = value.name }
+    val screen = AppScreen.valueOf(screenName)
     var completedCount by rememberSaveable { mutableStateOf(0) }
     var celebrate by rememberSaveable { mutableStateOf(false) }
     var selectedGroup by rememberSaveable { mutableStateOf(0) }
@@ -121,15 +119,15 @@ fun AdaptiveBaseRootV19(
         if(screen != AppScreen.HOME && screen != AppScreen.FOLDER) completedCount++
         if(completedCount >= 8) celebrate=true
         historyNames = historyNames + screen.name
-        screen = next
+        screenName = next.name
     }
 
     fun goBack() {
         if (historyNames.isNotEmpty()) {
-            screen = AppScreen.valueOf(historyNames.last())
+            screenName = historyNames.last()
             historyNames = historyNames.dropLast(1)
         } else {
-            screen = AppScreen.HOME
+            screenName = AppScreen.HOME.name
         }
     }
 
