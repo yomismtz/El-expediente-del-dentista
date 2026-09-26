@@ -90,6 +90,8 @@ private val tabsV19=listOf(
     TabV19(AppScreen.PERIODONTAL_FOLLOWUP,"📊","Ficha de Seguimiento Periodontal","Periodontal Follow-up Sheet",5),
     TabV19(AppScreen.IMPLANTOLOGY,"🔩","Ficha de Implantología","Implantology Sheet",5),
     TabV19(AppScreen.DENTOMAXILLARY_ORTHOPEDICS,"↔","Ficha de Ortopedia Dentomaxilar","Dentomaxillary Orthopedics Sheet",5),
+    TabV19(AppScreen.PEDIATRIC_DENTISTRY,"🧒","Ficha de Odontopediatría","Pediatric Dentistry Sheet",5),
+    TabV19(AppScreen.CARIES_RISK,"🛡️","Ficha de Caries y Riesgo de Caries","Caries and Caries-Risk Sheet",5),
 
     // 7 · Herramientas administrativas
     TabV19(AppScreen.ACTIVITIES,"✍","Autorización de actividades","Activity authorization",6),
@@ -197,6 +199,8 @@ fun AdaptiveBaseRootV19(
         AppScreen.PERIODONTAL_FOLLOWUP -> PeriodontalFollowupV44(lang,backPrevious)
         AppScreen.IMPLANTOLOGY -> ImplantologySheetV44(lang,backPrevious)
         AppScreen.DENTOMAXILLARY_ORTHOPEDICS -> DentomaxillaryOrthopedicsV44(lang,backPrevious)
+        AppScreen.PEDIATRIC_DENTISTRY -> PediatricDentistryV45(lang,backPrevious)
+        AppScreen.CARIES_RISK -> CariesRiskV45(lang,backPrevious)
         AppScreen.CONSENT -> ConsentTeachingScreen(lang,backPrevious)
         AppScreen.REQUEST -> TreatmentRequestTeachingV41(lang,backPrevious)
         AppScreen.BUDGET -> BudgetTeachingV41(lang,backPrevious)
