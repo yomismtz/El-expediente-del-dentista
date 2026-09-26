@@ -153,13 +153,17 @@ fun LaboratoryAuxiliariesV20Screen(lang:String,onBack:()->Unit){
     val teachingMin=if(male)p.maleMin else p.femaleMin; val teachingMax=if(male)p.maleMax else p.femaleMax
     val raw=values[p.key].orEmpty()
     val unit=units[p.key].orEmpty().ifBlank { p.unit }
-    val labMin=refMin[p.key].orEmpty().toDoubleOrNull()
-    val labMax=refMax[p.key].orEmpty().toDoubleOrNull()
-    val min=if(labMin!=null&&labMax!=null&&labMin<=labMax)labMin else teachingMin
-    val max=if(labMin!=null&&labMax!=null&&labMin<=labMax)labMax else teachingMax
+    val labMin=refMin[p.key].orEmpty().replace(',','.').toDoubleOrNull()
+    val labMax=refMax[p.key].orEmpty().replace(',','.').toDoubleOrNull()
+    val validLabRange=labMin!=null&&labMax!=null&&labMin<=labMax
+    val sameTeachingUnit=unit.trim().equals(p.unit.trim(),ignoreCase=true)
+    val canCompare=validLabRange||sameTeachingUnit
+    val min=if(validLabRange)labMin!! else teachingMin
+    val max=if(validLabRange)labMax!! else teachingMax
     val value=raw.replace(',','.').toDoubleOrNull()
     val result=when {
      value==null -> tr(lang,"Sin resultado numérico","No numeric result") to ""
+     !canCompare -> tr(lang,"Unidad distinta: captura intervalo del laboratorio","Different unit: enter laboratory interval") to tr(lang,"No se aplica el intervalo educativo porque corresponde a "+p.unit+".","The teaching interval is not applied because it corresponds to "+p.unit+".")
      value<min -> tr(lang,"↓ Bajo","↓ Low") to if(lang=="en")p.lowEn else p.lowEs
      value>max -> tr(lang,"↑ Alto","↑ High") to if(lang=="en")p.highEn else p.highEs
      else -> tr(lang,"✓ En referencia","✓ In reference") to tr(lang,"El resultado cae dentro del intervalo usado para esta comparación. Esto no establece ni descarta un diagnóstico por sí solo.","The result falls within the interval used for this comparison. This alone neither establishes nor excludes a diagnosis.")
@@ -176,8 +180,10 @@ fun LaboratoryAuxiliariesV20Screen(lang:String,onBack:()->Unit){
       if(i==0) OutlinedTextField(refMin[p.key].orEmpty(),{refMin[p.key]=it},Modifier.fillMaxWidth(),label={Text(tr(lang,"Mínimo del laboratorio","Laboratory minimum"))},singleLine=true)
       else OutlinedTextField(refMax[p.key].orEmpty(),{refMax[p.key]=it},Modifier.fillMaxWidth(),label={Text(tr(lang,"Máximo del laboratorio","Laboratory maximum"))},singleLine=true)
      }
-     if(value!=null){Text(result.first,fontWeight=FontWeight.Black,color=if(value<min||value>max)MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary);Text(result.second)}
-     Text(tr(lang,"Intervalo usado: ","Interval used: ")+"${formatLabV20(min)}–${formatLabV20(max)} $unit",style=MaterialTheme.typography.bodySmall)
+     if(labMin!=null&&labMax!=null&&labMin>labMax) Text(tr(lang,"⚠ Intervalo inválido: el mínimo es mayor que el máximo.","⚠ Invalid interval: minimum is greater than maximum."),color=MaterialTheme.colorScheme.error,fontWeight=FontWeight.Bold)
+     if(value!=null){Text(result.first,fontWeight=FontWeight.Black,color=if(canCompare&&(value<min||value>max))MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary);Text(result.second)}
+     if(canCompare) Text(tr(lang,"Intervalo usado: ","Interval used: ")+formatLabV20(min)+"–"+formatLabV20(max)+" "+(if(validLabRange)unit else p.unit),style=MaterialTheme.typography.bodySmall)
+     else Text(tr(lang,"Referencia educativa disponible sólo en "+p.unit+"; captura el intervalo del laboratorio para interpretar otra unidad.","Teaching reference is available only in "+p.unit+"; enter the laboratory interval to interpret another unit."),style=MaterialTheme.typography.bodySmall)
     }
    }
    if(tab==4) NoticeCard(tr(lang,"Los objetivos de INR cambian en pacientes con anticoagulación. Estas opciones enseñan interpretación; no autorizan procedimientos ni cambios de medicamentos.","INR targets differ in anticoagulated patients. These options teach interpretation; they do not clear procedures or medication changes."))
