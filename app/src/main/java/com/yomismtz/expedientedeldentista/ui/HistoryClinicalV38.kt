@@ -496,26 +496,14 @@ private data class E(val n:String,val d:String)
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Exploración física y extraoral",onBack,"Registro de inspección general, cráneo/cara, músculos extraorales, cuello y ganglios. Signos vitales y ATM se registran en sus módulos especializados para evitar duplicación.")}
   item{SectionCard("Apartado de exploración"){
+   val physicalSections=listOf("Inspección general","Cráneo y cara","Músculos","Cuello","Ganglios")
    ChipChoices(
-    listOf("Signos vitales","Somatometría","Glucosa capilar","Inspección general","Cráneo y cara","Músculos","Cuello","Ganglios","ATM y dimensión vertical").map{x->x to (section==x)},
-    {i->section=listOf("Signos vitales","Somatometría","Glucosa capilar","Inspección general","Cráneo y cara","Músculos","Cuello","Ganglios","ATM y dimensión vertical")[i]},
+    physicalSections.map{x->x to (section==x)},
+    {i->section=physicalSections[i]},
     columns=3
    )
+   Text("Signos vitales, somatometría y glucosa se registran en Signos vitales. ATM y movimientos mandibulares se registran en el módulo ATM.",style=MaterialTheme.typography.bodySmall)
   }}
-  if(section=="Signos vitales"){
-   item{Pick("Temperatura (°C)",listOf("<35.0","35.0–35.9","36.0–36.9","37.0–37.9","38.0–38.9","39.0–39.9","≥40.0","No medida"),"Seleccionar el intervalo correspondiente a la medición obtenida; interpretar según sitio y técnica de medición.")}
-   item{Pick("Presión arterial sistólica (mmHg)",listOf("<90","90–99","100–109","110–119","120–129","130–139","140–159","160–179","≥180","No medida"))}
-   item{Pick("Presión arterial diastólica (mmHg)",listOf("<60","60–69","70–79","80–89","90–99","100–109","≥110","No medida"),"La interpretación depende de edad y contexto clínico. En población pediátrica requiere edad, sexo y talla; no aplicar categorías de adulto automáticamente.")}
-   item{Pick("Frecuencia cardiaca (lpm)",listOf("<50","50–59","60–69","70–79","80–89","90–99","100–119","120–139","≥140","No medida"),"Interpretar según edad, reposo, síntomas y contexto clínico.")}
-   item{Pick("Frecuencia respiratoria (rpm)",listOf("<10","10–11","12–15","16–20","21–24","25–29","≥30","No medida"),"Los rangos normales varían especialmente con la edad; no clasificar automáticamente a niños con criterios de adulto.")}
-  }
-  if(section=="Somatometría"){
-   item{SectionCard("Peso y talla"){OutlinedTextField(weight,{weight=it.filter{x->x.isDigit()||x=='.'}},label={Text("Peso medido (kg)")},modifier=Modifier.fillMaxWidth());OutlinedTextField(height,{height=it.filter{x->x.isDigit()||x=='.'}},label={Text("Talla medida (cm)")},modifier=Modifier.fillMaxWidth());if(bmi!=null)Text("IMC calculado: %.1f kg/m²".format(bmi),fontWeight=FontWeight.Bold);Text("En adultos el IMC puede contextualizarse con criterios aplicables. En menores de edad debe interpretarse con referencias por edad y sexo; este valor aislado no establece diagnóstico.",style=MaterialTheme.typography.bodySmall)}}
-  }
-  if(section=="Glucosa capilar"){
-   item{Pick("Glucosa capilar (mg/dL)",listOf("<54","54–69","70–99","100–125","126–179","180–199","200–249","250–299","≥300","No medida"))}
-   item{Pick("Contexto de la medición",listOf("Ayuno referido","Antes de alimento","Después de alimento","Medición aleatoria","No se conoce"),"La glucosa capilar aislada debe interpretarse según contexto, síntomas y antecedentes; la app no diagnostica diabetes con una medición aislada.")}
-  }
   if(section=="Inspección general"){
    item{Pick("Edad aparente",listOf("Acorde con edad cronológica","Aparenta menor edad","Aparenta mayor edad","No valorable"))}
    item{Pick("Marcha",listOf("Sin alteración aparente","Con apoyo","Claudicante","Inestable","No deambula","No valorable"))}
@@ -565,24 +553,7 @@ private data class E(val n:String,val d:String)
    item{Pick("Tamaño aproximado",listOf("<0.5 cm","0.5–0.9 cm","1.0–1.9 cm","≥2 cm","No aplica/no palpable","No medido"))}
    item{Pick("Consistencia",listOf("Blanda","Elástica","Firme","Dura","No aplica/no palpable","No valorable"),"Registrar sitio, lateralidad y tamaño. Un ganglio palpable no establece por sí solo una etiología.")}
   }
-  if(section=="ATM y dimensión vertical"){
-   item{Pick("ATM · dolor",listOf("Sin dolor","Derecha","Izquierda","Bilateral","No valorable"))}
-   item{Pick("Dolor durante movimiento",listOf("No","En apertura","En cierre","En lateralidad derecha","En lateralidad izquierda","En protrusión","En retrusión","En varios movimientos","No valorable"))}
-   item{Pick("ATM · sonido",listOf("Sin sonido detectable","Click/chasquido derecho","Click/chasquido izquierdo","Click bilateral","Crepitación derecha","Crepitación izquierda","Crepitación bilateral","Otro/no valorable"),"Palpar región preauricular durante apertura, cierre y excursiones. Registrar el sonido sin generar diagnóstico automático.")}
-   item{Pick("Palpación ATM",listOf("Sin dolor","Dolor polo lateral derecho","Dolor polo lateral izquierdo","Dolor bilateral","No valorable"))}
-   item{Pick("Línea media al abrir/cerrar",listOf("Recta/centrada","Desviación derecha con retorno","Desviación izquierda con retorno","Deflexión persistente derecha","Deflexión persistente izquierda","Trayectoria irregular","No valorable"))}
-   item{ClinicalPhotoV38("Apertura mandibular · referencia clínica",R.drawable.clinical_mouth_open,"Fotografía clínica real · Benjaminginterr · CC BY-SA. Ilustra apertura oral; la medición debe realizarse clínicamente con regla/calibrador.")}
-   item{Pick("Apertura máxima interincisal",listOf("<25 mm","25–34 mm","35–39 mm","40–44 mm","45–55 mm","56–60 mm",">60 mm","No medida"),"Referencia adulta: se reportan rangos frecuentes alrededor de 42–55 mm; existe variación por edad, sexo y anatomía.")}
-   item{Pick("Lateralidad derecha",listOf("<4 mm","4–6 mm","7–9 mm","10–12 mm",">12 mm","No medida"),"7 mm o más se usa como referencia clínica funcional mínima; individualizar.")}
-   item{Pick("Lateralidad izquierda",listOf("<4 mm","4–6 mm","7–9 mm","10–12 mm",">12 mm","No medida"),"Comparar ambos lados y registrar dolor, click o limitación.")}
-   item{Pick("Protrusión",listOf("<4 mm","4–5 mm","6–9 mm","10–12 mm",">12 mm","No medida"),"6 mm se usa como referencia clínica funcional mínima; individualizar.")}
-   item{Pick("Retrusión",listOf("<1 mm","1–2 mm","3–4 mm",">4 mm","No medida"),"Registrar el desplazamiento medido; las referencias clínicas son menos uniformes para retrusión.")}
-   item{Pick("Limitación de movimiento",listOf("No aparente","Apertura","Cierre","Lateralidad derecha","Lateralidad izquierda","Protrusión","Retrusión","Varios movimientos","No valorable"))}
-   item{ClinicalPhotoV38("Dimensión vertical · referencia clínica",R.drawable.clinical_vertical_dimension,"Fotografía clínica real disponible en Wikimedia Commons para referencia de dimensión vertical; verificar puntos de medición y aplicar la técnica descrita en la app.")}
-   item{Pick("DVR · distancia medida",listOf("<50 mm","50–54 mm","55–59 mm","60–64 mm","65–69 mm","70–74 mm","≥75 mm","No medida"),"Medir entre dos puntos faciales reproducibles con mandíbula en reposo fisiológico.")}
-   item{Pick("DVO · distancia medida",listOf("<50 mm","50–54 mm","55–59 mm","60–64 mm","65–69 mm","70–74 mm","≥75 mm","No medida"),"Medir entre los mismos puntos con dientes en oclusión habitual. No existe una DVO universal en milímetros: depende de los puntos elegidos y de la anatomía individual.")}
-   item{SectionCard("Espacio interoclusal"){Text("Espacio interoclusal = DVR − DVO. Referencia habitual: 2–4 mm, con variación individual.",fontWeight=FontWeight.Bold);listOf("DVR − DVO <2 mm","DVR − DVO 2–4 mm","DVR − DVO >4 mm","No calculado").forEach{v->FilterChip(selected["Espacio interoclusal"]==v,{selected["Espacio interoclusal"]=v},{Text(v)},modifier=Modifier.fillMaxWidth())}}}
-  }
+
   item{Button(onClick={},modifier=Modifier.fillMaxWidth()){Text("💾 Guardar exploración")}}
   item{NoticeCard("Los valores de referencia son educativos y deben interpretarse con edad, sexo, anatomía, síntomas, técnica de medición y contexto clínico. Los hallazgos no generan un diagnóstico automático.")}
  }
