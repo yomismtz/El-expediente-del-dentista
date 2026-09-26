@@ -36,6 +36,11 @@ class ClinicalRecordStore(context: Context) {
         write(records)
     }
 
+    fun touch(id: String) {
+        val records = loadAll().map { if (it.id == id) it.copy(updatedAt = System.currentTimeMillis()) else it }
+        write(records)
+    }
+
     fun delete(id: String) = write(loadAll().filterNot { it.id == id })
 
     private fun write(records: List<SavedRecord>) {
@@ -93,7 +98,7 @@ class ClinicalRecordStore(context: Context) {
     }
 
     private fun profileToJson(p:PatientProfile)=JSONObject().put("exerciseName",p.exerciseName).put("patientInitials",p.patientInitials).put("age",p.age).put("sex",p.sex).put("birthDate",p.birthDate).put("occupation",p.occupation).put("reasonForVisit",p.reasonForVisit).put("currentCondition",p.currentCondition).put("medications",p.medications).put("allergies",p.allergies).put("bloodPressure",p.bloodPressure).put("heartRate",p.heartRate).put("respiratoryRate",p.respiratoryRate).put("temperature",p.temperature)
-    private fun profileFromJson(o:JSONObject)=PatientProfile(o.optString("exerciseName"),o.optString("patientInitials"),o.optString("age"),o.optString("sex"),o.optString("birthDate"),o.optString("occupation"),o.optString("reasonForVisit"),o.optString("currentCondition"),o.optString("medications"),o.optString("allergies"),o.optString("bloodPressure"),o.optString("heartRate"),o.optString("respiratoryRate"),o.optString("temperature"))
+    private fun profileFromJson(o:JSONObject)=PatientProfile(exerciseName=o.optString("exerciseName"),patientInitials=o.optString("patientInitials"),age=o.optString("age"),sex=o.optString("sex"),birthDate=o.optString("birthDate"),occupation=o.optString("occupation"),reasonForVisit=o.optString("reasonForVisit"),currentCondition=o.optString("currentCondition"),medications=o.optString("medications"),allergies=o.optString("allergies"),bloodPressure=o.optString("bloodPressure"),heartRate=o.optString("heartRate"),respiratoryRate=o.optString("respiratoryRate"),temperature=o.optString("temperature"))
 
     private fun historyToJson(h:HistoryState)=JSONObject().put("diseases",JSONObject().also{j->h.diseases.forEach{(k,v)->j.put(k,JSONObject().put("present",v.present).put("onset",v.onset).put("treatment",v.treatment).put("currentStatus",v.currentStatus).put("complications",v.complications))}}).put("asaClass",h.asaClass).put("asaEmergency",h.asaEmergency).put("tobaccoAlcohol",h.tobaccoAlcohol).put("hospitalizations",h.hospitalizations).put("pregnancy",h.pregnancy)
     private fun historyFromJson(o:JSONObject):HistoryState { val d=o.optJSONObject("diseases"); val m=mutableMapOf<String,DiseaseAnswer>(); if(d!=null){val it=d.keys();while(it.hasNext()){val k=it.next();val v=d.getJSONObject(k);m[k]=DiseaseAnswer(v.optBoolean("present"),v.optString("onset"),v.optString("treatment"),v.optString("currentStatus"),v.optString("complications"))}};return HistoryState(m,o.optInt("asaClass",1),o.optBoolean("asaEmergency"),o.optString("tobaccoAlcohol"),o.optString("hospitalizations"),o.optString("pregnancy")) }
