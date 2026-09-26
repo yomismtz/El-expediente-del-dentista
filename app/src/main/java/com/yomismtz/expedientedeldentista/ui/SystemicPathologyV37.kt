@@ -73,6 +73,7 @@ private fun presetTreatments37(d:Disease37):List<String> = when(d.protocol){
 }
 @Composable fun SystemicProtocols37Screen(lang:String,onBack:()->Unit){
  var selected by remember{mutableStateOf<Pair<String,String>?>(null)}
+ var carePlan by remember{mutableStateOf<String?>(null)}
  val p=listOf(
   "Diabetes mellitus" to "Confirmar tipo, tratamiento, control referido, alimentación y antecedentes de hipoglucemia.",
   "Hipertensión / cardiopatía" to "Confirmar diagnóstico, tratamiento, control, signos vitales, capacidad funcional y anticoagulación/antiagregación cuando corresponda.",
@@ -99,11 +100,11 @@ private fun presetTreatments37(d:Disease37):List<String> = when(d.protocol){
    }
   }else{
    val x=selected!!
-   item{OutlinedButton(onClick={selected=null}){Text("← Condiciones")}}
+   item{OutlinedButton(onClick={selected=null;carePlan=null}){Text("← Condiciones")}}
    item{Text(x.first,style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black)}
    item{ResponsiveSectionV17("1 · Signos, síntomas y control","Qué confirmar antes de decidir el manejo"){Text(x.second);Text("Selecciona y confirma el estado clínico en la historia; no asumir control sólo por el nombre del diagnóstico.")}}
    item{ResponsiveSectionV17("2 · Estudios y marcadores","Solicitar o revisar sólo cuando cambien la seguridad o la conducta clínica"){Text("Revisar estudios recientes pertinentes al diagnóstico y al procedimiento. No existe un panel universal para todos los pacientes sistémicos; usar protocolo institucional e interconsulta cuando esté indicada.")}}
-   item{ResponsiveSectionV17("3 · Atención odontológica","Decidir tratar, modificar, posponer o interconsultar"){ChipChoices(listOf("Atención habitual si está estable" to false,"Modificar plan / cita" to false,"Posponer atención electiva" to false,"Interconsulta médica" to false),{},2)}}
+   item{ResponsiveSectionV17("3 · Atención odontológica","Decidir tratar, modificar, posponer o interconsultar"){val careOptions=listOf("Atención habitual si está estable","Modificar plan / cita","Posponer atención electiva","Interconsulta médica"); ChipChoices(careOptions.map{it to (carePlan==it)},{carePlan=careOptions[it]},2); carePlan?.let{Text("Selección educativa: $it",fontWeight=FontWeight.Bold)}}}
    item{ResponsiveSectionV17("4 · Anestesia","La elección depende de enfermedad, control, medicamentos y procedimiento"){Text("Comprobar anestésico, vasoconstrictor, dosis máxima aplicable, interacciones y contraindicaciones antes de administrar. Evitar reglas universales por diagnóstico.")}}
    item{ResponsiveSectionV17("5 · Analgesia y antiinflamatorios","Seleccionar según antecedentes y tratamiento actual"){Text("Revisar riesgo renal, hepático, gastrointestinal, cardiovascular, hemorrágico e interacciones. No indicar AINE automáticamente.")}}
    item{ResponsiveSectionV17("6 · Antibióticos","No se indican por el solo hecho de tener una enfermedad sistémica"){Text("Usar antibiótico sólo cuando exista una indicación independiente o profilaxis específicamente indicada por una guía vigente. Verificar alergias, función renal/hepática e interacciones.")}}
