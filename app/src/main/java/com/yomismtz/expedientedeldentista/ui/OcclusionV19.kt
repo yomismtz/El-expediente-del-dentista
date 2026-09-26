@@ -44,8 +44,8 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
         "Mordida cruzada","Líneas medias","Alineación y espacios","Forma y simetría de arcadas","Plano vertical","Plano transversal",
         "Contactos oclusales","Máxima intercuspidación y cierre","Desgaste oclusal","Alteraciones asociadas"
     )
-    var selected by remember{mutableStateOf(0)}
-    var choice by remember{mutableStateOf("")}
+    var selected by rememberRecordState("occlusion.selected",0)
+    var choice by rememberRecordState("occlusion.choice","")
     val options=listOf(
         listOf("Temporal","Mixta temprana","Mixta tardía","Permanente","No valorable"),
         listOf("Recto bilateral","Mesial bilateral","Distal bilateral","Asimétrico","No valorable"),
