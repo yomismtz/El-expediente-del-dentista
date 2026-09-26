@@ -99,7 +99,7 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
         "Destartraje supragingival","Control periodontal","Mantenimiento periodontal","Ferulización periodontal",
         "Exodoncia quirúrgica","Sutura","Retiro de sutura","Control posoperatorio","Manejo de alveolitis bajo supervisión",
         "Biopsia","Toma radiográfica periapical","Toma radiográfica bitewing","Fotografía clínica","Modelos de estudio",
-        "Toma de impresiones diagnósticas","Análisis de modelos","Análisis radiográfico","Análisis fotográfico","Análisis cefalométrico de Steiner",
+        "Toma de impresiones diagnósticas","Análisis de modelos","Análisis radiográfico","Análisis fotográfico","Análisis cefalométrico de Steiner","Ficha endodóntica","Ficha quirúrgica","Ficha protésica","Ficha periodontal",
         "CAMBRA · valoración de riesgo de caries","Índice de placa O’Leary","CPO-D / ceo-d","ICDAS","IPC","IHOS","Exploración de mucosas",
         "Mantenedor de espacio","Mantenedor banda y ansa","Mantenedor corona y ansa","Arco lingual como mantenedor","Botón de Nance","Arco transpalatino","Zapatilla distal",
         "Recuperador de espacio","Extracciones seriadas",
@@ -130,7 +130,7 @@ fun ActivitiesScreen(lang: String, onBack: () -> Unit) {
         "Prótesis" to listOf("impresión","prótesis","protes","corona","provisional"),
         "Ortodoncia / ortopedia" to listOf("ortodon","mantenedor","espacio","aparat","nance","transpalatino","zapatilla distal","extracciones seriadas"),
         "Odontopediatría" to listOf("odontopedi","dentición temporal","pulpotom","pulpectom","acero cromo","mantenedor","zapatilla distal"),
-        "Diagnóstico" to listOf("radiograf","explor","fotograf","signos vitales","índice","periodontograma","impresiones diagnósticas","modelos","steiner","cambra","o’leary","cpo-d","ceo-d","icdas","ipc","ihos","mucosas")
+        "Diagnóstico" to listOf("radiograf","explor","fotograf","signos vitales","índice","periodontograma","impresiones diagnósticas","modelos","steiner","cambra","o’leary","cpo-d","ceo-d","icdas","ipc","ihos","mucosas","ficha endodóntica","ficha quirúrgica","ficha protésica","ficha periodontal")
     )
     fun matchesSpecialty(a:ActivityGuide):Boolean {
         if(specialty=="Todas") return true
