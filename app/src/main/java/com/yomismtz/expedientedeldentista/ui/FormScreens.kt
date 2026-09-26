@@ -1,10 +1,14 @@
 package com.yomismtz.expedientedeldentista.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -15,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -31,7 +36,7 @@ fun IdentificationScreen(
     onSessionChanged: (EducationalSession) -> Unit,
     onBack: () -> Unit
 ) {
-    var opened by remember { mutableStateOf<Int?>(0) }
+    var opened by rememberSaveable { mutableStateOf<Int?>(0) }
     val fields = listOf(
         TeachingField("Nombre completo","Full name","Identifica clínica y legalmente al paciente. En el expediente físico se escribe completo y sin abreviaturas.","Clinically and legally identifies the patient.","Ejemplo de estructura: apellido paterno · apellido materno · nombre(s).","Example structure: family names · given name(s)."),
         TeachingField("Género / sexo registrado","Recorded gender / sex","Registra el dato que solicita el formato, de manera respetuosa y sin inferirlo por apariencia.","Record the information requested by the form respectfully.","Ejemplo: dato referido y asentado conforme al formato institucional.","Example: reported information recorded according to the institutional form."),
@@ -54,13 +59,51 @@ fun IdentificationScreen(
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { ScreenHeader(tr(lang,"Identificación del paciente","Patient identification"),onBack,tr(lang,"Primer apartado de la Historia Clínica. Toca cada dato para aprender qué se registra y por qué es importante.","First section of the clinical history. Tap each field to learn what is recorded and why it matters.")) }
         item { NoticeCard(tr(lang,"La app funciona como guía de llenado. No introduzcas nombre, domicilio, teléfono ni otros datos personales reales.","This app is a completion guide. Do not enter real names, addresses, telephone numbers or other personal data.")) }
-        items(fields.size) { index ->
-            val field=fields[index]
-            Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=if(opened==index) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface),onClick={opened=if(opened==index)null else index}){
-                Column(Modifier.padding(15.dp),verticalArrangement=Arrangement.spacedBy(7.dp)){
-                    Text("${index+1}. ${if(lang=="en")field.titleEn else field.titleEs}",fontWeight=FontWeight.Bold,style=MaterialTheme.typography.titleMedium)
-                    if(opened==index){Text("💡 ${if(lang=="en")field.helpEn else field.helpEs}");Text("✍️ ${if(lang=="en")field.exampleEn else field.exampleEs}",color=MaterialTheme.colorScheme.primary)}
-                    else Text(tr(lang,"Toca para ver cómo se llena","Tap to see how it is completed"),style=MaterialTheme.typography.bodyMedium)
+        item {
+            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                val columns = when {
+                    maxWidth < 540.dp -> 1
+                    maxWidth < 820.dp -> 2
+                    maxWidth < 1100.dp -> 3
+                    else -> 4
+                }
+                Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    fields.chunked(columns).forEachIndexed { rowIndex, row ->
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            row.forEachIndexed { colIndex, field ->
+                                val index = rowIndex * columns + colIndex
+                                val open = opened == index
+                                Card(
+                                    modifier = Modifier.weight(1f),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = if (open) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+                                    ),
+                                    onClick = { opened = if (open) null else index }
+                                ) {
+                                    Column(Modifier.padding(13.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                        Text(
+                                            "${index + 1}. ${if (lang == "en") field.titleEn else field.titleEs}",
+                                            fontWeight = FontWeight.Bold,
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                        if (open) {
+                                            Text("💡 ${if (lang == "en") field.helpEn else field.helpEs}")
+                                            Text(
+                                                "✍️ ${if (lang == "en") field.exampleEn else field.exampleEs}",
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                        } else {
+                                            Text(
+                                                tr(lang, "Toca para ver cómo se llena", "Tap to see how it is completed"),
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
+                        }
+                    }
                 }
             }
         }
