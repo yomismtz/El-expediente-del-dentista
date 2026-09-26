@@ -97,15 +97,15 @@ fun VitalsInteractiveV19Screen(lang:String,onBack:()->Unit) {
         VitalBand19("≥12 a",13,20,60,100,95,135,58,88),
         VitalBand19(tr(lang,"Adulto","Adult"),12,20,60,100,100,140,60,90)
     )
-    var bandIndex by remember{mutableStateOf(5)}
-    var age by remember{mutableStateOf("")}
-    var sex by remember{mutableStateOf("Femenino")}
-    var spo2 by remember{mutableStateOf("")}
-    var rr by remember{mutableStateOf("")}; var hr by remember{mutableStateOf("")}
-    var sys by remember{mutableStateOf("")}; var dia by remember{mutableStateOf("")}
-    var temp by remember{mutableStateOf("")}; var glucose by remember{mutableStateOf("")}
-    var glucoseContext by remember{mutableStateOf(GlucoseContext19.RANDOM)}
-    var weight by remember{mutableStateOf("")}; var height by remember{mutableStateOf("")}
+    var bandIndex by rememberRecordState("vitals.bandIndex",5)
+    var age by rememberRecordState("vitals.age","")
+    var sex by rememberRecordState("vitals.sex","Femenino")
+    var spo2 by rememberRecordState("vitals.spo2","")
+    var rr by rememberRecordState("vitals.rr",""); var hr by rememberRecordState("vitals.hr","")
+    var sys by rememberRecordState("vitals.sys",""); var dia by rememberRecordState("vitals.dia","")
+    var temp by rememberRecordState("vitals.temp",""); var glucose by rememberRecordState("vitals.glucose","")
+    var glucoseContext by rememberRecordState("vitals.glucoseContext",GlucoseContext19.RANDOM)
+    var weight by rememberRecordState("vitals.weight",""); var height by rememberRecordState("vitals.height","")
     val b=bands[bandIndex]
     val bmi=run { val w=weight.toDoubleOrNull(); val h=height.toDoubleOrNull()?.div(100.0); if(w!=null&&h!=null&&h>0)w/h.pow(2) else null }
 
