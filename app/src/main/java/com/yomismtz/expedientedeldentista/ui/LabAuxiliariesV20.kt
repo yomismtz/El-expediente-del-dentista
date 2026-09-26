@@ -129,8 +129,8 @@ private fun labStatusV20(value:Double?,p:LabParamV20,male:Boolean,lang:String):P
 
 @Composable
 fun LaboratoryAuxiliariesV20Screen(lang:String,onBack:()->Unit){
- var tab by remember{mutableStateOf(0)}; var male by remember{mutableStateOf(true)}
- val values=remember{mutableStateMapOf<String,String>()}
+ var tab by remember{mutableStateOf(0)}; var male by rememberRecordState("lab.male",true)
+ val values=rememberRecordStateMap<String,String>("lab.values")
  val tabs=listOf(tr(lang,"Biometría","CBC"),tr(lang,"Química 18","Chemistry 18"),tr(lang,"Tiroides","Thyroid"),tr(lang,"Coagulación","Coagulation"),tr(lang,"Histología","Histology"),tr(lang,"Microbiología","Microbiology"),"CAMBRA")
  ResponsiveScreenV17(tr(lang,"Laboratorio e histopatología","Laboratory & histopathology"),tr(lang,"El alumno no escribe ni sube archivos o resultados en este módulo. La carga de archivos se reserva exclusivamente para los módulos de análisis de imágenes radiográficas, imagenología y cefalometría. Selecciona valores educativos y la app explica qué significan; todo debe comprobarse con el reporte real y el contexto clínico.","The student does not type or upload files or results in this module. File upload is reserved exclusively for radiographic image analysis, imaging and cephalometric modules. Select teaching values and the app explains their meaning; everything must be verified against the actual report and clinical context."),onBack){profile->
   val tabCols=when{profile.largeSystemText->3;profile.width==ScreenWidthV17.COMPACT->3;profile.width==ScreenWidthV17.MEDIUM->4;else->5}
@@ -196,8 +196,8 @@ private fun histologyEnglishV20(es:String)=when(es){
 }
 
 @Composable private fun CambraV23(lang:String){
-    var child by remember{mutableStateOf(false)}
-    val selected=remember{mutableStateMapOf<String,Boolean>()}
+    var child by rememberRecordState("lab.child",false)
+    val selected=rememberRecordStateMap<String,Boolean>("lab.selected")
     val items=if(child)cambraChildV23 else cambraAdultV23
     ResponsiveSectionV17("CAMBRA · "+tr(lang,"riesgo de caries","caries risk"),tr(lang,"Herramienta educativa para seleccionar indicadores, factores de riesgo y factores protectores.","Teaching tool to select disease indicators, risk factors and protective factors.")){
         ChipChoices(listOf(tr(lang,"Adulto / >6 años","Adult / >6 years") to !child,tr(lang,"Niño 0–6 años","Child 0–6 years") to child),{child=it==1;selected.clear()},columns=2)
