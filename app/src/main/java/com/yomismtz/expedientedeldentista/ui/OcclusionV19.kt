@@ -100,7 +100,7 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
         Pair("Desgaste: inspección clínica",R.drawable.occlusion_deepbite),
         Pair("Diastema · fotografía clínica real",R.drawable.occlusion_diastema)
     )
-    ResponsiveScreenV17(tr(lang,"Examen clínico de oclusión","Clinical occlusal examination"),tr(lang,"Exploración por subapartados con registro seleccionable y apoyo visual.","Sectioned examination with selectable findings and visual support."),onBack) {
+    ResponsiveScreenV17(tr(lang,"Examen clínico de oclusión","Clinical occlusal examination"),tr(lang,"Exploración por subapartados con registro seleccionable y apoyo visual.","Sectioned examination with selectable findings and visual support."),onBack) { profile ->
         ResponsiveSectionV17("Subapartados") {
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(6.dp)){
                 sections.forEachIndexed{i,s->FilterChip(selected==i,{selected=i;choice=""},{Text(s)})}
@@ -111,7 +111,10 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
             val ph=photos[selected]
             if(ph.second!=0) OcclusionPhoto19(ph.first,ph.second) else TerminalPlanes19(lang)
             Text("Registro clínico",fontWeight=FontWeight.Black)
-            options[selected].forEach{o->FilterChip(choice==o,{choice=o},{Text(o)},modifier=Modifier.fillMaxWidth())}
+            AdaptiveGridV17(options[selected].size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 3) { i ->
+                val o=options[selected][i]
+                FilterChip(choice==o,{choice=o},{Text(o)},modifier=Modifier.fillMaxWidth())
+            }
             when(selected){
                 1->TerminalPlanes19(lang)
                 2->AngleMolar19()
