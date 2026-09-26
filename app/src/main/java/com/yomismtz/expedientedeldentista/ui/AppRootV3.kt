@@ -103,6 +103,12 @@ fun AppRootV3(
                 onOpen = { screen = AppScreen.FOLDER },
                 onSettings = { screen = AppScreen.SETTINGS }
             )
+            AppScreen.SECTION -> FolderSpreadV3(
+                lang = preferences.languageTag,
+                onNavigate = { screen = it },
+                onClose = { screen = AppScreen.FOLDER },
+                onSettings = { screen = AppScreen.SETTINGS }
+            )
             AppScreen.FOLDER -> FolderSpreadV3(
                 lang = preferences.languageTag,
                 onNavigate = { screen = it },
