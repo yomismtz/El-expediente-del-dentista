@@ -35,9 +35,32 @@ import com.yomismtz.expedientedeldentista.clinical.EducationalSession
   Triple("icdas","ICDAS","Registro visual estandarizado de lesiones de caries."),
   Triple("pulpal","Análisis pulpar y periapical","Pruebas y hallazgos para integrar el diagnóstico pulpar y periapical.")
  )
- LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
-  item{ScreenHeader("Análisis dentales",onBack,"Selecciona el análisis que deseas realizar. Todos quedan concentrados dentro de este módulo.")}
-  items(items.size){i->val x=items[i];Card(onClick={page=x.first},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(15.dp)){Text(x.second,fontWeight=FontWeight.Bold);Text(x.third)}}}
+ ResponsiveScreenV17(
+  "Análisis dentales",
+  "Selecciona el análisis que deseas realizar. Se muestran 2 opciones por fila en pantallas pequeñas y 3 o más cuando el ancho permite mantenerlas legibles.",
+  onBack
+ ) { profile ->
+  val columns=when {
+   profile.largeSystemText -> 1
+   profile.width==ScreenWidthV17.COMPACT -> 2
+   profile.width==ScreenWidthV17.MEDIUM -> 2
+   else -> 3
+  }
+  ResponsiveSectionV17("Odontograma, índices y análisis") {
+   AdaptiveGridV17(items.size,columns) { i ->
+    val x=items[i]
+    Card(onClick={page=x.first},modifier=Modifier.fillMaxWidth()){
+     Column(
+      Modifier.fillMaxWidth().padding(15.dp),
+      verticalArrangement=Arrangement.spacedBy(6.dp)
+     ){
+      Text(x.second,fontWeight=FontWeight.Bold,style=MaterialTheme.typography.titleMedium)
+      Text(x.third,style=MaterialTheme.typography.bodyMedium)
+     }
+    }
+   }
+  }
+  NoticeCard("Este cambio reorganiza únicamente la pantalla de entrada. El contenido, cálculo, información y funcionamiento de CPOD/ceod, IPC, IHOS, O’Leary, ICDAS, odontograma y análisis pulpar/periapical permanecen en sus módulos existentes.")
  }
 }
 
