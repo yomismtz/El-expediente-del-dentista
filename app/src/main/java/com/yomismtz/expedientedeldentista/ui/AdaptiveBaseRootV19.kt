@@ -52,6 +52,7 @@ private data class TabV19(val screen:AppScreen,val icon:String,val es:String,val
 private val tabsV19=listOf(
     // 1 · Expediente clínico
     TabV19(AppScreen.HISTORY,"🩺","Historia clínica","Clinical history",0),
+    TabV19(AppScreen.INTAKE,"📋","Interrogatorio clínico guiado","Guided clinical intake",0),
     TabV19(AppScreen.INTAKE,"📋","Nota de ingreso","Intake note",0),
 
     // 2 · Exploración clínica
