@@ -223,7 +223,7 @@ fun AtmScreen(lang: String, onBack: () -> Unit) {
     }
 
     @Composable fun Pick(title:String,values:List<String>,selected:String,set:(String)->Unit) {
-        SectionCard(title) { Row(horizontalArrangement=Arrangement.spacedBy(6.dp),modifier=Modifier.fillMaxWidth()) { values.forEach { v -> FilterChip(selected==v,{set(v)},{Text(v)},modifier=Modifier.weight(1f)) } } }
+        SectionCard(title) { ChipChoices(values.map { v -> v to (selected==v) }, { i -> set(values[i]) }, columns=2) }
     }
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
