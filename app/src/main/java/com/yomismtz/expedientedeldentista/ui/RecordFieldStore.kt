@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -51,17 +52,20 @@ class RecordFieldStore(context: Context) {
 
 val LocalActiveRecordId = compositionLocalOf<String?> { null }
 val LocalRecordFieldStore = staticCompositionLocalOf<RecordFieldStore?> { null }
+val LocalRecordFieldChanged = staticCompositionLocalOf<(String) -> Unit> { {} }
 
 @Composable
 fun <T> rememberRecordState(key: String, initial: T): MutableState<T> {
     val id = LocalActiveRecordId.current
     val store = LocalRecordFieldStore.current
+    val changed = rememberUpdatedState(LocalRecordFieldChanged.current)
     @Suppress("UNCHECKED_CAST")
     val state = remember(id, key) {
         mutableStateOf((store?.load(id, key) as? T) ?: initial)
     }
     LaunchedEffect(id, key, state.value) {
         store?.save(id, key, state.value)
+        if (!id.isNullOrBlank()) changed.value(id)
     }
     return state
 }
@@ -70,6 +74,7 @@ fun <T> rememberRecordState(key: String, initial: T): MutableState<T> {
 fun <K, V> rememberRecordStateMap(key: String): SnapshotStateMap<K, V> {
     val id = LocalActiveRecordId.current
     val store = LocalRecordFieldStore.current
+    val changed = rememberUpdatedState(LocalRecordFieldChanged.current)
     @Suppress("UNCHECKED_CAST")
     val map = remember(id, key) {
         mutableStateMapOf<K, V>().also { target ->
@@ -79,6 +84,7 @@ fun <K, V> rememberRecordStateMap(key: String): SnapshotStateMap<K, V> {
     val snapshot = map.toMap()
     LaunchedEffect(id, key, snapshot) {
         store?.save(id, key, HashMap(snapshot))
+        if (!id.isNullOrBlank()) changed.value(id)
     }
     return map
 }
