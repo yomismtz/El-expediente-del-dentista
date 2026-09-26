@@ -39,7 +39,7 @@ private data class VisualPosture(
 
 @Composable
 fun PostureVisualScreen(lang: String, onBack: () -> Unit) {
-    var selected by remember { mutableStateOf(0) }
+    var selected by rememberRecordState("posture.visual.selected",0)
     val list = listOf(
         VisualPosture("Natural / equilibrada", "Natural / balanced", "Cabeza erguida con relación visual equilibrada respecto al cuello. Se usa como referencia descriptiva.", "Upright head with a visually balanced relation to the neck. Used as a descriptive reference.", 0f, 0f, 0f, 0.12f),
         VisualPosture("Cabeza adelantada", "Forward head posture", "El cráneo se observa desplazado hacia anterior respecto al tronco; describe la postura y busca compensaciones cervicales.", "The head appears translated anteriorly relative to the trunk; describe the posture and look for cervical compensation.", 28f, 5f, 0f, 0.18f),
@@ -48,19 +48,20 @@ fun PostureVisualScreen(lang: String, onBack: () -> Unit) {
         VisualPosture("Rectificación cervical", "Cervical straightening", "La curvatura cervical se aprecia disminuida. Requiere correlación con exploración y estudios adecuados.", "The cervical curve appears reduced. Correlate with examination and appropriate studies.", 0f, 0f, 0f, 0.02f),
         VisualPosture("Lordosis cervical aumentada", "Increased cervical lordosis", "La curvatura cervical se observa más pronunciada. Es una descripción postural, no un diagnóstico etiológico aislado.", "The cervical curve appears more pronounced. It is a postural description, not an isolated etiologic diagnosis.", 0f, 0f, 0f, 0.27f)
     )
-    val p = list[selected]
+    val safeSelected=selected.coerceIn(0,list.lastIndex)
+    val p = list[safeSelected]
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             ScreenHeader(
                 tr(lang, "Postura craneocervical · guía visual", "Craniocervical posture · visual guide"),
                 onBack,
-                tr(lang, "Selecciona una postura para comparar el esquema y aprender cómo describirla.", "Select a posture to compare the diagram and learn how to describe it.")
+                tr(lang, "Selecciona el hallazgo observado. La selección queda asociada al expediente activo; el esquema sirve como referencia descriptiva.", "Select the observed finding. The selection is stored with the active record; the diagram is a descriptive reference.")
             )
         }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(5.dp), modifier = Modifier.fillMaxWidth()) {
                 list.take(3).forEachIndexed { i, v ->
-                    FilterChip(selected == i, { selected = i }, { Text(if (lang == "en") v.nameEn else v.nameEs) }, modifier = Modifier.weight(1f))
+                    FilterChip(safeSelected == i, { selected = i }, { Text(if (lang == "en") v.nameEn else v.nameEs) }, modifier = Modifier.weight(1f))
                 }
             }
         }
@@ -68,7 +69,7 @@ fun PostureVisualScreen(lang: String, onBack: () -> Unit) {
             Row(horizontalArrangement = Arrangement.spacedBy(5.dp), modifier = Modifier.fillMaxWidth()) {
                 list.drop(3).forEachIndexed { i, v ->
                     val n = i + 3
-                    FilterChip(selected == n, { selected = n }, { Text(if (lang == "en") v.nameEn else v.nameEs) }, modifier = Modifier.weight(1f))
+                    FilterChip(safeSelected == n, { selected = n }, { Text(if (lang == "en") v.nameEn else v.nameEs) }, modifier = Modifier.weight(1f))
                 }
             }
         }
@@ -89,7 +90,7 @@ fun PostureVisualScreen(lang: String, onBack: () -> Unit) {
             }
         }
         item {
-            NoticeCard(tr(lang, "La imagen es un esquema original para enseñanza. No sustituye análisis cefalométrico, valoración funcional ni diagnóstico de alteraciones cervicales.", "The image is an original teaching schematic. It does not replace cephalometric, functional or cervical assessment."))
+            NoticeCard(tr(lang, "La selección registrada describe postura craneocervical observada y no establece una etiología. La imagen es un esquema original para enseñanza y no sustituye análisis cefalométrico, valoración funcional ni diagnóstico cervical.", "The stored selection describes observed craniocervical posture and does not establish an etiology. The image is an original teaching schematic and does not replace cephalometric, functional or cervical diagnosis."))
         }
     }
 }

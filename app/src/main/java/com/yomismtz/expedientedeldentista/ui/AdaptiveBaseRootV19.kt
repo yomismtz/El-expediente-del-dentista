@@ -60,7 +60,8 @@ private val tabsV19=listOf(
     // 2 · Exploración clínica
     // Hallazgos del paciente: signos vitales, postura, ATM, tejidos blandos y oclusión.
     TabV19(AppScreen.VITALS,"❤️","Signos vitales","Vital signs",1),
-    TabV19(AppScreen.POSTURE,"🧍","Postura y evaluación extraoral","Posture and extraoral assessment",1),
+    TabV19(AppScreen.HISTORY_PHYSICAL,"🩺","Exploración física y extraoral","Physical and extraoral examination",1),
+    TabV19(AppScreen.POSTURE,"🧍","Postura craneocervical","Craniocervical posture",1),
     TabV19(AppScreen.ATM,"◉","ATM y trastornos temporomandibulares","TMJ and temporomandibular disorders",1),
     TabV19(AppScreen.MUCOSA,"👄","Examen peribucal, intrabucal y mucosas","Perioral, intraoral and mucosal exam",1),
     TabV19(AppScreen.OCCLUSION,"↔","Oclusión","Occlusion",1),
@@ -84,7 +85,6 @@ private val tabsV19=listOf(
     TabV19(AppScreen.PROSTHETIC,"👑","Ficha protésica","Prosthetic sheet",5),
     TabV19(AppScreen.SURGICAL,"✚","Ficha quirúrgica","Surgical sheet",5),
     TabV19(AppScreen.PERIODONTOGRAM,"📈","Periodontograma","Periodontogram",5),
-    TabV19(AppScreen.ATM,"◉","Ficha de trastornos temporomandibulares","Temporomandibular disorders sheet",5),
     TabV19(AppScreen.EMERGENCY,"🚨","Ficha de Urgencias Odontológicas","Dental Emergency Sheet",5),
     TabV19(AppScreen.CLINICAL_PHOTO,"📷","Ficha de Fotografía Clínica","Clinical Photography Sheet",5),
     TabV19(AppScreen.PERIODONTAL_FOLLOWUP,"📊","Ficha de Seguimiento Periodontal","Periodontal Follow-up Sheet",5),

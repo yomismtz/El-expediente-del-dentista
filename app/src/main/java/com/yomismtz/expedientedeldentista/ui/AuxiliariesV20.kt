@@ -9,6 +9,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.Text
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +31,19 @@ fun AuxiliariesV20Screen(lang:String,onBack:()->Unit){
         AuxV20Page.ORTHO->OrthodonticAuxiliariesV20Screen(lang){open(AuxV20Page.HOME)}
         AuxV20Page.IMAGING->ImagingAuxiliariesV20Screen(lang){open(AuxV20Page.HOME)}
         AuxV20Page.SALIVA->ResponsiveScreenV17("Flujo salival · sialometría","Auxiliar diagnóstico para medir flujo salival total.",{open(AuxV20Page.HOME)}){_ ->
+            var method by rememberRecordState("saliva.method","No estimulada")
+            var volume by rememberRecordState("saliva.volumeMl","")
+            var minutes by rememberRecordState("saliva.minutes","")
+            val v=volume.replace(',','.').toDoubleOrNull()
+            val t=minutes.replace(',','.').toDoubleOrNull()
+            val flow=if(v!=null && t!=null && v>=0.0 && t>0.0) v/t else null
+            SectionCard("Registro por expediente"){
+                Text("Selecciona el método y registra volumen y tiempo medidos. El cálculo se guarda a partir de estos datos; no genera un diagnóstico automático.")
+                ChipChoices(listOf("No estimulada","Estimulada").map{it to (method==it)},{method=listOf("No estimulada","Estimulada")[it]},columns=2)
+                OutlinedTextField(volume,{volume=it.filter{c->c.isDigit()||c=='.'||c==','}},label={Text("Volumen recolectado (mL)")},modifier=Modifier.fillMaxWidth())
+                OutlinedTextField(minutes,{minutes=it.filter{c->c.isDigit()||c=='.'||c==','}},label={Text("Tiempo de recolección (min)")},modifier=Modifier.fillMaxWidth())
+                Text(if(flow!=null)"Flujo calculado: %.2f mL/min".format(flow) else "Flujo calculado: completa volumen y tiempo válidos.",fontWeight=FontWeight.Bold)
+            }
             SectionCard("Métodos de obtención"){
                 Text("No estimulada: drenaje pasivo, escupido, succión o papel absorbente. Estimulada: parafina/base de goma sin sabor o estímulo gustativo, con recolección cronometrada.")
                 Text("Flujo salival = volumen recolectado (mL) ÷ tiempo (min).",fontWeight=FontWeight.Bold)

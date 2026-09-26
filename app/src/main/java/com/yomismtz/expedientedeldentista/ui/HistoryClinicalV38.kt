@@ -117,6 +117,10 @@ private data class E(val n:String,val d:String)
  var selectedReason by rememberRecordState<Int?>("history.reason.selectedReason",null)
  var selectedDx by rememberRecordState<Int?>("history.reason.selectedDx",null)
  var showCatalog by remember { mutableStateOf(selectedReason==null) }
+ var onset by rememberRecordState("history.reason.onset","")
+ var evolution by rememberRecordState("history.reason.evolution","")
+ var symptoms by rememberRecordState("history.reason.symptoms","")
+ var modifiers by rememberRecordState("history.reason.modifiers","")
  val current=selectedReason?.let{catalog.getOrNull(it)}
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
   item{ScreenHeader("Motivo de consulta y padecimiento actual",onBack,"Selecciona el motivo referido. Al elegirlo, la lista se compacta y los pasos 2 y 3 aparecen inmediatamente debajo para conservar la secuencia clínica.")}
@@ -138,7 +142,14 @@ private data class E(val n:String,val d:String)
    item{SectionCard("2 · Cinco diagnósticos diferenciales posibles"){
     ChipChoices(current.dx.mapIndexed{i,x->x to (selectedDx==i)},{selectedDx=it},columns=5)
    }}
-   item{SectionCard("3 · Selección para estudio"){
+   item{SectionCard("3 · Padecimiento actual"){
+    Text("Registra la evolución con las palabras del paciente y completa sólo lo que realmente se obtuvo en el interrogatorio.",style=MaterialTheme.typography.bodySmall)
+    OutlinedTextField(onset,{onset=it},label={Text("Inicio · ¿desde cuándo?")},modifier=Modifier.fillMaxWidth())
+    OutlinedTextField(evolution,{evolution=it},label={Text("Evolución · ¿cómo ha cambiado?")},modifier=Modifier.fillMaxWidth())
+    OutlinedTextField(symptoms,{symptoms=it},label={Text("Síntomas y características asociadas")},modifier=Modifier.fillMaxWidth())
+    OutlinedTextField(modifiers,{modifiers=it},label={Text("Qué lo aumenta, disminuye o desencadena")},modifier=Modifier.fillMaxWidth())
+   }}
+   item{SectionCard("4 · Selección para estudio"){
     Text("Motivo: "+current.reason,fontWeight=FontWeight.Bold)
     Text("Posibilidad diagnóstica seleccionada: "+(selectedDx?.let{current.dx.getOrNull(it)}?:"sin seleccionar"))
     Text("Confirma o descarta mediante anamnesis dirigida, exploración clínica y auxiliares/pruebas que correspondan; no conviertas esta selección en diagnóstico definitivo.",style=MaterialTheme.typography.bodySmall)
@@ -467,9 +478,8 @@ private data class E(val n:String,val d:String)
 }
 
 @Composable fun HistoryPhysicalV38(lang:String,onBack:()->Unit){
- var section by remember{mutableStateOf("Signos vitales")}
+ var section by rememberRecordState("history.physical.section","Inspección general")
  val selected=rememberRecordStateMap<String,String>("history.physical.selected")
- var weight by rememberRecordState("history.physical.weight","");var height by rememberRecordState("history.physical.height","")
  @Composable fun Pick(title:String,options:List<String>,note:String=""){
   val longest=options.maxOfOrNull{it.length}?:0
   // Clinical option labels must stay readable on phones; never trade legibility for density.
@@ -483,9 +493,8 @@ private data class E(val n:String,val d:String)
    if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)
   }
  }
- val w=weight.toDoubleOrNull();val h=height.toDoubleOrNull();val bmi=if(w!=null&&h!=null&&h>0) w/((h/100)*(h/100)) else null
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Exploración física y signos vitales",onBack,"Registro educativo. Los valores deben medirse; la app no sustituye la valoración clínica ni asigna diagnósticos automáticamente.")}
+  item{ScreenHeader("Exploración física y extraoral",onBack,"Registro de inspección general, cráneo/cara, músculos extraorales, cuello y ganglios. Signos vitales y ATM se registran en sus módulos especializados para evitar duplicación.")}
   item{SectionCard("Apartado de exploración"){
    ChipChoices(
     listOf("Signos vitales","Somatometría","Glucosa capilar","Inspección general","Cráneo y cara","Músculos","Cuello","Ganglios","ATM y dimensión vertical").map{x->x to (section==x)},
