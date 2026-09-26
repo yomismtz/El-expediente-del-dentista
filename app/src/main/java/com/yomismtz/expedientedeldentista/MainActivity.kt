@@ -12,6 +12,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.yomismtz.expedientedeldentista.clinical.ClinicalRecordStore
@@ -45,9 +46,8 @@ class MainActivity : AppCompatActivity() {
         setContent {
             var preferences by remember { mutableStateOf(store.load()) }
             var savedRecords by remember { mutableStateOf(recordStore.loadAll()) }
-            // Deliberately start with no active record after a process restart.
-            // Records are durable; the user explicitly chooses which one to load.
-            var activeRecordId by remember { mutableStateOf<String?>(null) }
+            // Keep the active record identity across configuration changes such as rotation.
+            var activeRecordId by rememberSaveable { mutableStateOf<String?>(null) }
             var activeRecord by remember(activeRecordId) {
                 mutableStateOf(activeRecordId?.let { id -> recordStore.loadAll().firstOrNull { it.id == id } })
             }
