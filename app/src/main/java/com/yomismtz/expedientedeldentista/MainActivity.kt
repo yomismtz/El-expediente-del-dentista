@@ -12,6 +12,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.yomismtz.expedientedeldentista.clinical.ClinicalRecordStore
@@ -43,9 +44,12 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             var preferences by remember { mutableStateOf(store.load()) }
-            var activeRecord by remember { mutableStateOf<SavedRecord?>(null) }
-            var session by remember { mutableStateOf(EducationalSession()) }
             var savedRecords by remember { mutableStateOf(recordStore.loadAll()) }
+            var activeRecordId by rememberSaveable { mutableStateOf<String?>(null) }
+            var activeRecord by remember(activeRecordId) {
+                mutableStateOf(activeRecordId?.let { id -> recordStore.loadAll().firstOrNull { it.id == id } })
+            }
+            var session by remember(activeRecordId) { mutableStateOf(activeRecord?.session ?: EducationalSession()) }
 
             val savePreferences: (AppPreferences) -> Unit = { updated ->
                 preferences = updated
@@ -89,11 +93,13 @@ class MainActivity : AppCompatActivity() {
                                 onNewRecord = { profile ->
                                     val created = recordStore.create(EducationalSession(profile = profile))
                                     activeRecord = created
+                                    activeRecordId = created.id
                                     session = created.session
                                     savedRecords = recordStore.loadAll()
                                 },
                                 onLoadRecord = { record ->
                                     activeRecord = record
+                                    activeRecordId = record.id
                                     session = record.session
                                 },
                                 onDeleteRecord = { id ->
@@ -101,6 +107,7 @@ class MainActivity : AppCompatActivity() {
                                     fieldStore.deleteRecord(id)
                                     if (activeRecord?.id == id) {
                                         activeRecord = null
+                                        activeRecordId = null
                                         session = EducationalSession()
                                     }
                                     savedRecords = recordStore.loadAll()
