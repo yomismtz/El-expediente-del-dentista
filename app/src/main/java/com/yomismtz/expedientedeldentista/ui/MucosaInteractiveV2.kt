@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
@@ -208,15 +207,11 @@ fun MucosaInteractiveV2Screen(lang: String, onBack: () -> Unit) {
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-                    items(mucosaZones) { zone ->
-                        FilterChip(
-                            selected = selectedId == zone.id,
-                            onClick = { selectedId = zone.id },
-                            label = { Text(if (lang == "en") zone.en else zone.es) }
-                        )
-                    }
-                }
+                ChipChoices(
+                    mucosaZones.map { zone -> (if (lang == "en") zone.en else zone.es) to (selectedId == zone.id) },
+                    onClick = { index -> selectedId = mucosaZones[index].id },
+                    columns = 2
+                )
             }
         }
 
@@ -296,12 +291,17 @@ fun MucosaInteractiveV2Screen(lang: String, onBack: () -> Unit) {
                         }
                     }
 
-                    OutlinedTextField(
-                        value = notes,
-                        onValueChange = { notes = it.take(160) },
-                        label = { Text(tr(lang, "Observaciones descriptivas", "Descriptive notes")) },
-                        modifier = Modifier.fillMaxWidth()
+                    Text(tr(lang, "Observaciones complementarias", "Additional observations"), fontWeight = FontWeight.Bold)
+                    val noteOptions = listOf(
+                        tr(lang, "Sin observaciones adicionales", "No additional observations"),
+                        tr(lang, "Bordes bien definidos", "Well-defined borders"),
+                        tr(lang, "Bordes poco definidos", "Poorly defined borders"),
+                        tr(lang, "Superficie lisa", "Smooth surface"),
+                        tr(lang, "Superficie irregular", "Irregular surface"),
+                        tr(lang, "Requiere documentación fotográfica", "Photographic documentation indicated"),
+                        tr(lang, "Requiere valoración/seguimiento", "Assessment/follow-up indicated")
                     )
+                    ChipChoices(noteOptions.map { it to (notes == it) }, { notes = noteOptions[it] }, columns = 2)
                 }
             }
         }
