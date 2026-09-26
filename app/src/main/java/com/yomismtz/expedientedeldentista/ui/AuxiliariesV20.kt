@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -65,13 +66,19 @@ fun AuxiliariesV20Screen(lang:String,onBack:()->Unit){
                 Card(
                     onClick={page=if(lab)AuxV20Page.LAB else if(imaging)AuxV20Page.IMAGING else if(saliva)AuxV20Page.SALIVA else AuxV20Page.ORTHO},
                     modifier=Modifier.fillMaxWidth(),
-                    colors=CardDefaults.cardColors(containerColor=cardColors[i]),
+                    colors=CardDefaults.cardColors(
+                        containerColor=cardColors[i],
+                        contentColor=contentColorFor(cardColors[i])
+                    ),
                     border=BorderStroke(1.dp,MaterialTheme.colorScheme.outline.copy(alpha=.35f)),
                     shape=RoundedCornerShape(18.dp)
                 ){
-                    androidx.compose.foundation.layout.Column(Modifier.padding(16.dp)){
+                    androidx.compose.foundation.layout.Column(
+                        Modifier.fillMaxWidth().padding(16.dp),
+                        verticalArrangement=androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+                    ){
                         Text(if(lab)"🧪 ${tr(lang,"Laboratorio e histopatología","Laboratory & histopathology")}" else if(imaging)"🩻 ${tr(lang,"Imagenología dental","Dental imaging")}" else if(saliva)"💧 ${tr(lang,"Flujo salival / sialometría","Salivary flow / sialometry")}" else "📐 ${tr(lang,"Ortodoncia y análisis","Orthodontics & analysis")}",style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black)
-                        Text(if(lab)tr(lang,"Biometría hemática, química sanguínea, coagulación y lectura educativa de biopsia.","CBC, blood chemistry, coagulation and educational biopsy reading.") else if(imaging)tr(lang,"Periapical, bitewing, oclusal, panorámica, cefalométrica, CBCT y registro sistemático de hallazgos.","Periapical, bitewing, occlusal, panoramic, cephalometric, CBCT and systematic findings.") else if(saliva)tr(lang,"Flujo no estimulado y estimulado, métodos de obtención, tira de papel y cálculo en mL/min.","Unstimulated and stimulated flow, collection methods, paper strip and mL/min calculation.") else tr(lang,"Fotos frontal/lateral, Powell, Steiner, Moyers, Tanaka–Johnston, panorámica y Nolla.","Frontal/lateral photos, Powell, Steiner, Moyers, Tanaka–Johnston, panoramic and Nolla."))
+                        Text(if(lab)tr(lang,"Biometría hemática, química sanguínea, coagulación y lectura educativa de biopsia.","CBC, blood chemistry, coagulation and educational biopsy reading.") else if(imaging)tr(lang,"Periapical, bitewing, oclusal, panorámica, cefalométrica, CBCT y registro sistemático de hallazgos.","Periapical, bitewing, occlusal, panoramic, cephalometric, CBCT and systematic findings.") else if(saliva)tr(lang,"Flujo no estimulado y estimulado, métodos de obtención, tira de papel y cálculo en mL/min.","Unstimulated and stimulated flow, collection methods, paper strip and mL/min calculation.") else tr(lang,"Fotos frontal/lateral, Powell, Steiner, Moyers, Tanaka–Johnston, panorámica y Nolla.","Frontal/lateral photos, Powell, Steiner, Moyers, Tanaka–Johnston, panoramic and Nolla."),style=MaterialTheme.typography.bodyMedium)
                     }
                 }
             }
