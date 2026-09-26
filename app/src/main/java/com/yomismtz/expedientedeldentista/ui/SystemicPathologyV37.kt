@@ -30,14 +30,64 @@ private val categories37=listOf(
 private fun asa37(map:Map<String,DiseaseAnswer>):Int{val a=map.values.filter{it.present};if(a.isEmpty())return 1;if(a.any{it.currentStatus.contains("inestable",true)||it.currentStatus.contains("amenaza",true)||it.currentStatus.contains("sever",true)})return 4;if(a.any{it.currentStatus.contains("mal control",true)||it.complications.isNotBlank()})return 3;return 2}
 
 @Composable fun PathologicalHistory37Screen(lang:String,session:EducationalSession,onSessionChanged:(EducationalSession)->Unit,onProtocols:()->Unit,onBack:()->Unit){
- var category by remember{mutableStateOf<Category37?>(null)};var disease by remember{mutableStateOf<Disease37?>(null)};val saved=session.history.diseases
+ var category by remember{mutableStateOf<Category37?>(null)}
+ var disease by remember{mutableStateOf<Disease37?>(null)}
+ val saved=session.history.diseases
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
-  item{ScreenHeader("Antecedentes personales patológicos",onBack,"Selecciona una clasificación y después una enfermedad. Los datos se guardan solo en la sesión educativa.")}
+  item{ScreenHeader("Antecedentes personales patológicos",onBack,"Selecciona una clasificación y después una enfermedad. La rejilla muestra 2 columnas en pantallas pequeñas y 3 cuando hay más espacio.")}
   item{NoticeCard("ASA es una orientación educativa: depende de gravedad, control, repercusión sistémica y valoración completa; el diagnóstico por sí solo no determina la clase.")}
   item{Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){Column(Modifier.padding(14.dp)){Text("ASA "+asa37(saved)+" · orientación automática",fontWeight=FontWeight.Black);Text("Debe confirmarse clínicamente y con supervisión docente.")}}}
-  if(category==null){items(categories37){x->Card(onClick={category=x},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp)){Text(x.name,fontWeight=FontWeight.Bold);Text("Toca para ver enfermedades frecuentes y relevantes")}}}}
-  else if(disease==null){item{Button(onClick={category=null}){Text("← Clasificaciones")}};items(category!!.diseases){x->Card(onClick={disease=x},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp)){Text(x.name,fontWeight=FontWeight.Bold);if(saved[x.id]?.present==true)Text("✓ Guardado en esta sesión")}}}}
-  else{item{DiseaseEditor37(disease!!,saved[disease!!.id]?:DiseaseAnswer(),{a->val n=saved.toMutableMap();n[disease!!.id]=a;onSessionChanged(session.copy(history=session.history.copy(diseases=n,asaClass=asa37(n))));disease=null},onProtocols){disease=null}}}
+  if(category==null){
+   item{
+    BoxWithConstraints(Modifier.fillMaxWidth()){
+     val columns=if(maxWidth<700.dp)2 else 3
+     Column(verticalArrangement=Arrangement.spacedBy(9.dp)){
+      categories37.chunked(columns).forEach{row->
+       Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(9.dp)){
+        row.forEach{x->
+         Card(onClick={category=x},modifier=Modifier.weight(1f)){
+          Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
+           Text(x.name,fontWeight=FontWeight.Bold)
+           Text("Toca para ver enfermedades frecuentes y relevantes",style=MaterialTheme.typography.bodySmall)
+          }
+         }
+        }
+        repeat(columns-row.size){Spacer(Modifier.weight(1f))}
+       }
+      }
+     }
+    }
+   }
+  }else if(disease==null){
+   item{Button(onClick={category=null}){Text("← Clasificaciones")}}
+   item{
+    BoxWithConstraints(Modifier.fillMaxWidth()){
+     val columns=if(maxWidth<700.dp)2 else 3
+     Column(verticalArrangement=Arrangement.spacedBy(9.dp)){
+      category!!.diseases.chunked(columns).forEach{row->
+       Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(9.dp)){
+        row.forEach{x->
+         Card(onClick={disease=x},modifier=Modifier.weight(1f)){
+          Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
+           Text(x.name,fontWeight=FontWeight.Bold)
+           if(saved[x.id]?.present==true)Text("✓ Guardado en esta sesión",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.primary)
+          }
+         }
+        }
+        repeat(columns-row.size){Spacer(Modifier.weight(1f))}
+       }
+      }
+     }
+    }
+   }
+  }else{
+   item{DiseaseEditor37(disease!!,saved[disease!!.id]?:DiseaseAnswer(),{a->
+    val n=saved.toMutableMap()
+    n[disease!!.id]=a
+    onSessionChanged(session.copy(history=session.history.copy(diseases=n,asaClass=asa37(n))))
+    disease=null
+   },onProtocols){disease=null}}
+  }
  }
 }
 private fun presetTreatments37(d:Disease37):List<String> = when(d.protocol){
