@@ -32,9 +32,9 @@ data class BirdPalette(
 val BirdPaletteChoices = BirdPaletteStyle.entries.toList()
 
 fun paletteDisplayName(style: BirdPaletteStyle, lang: String = "es"): String = when (style) {
-    BirdPaletteStyle.AZUL_TURQUESA -> if(lang=="en") "Turquoise blue" else "Azul turquesa"
-    BirdPaletteStyle.AZUL_MARINO -> if(lang=="en") "Navy blue" else "Azul marino"
-    BirdPaletteStyle.AGAPORNI -> "Agaporni"
+    BirdPaletteStyle.AZUL_TURQUESA -> if(lang=="en") "Blue morpho · turquoise blue" else "Mariposa morpho azul · azul turquesa"
+    BirdPaletteStyle.AZUL_MARINO -> if(lang=="en") "Blue whale · navy blue" else "Ballena azul · azul marino"
+    BirdPaletteStyle.AGAPORNI -> if(lang=="en") "Lovebird · green" else "Agaporni · verde"\n    BirdPaletteStyle.AGAPORNI_PASTEL -> if(lang=="en") "Lovebird · pastel yellow" else "Agaporni · amarillo pastel"
     BirdPaletteStyle.TUCAN -> if(lang=="en") "Toucan" else "Tucán"
     BirdPaletteStyle.NINFA -> if(lang=="en") "Cockatiel" else "Ninfa"
     BirdPaletteStyle.BUHO -> if(lang=="en") "Owl" else "Búho"
@@ -83,7 +83,7 @@ fun birdPalette(style: BirdPaletteStyle): BirdPalette {
     return when(style){
         BirdPaletteStyle.AZUL_TURQUESA -> p(0xFF008C95,0xFF22B8C7,0xFF0A5D7A,0xFFE7FAFA,0xFFB9EEF0,0xFFD2F5F6,on=0xFF083B4C)
         BirdPaletteStyle.AZUL_MARINO -> p(0xFF173B63,0xFF2D6A91,0xFF0B7285,0xFFF0F5FA,0xFFD8E5F0,0xFFCFEAF0,on=0xFF102A43)
-        BirdPaletteStyle.AGAPORNI -> BirdPalette(Color(0xFF78B77A),Color.White,Color(0xFFF3D77A),Color(0xFFF29A5A),Color(0xFFF4FAEF),Color(0xFFFFFCFF),Color(0xFF173B63),Color(0xFFCFE8C8),Color(0xFF8ECBE3),Color(0xFF008C95))
+        BirdPaletteStyle.AGAPORNI -> BirdPalette(Color(0xFF78B77A),Color.White,Color(0xFFF3D77A),Color(0xFFF29A5A),Color(0xFFF4FAEF),Color(0xFFFFFCFF),Color(0xFF173B63),Color(0xFFCFE8C8),Color(0xFF8ECBE3),Color(0xFF008C95))\n        BirdPaletteStyle.AGAPORNI_PASTEL -> BirdPalette(Color(0xFFF4C542),Color(0xFF4A2B24),Color(0xFFE85D3F),Color(0xFFF29A4A),Color(0xFFFFFAF0),Color(0xFFFFFFFF),Color(0xFF4A2B24),Color(0xFFFFE59A),Color(0xFFFFC7A3),Color(0xFFD7A63A))
         BirdPaletteStyle.TUCAN -> p(0xFFF2C230,0xFF202124,0xFFF28C28,0xFFFFFAE8,0xFFFFED9B,0xFFE4E4E4)
         BirdPaletteStyle.NINFA -> p(0xFF74777D,0xFFF0C83F,0xFFF28B35,0xFFFAF9F2,0xFFE6E7E8,0xFFFFF0AD)
         BirdPaletteStyle.BUHO -> p(0xFF76513D,0xFFD8B98C,0xFF9A714F,0xFFFFF8F0,0xFFEAD9CA,0xFFF5E7CF)
@@ -130,7 +130,7 @@ fun birdPalette(style: BirdPaletteStyle): BirdPalette {
 
 fun paletteSwatches(style: BirdPaletteStyle): List<Color> {
     val p = birdPalette(style)
-    return if(style == BirdPaletteStyle.AGAPORNI) listOf(p.primary, p.secondary, p.tertiary, Color(0xFF008C95), Color(0xFF173B63), Color(0xFFE98CA5), p.primaryContainer, p.secondaryContainer, p.background) else listOf(p.primary, p.secondary, p.tertiary, p.primaryContainer, p.secondaryContainer, p.background, p.surface, p.outline)
+    return if(style == BirdPaletteStyle.AGAPORNI || style == BirdPaletteStyle.AGAPORNI_PASTEL) listOf(p.primary, p.secondary, p.tertiary, Color(0xFF008C95), Color(0xFF173B63), Color(0xFFE98CA5), p.primaryContainer, p.secondaryContainer, p.background) else listOf(p.primary, p.secondary, p.tertiary, p.primaryContainer, p.secondaryContainer, p.background, p.surface, p.outline)
 }
 
 fun fontDisplayName(style: FontStyle, lang: String = "es"): String = when (style) {
