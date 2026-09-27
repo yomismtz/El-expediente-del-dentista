@@ -45,9 +45,25 @@ private data class RiskFactor45(val key:String,val label:String,val kind:String)
    "ICDAS 0"->Triple(R.drawable.edu_icdas_0,"ICDAS 0","Referencia visual educativa; no modifica los criterios del módulo ICDAS.")
    else->null
   }
-  ResponsiveSectionV17(tr(lang,"Referencia visual de cariología","Cariology visual reference")){
-   visual?.let{LocalClinicalInlineZoomImageV48(lang,it.second,it.second,it.first,it.third,it.third)}
+  ResponsiveSectionV17(tr(lang,"Cariología · referencia contextual","Cariology · contextual reference")){
    AdaptiveGridV17(visualOptions.size,cols){i->val o=visualOptions[i];FilterChip(cariesVisual==o,{cariesVisual=o},{Text(o)},Modifier.fillMaxWidth())}
+   visual?.let{v->
+    Card(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp)){
+     Text(v.second,fontWeight=FontWeight.Bold)
+     Text(tr(lang,"¿Qué es?","What is it?"),fontWeight=FontWeight.SemiBold)
+     Text(v.third)
+     Text(tr(lang,"¿Qué observar?","What to observe?"),fontWeight=FontWeight.SemiBold)
+     Text(tr(lang,"Valora integridad superficial, localización, textura, brillo, actividad y contexto clínico según corresponda. La imagen aislada no establece diagnóstico.","Assess surface integrity, location, texture, shine, activity and clinical context as appropriate. The image alone does not establish a diagnosis."))
+     Text(tr(lang,"Imagen representativa","Representative image"),fontWeight=FontWeight.SemiBold)
+     LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
+     when(cariesVisual){
+      "Lesión no cavitada"->LocalClinicalHelpImageV47(lang,"Explicación · lesión no cavitada","Explanation · non-cavitated lesion",R.drawable.edu_explicacion_lesion_cariosa_no_cavitada,"Lámina explicativa complementaria.","Complementary explanatory plate.")
+      "Lesión cavitada"->LocalClinicalHelpImageV47(lang,"Explicación · lesión cavitada","Explanation · cavitated lesion",R.drawable.edu_explicacion_lesion_cariosa_cavitada,"Lámina explicativa complementaria.","Complementary explanatory plate.")
+      "Caries activa"->LocalClinicalHelpImageV47(lang,"Explicación · caries activa","Explanation · active caries",R.drawable.edu_explicacion_caries_activa,"Lámina educativa sobre actividad.","Educational plate about activity.")
+      "Caries inactiva"->LocalClinicalHelpImageV47(lang,"Explicación · caries no activa","Explanation · inactive caries",R.drawable.edu_explicacion_caries_no_activa,"Lámina educativa sobre inactividad.","Educational plate about inactivity.")
+     }
+    }}
+   }
   }
   ResponsiveSectionV17(tr(lang,"Factores","Factors"),tr(lang,"Marca Presente, Ausente o No valorado. No asumas un dato que no fue interrogado o explorado.","Mark Present, Absent or Not assessed. Do not assume information that was not obtained.")){
    factors.forEach{f->val st=states.getValue(f.key);Text(f.label,fontWeight=FontWeight.SemiBold);AdaptiveGridV17(3,cols){i->val o=listOf("Presente","Ausente","No valorado")[i];FilterChip(st.value==o,{st.value=o},{Text(o)},Modifier.fillMaxWidth())}}
