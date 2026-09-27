@@ -108,6 +108,28 @@ private val localClinicalGuidesV45=listOf(
 )
 
 @Composable
+fun LocalClinicalImageSectionV46(lang:String,profile:ScreenProfileV17?=null,groupEs:String,groupEn:String){
+    var expanded by remember{mutableStateOf<LocalClinicalGuideV45?>(null)}
+    val items=localClinicalGuidesV45.filter{it.groupEs==groupEs}
+    if(items.isEmpty())return
+    ResponsiveSectionV17(if(lang=="en")groupEn else groupEs,tr(lang,"Referencias visuales locales incluidas en el APK. Toca para ampliar.","Local visual references included in the APK. Tap to enlarge.")){
+        val columns=when{profile==null->2;profile.largeSystemText->1;profile.width==ScreenWidthV17.COMPACT->2;profile.width==ScreenWidthV17.MEDIUM->3;else->4}
+        AdaptiveGridV17(items.size,columns){i->
+            val item=items[i]
+            Card(Modifier.fillMaxWidth().clickable{expanded=item},shape=RoundedCornerShape(14.dp)){
+                Column(Modifier.padding(8.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){
+                    Image(painterResource(item.drawable),if(lang=="en")item.titleEn else item.titleEs,Modifier.fillMaxWidth().heightIn(min=110.dp,max=190.dp),contentScale=ContentScale.Fit)
+                    Text(if(lang=="en")item.titleEn else item.titleEs,fontWeight=FontWeight.Bold)
+                    Text(if(lang=="en")item.noteEn else item.noteEs,style=MaterialTheme.typography.bodySmall)
+                }
+            }
+        }
+        Text(tr(lang,"Apoyo educativo: interpretar junto con interrogatorio y exploración; la imagen aislada no establece diagnóstico.","Educational aid: interpret with history and examination; an isolated image does not establish diagnosis."),style=MaterialTheme.typography.bodySmall)
+    }
+    expanded?.let{item->AlertDialog(onDismissRequest={expanded=null},confirmButton={TextButton(onClick={expanded=null}){Text(tr(lang,"Cerrar","Close"))}},title={Text(if(lang=="en")item.titleEn else item.titleEs)},text={Box(Modifier.fillMaxWidth().sizeIn(minHeight=220.dp,maxHeight=620.dp),contentAlignment=Alignment.Center){Image(painterResource(item.drawable),if(lang=="en")item.titleEn else item.titleEs,Modifier.fillMaxSize(),contentScale=ContentScale.Fit)}})}
+}
+
+@Composable
 fun LocalClinicalImageGalleryV45(lang:String,profile:ScreenProfileV17){
     var expanded by remember{mutableStateOf<LocalClinicalGuideV45?>(null)}
     val groups=localClinicalGuidesV45.groupBy{if(lang=="en")it.groupEn else it.groupEs}
