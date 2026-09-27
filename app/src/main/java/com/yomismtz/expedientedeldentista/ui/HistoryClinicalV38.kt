@@ -653,6 +653,18 @@ private data class E(val n:String,val d:String)
      if(openId==h.id){
       Text("¿Qué es?",fontWeight=FontWeight.SemiBold);Text(h.description)
       Text("¿Qué observar?",fontWeight=FontWeight.SemiBold);Text(h.observe)
+      val habitVisual=when(h.id){
+       "suction"->Triple(R.drawable.edu_habito_succion_digital,"Succión digital","Aspecto visual asociado a succión digital")
+       "pacifier"->Triple(R.drawable.edu_habito_chupon,"Chupón","Aspecto visual asociado a uso de chupón")
+       "mouthbreathing"->Triple(R.drawable.edu_habito_respiracion_oral,"Respiración oral","Aspecto visual asociado a respiración oral")
+       "tongue"->Triple(R.drawable.edu_habito_interposicion_lingual,"Interposición lingual","Aspecto visual asociado a interposición lingual")
+       "nail"->Triple(R.drawable.edu_habito_onicofagia,"Onicofagia / mordisqueo","Ejemplo visual de hábito oral")
+       "bruxism"->Triple(R.drawable.edu_habito_bruxismo,"Bruxismo / apretamiento","Ejemplo visual; ningún signo aislado confirma bruxismo")
+       else->null
+      }
+      habitVisual?.let{v->LocalClinicalHelpImageV47(lang,v.second,v.second,v.first,v.third,v.third)}
+      if(h.id=="pacifier") LocalClinicalHelpImageV47(lang,"Mamila prolongada","Prolonged bottle use",R.drawable.edu_habito_mamila,"Ejemplo visual asociado al uso prolongado de mamila.","Visual example associated with prolonged bottle use.")
+      if(h.id=="nail") LocalClinicalHelpImageV47(lang,"Mordisqueo labial","Lip biting",R.drawable.edu_habito_mordisqueo_labial,"Ejemplo visual de mordisqueo labial.","Visual example of lip biting.")
       Text("Frecuencia",fontWeight=FontWeight.SemiBold)
       ChipChoices(freqOpts.map{x->x to (frequency[h.id]==x)},{i->frequency[h.id]=freqOpts[i]},columns=3)
       Text("Tiempo de evolución / duración",fontWeight=FontWeight.SemiBold)
