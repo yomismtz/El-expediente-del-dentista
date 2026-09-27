@@ -8,6 +8,7 @@ import android.graphics.Canvas
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
+import android.graphics.Matrix
 import android.graphics.pdf.PdfDocument
 import android.widget.Toast
 import java.io.File
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -135,6 +137,10 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     val photoBrightness=rememberRecordStateMap<String,Float>("photo.brightnessByView")
     val photoContrast=rememberRecordStateMap<String,Float>("photo.contrastByView")
     val photoSharpness=rememberRecordStateMap<String,Float>("photo.sharpnessByView")
+    val photoRotation=rememberRecordStateMap<String,Int>("photo.rotationByView")
+    val photoZoom=rememberRecordStateMap<String,Float>("photo.zoomByView")
+    val photoOffsetX=rememberRecordStateMap<String,Float>("photo.offsetXByView")
+    val photoOffsetY=rememberRecordStateMap<String,Float>("photo.offsetYByView")
     val launcher=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()){uri:Uri?->
         if(uri!=null){
             runCatching{context.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)}
@@ -153,6 +159,10 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     val brightness=photoBrightness[safeView] ?: 0f
     val contrast=photoContrast[safeView] ?: 1f
     val sharpness=photoSharpness[safeView] ?: 0f
+    val rotation=(photoRotation[safeView] ?: 0).let{((it%360)+360)%360}
+    val zoom=(photoZoom[safeView] ?: 1f).coerceIn(1f,3f)
+    val offsetX=(photoOffsetX[safeView] ?: 0f).coerceIn(-1f,1f)
+    val offsetY=(photoOffsetY[safeView] ?: 0f).coerceIn(-1f,1f)
     val original=remember(uriText){if(uriText.isBlank())null else photoBitmapV43(context,uriText)}
     val preview=remember(original,brightness,contrast,sharpness){original?.let{adjustedPhotoV43(it,brightness,contrast,sharpness)}}
 
@@ -169,11 +179,18 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
         ResponsiveSectionV17(tr(lang,"2 · Fotografía del paciente","2 · Patient photograph"),tr(lang,"Las fotografías permanecen vinculadas localmente al expediente activo.","Photos remain locally linked to the active record.")){
             Button(onClick={launcher.launch(arrayOf("image/*"))},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Seleccionar / reemplazar fotografía","Select / replace photograph"),fontWeight=FontWeight.Bold)}
             if(preview!=null){
-                Image(preview.asImageBitmap(),safeView,Modifier.fillMaxWidth().height(260.dp),contentScale=ContentScale.Fit)
+                Image(preview.asImageBitmap(),safeView,Modifier.fillMaxWidth().height(260.dp).graphicsLayer{rotationZ=rotation.toFloat();scaleX=zoom;scaleY=zoom;translationX=offsetX*180f;translationY=offsetY*180f},contentScale=ContentScale.Fit)
+                Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                    OutlinedButton(onClick={photoRotation[safeView]=(rotation+270)%360},modifier=Modifier.weight(1f)){Text("↶ 90°")}
+                    OutlinedButton(onClick={photoRotation[safeView]=(rotation+90)%360},modifier=Modifier.weight(1f)){Text("↷ 90°")}
+                }
+                Text(tr(lang,"Zoom / encuadre","Zoom / framing"));Slider(zoom,{photoZoom[safeView]=it},valueRange=1f..3f)
+                Text(tr(lang,"Posición horizontal","Horizontal position"));Slider(offsetX,{photoOffsetX[safeView]=it},valueRange=-1f..1f)
+                Text(tr(lang,"Posición vertical","Vertical position"));Slider(offsetY,{photoOffsetY[safeView]=it},valueRange=-1f..1f)
                 Text(tr(lang,"Brillo","Brightness"));Slider(brightness,{photoBrightness[safeView]=it},valueRange=-1f..1f)
                 Text(tr(lang,"Contraste","Contrast"));Slider(contrast,{photoContrast[safeView]=it},valueRange=.5f..1.8f)
                 Text(tr(lang,"Nitidez","Sharpness"));Slider(sharpness,{photoSharpness[safeView]=it},valueRange=0f..1f)
-                OutlinedButton(onClick={photoBrightness[safeView]=0f;photoContrast[safeView]=1f;photoSharpness[safeView]=0f},modifier=Modifier.fillMaxWidth()){Text("↺ "+tr(lang,"Restablecer ajustes de esta fotografía","Reset adjustments for this photograph"))}
+                OutlinedButton(onClick={photoBrightness[safeView]=0f;photoContrast[safeView]=1f;photoSharpness[safeView]=0f;photoRotation[safeView]=0;photoZoom[safeView]=1f;photoOffsetX[safeView]=0f;photoOffsetY[safeView]=0f},modifier=Modifier.fillMaxWidth()){Text("↺ "+tr(lang,"Restablecer foto original y encuadre","Reset original photo and framing"))}
                 OutlinedButton(onClick={
                     val source=Uri.parse(uriText)
                     val intent=Intent("com.android.camera.action.CROP").apply{setDataAndType(source,"image/*");putExtra("crop",true);putExtra("return-data",false);addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)}
