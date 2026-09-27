@@ -29,7 +29,7 @@ data class BirdPalette(
     val outline: Color
 )
 
-val BirdPaletteChoices: List<BirdPaletteStyle>\n    get() = BirdPaletteStyle.entries.sortedBy { paletteDisplayName(it, "es").lowercase() }
+val BirdPaletteChoices: List<BirdPaletteStyle> = BirdPaletteStyle.entries.sortedBy { paletteDisplayName(it, "es").lowercase() }
 
 fun paletteDisplayName(style: BirdPaletteStyle, lang: String = "es"): String = when (style) {
     BirdPaletteStyle.AZUL_TURQUESA -> if(lang=="en") "Blue morpho butterfly" else "Mariposa morpho azul"
