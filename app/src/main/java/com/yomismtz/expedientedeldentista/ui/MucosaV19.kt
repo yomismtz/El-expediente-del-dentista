@@ -230,7 +230,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                     Column(Modifier.height(520.dp).verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(10.dp)){
                         Text(tr(lang,"1 · Observa y describe","1 · Observe and describe"),fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
                         Text(tr(lang,"Antes de pensar en un diagnóstico, identifica el tipo de lesión y registra ubicación, número, tamaño, color, forma, superficie, bordes, base, consistencia, movilidad, síntomas, duración y evolución.","Before considering a diagnosis, identify the lesion type and record site, number, size, color, shape, surface, borders, base, consistency, mobility, symptoms, duration and evolution."))
-                        Card(onClick={zoomHelpImage=true},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){
+                        Card(onClick={lesionHelp=false;zoomHelpImage=true},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){
                             Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
                                 Image(painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),contentDescription=tr(lang,"Lámina de lesiones elementales","Elementary lesions chart"),modifier=Modifier.fillMaxWidth().height(320.dp),contentScale=ContentScale.Fit)
                                 Text(tr(lang,"🔍 Toca la lámina para verla grande y usar zoom","🔍 Tap the chart to enlarge and zoom"),fontWeight=FontWeight.Bold)
