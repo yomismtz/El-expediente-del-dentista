@@ -222,7 +222,8 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
     var trajectory by rememberRecordState("atm.trajectory","Recta / sin desviación evidente")
     var jointPalpation by rememberRecordState("atm.jointPalpation","Sin dolor reproducible")
     var musclePalpation by rememberRecordState("atm.musclePalpation","Sin dolor reproducible")
-    var followup by rememberRecordState("atm.followup","Sin seguimiento registrado")\n    var atmVisual by rememberRecordState("atm.visual","Apertura y cierre")
+    var followup by rememberRecordState("atm.followup","Sin seguimiento registrado")
+    var atmVisual by rememberRecordState("atm.visual","Apertura y cierre")
 
     val orientation=when {
         on("lockOpen") -> tr(lang,"Boca abierta sin poder cerrar: requiere valoración clínica inmediata y diagnóstico diferencial.","Open mouth unable to close: prompt clinical assessment and differential diagnosis are required.")
@@ -262,7 +263,21 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
         item{Pick(tr(lang,"15 · Trayectoria de apertura","15 · Opening trajectory"),tr(lang,"Desviación regresa hacia la línea media durante la apertura; deflexión permanece hacia un lado al final. Registra lo observado sin asumir etiología.","Deviation returns toward midline during opening; deflection remains to one side at the end. Record what is observed without assuming etiology."),listOf("Recta / sin desviación evidente","Desviación a derecha","Desviación a izquierda","Deflexión a derecha","Deflexión a izquierda","Bloqueo durante movimiento"),trajectory){trajectory=it}}
         item{Pick(tr(lang,"16 · Palpación articular","16 · Joint palpation"),tr(lang,"Registra si la palpación reproduce el dolor familiar del paciente y el lado.","Record whether palpation reproduces the patient's familiar pain and the side."),listOf("Sin dolor reproducible","Dolor derecho","Dolor izquierdo","Dolor bilateral","Dolor familiar reproducido"),jointPalpation){jointPalpation=it}}
         item{Pick(tr(lang,"17 · Palpación muscular","17 · Muscle palpation"),tr(lang,"Explora de forma comparable maseteros y temporales. Dolor a la palpación aislado no establece diagnóstico.","Examine masseters and temporalis comparably. Isolated palpation pain does not establish diagnosis."),listOf("Sin dolor reproducible","Masetero derecho","Masetero izquierdo","Temporal derecho","Temporal izquierdo","Bilateral/múltiples","Dolor familiar reproducido"),musclePalpation){musclePalpation=it}}
-        item{SectionCard(tr(lang,"Referencia visual de ATM y movimientos","TMJ and movement visual reference")){\n            val visualOptions=listOf("Apertura y cierre","Trayectoria normal","Desviación","Deflexión","Lateralidades","Protrusión","Palpación de ATM","Palpación muscular")\n            val v=when(atmVisual){\n                "Trayectoria normal"->Triple(R.drawable.edu_atm_trayectoria_normal,"Trayectoria normal","Referencia de trayectoria de apertura.")\n                "Desviación"->Triple(R.drawable.edu_atm_desviacion,"Desviación","La desviación retorna hacia la línea media.")\n                "Deflexión"->Triple(R.drawable.edu_atm_deflexion,"Deflexión","La deflexión permanece hacia un lado al final.")\n                "Lateralidades"->Triple(R.drawable.edu_atm_lateralidad_derecha_izquierda,"Lateralidades","Movimiento de lateralidad derecha e izquierda.")\n                "Protrusión"->Triple(R.drawable.edu_atm_protrusion,"Protrusión","Movimiento anterior mandibular.")\n                "Palpación de ATM"->Triple(R.drawable.edu_atm_palpacion,"Palpación de ATM","Referencia educativa de palpación articular.")\n                "Palpación muscular"->Triple(R.drawable.edu_atm_palpacion_muscular,"Palpación muscular","Referencia educativa de palpación muscular.")\n                else->Triple(R.drawable.edu_atm_apertura_y_cierre,"Apertura y cierre","Secuencia educativa del movimiento mandibular.")\n            }\n            LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)\n            ChipChoices(visualOptions.map{it to (atmVisual==it)},{i->atmVisual=visualOptions[i]},columns=3)\n        }}
+        item{SectionCard(tr(lang,"Referencia visual de ATM y movimientos","TMJ and movement visual reference")){
+            val visualOptions=listOf("Apertura y cierre","Trayectoria normal","Desviación","Deflexión","Lateralidades","Protrusión","Palpación de ATM","Palpación muscular")
+            val v=when(atmVisual){
+                "Trayectoria normal"->Triple(R.drawable.edu_atm_trayectoria_normal,"Trayectoria normal","Referencia de trayectoria de apertura.")
+                "Desviación"->Triple(R.drawable.edu_atm_desviacion,"Desviación","La desviación retorna hacia la línea media.")
+                "Deflexión"->Triple(R.drawable.edu_atm_deflexion,"Deflexión","La deflexión permanece hacia un lado al final.")
+                "Lateralidades"->Triple(R.drawable.edu_atm_lateralidad_derecha_izquierda,"Lateralidades","Movimiento de lateralidad derecha e izquierda.")
+                "Protrusión"->Triple(R.drawable.edu_atm_protrusion,"Protrusión","Movimiento anterior mandibular.")
+                "Palpación de ATM"->Triple(R.drawable.edu_atm_palpacion,"Palpación de ATM","Referencia educativa de palpación articular.")
+                "Palpación muscular"->Triple(R.drawable.edu_atm_palpacion_muscular,"Palpación muscular","Referencia educativa de palpación muscular.")
+                else->Triple(R.drawable.edu_atm_apertura_y_cierre,"Apertura y cierre","Secuencia educativa del movimiento mandibular.")
+            }
+            LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
+            ChipChoices(visualOptions.map{it to (atmVisual==it)},{i->atmVisual=visualOptions[i]},columns=3)
+        }}
         item{SectionCard(tr(lang,"18 · Seguimiento","18 · Follow-up")){
             Text(tr(lang,"Registra la evolución clínica en controles posteriores; no sustituye las notas de evolución.","Record clinical evolution at subsequent visits; it does not replace progress notes."),style=MaterialTheme.typography.bodySmall)
             OutlinedTextField(followup,{followup=it.take(500)},label={Text(tr(lang,"Evolución / observaciones","Evolution / notes"))},modifier=Modifier.fillMaxWidth(),minLines=3)
