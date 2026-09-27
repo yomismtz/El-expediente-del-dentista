@@ -229,7 +229,7 @@ private fun mascotIconV19(style:BirdPaletteStyle)=when(style){
  BirdPaletteStyle.TORTUGA->"🐢"; BirdPaletteStyle.PEZ_PAYASO->"🐠"; BirdPaletteStyle.DELFIN->"🐬"; BirdPaletteStyle.TIBURON->"🦈"; BirdPaletteStyle.AJOLOTE->"🩷"
  BirdPaletteStyle.PINGUINO->"🐧"; BirdPaletteStyle.PATO_MANDARIN->"🦆"; BirdPaletteStyle.HAMSTER->"🐹"; BirdPaletteStyle.FENIX->"🔥"; BirdPaletteStyle.ZORRO->"🦊"
  BirdPaletteStyle.PAVO_REAL->"🦚"; BirdPaletteStyle.COLIBRI->"🐦"; BirdPaletteStyle.MARTIN_PESCADOR->"🐦"; BirdPaletteStyle.QUETZAL->"🐦"; BirdPaletteStyle.DRAGON->"🐉"
- BirdPaletteStyle.BALLENA_AZUL->"🐋"; BirdPaletteStyle.RANA_VERDE->"🐸"; BirdPaletteStyle.MARIPOSA_MONARCA->"🦋"; BirdPaletteStyle.FLAMENCO_ROSA->"🦩"; BirdPaletteStyle.CABALLITO_TURQUESA->"🐠"
+ BirdPaletteStyle.BALLENA_AZUL->"🐟"; BirdPaletteStyle.RANA_VERDE->"🐸"; BirdPaletteStyle.MARIPOSA_MONARCA->"🦋"; BirdPaletteStyle.FLAMENCO_ROSA->"🦩"; BirdPaletteStyle.CABALLITO_TURQUESA->"🐠"
  BirdPaletteStyle.CANGREJO_CORAL->"🦀"; BirdPaletteStyle.MURCIELAGO_NOCHE->"🦇"; BirdPaletteStyle.PANDA_MONO->"🐼"; BirdPaletteStyle.ABEJA_CONTRASTE->"🐝"
  BirdPaletteStyle.CAMALEON->"🦎"; BirdPaletteStyle.PERICO->"🦜"; BirdPaletteStyle.GALLO->"🐓"
 }
