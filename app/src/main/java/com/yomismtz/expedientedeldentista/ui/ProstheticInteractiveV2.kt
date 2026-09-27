@@ -156,6 +156,7 @@ fun ProstheticInteractiveV2Screen(lang: String, onBack: () -> Unit) {
         when (tab) {
             ProstTab.DIAGNOSIS -> {
                 item {
+                    ClinicalRegisterHelpV49(lang,"Ayuda · Prótesis","Help · Prosthodontics","Registra dientes realmente presentes y ausentes y los hallazgos protésicos observados. Documenta soporte, pilares, espacios, material, diseño y componentes seleccionados por el operador. Las reglas mostradas apoyan el registro y no generan una indicación automática.","Record teeth actually present and missing and observed prosthetic findings. Document support, abutments, spaces, material, design and components selected by the operator. Displayed rules support documentation and do not generate an automatic indication.")
                     SectionCard(tr(lang,"1 · Marca los dientes presentes y ausentes","1 · Mark present and missing teeth")) {
                         Text(tr(lang,"Toca un diente para alternar presente/ausente. Los terceros molares se excluyen por defecto en este ejercicio; aplica las reglas de Applegate según el caso real.",
                             "Tap a tooth to toggle present/missing. Third molars are excluded by default in this exercise; apply Applegate rules to the real case."))
