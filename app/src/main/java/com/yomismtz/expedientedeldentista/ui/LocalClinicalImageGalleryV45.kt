@@ -131,6 +131,13 @@ private val localClinicalGuidesV45=listOf(
 )
 
 @Composable
+internal fun LocalClinicalHelpImageV47(lang:String,titleEs:String,titleEn:String,@DrawableRes drawable:Int,noteEs:String,noteEn:String){
+    var open by remember{mutableStateOf(false)}
+    TextButton(onClick={open=true}){Text("ⓘ "+tr(lang,"Ver ejemplo visual","View visual example"))}
+    if(open) AlertDialog(onDismissRequest={open=false},confirmButton={TextButton(onClick={open=false}){Text(tr(lang,"Cerrar","Close"))}},title={Text(if(lang=="en")titleEn else titleEs)},text={Column(verticalArrangement=Arrangement.spacedBy(8.dp)){Image(painterResource(drawable),if(lang=="en")titleEn else titleEs,Modifier.fillMaxWidth().heightIn(min=180.dp,max=520.dp),contentScale=ContentScale.Fit);Text(if(lang=="en")noteEn else noteEs,style=MaterialTheme.typography.bodySmall)}})
+}
+
+@Composable
 internal fun LocalClinicalImageSectionV46(lang:String,profile:ScreenProfileV17?=null,groupEs:String,groupEn:String){
     var expanded by remember{mutableStateOf<LocalClinicalGuideV45?>(null)}
     val items=localClinicalGuidesV45.filter{it.groupEs==groupEs}
