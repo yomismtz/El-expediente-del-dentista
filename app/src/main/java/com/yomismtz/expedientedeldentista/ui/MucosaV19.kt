@@ -81,23 +81,20 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
     var symptoms by rememberRecordState("mucosa.symptoms","Asintomática")
     var duration by rememberRecordState("mucosa.duration","No referido")
     var evolution by rememberRecordState("mucosa.evolution","No referida")
-    var lesionHelp by remember{mutableStateOf(false)}
-    var zoomHelpImage by remember{mutableStateOf(false)}
     var count by rememberRecordState("mucosa.count","Única")
     val selected=zones19.firstOrNull{it.id==selectedId} ?: zones19.first()
     val name=if(lang=="en")selected.en else selected.es
     val example=if(finding=="Normal") "$name: ${if(lang=="en")selected.normalEn else selected.normalEs}"
     else tr(lang,"$name: $finding; ${if(count=="Única")"lesión única" else "lesiones múltiples"}; tamaño ${sizeMm}; color $color; forma $shape; superficie $surface; borde $border; base $base; consistencia $consistency; movilidad $mobility; $symptoms; duración $duration; evolución $evolution${if(notes.isBlank())"" else "; $notes"}. Descripción clínica; correlacionar antes de diagnosticar.","$name: $finding; size ${if(sizeMm.isBlank())"not entered" else "$sizeMm mm"}; color $color; shape $shape; surface $surface; border $border; base $base; consistency $consistency; mobility $mobility; symptoms $symptoms; duration $duration; evolution $evolution. Clinical description; correlate before diagnosis.")
 
-    ResponsiveScreenV17(tr(lang,"Mucosas orales interactivas","Interactive oral mucosa"),tr(lang,"Toca una zona en la boca abierta y practica una descripción clínica sistemática.","Tap a region on the open-mouth diagram and practice systematic clinical description."),onBack) { profile ->
+    ResponsiveScreenV17(tr(lang,"Mucosas orales interactivas","Interactive oral mucosa"),tr(lang,"Selecciona un tejido y practica una descripción clínica sistemática.","Select a tissue and practice systematic clinical description."),onBack) { profile ->
         val zoneColumns=when {
             profile.largeSystemText -> 2
             profile.width==ScreenWidthV17.COMPACT -> 3
             profile.width==ScreenWidthV17.MEDIUM -> 4
             else -> 6
         }
-        ResponsiveSectionV17(tr(lang,"Boca abierta · selecciona un tejido","Open mouth · select a tissue")) {
-            OpenMouthMap19(selectedId){selectedId=it}
+        ResponsiveSectionV17(tr(lang,"Selecciona un tejido","Select a tissue")) {
             Text("${tr(lang,"Zona seleccionada","Selected region")}: $name",fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
             AdaptiveGridV17(zones19.size,zoneColumns){i->
                 val z=zones19[i]
@@ -134,7 +131,6 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                     "orofaringe" to listOf("Faringoamigdalitis a valorar","Hipertrofia amigdalina","Exudado amigdalino","Úlcera/lesión mucosa","Asimetría amigdalina a valorar")
                 )
                 Text(tr(lang,"Lesión elemental observada","Observed elementary lesion"),fontWeight=FontWeight.Black)
-                TextButton(onClick={lesionHelp=true}){Text("ⓘ "+tr(lang,"Ayuda para reconocer lesiones elementales","Help identifying elementary lesions"))}
                 AdaptiveGridV17(elementary.size,zoneColumns){i->
                     val option=elementary[i]
                     FilterChip(tissueLesion[selected.id]==option,{tissueLesion[selected.id]=option;finding=option},{Text(option)},modifier=Modifier.fillMaxWidth())
@@ -182,69 +178,6 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
             }
         }
 
-        if(zoomHelpImage){
-            var scale by remember{mutableStateOf(1f)}
-            var offsetX by remember{mutableStateOf(0f)}
-            var offsetY by remember{mutableStateOf(0f)}
-            val transformState=rememberTransformableState{zoomChange,panChange,_->scale=(scale*zoomChange).coerceIn(1f,5f);offsetX+=panChange.x;offsetY+=panChange.y}
-            AlertDialog(onDismissRequest={zoomHelpImage=false},confirmButton={TextButton(onClick={zoomHelpImage=false}){Text("Cerrar")}},title={Text("Lesiones elementales · visor")},text={
-                Column{
-                    Image(painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),contentDescription="Lesiones elementales ampliadas",modifier=Modifier.fillMaxWidth().height(520.dp).graphicsLayer(scaleX=scale,scaleY=scale,translationX=offsetX,translationY=offsetY).transformable(transformState),contentScale=ContentScale.Fit)
-                    Text("Pellizca con dos dedos para ampliar. Arrastra para recorrer la imagen.",style=MaterialTheme.typography.bodySmall)
-                }
-            })
-        }
-        if(lesionHelp){
-            val elementary=listOf(
-                "Mácula / mancha" to "Cambio circunscrito de color, plano y no palpable.",
-                "Eritema" to "Enrojecimiento de la mucosa por aumento visible de la vascularidad; describir distribución y contexto.",
-                "Petequia" to "Punto hemorrágico pequeño, rojo a violáceo, que no desaparece a la presión.",
-                "Púrpura / equimosis" to "Extravasación sanguínea mayor que una petequia; la equimosis es una zona hemorrágica más extensa.",
-                "Pápula" to "Elevación sólida, pequeña y circunscrita.",
-                "Placa" to "Lesión elevada o engrosada, de superficie relativamente amplia; puede ser blanca, roja o mixta.",
-                "Nódulo" to "Lesión sólida palpable, más profunda o voluminosa que una pápula.",
-                "Tumor / masa" to "Aumento de volumen sólido; término descriptivo y no sinónimo automático de cáncer.",
-                "Vesícula" to "Elevación pequeña con contenido líquido.",
-                "Ampolla / bula" to "Elevación con contenido líquido de mayor tamaño que una vesícula.",
-                "Pústula" to "Elevación circunscrita con contenido purulento.",
-                "Quiste" to "Cavidad patológica revestida, habitualmente con contenido líquido o semisólido; suele requerir correlación clínica/radiográfica o histológica.",
-                "Erosión" to "Pérdida superficial del epitelio, sin exposición profunda del tejido conjuntivo.",
-                "Úlcera" to "Pérdida del epitelio con exposición del tejido conjuntivo; describir fondo, bordes, dolor e induración.",
-                "Fisura / grieta" to "Hendidura lineal de la superficie mucosa.",
-                "Costra" to "Material seco de exudado o sangre; es más habitual en piel o bermellón que dentro de la mucosa húmeda.",
-                "Escama" to "Lámina de queratina desprendida; principalmente observable en superficies queratinizadas/piel.",
-                "Atrofia" to "Adelgazamiento epitelial que puede dar aspecto liso o eritematoso.",
-                "Queratosis" to "Engrosamiento queratósico clínicamente blanquecino; es una descripción, no una etiología.",
-                "Vegetación / lesión papilar" to "Crecimiento exofítico con superficie papilar, verrugosa o digitiforme.",
-                "Fístula / trayecto sinusal" to "Conducto de drenaje hacia la superficie; buscar el origen clínico.",
-                "Trauma" to "Mecanismo o antecedente, no lesión elemental. Puede producir erosión, úlcera, hematoma, fisura u otras lesiones.",
-                "Edema" to "Aumento de volumen por acumulación de líquido en tejidos.",
-                "Hematoma" to "Colección localizada de sangre en tejidos, generalmente relacionada con trauma o sangrado.",
-                "Pigmentación" to "Cambio de color por pigmento endógeno o exógeno; describir color, patrón, extensión y evolución."
-            )
-            AlertDialog(
-                onDismissRequest={lesionHelp=false},
-                confirmButton={TextButton(onClick={lesionHelp=false}){Text(tr(lang,"Cerrar","Close"))}},
-                title={Text(tr(lang,"Lesiones elementales básicas · guía rápida","Basic elementary lesions · quick guide"))},
-                text={
-                    Column(Modifier.height(520.dp).verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(10.dp)){
-                        Text(tr(lang,"1 · Observa y describe","1 · Observe and describe"),fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
-                        Text(tr(lang,"Antes de pensar en un diagnóstico, identifica el tipo de lesión y registra ubicación, número, tamaño, color, forma, superficie, bordes, base, consistencia, movilidad, síntomas, duración y evolución.","Before considering a diagnosis, identify the lesion type and record site, number, size, color, shape, surface, borders, base, consistency, mobility, symptoms, duration and evolution."))
-                        Card(onClick={lesionHelp=false;zoomHelpImage=true},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){
-                            Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
-                                Image(painter=painterResource(com.yomismtz.expedientedeldentista.R.drawable.mucosa_lesiones_elementales),contentDescription=tr(lang,"Lámina de lesiones elementales","Elementary lesions chart"),modifier=Modifier.fillMaxWidth().height(320.dp),contentScale=ContentScale.Fit)
-                                Text(tr(lang,"🔍 Toca la lámina para verla grande y usar zoom","🔍 Tap the chart to enlarge and zoom"),fontWeight=FontWeight.Bold)
-                                Text(tr(lang,"Imagen incluida dentro del APK · no requiere Internet. Si necesitas detalle, tócala para abrir el visor ampliado.","Image bundled inside the APK · no Internet required. Tap it to open the enlarged viewer for detail."),style=MaterialTheme.typography.bodySmall)
-                            }
-                        }
-                        Text(tr(lang,"2 · ¿Qué significa cada lesión?","2 · What does each lesion mean?"),fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
-                        elementary.forEach{(n,d)->Card(Modifier.fillMaxWidth()){Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(3.dp)){Text(n,fontWeight=FontWeight.Black);Text(d)}}}
-                        Text(tr(lang,"3 · Regresa al registro","3 · Return to the record"),fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
-                        Text(tr(lang,"Cierra la ayuda, selecciona el hallazgo observado y completa sus características. La app genera la descripción clínica con las opciones elegidas; esta guía no establece un diagnóstico definitivo.","Close the guide, select the observed finding and complete its characteristics. The app generates the clinical description from the selected options; this guide does not establish a definitive diagnosis."))
-                    }
-                }
-            )
-        }
         NoticeCard(tr(lang,"Describe antes de diagnosticar. Lesiones persistentes, induradas, ulceradas sin causa clara, masas o crecimiento requieren supervisión docente/profesional y seguimiento.","Describe before diagnosing. Persistent, indurated, unexplained ulcerated lesions, masses or growth require faculty/professional assessment and follow-up."))
     }
 }
@@ -254,85 +187,5 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
     Text(label,fontWeight=FontWeight.Bold)
     Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(7.dp)){
         options.forEach{o->FilterChip(selected==o,{onSelected(o)},{Text(o)})}
-    }
-}
-
-@Composable
-private fun OpenMouthMap19(selectedId:String,onSelected:(String)->Unit) {
-    val outline=MaterialTheme.colorScheme.outline
-    val selectionColor=MaterialTheme.colorScheme.primary
-    Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer.copy(alpha=.35f))) {
-        Canvas(
-            Modifier.fillMaxWidth().height(340.dp).padding(8.dp).pointerInput(Unit) {
-                detectTapGestures { p ->
-                    val x=p.x/size.width.toFloat(); val y=p.y/size.height.toFloat()
-                    val id=when {
-                        y<0.12f -> "labio_sup"
-                        y>0.88f -> "labio_inf"
-                        x<0.18f && y in 0.20f..0.78f -> "carrillo_der"
-                        x>0.82f && y in 0.20f..0.78f -> "carrillo_izq"
-                        y<0.32f -> "paladar_duro"
-                        y<0.42f -> "paladar_blando"
-                        y<0.50f -> "orofaringe"
-                        y<0.75f -> "lengua"
-                        y>0.78f -> "piso"
-                        else -> "encia"
-                    }
-                    onSelected(id)
-                }
-            }
-        ) {
-            val w=size.width; val h=size.height
-            val lip=Color(0xFFE98CA5); val oral=Color(0xFF5E2338); val palate=Color(0xFFE8AAA8); val tongue=Color(0xFFE87886); val gum=Color(0xFFD98592)
-            val outer=Path().apply {
-                moveTo(w*.08f,h*.50f)
-                cubicTo(w*.18f,h*.08f,w*.36f,h*.02f,w*.50f,h*.07f)
-                cubicTo(w*.64f,h*.02f,w*.82f,h*.08f,w*.92f,h*.50f)
-                cubicTo(w*.82f,h*.92f,w*.64f,h*.98f,w*.50f,h*.93f)
-                cubicTo(w*.36f,h*.98f,w*.18f,h*.92f,w*.08f,h*.50f)
-                close()
-            }
-            drawPath(outer,lip); drawPath(outer,outline,style=Stroke(3f))
-            val cavity=Path().apply {
-                moveTo(w*.16f,h*.48f)
-                cubicTo(w*.22f,h*.20f,w*.36f,h*.14f,w*.50f,h*.16f)
-                cubicTo(w*.64f,h*.14f,w*.78f,h*.20f,w*.84f,h*.48f)
-                cubicTo(w*.78f,h*.78f,w*.65f,h*.86f,w*.50f,h*.84f)
-                cubicTo(w*.35f,h*.86f,w*.22f,h*.78f,w*.16f,h*.48f)
-                close()
-            }
-            drawPath(cavity,oral)
-            drawOval(palate,Offset(w*.30f,h*.19f),Size(w*.40f,h*.20f))
-            drawOval(Color(0xFFD99298),Offset(w*.35f,h*.31f),Size(w*.30f,h*.11f))
-            val uvula=Path().apply { moveTo(w*.47f,h*.37f); quadraticBezierTo(w*.50f,h*.49f,w*.53f,h*.37f); close() }
-            drawPath(uvula,Color(0xFFC96E7B))
-            drawArc(gum,200f,140f,false,Offset(w*.22f,h*.30f),Size(w*.56f,h*.22f),style=Stroke(h*.035f))
-            drawArc(gum,20f,140f,false,Offset(w*.22f,h*.58f),Size(w*.56f,h*.20f),style=Stroke(h*.035f))
-            repeat(10) { i ->
-                val f=i/9f; val x=w*(.245f+.51f*f); val dy=kotlin.math.abs(f-.5f)*h*.035f
-                drawRoundRect(Color(0xFFFFFDF8),Offset(x-w*.022f,h*.36f+dy),Size(w*.044f,h*.095f),CornerRadius(7f,7f))
-                drawRoundRect(outline,Offset(x-w*.022f,h*.36f+dy),Size(w*.044f,h*.095f),CornerRadius(7f,7f),style=Stroke(1.5f))
-                drawRoundRect(Color(0xFFFFFDF8),Offset(x-w*.022f,h*.65f-dy),Size(w*.044f,h*.09f),CornerRadius(7f,7f))
-                drawRoundRect(outline,Offset(x-w*.022f,h*.65f-dy),Size(w*.044f,h*.09f),CornerRadius(7f,7f),style=Stroke(1.5f))
-            }
-            val tonguePath=Path().apply {
-                moveTo(w*.29f,h*.69f)
-                cubicTo(w*.31f,h*.52f,w*.40f,h*.48f,w*.50f,h*.49f)
-                cubicTo(w*.60f,h*.48f,w*.69f,h*.52f,w*.71f,h*.69f)
-                cubicTo(w*.64f,h*.80f,w*.57f,h*.82f,w*.50f,h*.82f)
-                cubicTo(w*.43f,h*.82f,w*.36f,h*.80f,w*.29f,h*.69f)
-                close()
-            }
-            drawPath(tonguePath,tongue)
-            drawLine(Color(0xFFC75F70),Offset(w*.50f,h*.55f),Offset(w*.50f,h*.76f),strokeWidth=2.5f)
-            val centers=mapOf(
-                "labio_sup" to Offset(w*.50f,h*.07f),"labio_inf" to Offset(w*.50f,h*.93f),
-                "carrillo_der" to Offset(w*.13f,h*.52f),"carrillo_izq" to Offset(w*.87f,h*.52f),
-                "encia" to Offset(w*.50f,h*.35f),"paladar_duro" to Offset(w*.50f,h*.25f),
-                "paladar_blando" to Offset(w*.50f,h*.36f),"orofaringe" to Offset(w*.50f,h*.45f),
-                "lengua" to Offset(w*.50f,h*.64f),"piso" to Offset(w*.50f,h*.84f)
-            )
-            centers[selectedId]?.let { c -> drawCircle(selectionColor.copy(alpha=.72f),minOf(w,h)*.055f,c); drawCircle(Color.White,minOf(w,h)*.018f,c) }
-        }
     }
 }
