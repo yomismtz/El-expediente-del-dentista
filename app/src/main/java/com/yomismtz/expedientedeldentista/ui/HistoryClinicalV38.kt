@@ -634,7 +634,10 @@ private data class E(val n:String,val d:String)
  val durationOpts=listOf("<1 mes","1–6 meses","7–12 meses","1–2 años","3–5 años",">5 años","Desde infancia","No sabe")
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Hábitos y parafunciones",onBack,"Selecciona los hábitos presentes. Las opciones se organizan en 2–3 celdas y cada una incluye explicación, qué observar y una fotografía local opcional asociada al expediente.")}
-  item{SectionCard("Ayuda visual · hábitos orales"){\n   Text("Panorama general de hábitos orales. Úsalo como orientación educativa; selecciona después el hábito referido para ver su explicación e imagen específica.",style=MaterialTheme.typography.bodySmall)\n   LocalClinicalHelpImageV47(lang,"Panorama de hábitos orales","Oral habits overview",R.drawable.edu_habitos_orales,"Lámina general de apoyo para reconocer los principales hábitos y parafunciones.","General educational overview of common oral habits and parafunctions.")\n  }}
+  item{SectionCard("Ayuda visual · hábitos orales"){
+   Text("Panorama general de hábitos orales. Úsalo como orientación educativa; selecciona después el hábito referido para ver su explicación e imagen específica.",style=MaterialTheme.typography.bodySmall)
+   LocalClinicalHelpImageV47(lang,"Panorama de hábitos orales","Oral habits overview",R.drawable.edu_habitos_orales,"Lámina general de apoyo para reconocer los principales hábitos y parafunciones.","General educational overview of common oral habits and parafunctions.")
+  }}
   item{SectionCard("Hábitos referidos"){
    ChipChoices(habits.map{h->h.name to (present[h.id]==true)},{i->
     val h=habits[i]
@@ -662,7 +665,10 @@ private data class E(val n:String,val d:String)
        "bruxism"->Triple(R.drawable.edu_habito_bruxismo,"Bruxismo / apretamiento","Ejemplo visual; ningún signo aislado confirma bruxismo")
        else->null
       }
-      habitVisual?.let{v->\n       Text("Imagen representativa",fontWeight=FontWeight.SemiBold)\n       LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)\n      }
+      habitVisual?.let{v->
+       Text("Imagen representativa",fontWeight=FontWeight.SemiBold)
+       LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
+      }
       if(h.id=="pacifier") LocalClinicalHelpImageV47(lang,"Mamila prolongada","Prolonged bottle use",R.drawable.edu_habito_mamila,"Ejemplo visual complementario asociado al uso prolongado de mamila.","Additional visual example associated with prolonged bottle use.")
       if(h.id=="nail") LocalClinicalHelpImageV47(lang,"Mordisqueo labial","Lip biting",R.drawable.edu_habito_mordisqueo_labial,"Ejemplo visual de mordisqueo labial.","Visual example of lip biting.")
       Text("Frecuencia",fontWeight=FontWeight.SemiBold)
