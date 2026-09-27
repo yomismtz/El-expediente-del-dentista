@@ -3,6 +3,8 @@ package com.yomismtz.expedientedeldentista.ui
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -133,8 +135,38 @@ private val localClinicalGuidesV45=listOf(
 @Composable
 internal fun LocalClinicalHelpImageV47(lang:String,titleEs:String,titleEn:String,@DrawableRes drawable:Int,noteEs:String,noteEn:String){
     var open by remember{mutableStateOf(false)}
-    TextButton(onClick={open=true}){Text("ⓘ "+tr(lang,"Ver ejemplo visual","View visual example"))}
-    if(open) AlertDialog(onDismissRequest={open=false},confirmButton={TextButton(onClick={open=false}){Text(tr(lang,"Cerrar","Close"))}},title={Text(if(lang=="en")titleEn else titleEs)},text={Column(verticalArrangement=Arrangement.spacedBy(8.dp)){Image(painterResource(drawable),if(lang=="en")titleEn else titleEs,Modifier.fillMaxWidth().heightIn(min=180.dp,max=520.dp),contentScale=ContentScale.Fit);Text(if(lang=="en")noteEn else noteEs,style=MaterialTheme.typography.bodySmall)}})
+    TextButton(onClick={open=true}){Text("ⓘ "+tr(lang,"Ver ayuda visual","View visual help"))}
+    if(open) LocalClinicalZoomDialogV48(lang,titleEs,titleEn,drawable,noteEs,noteEn){open=false}
+}
+
+@Composable
+internal fun LocalClinicalInlineZoomImageV48(lang:String,titleEs:String,titleEn:String,@DrawableRes drawable:Int,noteEs:String,noteEn:String){
+    var open by remember{mutableStateOf(false)}
+    Card(Modifier.fillMaxWidth().clickable{open=true},shape=RoundedCornerShape(14.dp)){
+        Column(Modifier.fillMaxWidth().padding(8.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+            Image(painterResource(drawable),if(lang=="en")titleEn else titleEs,Modifier.fillMaxWidth().heightIn(min=150.dp,max=280.dp),contentScale=ContentScale.Fit)
+            Text(tr(lang,"Toca para ampliar y hacer zoom","Tap to enlarge and zoom"),style=MaterialTheme.typography.bodySmall)
+        }
+    }
+    if(open) LocalClinicalZoomDialogV48(lang,titleEs,titleEn,drawable,noteEs,noteEn){open=false}
+}
+
+@Composable
+private fun LocalClinicalZoomDialogV48(lang:String,titleEs:String,titleEn:String,@DrawableRes drawable:Int,noteEs:String,noteEn:String,onClose:()->Unit){
+    var scale by remember{mutableStateOf(1f)}
+    val transformState=rememberTransformableState{zoomChange,_,_->scale=(scale*zoomChange).coerceIn(1f,5f)}
+    AlertDialog(
+        onDismissRequest=onClose,
+        confirmButton={TextButton(onClick=onClose){Text(tr(lang,"Cerrar","Close"))}},
+        title={Text(if(lang=="en")titleEn else titleEs)},
+        text={Column(verticalArrangement=Arrangement.spacedBy(8.dp)){
+            Box(Modifier.fillMaxWidth().heightIn(min=220.dp,max=560.dp).transformable(transformState),contentAlignment=Alignment.Center){
+                Image(painterResource(drawable),if(lang=="en")titleEn else titleEs,Modifier.fillMaxWidth().graphicsLayer{scaleX=scale;scaleY=scale},contentScale=ContentScale.Fit)
+            }
+            Text(tr(lang,"Pellizca con dos dedos para acercar o alejar.","Pinch with two fingers to zoom in or out."),style=MaterialTheme.typography.bodySmall)
+            Text(if(lang=="en")noteEn else noteEs,style=MaterialTheme.typography.bodySmall)
+        }}
+    )
 }
 
 @Composable
