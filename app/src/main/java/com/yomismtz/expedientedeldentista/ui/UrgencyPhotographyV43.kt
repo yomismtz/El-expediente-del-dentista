@@ -139,18 +139,18 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     val launcher=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()){uri:Uri?->
         if(uri!=null){
             runCatching{context.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)}
-            photoUris[view]=uri.toString()
+            photoUris[safeView]=uri.toString()
         }
     }
     val cropLauncher=rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()){result->
         val uri=result.data?.data
-        if(uri!=null){runCatching{context.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)};photoUris[view]=uri.toString()}
+        if(uri!=null){runCatching{context.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)};photoUris[safeView]=uri.toString()}
     }
     val extraoral=listOf("Frontal extraoral","Perfil derecho","Perfil izquierdo","Sonrisa")
     val intraoral=listOf("Frontal intraoral","Lateral derecha","Lateral izquierda","Oclusal superior","Oclusal inferior","Detalle de lesión / procedimiento")
     val views=if(category=="Intraoral") intraoral else extraoral
-    if(view !in views) view=views.first()
-    val uriText=photoUris[view].orEmpty()
+    val safeView = view.takeIf { it in views } ?: views.first()
+    val uriText=photoUris[safeView].orEmpty()
     val original=remember(uriText){if(uriText.isBlank())null else photoBitmapV43(context,uriText)}
     val preview=remember(original,brightness,contrast,sharpness){original?.let{adjustedPhotoV43(it,brightness,contrast,sharpness)}}
 
@@ -161,13 +161,13 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
                 listOf("Extraoral","Intraoral").forEach{o->FilterChip(category==o,{category=o;view=if(o=="Intraoral")intraoral.first() else extraoral.first()},{Text(o)},Modifier.weight(1f))}
             }
             AdaptiveGridV17(views.size,when{profile.largeSystemText->1;profile.width==ScreenWidthV17.COMPACT->2;profile.width==ScreenWidthV17.MEDIUM->3;else->5}){i->
-                FilterChip(view==views[i],{view=views[i]},{Text(views[i])},Modifier.fillMaxWidth())
+                FilterChip(safeView==views[i],{view=views[i]},{Text(views[i])},Modifier.fillMaxWidth())
             }
         }
         ResponsiveSectionV17(tr(lang,"2 · Fotografía del paciente","2 · Patient photograph"),tr(lang,"Las fotografías permanecen vinculadas localmente al expediente activo.","Photos remain locally linked to the active record.")){
             Button(onClick={launcher.launch(arrayOf("image/*"))},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Seleccionar / reemplazar fotografía","Select / replace photograph"),fontWeight=FontWeight.Bold)}
             if(preview!=null){
-                Image(preview.asImageBitmap(),view,Modifier.fillMaxWidth().height(260.dp),contentScale=ContentScale.Fit)
+                Image(preview.asImageBitmap(),safeView,Modifier.fillMaxWidth().height(260.dp),contentScale=ContentScale.Fit)
                 Text(tr(lang,"Brillo","Brightness"));Slider(brightness,{brightness=it},valueRange=-1f..1f)
                 Text(tr(lang,"Contraste","Contrast"));Slider(contrast,{contrast=it},valueRange=.5f..1.8f)
                 Text(tr(lang,"Nitidez","Sharpness"));Slider(sharpness,{sharpness=it},valueRange=0f..1f)
