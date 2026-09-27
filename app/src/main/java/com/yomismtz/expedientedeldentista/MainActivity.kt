@@ -146,6 +146,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
     private fun exportAttachments(recordId:String,fieldStore:RecordFieldStore):JSONArray {
         val out=JSONArray()
         val photos=fieldStore.load(recordId,"photo.uris") as? Map<*,*> ?: return out
@@ -179,5 +181,4 @@ class MainActivity : AppCompatActivity() {
         if(restored.isNotEmpty()) fieldStore.replacePhotoUris(recordId,restored)
     }
 
-    }
 }
