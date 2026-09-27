@@ -277,8 +277,19 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
                 "Palpación muscular"->Triple(R.drawable.edu_atm_palpacion_muscular,"Palpación muscular","Referencia educativa de palpación muscular.")
                 else->Triple(R.drawable.edu_atm_apertura_y_cierre,"Apertura y cierre","Secuencia educativa del movimiento mandibular.")
             }
-            LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
             ChipChoices(visualOptions.map{it to (atmVisual==it)},{i->atmVisual=visualOptions[i]},columns=3)
+            Card(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+                Text(v.second,fontWeight=FontWeight.Bold)
+                Text(tr(lang,"¿Qué es?","What is it?"),fontWeight=FontWeight.SemiBold)
+                Text(v.third)
+                Text(tr(lang,"¿Qué observar?","What to observe?"),fontWeight=FontWeight.SemiBold)
+                Text(tr(lang,"Relaciona el movimiento o la palpación seleccionada con simetría, amplitud, trayectoria, dolor reproducible y limitación funcional, según corresponda.","Relate the selected movement or palpation to symmetry, range, trajectory, reproducible pain and functional limitation as appropriate."))
+                Text(tr(lang,"Imagen representativa","Representative image"),fontWeight=FontWeight.SemiBold)
+                LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
+                if(atmVisual=="Apertura y cierre") LocalClinicalHelpImageV47(lang,"Animación · apertura y cierre","Animation · opening and closing",R.drawable.atm_apertura_cierre,"Secuencia animada complementaria del movimiento.","Complementary animated movement sequence.")
+                if(atmVisual=="Lateralidades") LocalClinicalHelpImageV47(lang,"Animación · lateralidad","Animation · excursion",R.drawable.edu_atm_lateralidad_,"Secuencia animada complementaria.","Complementary animated sequence.")
+                if(atmVisual=="Protrusión") LocalClinicalHelpImageV47(lang,"Animación · protrusión","Animation · protrusion",R.drawable.edu_atm_protrusion_anim,"Secuencia animada complementaria.","Complementary animated sequence.")
+            }}
         }}
         item{SectionCard(tr(lang,"18 · Seguimiento","18 · Follow-up")){
             Text(tr(lang,"Registra la evolución clínica en controles posteriores; no sustituye las notas de evolución.","Record clinical evolution at subsequent visits; it does not replace progress notes."),style=MaterialTheme.typography.bodySmall)
