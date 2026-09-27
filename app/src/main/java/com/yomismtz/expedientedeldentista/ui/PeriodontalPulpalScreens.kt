@@ -41,7 +41,15 @@ fun PeriodontogramScreen(
     onBack: () -> Unit
 ) {
     var selectedTooth by remember { mutableStateOf(16) }
-    val record = session.periodontogram[selectedTooth] ?: PerioRecord()
+    val storedRecord = session.periodontogram[selectedTooth] ?: PerioRecord()
+    // Older/imported records may contain fewer than six sites. Normalize locally before any UI indexing.
+    val record = storedRecord.copy(
+        probingDepths = List(6) { storedRecord.probingDepths.getOrElse(it) { 0 } },
+        recessionBySite = List(6) { storedRecord.recessionBySite.getOrElse(it) { 0 } },
+        bleedingSites = storedRecord.bleedingSites.filter { it in 0..5 }.toSet(),
+        plaqueSites = storedRecord.plaqueSites.filter { it in 0..5 }.toSet(),
+        suppurationSites = storedRecord.suppurationSites.filter { it in 0..5 }.toSet()
+    )
     val siteNames = listOf("MV/MB", "V/B", "DV/DB", "ML", "L/P", "DL")
     fun update(updated: PerioRecord) {
         onSessionChanged(session.copy(periodontogram = session.periodontogram + (selectedTooth to updated)))
@@ -71,9 +79,10 @@ fun PeriodontogramScreen(
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
                         listOf(0,1,2,3,4,5,6,7,8,9,10,12,15).forEach { mm ->
                             FilterChip(
-                                selected = record.probingDepths[index] == mm,
+                                selected = record.probingDepths.getOrElse(index) { 0 } == mm,
                                 onClick = {
-                                    val values = record.probingDepths.toMutableList()
+                                    val values = record.probingDepths.take(6).toMutableList()
+                                    while (values.size < 6) values.add(0)
                                     values[index] = mm
                                     update(record.copy(probingDepths = values))
                                 },
