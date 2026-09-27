@@ -216,7 +216,9 @@ fun AdaptiveBaseRootV19(
 
 @Composable
 private fun CoverV19(lang:String,onOpen:()->Unit) {
-    BoxWithConstraints(Modifier.fillMaxSize()) {\n        Image(painterResource(R.drawable.doctora_agaporni_anime),tr(lang,"Doctora con agaporni","Dentist with lovebird"),Modifier.fillMaxSize(),contentScale=ContentScale.Crop)\n        Box(Modifier.fillMaxSize().background(Color(0x663A145F))) {
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        Image(painterResource(R.drawable.doctora_agaporni_anime),tr(lang,"Doctora con agaporni","Dentist with lovebird"),Modifier.fillMaxSize(),contentScale=ContentScale.Crop)
+        Box(Modifier.fillMaxSize().background(Color(0x663A145F))) {
         val compact=maxWidth<360.dp || LocalDensity.current.fontScale>=1.30f
         Column(Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal=if(compact)16.dp else 28.dp,vertical=20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.Center) {
             Image(painterResource(R.drawable.ysm_logo),tr(lang,"Logo YSM con ave y expediente dental","YSM bird and dental record logo"),Modifier.size(if(compact)118.dp else 158.dp),contentScale=ContentScale.Fit)
@@ -234,6 +236,7 @@ private fun CoverV19(lang:String,onOpen:()->Unit) {
     }
 }
 
+        }
 @Composable
 private fun FolderV19(lang:String,onOpenGroup:(Int)->Unit,onClose:()->Unit) {
     ResponsiveScreenV17(
