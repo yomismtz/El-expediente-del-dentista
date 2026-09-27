@@ -1,10 +1,13 @@
 package com.yomismtz.expedientedeldentista.ui
 import com.yomismtz.expedientedeldentista.R
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 
 @Composable private fun PText45(key:String,label:String){ var v by rememberRecordState(key,""); OutlinedTextField(v,{v=it},Modifier.fillMaxWidth(),label={Text(label)}) }
 @Composable private fun PChoice45(key:String,options:List<String>,columns:Int){ var v by rememberRecordState(key,""); AdaptiveGridV17(options.size,columns){i->FilterChip(v==options[i],{v=options[i]},{Text(options[i])},Modifier.fillMaxWidth())} }
