@@ -82,7 +82,8 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
                 FilterChip(view==views[i],{view=views[i]},{Text(views[i])},Modifier.fillMaxWidth())
             }
         }
-        LocalClinicalImageGalleryV45(lang,profile)\n        ResponsiveSectionV17(tr(lang,"2 · Finalidad y archivo local","2 · Purpose and local file"),tr(lang,"Registra por qué se tomó la fotografía y vincula únicamente una imagen clínica autorizada del expediente activo.","Record why the photograph was taken and link only an authorized clinical image for the active record.")){
+        LocalClinicalImageGalleryV45(lang,profile)
+        ResponsiveSectionV17(tr(lang,"2 · Finalidad y archivo local","2 · Purpose and local file"),tr(lang,"Registra por qué se tomó la fotografía y vincula únicamente una imagen clínica autorizada del expediente activo.","Record why the photograph was taken and link only an authorized clinical image for the active record.")){
             val purposes=listOf("Documentación inicial","Diagnóstico / seguimiento","Antes del tratamiento","Durante el tratamiento","Después del tratamiento","Comunicación / interconsulta")
             AdaptiveGridV17(purposes.size,if(profile.largeSystemText)1 else if(profile.width==ScreenWidthV17.COMPACT)2 else 3){i->FilterChip(purpose==purposes[i],{purpose=purposes[i]},{Text(purposes[i])},Modifier.fillMaxWidth())}
             Button(onClick={launcher.launch(arrayOf("image/*"))},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Seleccionar fotografía local","Select local photograph"),fontWeight=FontWeight.Bold)}
