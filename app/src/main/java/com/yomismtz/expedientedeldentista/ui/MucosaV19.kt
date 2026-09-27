@@ -158,22 +158,8 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 }
             }
         }
-        // Atlas visual se abre bajo demanda desde Ayuda para evitar cargar la lámina grande al entrar.
-        ResponsiveSectionV17(tr(lang,"Atlas visual · lesiones elementales","Visual atlas · elementary lesions")) {
-            Card(onClick={zoomHelpImage=true},modifier=Modifier.fillMaxWidth()){
-                Column(Modifier.padding(8.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
-                    Text("🖼️ "+tr(lang,"Lámina de lesiones elementales disponible","Elementary lesions chart available"),fontWeight=FontWeight.Bold)
-                    Text("🔍 Toca la lámina para abrirla y ampliar con dos dedos.",fontWeight=FontWeight.Bold)
-                    Text("Recurso interno de la app: funciona sin conexión.",style=MaterialTheme.typography.bodySmall)
-                }
-            }
-        }
-        ResponsiveSectionV17(tr(lang,"2 · Registro rápido","2 · Quick description")) {
-            Button(onClick={lesionHelp=true},modifier=Modifier.fillMaxWidth()){Text("❓ Ayuda · Lesiones elementales de mucosa oral")}
-            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(7.dp)) {
-                listOf("Normal","Mácula / mancha","Eritema","Petequia","Púrpura / equimosis","Pápula","Placa blanca","Placa roja","Nódulo","Masa","Vesícula","Ampolla / bula","Pústula","Quiste","Erosión","Úlcera","Fisura / grieta","Costra","Escama","Atrofia","Queratosis","Lesión papilar / vegetación","Fístula / trayecto sinusal","Edema","Hematoma","Pigmentación").forEach { f -> FilterChip(finding==f,{finding=f},{Text(f)}) }
-            }
-            if(finding!="Normal") {
+        if(tissueStatus[selected.id]=="Alteración" && !tissueLesion[selected.id].isNullOrBlank()){
+            ResponsiveSectionV17(tr(lang,"Características de la alteración seleccionada","Characteristics of the selected alteration")) {
                 MucosaPick19("Tamaño mayor aproximado",listOf("<2 mm","2–4 mm","5–9 mm","10–19 mm","20–29 mm","≥30 mm","No medido"),sizeMm){sizeMm=it}
                 MucosaPick19("Número",listOf("Única","Múltiples"),count){count=it}
                 MucosaPick19("Color",listOf("Rosado","Rojo","Blanco","Rojo-blanco","Amarillo","Azulado/violáceo","Marrón/negro","Translúcido","Mixto"),color){color=it}
