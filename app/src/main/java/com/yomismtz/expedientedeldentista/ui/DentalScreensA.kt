@@ -11,6 +11,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -159,6 +160,7 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
     var selectedTooth by remember { mutableStateOf(16) }
     var primary by remember { mutableStateOf(false) }
     var selectedSurface by remember { mutableStateOf(Surface.OCCLUSAL) }
+    var showIcdasHelp by remember { mutableStateOf(false) }
     val shown = if (primary) ClinicalContent.primaryTeeth else ClinicalContent.permanentTeeth
     if (selectedTooth !in shown) selectedTooth = shown.first()
     val surfaceCodes = session.icdasSurfaces[selectedTooth] ?: emptyMap()
@@ -178,6 +180,7 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
         item { ScreenHeader("ICDAS",onBack,tr(lang,"Puedes asignar códigos diferentes a varias caras. El código global del diente se actualiza automáticamente con el mayor código registrado.","You can assign different codes to multiple surfaces. The overall tooth code automatically becomes the highest recorded code.")) }
+        item { OutlinedButton(onClick={showIcdasHelp=true},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"ⓘ Ayuda ICDAS · cómo reconocer los códigos","ⓘ ICDAS help · how to recognize the codes"))} }
         item { Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
             FilterChip(!primary,{primary=false},{Text(tr(lang,"Permanentes","Permanent"))}); FilterChip(primary,{primary=true},{Text(tr(lang,"Temporales","Primary"))})
         } }
@@ -192,10 +195,10 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
         } }
         items(ClinicalContent.icdas.size) { index ->
             val guide=ClinicalContent.icdas[index]
-            Card(onClick={setCode(guide.code)},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=if(currentCode==guide.code)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface)) {
+            Card(onClick={setCode(guide.code)},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=if(currentCode==guide.code)MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.surface)) {
                 Row(Modifier.fillMaxWidth().padding(12.dp),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
-                    Text(guide.code.toString(),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold)
-                    Text(if(lang=="en")guide.en else guide.es,modifier=Modifier.weight(1f))
+                    Text((if(currentCode==guide.code)"✓ " else "")+guide.code.toString(),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold,color=if(currentCode==guide.code)MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.onSurface)
+                    Text(if(lang=="en")guide.en else guide.es,modifier=Modifier.weight(1f),color=if(currentCode==guide.code)MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.onSurface)
                 }
             }
         }
@@ -204,6 +207,15 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
             OutlinedButton(onClick={setAll(0)},modifier=Modifier.weight(1f)){Text(tr(lang,"Limpiar diente","Clear tooth"))}
         } }
         item { NoticeCard(tr(lang,"Para práctica: selecciona una cara, asigna su código y continúa con las demás. Un diente puede tener varias superficies con códigos distintos; el resumen toma el mayor.","For practice: select a surface, assign its code and continue with the others. One tooth may have several different surface codes; the summary uses the highest.")) }
+    }
+    if(showIcdasHelp){
+        AlertDialog(onDismissRequest={showIcdasHelp=false},confirmButton={OutlinedButton(onClick={showIcdasHelp=false}){Text(tr(lang,"Cerrar","Close"))}},title={Text(tr(lang,"ⓘ Ayuda ICDAS 0–6","ⓘ ICDAS 0–6 help"))},text={
+            Column(verticalArrangement=Arrangement.spacedBy(8.dp)){
+                Text(tr(lang,"Observa la superficie limpia y valora el cambio visual y la pérdida de estructura. Usa esta ayuda junto con las descripciones que ya aparecen en cada código.","Observe the clean surface and assess visual change and structural loss. Use this help together with the descriptions already shown for each code."))
+                ClinicalContent.icdas.forEach { g -> Text("${g.code} · ${if(lang=="en")g.en else g.es}",fontWeight=if(g.code==currentCode)FontWeight.Bold else FontWeight.Normal) }
+                Text(tr(lang,"La ayuda no cambia el código registrado ni genera un diagnóstico automático.","Help does not change the recorded code or generate an automatic diagnosis."),fontWeight=FontWeight.SemiBold)
+            }
+        })
     }
 }
 
