@@ -2,11 +2,20 @@ package com.yomismtz.expedientedeldentista.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+
+@Composable
+internal fun ClinicalRegisterHelpV49(lang:String,titleEs:String,titleEn:String,bodyEs:String,bodyEn:String){
+    var open by remember{mutableStateOf(false)}
+    TextButton(onClick={open=true}){Text("ⓘ "+tr(lang,"¿Cómo registrar esto?","How do I record this?"))}
+    if(open) AlertDialog(onDismissRequest={open=false},confirmButton={TextButton(onClick={open=false}){Text(tr(lang,"Cerrar","Close"))}},title={Text(if(lang=="en")titleEn else titleEs)},text={Text(if(lang=="en")bodyEn else bodyEs)})
+}
 
 @Composable
 private fun PersistTextV44(key:String,label:String){
@@ -42,6 +51,7 @@ fun ImplantologySheetV44(lang:String,onBack:()->Unit){
     ResponsiveScreenV17("🦷 "+tr(lang,"Ficha de Implantología","Implantology Sheet"),
         tr(lang,"Hoja educativa para documentar evaluación, planificación, procedimiento y seguimiento implantológico. No calcula por sí sola indicación, dimensiones ni posición del implante.","Educational sheet for implant assessment, planning, procedure and follow-up. It does not independently determine indication, implant dimensions or position."),onBack){p->
         val cols=if(p.largeSystemText)1 else if(p.width==ScreenWidthV17.COMPACT)2 else 3
+        ClinicalRegisterHelpV49(lang,"Ayuda · Implantología","Help · Implantology","Registra únicamente datos obtenidos: sitio edéntulo, antecedentes y riesgos relevantes, estado periodontal, tejidos, imagenología y planificación. En procedimiento anota el sistema y componentes realmente utilizados; en seguimiento, sólo hallazgos evaluados y el próximo control. No deduzcas una indicación o diagnóstico a partir de un campo aislado.","Record only obtained data: edentulous site, relevant history and risks, periodontal status, tissues, imaging and planning. For the procedure, record the system and components actually used; for follow-up, only assessed findings and the next review. Do not infer an indication or diagnosis from an isolated field.")
         ResponsiveSectionV17(tr(lang,"Evaluación preoperatoria","Preoperative assessment"),tr(lang,"Integra historia médica, periodontal, sitio edéntulo y auxiliares pertinentes antes de decidir tratamiento.","Integrate medical and periodontal history, edentulous site and relevant diagnostic aids before deciding treatment.")){
             AdaptiveGridV17(6,cols){i->when(i){0->PersistTextV44("implant.site",tr(lang,"Sitio / OD ausente","Site / missing tooth"));1->PersistTextV44("implant.indication",tr(lang,"Indicación protésico-quirúrgica","Prosthetic-surgical indication"));2->PersistTextV44("implant.systemic",tr(lang,"Riesgos sistémicos / medicamentos","Systemic risks / medications"));3->PersistTextV44("implant.perio",tr(lang,"Estado periodontal e higiene","Periodontal status and hygiene"));4->PersistTextV44("implant.bone",tr(lang,"Evaluación ósea / tejidos","Bone / tissue assessment"));else->PersistTextV44("implant.imaging",tr(lang,"Imagenología / planificación","Imaging / planning"))}}
         }
