@@ -634,6 +634,7 @@ private data class E(val n:String,val d:String)
  val durationOpts=listOf("<1 mes","1–6 meses","7–12 meses","1–2 años","3–5 años",">5 años","Desde infancia","No sabe")
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Hábitos y parafunciones",onBack,"Selecciona los hábitos presentes. Las opciones se organizan en 2–3 celdas y cada una incluye explicación, qué observar y una fotografía local opcional asociada al expediente.")}
+  item{LocalClinicalImageSectionV46(lang,null,"Hábitos y parafunciones","Habits and parafunctions")}
   item{SectionCard("Hábitos referidos"){
    ChipChoices(habits.map{h->h.name to (present[h.id]==true)},{i->
     val h=habits[i]
