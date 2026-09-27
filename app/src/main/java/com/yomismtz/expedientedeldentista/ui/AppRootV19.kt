@@ -115,7 +115,7 @@ private fun SettingsV19Screen(
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val widthDp = maxWidth.value.toInt()
         val compact = maxWidth < 380.dp || systemScale >= 1.20f
-        val paletteColumns = if (compact) 1 else if (maxWidth < 650.dp) 2 else 3
+        val paletteColumns = when {\n            maxWidth < 600.dp -> 3\n            maxWidth < 900.dp -> 4\n            maxWidth < 1200.dp -> 5\n            else -> 6\n        }
         Column(
             Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -212,10 +212,10 @@ private fun PaletteCardV19(style:BirdPaletteStyle,lang:String,selected:Boolean,o
     val motion = remember { Animatable(0f) }
     LaunchedEffect(reaction) { if(reaction>0){ motion.snapTo(0f); motion.animateTo(1f,tween(180)); motion.animateTo(0f,tween(300)) } }
     Card(onClick={ reaction++; onClick() },modifier=modifier,colors=CardDefaults.cardColors(containerColor=if(selected)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface),border=BorderStroke(if(selected)2.dp else 1.dp,if(selected)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha=.4f)),shape=RoundedCornerShape(14.dp)) {
-        Column(Modifier.fillMaxWidth().padding(9.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(6.dp)) {
-            Text(mascotIconV19(style),style=MaterialTheme.typography.headlineMedium,modifier=Modifier.graphicsLayer { val k=motion.value; when(mascotMotionV19(style)){0->{translationY=-18f*k; scaleX=1f+.12f*k; scaleY=1f+.12f*k};1->{rotationZ=14f*k; scaleX=1f+.08f*k};2->{translationX=12f*k; rotationZ=-10f*k};else->{scaleX=1f+.16f*k; scaleY=1f-.10f*k} } })
-            Text(paletteDisplayName(style,lang),fontWeight=if(selected)FontWeight.Black else FontWeight.Medium,textAlign=TextAlign.Center)
-            Row(horizontalArrangement=Arrangement.spacedBy(4.dp)) { paletteSwatches(style).forEach { c -> Box(Modifier.size(16.dp).background(c,CircleShape)) } }
+        Column(Modifier.fillMaxWidth().padding(horizontal=5.dp,vertical=7.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(4.dp)) {
+            Text(mascotIconV19(style),style=MaterialTheme.typography.titleLarge,modifier=Modifier.graphicsLayer { val k=motion.value; when(mascotMotionV19(style)){0->{translationY=-18f*k; scaleX=1f+.12f*k; scaleY=1f+.12f*k};1->{rotationZ=14f*k; scaleX=1f+.08f*k};2->{translationX=12f*k; rotationZ=-10f*k};else->{scaleX=1f+.16f*k; scaleY=1f-.10f*k} } })
+            Text(paletteDisplayName(style,lang),fontWeight=if(selected)FontWeight.Black else FontWeight.Medium,textAlign=TextAlign.Center,style=MaterialTheme.typography.bodySmall)
+            Row(horizontalArrangement=Arrangement.spacedBy(2.dp)) { paletteSwatches(style).forEach { c -> Box(Modifier.size(9.dp).background(c,CircleShape)) } }
         }
     }
 }
