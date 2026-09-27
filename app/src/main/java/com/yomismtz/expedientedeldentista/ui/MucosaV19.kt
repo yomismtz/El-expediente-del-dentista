@@ -135,6 +135,34 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                     val option=elementary[i]
                     FilterChip(tissueLesion[selected.id]==option,{tissueLesion[selected.id]=option;finding=option},{Text(option)},modifier=Modifier.fillMaxWidth())
                 }
+                val selectedLesion=tissueLesion[selected.id].orEmpty()
+                val lesionVisual=when {
+                    selectedLesion.startsWith("Mácula") -> Triple(com.yomismtz.expedientedeldentista.R.drawable.edu_lesion_macula,"Mácula / mancha","Lesión plana definida por un cambio de color. Observa límites, color, distribución y evolución.")
+                    selectedLesion=="Pápula" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.edu_lesion_papula,"Pápula","Elevación sólida pequeña y circunscrita. Observa tamaño, superficie, color y consistencia.")
+                    selectedLesion.startsWith("Placa") -> Triple(com.yomismtz.expedientedeldentista.R.drawable.edu_lesion_placa,selectedLesion,"Área elevada o engrosada. Observa color, superficie, límites y si se desprende o no.")
+                    selectedLesion=="Nódulo" || selectedLesion=="Masa" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.edu_lesion_nodulo,selectedLesion,"Aumento de volumen sólido. Observa tamaño, profundidad, consistencia, movilidad y evolución.")
+                    selectedLesion=="Vesícula" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.edu_lesion_vesicula,"Vesícula","Elevación pequeña con contenido líquido. Observa número, agrupación, integridad y síntomas.")
+                    selectedLesion.startsWith("Ampolla") -> Triple(com.yomismtz.expedientedeldentista.R.drawable.edu_lesion_ampolla,"Ampolla / bula","Elevación con contenido líquido de mayor tamaño. Observa integridad, extensión y síntomas.")
+                    selectedLesion=="Pústula" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.edu_lesion_pustula,"Pústula","Elevación con contenido purulento. Observa tamaño, localización, drenaje y tejido circundante.")
+                    selectedLesion=="Erosión" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.edu_lesion_erosion,"Erosión","Pérdida superficial del epitelio. Observa extensión, fondo, bordes, dolor y posible causa local.")
+                    selectedLesion=="Úlcera" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.edu_lesion_ulcera,"Úlcera","Pérdida epitelial con exposición del tejido conjuntivo. Observa fondo, bordes, induración, dolor y duración.")
+                    selectedLesion.startsWith("Fisura") -> Triple(com.yomismtz.expedientedeldentista.R.drawable.edu_lesion_fisura,"Fisura / grieta","Hendidura lineal de la superficie. Observa profundidad, localización, síntomas y factores locales.")
+                    selectedLesion.startsWith("Fístula") -> Triple(com.yomismtz.expedientedeldentista.R.drawable.edu_lesion_fistula,"Fístula / trayecto sinusal","Trayecto de drenaje. Observa localización, secreción y correlaciona clínicamente el posible origen.")
+                    else -> null
+                }
+                lesionVisual?.let{v->
+                    Card(Modifier.fillMaxWidth()){
+                        Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+                            Text(v.second,fontWeight=FontWeight.Black)
+                            Text(tr(lang,"¿Qué es?","What is it?"),fontWeight=FontWeight.SemiBold)
+                            Text(v.third)
+                            Text(tr(lang,"¿Qué observar?","What to observe?"),fontWeight=FontWeight.SemiBold)
+                            Text(tr(lang,"Describe sitio, número, tamaño, color, forma, superficie, bordes, base, consistencia, síntomas, duración y evolución.","Describe site, number, size, color, shape, surface, borders, base, consistency, symptoms, duration and evolution."))
+                            Text(tr(lang,"Imagen representativa","Representative image"),fontWeight=FontWeight.SemiBold)
+                            LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
+                        }
+                    }
+                }
                 val pathologies=pathologyByZone[selected.id].orEmpty()
                 if(pathologies.isNotEmpty()){
                     Text(tr(lang,"Patologías o condiciones frecuentes en este tejido","Frequent pathologies or conditions in this tissue"),fontWeight=FontWeight.Black)
