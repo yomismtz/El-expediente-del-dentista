@@ -115,6 +115,10 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
             AdaptiveGridV17(options[selected].size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 3) { i ->
                 val o=options[selected][i]
                 FilterChip(choice==o,{choice=o},{Text(o)},modifier=Modifier.fillMaxWidth())
+                if(choice==o){
+                    val visual=occlusionChoiceVisual19(selected,o)
+                    visual?.let{v->LocalClinicalHelpImageV47(lang,v.first,v.first,v.second,v.third,v.third)}
+                }
             }
             when(selected){
                 1->TerminalPlanes19(lang)
@@ -127,6 +131,18 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
         }
         NoticeCard(tr(lang,"Los espacios visuales clínicos están preparados para recursos locales del APK. Mientras un recurso siga pendiente de integración, no debe interpretarse el marcador visual como fotografía clínica. Los esquemas de medición se identifican como esquemas. Registrar hallazgos no equivale a emitir automáticamente un diagnóstico.","Clinical visual slots are prepared for local APK resources. While a resource is still pending integration, its visual placeholder must not be interpreted as a clinical photograph. Measurement diagrams are identified as diagrams. Recording findings does not automatically establish a diagnosis."))
     }
+}
+
+private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int,String>?=when(section){
+ 2->when{choice.startsWith("Clase I ")->Triple("Angle Clase I",R.drawable.edu_oclusion_angle_clase_1_png,"Ejemplo visual de relación molar Clase I.");choice.startsWith("Clase II ")->Triple("Angle Clase II",R.drawable.edu_oclusion_angle_clase_2_png,"Ejemplo visual de relación molar Clase II.");choice.startsWith("Clase III ")->Triple("Angle Clase III",R.drawable.edu_oclusion_angle_clase_3_png,"Ejemplo visual de relación molar Clase III.");else->null}
+ 4->when(choice){"Aumentado"->Triple("Overjet aumentado",R.drawable.edu_oclusion_overjet,"Ejemplo y explicación visual de overjet.");"Reducido","Borde a borde","Invertido"->Triple("Relación anterior · overjet",R.drawable.edu_oclusion_oveerjetoverbite,"Referencia visual para comparar la relación horizontal anterior.");else->null}
+ 5->when(choice){"Profunda"->Triple("Mordida profunda",R.drawable.edu_oclusion_mordida_profunda,"Ejemplo visual de sobremordida aumentada.");"Abierta anterior"->Triple("Mordida abierta anterior",R.drawable.edu_oclusion_mordida_abierta,"Ejemplo visual de mordida abierta anterior.");"Abierta posterior"->Triple("Mordida abierta posterior",R.drawable.edu_oclusion_mordida_abierta_posterior,"Ejemplo visual de mordida abierta posterior.");"Traslape habitual","Borde a borde"->Triple("Overbite",R.drawable.edu_oclusion_overbite,"Referencia visual de relación vertical anterior.");else->null}
+ 6->when(choice){"Anterior"->Triple("Mordida cruzada anterior",R.drawable.edu_oclusion_cruzada_anterior,"Ejemplo visual de mordida cruzada anterior.");"Posterior derecha","Posterior izquierda"->Triple("Mordida cruzada posterior unilateral",R.drawable.edu_oclusion_cruzada_posterior_unilateral,"Ejemplo visual de mordida cruzada posterior unilateral.");"Posterior bilateral"->Triple("Mordida cruzada posterior bilateral",R.drawable.edu_oclusion_cruzada_posterior_bilateral,"Ejemplo visual de mordida cruzada posterior bilateral.");else->null}
+ 7->if(choice!="Coincidentes") Triple("Líneas medias",R.drawable.edu_oclusion_linea_media,"Referencia visual para valorar discrepancias de línea media.") else null
+ 10->when(choice){"Mordida profunda"->Triple("Mordida profunda",R.drawable.edu_oclusion_mordida_profunda_1,"Referencia visual.");"Mordida abierta"->Triple("Mordida abierta",R.drawable.edu_oclusion_mordida_abierta,"Referencia visual.");else->null}
+ 11->when(choice){"Cruzada unilateral"->Triple("Cruzada posterior unilateral",R.drawable.edu_oclusion_cruzada_posterior_unilateral_2,"Referencia visual.");"Cruzada bilateral"->Triple("Cruzada posterior bilateral",R.drawable.edu_oclusion_cruzada_posterior_bilateral_2,"Referencia visual.");else->null}
+ 15->when(choice){"Mordida profunda"->Triple("Mordida profunda",R.drawable.edu_oclusion_mordida_profunda,"Referencia visual.");"Mordida abierta"->Triple("Mordida abierta",R.drawable.edu_oclusion_mordida_abierta,"Referencia visual.");"Mordida invertida/underbite"->Triple("Relación anterior invertida",R.drawable.edu_oclusion_cruzada_anterior,"Referencia visual.");else->null}
+ else->null
 }
 
 @Composable private fun OcclusionPhoto19(title:String,@DrawableRes resource:Int){
