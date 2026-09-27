@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.Image
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
@@ -20,9 +22,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.yomismtz.expedientedeldentista.R
 import com.yomismtz.expedientedeldentista.clinical.ClinicalContent
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEngines
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
@@ -212,6 +217,8 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
         AlertDialog(onDismissRequest={showIcdasHelp=false},confirmButton={OutlinedButton(onClick={showIcdasHelp=false}){Text(tr(lang,"Cerrar","Close"))}},title={Text(tr(lang,"ⓘ Ayuda ICDAS 0–6","ⓘ ICDAS 0–6 help"))},text={
             Column(verticalArrangement=Arrangement.spacedBy(8.dp)){
                 Text(tr(lang,"Observa la superficie limpia y valora el cambio visual y la pérdida de estructura. Usa esta ayuda junto con las descripciones que ya aparecen en cada código.","Observe the clean surface and assess visual change and structural loss. Use this help together with the descriptions already shown for each code."))
+                Image(painterResource(R.drawable.edu_icdas_0),tr(lang,"Referencia visual ICDAS disponible en la aplicación","ICDAS visual reference available in the app"),Modifier.fillMaxWidth().heightIn(min=140.dp,max=260.dp),contentScale=ContentScale.Fit)
+                Text(tr(lang,"Referencia visual local incluida en la aplicación. No sustituye los criterios escritos de los códigos 0–6.","Local visual reference included in the app. It does not replace the written criteria for codes 0–6."),style=MaterialTheme.typography.bodySmall)
                 ClinicalContent.icdas.forEach { g -> Text("${g.code} · ${if(lang=="en")g.en else g.es}",fontWeight=if(g.code==currentCode)FontWeight.Bold else FontWeight.Normal) }
                 Text(tr(lang,"La ayuda no cambia el código registrado ni genera un diagnóstico automático.","Help does not change the recorded code or generate an automatic diagnosis."),fontWeight=FontWeight.SemiBold)
             }
