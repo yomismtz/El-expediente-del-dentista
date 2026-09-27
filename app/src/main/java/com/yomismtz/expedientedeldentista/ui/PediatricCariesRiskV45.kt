@@ -1,4 +1,5 @@
 package com.yomismtz.expedientedeldentista.ui
+import com.yomismtz.expedientedeldentista.R
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
