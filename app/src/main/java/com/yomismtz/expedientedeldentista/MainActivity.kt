@@ -3,6 +3,11 @@ package com.yomismtz.expedientedeldentista
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.Bundle
+import android.net.Uri
+import android.util.Base64
+import java.io.File
+import java.security.MessageDigest
+import org.json.JSONArray
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
@@ -122,6 +127,7 @@ class MainActivity : AppCompatActivity() {
                                 onExportRecord = { id ->
                                     recordStore.exportRecordJson(id)?.also { root ->
                                         root.put("fields", fieldStore.exportRecord(id))
+                                        root.put("attachments", exportAttachments(id,fieldStore))
                                     }?.toString(2)
                                 },
                                 onImportRecord = { raw ->
@@ -129,6 +135,7 @@ class MainActivity : AppCompatActivity() {
                                         val root=JSONObject(raw)
                                         val imported=recordStore.importRecordJson(root)
                                         root.optJSONObject("fields")?.let { fieldStore.importRecord(imported.id,it) }
+                                        restoreAttachments(root.optJSONArray("attachments"),imported.id,fieldStore)
                                         savedRecords=recordStore.loadAll()
                                         imported
                                     }.getOrNull()
@@ -139,5 +146,38 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    private fun exportAttachments(recordId:String,fieldStore:RecordFieldStore):JSONArray {
+        val out=JSONArray()
+        val photos=fieldStore.load(recordId,"photo.uris") as? Map<*,*> ?: return out
+        photos.forEach { (slot,value) ->
+            val uri=value as? String ?: return@forEach
+            val bytes=runCatching { contentResolver.openInputStream(Uri.parse(uri))?.use { it.readBytes() } }.getOrNull() ?: return@forEach
+            val sha=MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
+            out.put(JSONObject().put("kind","clinicalPhoto").put("slot",slot.toString()).put("mime",contentResolver.getType(Uri.parse(uri))?:"image/jpeg").put("sha256",sha).put("data",Base64.encodeToString(bytes,Base64.NO_WRAP)))
+        }
+        return out
+    }
+
+    private fun restoreAttachments(items:JSONArray?,recordId:String,fieldStore:RecordFieldStore) {
+        if(items==null) return
+        val restored=HashMap<String,String>()
+        val dir=File(filesDir,"record_attachments/$recordId").apply { mkdirs() }
+        for(i in 0 until items.length()) {
+            val item=items.optJSONObject(i) ?: continue
+            if(item.optString("kind")!="clinicalPhoto") continue
+            val bytes=runCatching { Base64.decode(item.getString("data"),Base64.DEFAULT) }.getOrNull() ?: continue
+            val expected=item.optString("sha256")
+            val actual=MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
+            if(expected.isNotBlank() && expected!=actual) continue
+            val originalSlot=item.optString("slot")
+            val safeSlot=originalSlot.replace(Regex("[^A-Za-z0-9_-]"),"_").ifBlank { "photo_$i" }
+            val ext=if(item.optString("mime").contains("png")) "png" else "jpg"
+            val file=File(dir,"$safeSlot.$ext")
+            file.outputStream().use { it.write(bytes) }
+            restored[originalSlot]=Uri.fromFile(file).toString()
+        }
+        if(restored.isNotEmpty()) fieldStore.replacePhotoUris(recordId,restored)
+    }
+
     }
 }
