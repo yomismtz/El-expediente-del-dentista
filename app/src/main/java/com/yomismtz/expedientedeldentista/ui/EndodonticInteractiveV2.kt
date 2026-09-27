@@ -155,6 +155,7 @@ fun EndodonticInteractiveV2Screen(
         when (tab) {
             0 -> {
                 item {
+                    ClinicalRegisterHelpV49(lang,"Ayuda · Endodoncia","Help · Endodontics","Confirma órgano dentario y etapa dentaria. Registra diagnósticos sólo si fueron establecidos por el operador con historia, pruebas y auxiliares. En conductometría identifica cada conducto y anota mediciones obtenidas; documenta procedimiento y control según lo realizado.","Confirm tooth and dentition stage. Record diagnoses only when established by the operator using history, tests and diagnostic aids. For working length identify each canal and enter obtained measurements; document procedure and follow-up as performed.")
                     SectionCard(tr(lang, "1 · Órgano dentario", "1 · Tooth")) {
                         DentalArchSelector(
                             teeth = toothList,
