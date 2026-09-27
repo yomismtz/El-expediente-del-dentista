@@ -18,7 +18,6 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.io.Serializable
 import java.util.HashMap
-import kotlin.reflect.KClass
 import org.json.JSONObject
 
 class RecordFieldStore(context: Context) {
@@ -63,6 +62,8 @@ class RecordFieldStore(context: Context) {
         }
         editor.apply()
     }
+
+    fun replacePhotoUris(recordId: String, values: Map<String,String>) = save(recordId, "photo.uris", HashMap(values))
 
     fun deleteRecord(recordId: String) {
         val prefix = "$recordId::"
