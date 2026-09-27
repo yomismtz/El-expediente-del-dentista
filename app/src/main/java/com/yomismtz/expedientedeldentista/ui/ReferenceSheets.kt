@@ -1,5 +1,7 @@
 package com.yomismtz.expedientedeldentista.ui
 
+import com.yomismtz.expedientedeldentista.R
+
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
