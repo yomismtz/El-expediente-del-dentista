@@ -81,9 +81,11 @@ fun EndodonticInteractiveV2Screen(
 
     val pulpal = if (lang == "en") result.pulpalEn else result.pulpalEs
     val apical = if (lang == "en") result.apicalEn else result.apicalEs
-    val orientation = treatmentOrientation(dentition, session, lang)
+    val safeDentition = dentition.takeIf { it == "primary" || it == "mature" } ?: "mature"
+    val toothList = if (safeDentition == "primary") ClinicalContent.primaryTeeth else ClinicalContent.permanentTeeth
+    if (selectedTooth !in toothList) selectedTooth = if (safeDentition == "primary") 75 else 36
+    val orientation = treatmentOrientation(safeDentition, session, lang)
     val procedureLabel = procedureLabel(procedure, lang)
-    val toothList = if (dentition == "primary") ClinicalContent.primaryTeeth else ClinicalContent.permanentTeeth
 
     fun changeTooth(tooth: Int) {
         selectedTooth = tooth
