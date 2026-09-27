@@ -9,7 +9,6 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
-import android.provider.MediaStore
 import android.widget.Toast
 import java.io.File
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -132,10 +131,10 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     var view by rememberRecordState("photo.view","Frontal extraoral")
     var purpose by rememberRecordState("photo.purpose","Documentación inicial")
     var notes by rememberRecordState("photo.notes","")
-    var brightness by rememberRecordState("photo.brightness",0f)
-    var contrast by rememberRecordState("photo.contrast",1f)
-    var sharpness by rememberRecordState("photo.sharpness",0f)
     val photoUris=rememberRecordStateMap<String,String>("photo.uris")
+    val photoBrightness=rememberRecordStateMap<String,Float>("photo.brightnessByView")
+    val photoContrast=rememberRecordStateMap<String,Float>("photo.contrastByView")
+    val photoSharpness=rememberRecordStateMap<String,Float>("photo.sharpnessByView")
     val launcher=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()){uri:Uri?->
         if(uri!=null){
             runCatching{context.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)}
@@ -151,6 +150,9 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     val views=if(category=="Intraoral") intraoral else extraoral
     val safeView = view.takeIf { it in views } ?: views.first()
     val uriText=photoUris[safeView].orEmpty()
+    val brightness=photoBrightness[safeView] ?: 0f
+    val contrast=photoContrast[safeView] ?: 1f
+    val sharpness=photoSharpness[safeView] ?: 0f
     val original=remember(uriText){if(uriText.isBlank())null else photoBitmapV43(context,uriText)}
     val preview=remember(original,brightness,contrast,sharpness){original?.let{adjustedPhotoV43(it,brightness,contrast,sharpness)}}
 
@@ -168,9 +170,10 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
             Button(onClick={launcher.launch(arrayOf("image/*"))},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Seleccionar / reemplazar fotografía","Select / replace photograph"),fontWeight=FontWeight.Bold)}
             if(preview!=null){
                 Image(preview.asImageBitmap(),safeView,Modifier.fillMaxWidth().height(260.dp),contentScale=ContentScale.Fit)
-                Text(tr(lang,"Brillo","Brightness"));Slider(brightness,{brightness=it},valueRange=-1f..1f)
-                Text(tr(lang,"Contraste","Contrast"));Slider(contrast,{contrast=it},valueRange=.5f..1.8f)
-                Text(tr(lang,"Nitidez","Sharpness"));Slider(sharpness,{sharpness=it},valueRange=0f..1f)
+                Text(tr(lang,"Brillo","Brightness"));Slider(brightness,{photoBrightness[safeView]=it},valueRange=-1f..1f)
+                Text(tr(lang,"Contraste","Contrast"));Slider(contrast,{photoContrast[safeView]=it},valueRange=.5f..1.8f)
+                Text(tr(lang,"Nitidez","Sharpness"));Slider(sharpness,{photoSharpness[safeView]=it},valueRange=0f..1f)
+                OutlinedButton(onClick={photoBrightness[safeView]=0f;photoContrast[safeView]=1f;photoSharpness[safeView]=0f},modifier=Modifier.fillMaxWidth()){Text("↺ "+tr(lang,"Restablecer ajustes de esta fotografía","Reset adjustments for this photograph"))}
                 OutlinedButton(onClick={
                     val source=Uri.parse(uriText)
                     val intent=Intent("com.android.camera.action.CROP").apply{setDataAndType(source,"image/*");putExtra("crop",true);putExtra("return-data",false);addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)}
@@ -178,6 +181,8 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
                 },modifier=Modifier.fillMaxWidth()){Text("✂️ "+tr(lang,"Recortar / acomodar","Crop / reposition"))}
             }
         }
+        LocalClinicalImageSectionV46(lang,profile,"Fotografía extraoral","Extraoral photography")
+        LocalClinicalImageSectionV46(lang,profile,"Fotografía intraoral","Intraoral photography")
         ResponsiveSectionV17(tr(lang,"3 · Finalidad y notas","3 · Purpose and notes")){
             val purposes=listOf("Documentación inicial","Diagnóstico / seguimiento","Antes del tratamiento","Durante el tratamiento","Después del tratamiento","Comunicación / interconsulta")
             AdaptiveGridV17(purposes.size,if(profile.largeSystemText)1 else if(profile.width==ScreenWidthV17.COMPACT)2 else 3){i->FilterChip(purpose==purposes[i],{purpose=purposes[i]},{Text(purposes[i])},Modifier.fillMaxWidth())}
