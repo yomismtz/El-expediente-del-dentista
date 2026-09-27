@@ -65,7 +65,7 @@ fun paletteDisplayName(style: BirdPaletteStyle, lang: String = "es"): String = w
     BirdPaletteStyle.MARTIN_PESCADOR -> if(lang=="en") "Kingfisher" else "Martín pescador"
     BirdPaletteStyle.QUETZAL -> "Quetzal"
     BirdPaletteStyle.DRAGON -> if(lang=="en") "Dragon" else "Dragón"
-    BirdPaletteStyle.BALLENA_AZUL -> if(lang=="en") "Whale" else "Ballena"
+    BirdPaletteStyle.BALLENA_AZUL -> if(lang=="en") "Manta ray" else "Mantarraya"
     BirdPaletteStyle.RANA_VERDE -> if(lang=="en") "Frog" else "Rana"
     BirdPaletteStyle.MARIPOSA_MONARCA -> if(lang=="en") "Butterfly" else "Mariposa"
     BirdPaletteStyle.FLAMENCO_ROSA -> if(lang=="en") "Flamingo" else "Flamenco"
@@ -132,7 +132,14 @@ fun birdPalette(style: BirdPaletteStyle): BirdPalette {
 
 fun paletteSwatches(style: BirdPaletteStyle): List<Color> {
     val p = birdPalette(style)
-    return if(style == BirdPaletteStyle.AGAPORNI || style == BirdPaletteStyle.AGAPORNI_PASTEL) listOf(p.primary, p.secondary, p.tertiary, Color(0xFF008C95), Color(0xFF173B63), Color(0xFFE98CA5), p.primaryContainer, p.secondaryContainer, p.background) else listOf(p.primary, p.secondary, p.tertiary, p.primaryContainer, p.secondaryContainer, p.background, p.surface, p.outline)
+    val characteristic = when(style) {
+        BirdPaletteStyle.AGAPORNI -> listOf(p.primary, p.secondary, p.tertiary, Color(0xFF2F7D4A), Color(0xFF2F75B5), Color(0xFFFFF4D6), p.primaryContainer, p.secondaryContainer)
+        BirdPaletteStyle.AGAPORNI_PASTEL -> listOf(p.primary, p.secondary, p.tertiary, Color(0xFFFFFFFF), Color(0xFFFFF0C2), Color(0xFFD94B3D), p.primaryContainer, p.secondaryContainer)
+        BirdPaletteStyle.ABEJA_CONTRASTE -> listOf(p.primary, p.secondary, p.tertiary, Color(0xFFF59E0B), Color(0xFFFFF1A8), Color(0xFF3B2F1F), p.primaryContainer, p.secondaryContainer)
+        BirdPaletteStyle.PANDA_MONO -> listOf(p.primary, p.secondary, p.tertiary, Color(0xFFF5F5F5), Color(0xFF1E1E1E), Color(0xFFBDBDBD), p.primaryContainer, p.secondaryContainer)
+        else -> listOf(p.primary, p.secondary, p.tertiary, p.primaryContainer, p.secondaryContainer, p.background, p.onSurface, p.outline)
+    }
+    return characteristic.distinct().take(8)
 }
 
 fun fontDisplayName(style: FontStyle, lang: String = "es"): String = when (style) {
