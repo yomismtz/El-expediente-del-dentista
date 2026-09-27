@@ -115,7 +115,7 @@ private val localClinicalGuidesV45=listOf(
 )
 
 @Composable
-fun LocalClinicalImageSectionV46(lang:String,profile:ScreenProfileV17?=null,groupEs:String,groupEn:String){
+internal fun LocalClinicalImageSectionV46(lang:String,profile:ScreenProfileV17?=null,groupEs:String,groupEn:String){
     var expanded by remember{mutableStateOf<LocalClinicalGuideV45?>(null)}
     val items=localClinicalGuidesV45.filter{it.groupEs==groupEs}
     if(items.isEmpty())return
@@ -137,7 +137,7 @@ fun LocalClinicalImageSectionV46(lang:String,profile:ScreenProfileV17?=null,grou
 }
 
 @Composable
-fun LocalClinicalImageGalleryV45(lang:String,profile:ScreenProfileV17){
+internal fun LocalClinicalImageGalleryV45(lang:String,profile:ScreenProfileV17){
     var expanded by remember{mutableStateOf<LocalClinicalGuideV45?>(null)}
     val groups=localClinicalGuidesV45.groupBy{if(lang=="en")it.groupEn else it.groupEs}
     ResponsiveSectionV17(
