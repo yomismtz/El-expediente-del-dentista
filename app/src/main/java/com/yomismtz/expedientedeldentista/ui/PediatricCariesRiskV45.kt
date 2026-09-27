@@ -32,6 +32,7 @@ private data class RiskFactor45(val key:String,val label:String,val kind:String)
  val states=factors.associate{it.key to rememberRecordState("cariesRisk."+it.key,"No valorado")}
  ResponsiveScreenV17("🛡️ "+tr(lang,"Ficha de Caries y Riesgo de Caries","Caries and Caries-Risk Sheet"),tr(lang,"Instrumento educativo propio de la app, multifactorial y no equivalente ni afiliado a CAMBRA. Organiza enfermedad observada, factores de riesgo y protección; no sustituye una herramienta validada ni el juicio clínico.","App-owned multifactorial educational instrument; it is not CAMBRA and is not affiliated with CAMBRA. It organizes observed disease, risk and protective factors; it does not replace a validated tool or clinical judgment."),onBack){p->
   val cols=if(p.largeSystemText)1 else if(p.width==ScreenWidthV17.COMPACT)2 else 3
+  LocalClinicalImageSectionV46(lang,p,"Cariología","Cariology")
   ResponsiveSectionV17(tr(lang,"Factores","Factors"),tr(lang,"Marca Presente, Ausente o No valorado. No asumas un dato que no fue interrogado o explorado.","Mark Present, Absent or Not assessed. Do not assume information that was not obtained.")){
    factors.forEach{f->val st=states.getValue(f.key);Text(f.label,fontWeight=FontWeight.SemiBold);AdaptiveGridV17(3,cols){i->val o=listOf("Presente","Ausente","No valorado")[i];FilterChip(st.value==o,{st.value=o},{Text(o)},Modifier.fillMaxWidth())}}
   }
