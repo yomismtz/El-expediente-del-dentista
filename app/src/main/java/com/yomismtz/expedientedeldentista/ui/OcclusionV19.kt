@@ -101,7 +101,6 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
         Pair("Diastema · fotografía clínica real",R.drawable.occlusion_diastema)
     )
     ResponsiveScreenV17(tr(lang,"Examen clínico de oclusión","Clinical occlusal examination"),tr(lang,"Exploración por subapartados con registro seleccionable y apoyo visual.","Sectioned examination with selectable findings and visual support."),onBack) { profile ->
-        LocalClinicalImageSectionV46(lang,profile,"Oclusión","Occlusion")
         ResponsiveSectionV17("Subapartados") {
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(6.dp)){
                 sections.forEachIndexed{i,s->FilterChip(selected==i,{selected=i;choice=""},{Text(s)})}
@@ -109,17 +108,24 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
         }
         ResponsiveSectionV17(sections[selected]) {
             Text(help[selected],fontWeight=FontWeight.SemiBold)
-            val ph=photos[selected]
-            if(ph.second!=0) OcclusionPhoto19(ph.first,ph.second) else TerminalPlanes19(lang)
             Text("Registro clínico",fontWeight=FontWeight.Black)
             AdaptiveGridV17(options[selected].size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 3) { i ->
                 val o=options[selected][i]
                 FilterChip(choice==o,{choice=o},{Text(o)},modifier=Modifier.fillMaxWidth())
-                if(choice==o){
-                    val visual=occlusionChoiceVisual19(selected,o)
-                    visual?.let{v->LocalClinicalHelpImageV47(lang,v.first,v.first,v.second,v.third,v.third)}
-                }
             }
+            val visual=occlusionChoiceVisual19(selected,choice)
+            val ph=photos[selected]
+            if(visual!=null){
+                Card(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+                    Text(visual.first,fontWeight=FontWeight.Bold)
+                    Text(tr(lang,"¿Qué es?","What is it?"),fontWeight=FontWeight.SemiBold)
+                    Text(visual.third)
+                    Text(tr(lang,"¿Qué observar?","What to observe?"),fontWeight=FontWeight.SemiBold)
+                    Text(tr(lang,"Compara la relación dental seleccionada con el hallazgo clínico y registra lateralidad, magnitud y simetría cuando correspondan.","Compare the selected dental relationship with the clinical finding and record laterality, magnitude and symmetry when appropriate."))
+                    Text(tr(lang,"Imagen representativa","Representative image"),fontWeight=FontWeight.SemiBold)
+                    LocalClinicalInlineZoomImageV48(lang,visual.first,visual.first,visual.second,visual.third,visual.third)
+                }}
+            } else if(ph.second!=0) OcclusionPhoto19(ph.first,ph.second) else TerminalPlanes19(lang)
             when(selected){
                 1->TerminalPlanes19(lang)
                 2->AngleMolar19()
