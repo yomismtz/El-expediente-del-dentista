@@ -65,7 +65,9 @@ private val zones19=listOf(
 @Composable
 fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
     var selectedId by rememberRecordState("mucosa.selectedId","lengua")
-    var tab by remember{mutableStateOf(0)}
+    val tissueStatus=rememberRecordStateMap<String,String>("mucosa.tissueStatus")
+    val tissueLesion=rememberRecordStateMap<String,String>("mucosa.tissueLesion")
+    val tissuePathology=rememberRecordStateMap<String,String>("mucosa.tissuePathology")
     var finding by rememberRecordState("mucosa.finding","Normal")
     var sizeMm by rememberRecordState("mucosa.sizeMm","5 mm")
     var notes by rememberRecordState("mucosa.notes","Sin observaciones adicionales")
@@ -88,68 +90,73 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
     else tr(lang,"$name: $finding; ${if(count=="Única")"lesión única" else "lesiones múltiples"}; tamaño ${sizeMm}; color $color; forma $shape; superficie $surface; borde $border; base $base; consistencia $consistency; movilidad $mobility; $symptoms; duración $duration; evolución $evolution${if(notes.isBlank())"" else "; $notes"}. Descripción clínica; correlacionar antes de diagnosticar.","$name: $finding; size ${if(sizeMm.isBlank())"not entered" else "$sizeMm mm"}; color $color; shape $shape; surface $surface; border $border; base $base; consistency $consistency; mobility $mobility; symptoms $symptoms; duration $duration; evolution $evolution. Clinical description; correlate before diagnosis.")
 
     ResponsiveScreenV17(tr(lang,"Mucosas orales interactivas","Interactive oral mucosa"),tr(lang,"Toca una zona en la boca abierta y practica una descripción clínica sistemática.","Tap a region on the open-mouth diagram and practice systematic clinical description."),onBack) { profile ->
-        LocalClinicalImageSectionV46(lang,profile,"Mucosa y lesiones elementales","Mucosa and elementary lesions")
-        Button(onClick={lesionHelp=true},modifier=Modifier.fillMaxWidth()) {
-            Text(tr(lang,"❓ Ayuda · Lesiones elementales básicas","❓ Help · Basic elementary lesions"),fontWeight=FontWeight.Black)
+        val zoneColumns=when {
+            profile.largeSystemText -> 2
+            profile.width==ScreenWidthV17.COMPACT -> 3
+            profile.width==ScreenWidthV17.MEDIUM -> 4
+            else -> 6
         }
-        Text(tr(lang,"Abre la guía rápida para identificar y describir lesiones antes de registrarlas.","Open the quick guide to identify and describe lesions before recording them."),style=MaterialTheme.typography.bodySmall)
-        ResponsiveSectionV17(tr(lang,"Exploración peribucal e intrabucal por sitio anatómico","Perioral and intraoral examination by anatomical site")) {
-            Text(tr(lang,
-                "Secuencia sugerida: piel peribucal → labios y comisuras → mucosa labial y frenillos → carrillos → encía → paladares → orofaringe, úvula, pilares y amígdalas → lengua → frenillo lingual → piso de boca.",
-                "Suggested sequence: perioral skin → lips and commissures → labial mucosa and frenula → cheeks → gingiva → palate → oropharynx, uvula, pillars and tonsils → tongue → lingual frenum → floor of mouth."
-            ), fontWeight=FontWeight.Bold)
-            val detailedSites = listOf(
-                "Piel peribucal" to "Normal: piel íntegra, sin lesiones evidentes y simetría conservada. Observar eritema o cambio de color, descamación, costra, fisura, úlcera, vesícula/ampolla, pápula/nódulo, aumento de volumen, cicatriz, pigmentación o asimetría.",
-                "Labio superior" to "Explorar piel, bermellón y mucosa labial superior: color, hidratación, simetría, integridad y superficie. Observar resequedad, fisura, costra, erosión/úlcera, placa o mancha blanca/roja, pigmentación, vesículas, aumento de volumen o lesión palpable.",
-                "Labio inferior" to "Explorar piel, bermellón y mucosa labial inferior con los mismos criterios; registrar sitio, tamaño, color, superficie, consistencia y síntomas.",
-                "Comisura derecha" to "Normal: continuidad e integridad sin fisura ni ulceración. Observar fisura, eritema, maceración, costra, erosión/úlcera, lesión blanca/roja o aumento de volumen.",
-                "Comisura izquierda" to "Comparar bilateralmente. Describir el hallazgo observable antes de atribuir una causa.",
-                "Carrillo derecho / mucosa bucal" to "Inspeccionar mucosa y desembocadura de Stensen. Observar línea alba, mordisqueo, placa/mancha blanca, eritema, úlcera/erosión, pigmentación, pápula/nódulo, vesícula/ampolla, aumento de volumen o lesión palpable.",
-                "Carrillo izquierdo / mucosa bucal" to "Aplicar los mismos criterios y comparar bilateralmente; registrar alteraciones sin asumir etiología.",
-                "Encía" to "Valorar firmeza, contorno y color considerando pigmentación fisiológica. Observar eritema, edema, sangrado, ulceración, recesión, hiperplasia, pigmentación, lesión blanca/roja o masa.",
-                "Piso de boca" to "Inspeccionar con la lengua elevada y palpar cuando corresponda. Observar aumento de volumen, induración, úlcera/erosión, cambios blanco/rojo, pigmentación, lesión quística aparente, asimetría o alteraciones salivales.",
-                "Paladar duro" to "Valorar mucosa masticatoria firme y queratinizada. Observar cambio de color, úlcera, erosión, placa/mancha, pigmentación, petequias, aumento de volumen, torus/variación anatómica o masa.",
-                "Paladar blando" to "Valorar mucosa flexible y móvil. Observar eritema, petequias, úlcera/erosión, placa/mancha, asimetría, aumento de volumen o alteración del movimiento.",
-                "Orofaringe / pared posterior" to "Examinar con buena iluminación y depresor cuando sea necesario. Registrar aspecto, eritema, exudado, lesión, aumento de volumen o asimetría.",
-                "Úvula" to "Valorar posición y movilidad al fonar. Observar desviación, edema, eritema, lesión superficial o alteración del movimiento.",
-                "Pilares amigdalinos" to "Inspeccionar pilares anterior y posterior bilateralmente; valorar simetría, eritema, lesión, ulceración, exudado o aumento de volumen.",
-                "Amígdala derecha" to "Registrar tamaño/aspecto, simetría, eritema, exudado, lesión o aumento de volumen; la apariencia aislada no establece etiología.",
-                "Amígdala izquierda" to "Comparar con el lado derecho y registrar los mismos criterios.",
-                "Lengua · dorso" to "Valorar papilas y superficie. Observar saburra, depapilación, patrón geográfico, fisuras, placa/mancha, pigmentación, úlcera, aumento de volumen o lesión.",
-                "Lengua · bordes laterales" to "Inspeccionar y palpar bilateralmente. Observar úlcera/erosión, placa/mancha blanca o roja, induración, masa, trauma aparente, pigmentación o asimetría.",
-                "Lengua · cara ventral" to "Reconocer vasos visibles como variante frecuente. Observar lesión blanca/roja, úlcera, masa, induración o alteración vascular aparente.",
-                "Frenillo lingual" to "Registrar inserción, movilidad lingual y aspecto. La apariencia aislada no basta para diagnosticar limitación funcional.",
-                "Frenillo labial superior" to "Observar inserción, grosor, integridad y relación con encía/diastema; registrar prominencia, inserción baja, trauma, ulceración o inflamación.",
-                "Frenillo labial inferior" to "Observar inserción, integridad y tensión sobre tejidos; registrar prominencia, trauma, ulceración, inflamación u otro hallazgo."
-            )
-            var detailedOpen by remember { mutableStateOf<Int?>(null) }
-            AdaptiveGridV17(detailedSites.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 3) { index ->
-                val item=detailedSites[index]
-                Card(onClick={detailedOpen=if(detailedOpen==index)null else index},modifier=Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)) {
-                        Text(item.first,fontWeight=FontWeight.Bold)
-                        if(detailedOpen==index) {
-                            Text(item.second)
-                            Text("□ Normal / sin alteración evidente   □ Hallazgo presente   □ No valorable",style=MaterialTheme.typography.bodySmall)
-                        } else Text(tr(lang,"Toca para explorar","Tap to examine"),style=MaterialTheme.typography.bodySmall)
+        ResponsiveSectionV17(tr(lang,"Boca abierta · selecciona un tejido","Open mouth · select a tissue")) {
+            OpenMouthMap19(selectedId){selectedId=it}
+            Text("${tr(lang,"Zona seleccionada","Selected region")}: $name",fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
+            AdaptiveGridV17(zones19.size,zoneColumns){i->
+                val z=zones19[i]
+                FilterChip(selectedId==z.id,{selectedId=z.id},{Text(if(lang=="en")z.en else z.es)},modifier=Modifier.fillMaxWidth())
+            }
+        }
+        ResponsiveSectionV17(name,tr(lang,"Indica primero si el tejido está sano o presenta una alteración. Las opciones posteriores se muestran sólo cuando corresponde.","First indicate whether the tissue is healthy or altered. Further options appear only when appropriate.")) {
+            val status=tissueStatus[selected.id]?:""
+            AdaptiveGridV17(2,2){i->
+                val value=if(i==0)"Sano" else "Alteración"
+                FilterChip(status==value,{tissueStatus[selected.id]=value;if(value=="Sano"){tissueLesion[selected.id]="";tissuePathology[selected.id]=""}},{Text(if(lang=="en" && value=="Sano")"Healthy" else if(lang=="en")"Alteration" else value)},modifier=Modifier.fillMaxWidth())
+            }
+            if(status=="Sano"){
+                Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){
+                    Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){
+                        Text(tr(lang,"Aspecto compatible con tejido sano","Appearance compatible with healthy tissue"),fontWeight=FontWeight.Bold)
+                        Text(if(lang=="en")selected.normalEn else selected.normalEs)
+                        Text(if(lang=="en")selected.exploreEn else selected.exploreEs,style=MaterialTheme.typography.bodySmall)
                     }
                 }
             }
-        }
-        ResponsiveSectionV17(tr(lang,"1 · Boca abierta: toca una zona","1 · Open mouth: tap a region")) {
-            OpenMouthMap19(selectedId){selectedId=it}
-            Text("${tr(lang,"Zona seleccionada","Selected region")}: $name",fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
-            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(7.dp)) {
-                zones19.forEach { z -> FilterChip(selectedId==z.id,{selectedId=z.id},{Text(if(lang=="en")z.en else z.es)}) }
+            if(status=="Alteración"){
+                val elementary=listOf("Mácula / mancha","Eritema","Petequia","Púrpura / equimosis","Pápula","Placa blanca","Placa roja","Nódulo","Masa","Vesícula","Ampolla / bula","Pústula","Quiste","Erosión","Úlcera","Fisura / grieta","Costra","Atrofia","Queratosis","Lesión papilar / vegetación","Fístula / trayecto sinusal","Edema","Hematoma","Pigmentación")
+                val pathologyByZone=mapOf(
+                    "labio_sup" to listOf("Queilitis irritativa/traumática","Queilitis actínica","Herpes labial","Mucocele","Fibroma traumático"),
+                    "labio_inf" to listOf("Mucocele","Queilitis irritativa/traumática","Herpes labial","Fibroma traumático","Lesión por mordisqueo"),
+                    "carrillo_der" to listOf("Línea alba","Morsicatio / mordisqueo","Fibroma traumático","Leucoedema","Liquen plano oral","Úlcera traumática"),
+                    "carrillo_izq" to listOf("Línea alba","Morsicatio / mordisqueo","Fibroma traumático","Leucoedema","Liquen plano oral","Úlcera traumática"),
+                    "encia" to listOf("Gingivitis","Recesión gingival","Hiperplasia gingival","Absceso/fístula a valorar","Granuloma piógeno","Lesión periodontal a valorar"),
+                    "paladar_duro" to listOf("Torus palatino","Quemadura térmica","Estomatitis nicotínica","Candidiasis","Úlcera traumática","Lesión pigmentada a valorar"),
+                    "paladar_blando" to listOf("Eritema inflamatorio","Petequias","Candidiasis","Úlcera aftosa","Lesión viral a valorar","Asimetría funcional a valorar"),
+                    "lengua" to listOf("Lengua geográfica","Lengua fisurada","Lengua saburral","Candidiasis","Glositis atrófica","Úlcera traumática","Fibroma traumático"),
+                    "piso" to listOf("Ránula","Sialolitiasis/obstrucción a valorar","Quiste/masa a valorar","Lesión vascular a valorar","Úlcera traumática"),
+                    "orofaringe" to listOf("Faringoamigdalitis a valorar","Hipertrofia amigdalina","Exudado amigdalino","Úlcera/lesión mucosa","Asimetría amigdalina a valorar")
+                )
+                Text(tr(lang,"Lesión elemental observada","Observed elementary lesion"),fontWeight=FontWeight.Black)
+                TextButton(onClick={lesionHelp=true}){Text("ⓘ "+tr(lang,"Ayuda para reconocer lesiones elementales","Help identifying elementary lesions"))}
+                AdaptiveGridV17(elementary.size,zoneColumns){i->
+                    val option=elementary[i]
+                    FilterChip(tissueLesion[selected.id]==option,{tissueLesion[selected.id]=option;finding=option},{Text(option)},modifier=Modifier.fillMaxWidth())
+                }
+                val pathologies=pathologyByZone[selected.id].orEmpty()
+                if(pathologies.isNotEmpty()){
+                    Text(tr(lang,"Patologías o condiciones frecuentes en este tejido","Frequent pathologies or conditions in this tissue"),fontWeight=FontWeight.Black)
+                    Text(tr(lang,"Son opciones de registro y orientación clínica; seleccionarlas no establece por sí solo un diagnóstico.","These are recording and clinical-orientation options; selecting one does not by itself establish a diagnosis."),style=MaterialTheme.typography.bodySmall)
+                    AdaptiveGridV17(pathologies.size,zoneColumns){i->
+                        val option=pathologies[i]
+                        FilterChip(tissuePathology[selected.id]==option,{tissuePathology[selected.id]=option},{Text(option)},modifier=Modifier.fillMaxWidth())
+                    }
+                }
+                Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){
+                    Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
+                        Text(tr(lang,"Cómo explorar","How to examine"),fontWeight=FontWeight.Bold)
+                        Text(if(lang=="en")selected.exploreEn else selected.exploreEs)
+                        Text(tr(lang,"Cambios que pueden observarse","Changes that may be observed"),fontWeight=FontWeight.Bold)
+                        Text(if(lang=="en")selected.changesEn else selected.changesEs)
+                    }
+                }
             }
-        }
-        ResponsiveSectionV17(name) {
-            AdaptiveGridV17(3,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 3) { i ->
-                val labels=listOf(tr(lang,"Normal","Normal"),tr(lang,"Alteraciones","Changes"),tr(lang,"Cómo explorar","How to examine"))
-                FilterChip(tab==i,{tab=i},{Text(labels[i])},modifier=Modifier.fillMaxWidth())
-            }
-            val detail=when(tab){1->if(lang=="en")selected.changesEn else selected.changesEs;2->if(lang=="en")selected.exploreEn else selected.exploreEs;else->if(lang=="en")selected.normalEn else selected.normalEs}
-            Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) { Text(detail,Modifier.padding(12.dp)) }
         }
         // Atlas visual se abre bajo demanda desde Ayuda para evitar cargar la lámina grande al entrar.
         ResponsiveSectionV17(tr(lang,"Atlas visual · lesiones elementales","Visual atlas · elementary lesions")) {
