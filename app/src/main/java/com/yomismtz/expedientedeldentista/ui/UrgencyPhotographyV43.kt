@@ -139,7 +139,7 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     val launcher=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()){uri:Uri?->
         if(uri!=null){
             runCatching{context.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)}
-            photoUris[safeView]=uri.toString()
+            photoUris[view]=uri.toString()
         }
     }
     val cropLauncher=rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()){result->
