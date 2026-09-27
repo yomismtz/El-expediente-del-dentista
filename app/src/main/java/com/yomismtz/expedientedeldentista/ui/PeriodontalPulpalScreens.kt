@@ -65,6 +65,7 @@ fun PeriodontogramScreen(
             )
         }
         item {
+            ClinicalRegisterHelpV49(lang,"Ayuda · Periodoncia","Help · Periodontics","Selecciona el diente y registra cada sitio medido. Anota profundidad de sondaje, recesión y sangrado, placa o supuración sólo cuando fueron evaluados. Mantén el sitio correcto y los milímetros; el resumen organiza datos y no sustituye la interpretación periodontal.","Select the tooth and record each measured site. Enter probing depth, recession, bleeding, plaque or suppuration only when assessed. Keep the correct site and millimeters; the summary organizes data and does not replace periodontal interpretation.")
             SectionCard(tr(lang, "Selecciona diente", "Select tooth")) {
                 DentalArchSelector(ClinicalContent.permanentTeeth, selectedTooth, { selectedTooth = it }) { it in session.periodontogram }
             }
