@@ -115,7 +115,12 @@ private fun SettingsV19Screen(
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val widthDp = maxWidth.value.toInt()
         val compact = maxWidth < 380.dp || systemScale >= 1.20f
-        val paletteColumns = when {\n            maxWidth < 600.dp -> 3\n            maxWidth < 900.dp -> 4\n            maxWidth < 1200.dp -> 5\n            else -> 6\n        }
+        val paletteColumns = when {
+            maxWidth < 600.dp -> 3
+            maxWidth < 900.dp -> 4
+            maxWidth < 1200.dp -> 5
+            else -> 6
+        }
         Column(
             Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
