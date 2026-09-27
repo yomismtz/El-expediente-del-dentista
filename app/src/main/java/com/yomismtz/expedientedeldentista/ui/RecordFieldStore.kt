@@ -18,6 +18,7 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.io.Serializable
 import java.util.HashMap
+import kotlin.reflect.KClass
 import org.json.JSONObject
 
 class RecordFieldStore(context: Context) {
@@ -75,6 +76,23 @@ val LocalActiveRecordId = compositionLocalOf<String?> { null }
 val LocalRecordFieldStore = staticCompositionLocalOf<RecordFieldStore?> { null }
 val LocalRecordFieldChanged = staticCompositionLocalOf<(String) -> Unit> { {} }
 
+private fun compatibleRecordValue(value: Any?, initial: Any?): Boolean {
+    if (value == null) return false
+    if (initial == null) return true
+    return when (initial) {
+        is String -> value is String
+        is Int -> value is Int
+        is Long -> value is Long
+        is Float -> value is Float
+        is Double -> value is Double
+        is Boolean -> value is Boolean
+        is Set<*> -> value is Set<*>
+        is List<*> -> value is List<*>
+        is Map<*,*> -> value is Map<*,*>
+        else -> initial::class.java.isInstance(value)
+    }
+}
+
 @Composable
 fun <T> rememberRecordState(key: String, initial: T): MutableState<T> {
     val id = LocalActiveRecordId.current
@@ -82,7 +100,8 @@ fun <T> rememberRecordState(key: String, initial: T): MutableState<T> {
     val changed = rememberUpdatedState(LocalRecordFieldChanged.current)
     @Suppress("UNCHECKED_CAST")
     val state = remember(id, key) {
-        mutableStateOf((store?.load(id, key) as? T) ?: initial)
+        val loaded = store?.load(id, key)
+        mutableStateOf(if (compatibleRecordValue(loaded, initial)) loaded as T else initial)
     }
     LaunchedEffect(id, key, state.value) {
         val didChange = store?.save(id, key, state.value) == true
@@ -99,7 +118,10 @@ fun <K, V> rememberRecordStateMap(key: String): SnapshotStateMap<K, V> {
     @Suppress("UNCHECKED_CAST")
     val map = remember(id, key) {
         mutableStateMapOf<K, V>().also { target ->
-            (store?.load(id, key) as? Map<K, V>)?.let(target::putAll)
+            val loaded = store?.load(id, key)
+            if (loaded is Map<*, *>) {
+                runCatching { target.putAll(loaded as Map<K, V>) }
+            }
         }
     }
     val snapshot = map.toMap()
