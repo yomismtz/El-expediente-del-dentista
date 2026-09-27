@@ -144,7 +144,7 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     }
     val cropLauncher=rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()){result->
         val uri=result.data?.data
-        if(uri!=null){runCatching{context.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)};photoUris[safeView]=uri.toString()}
+        if(uri!=null){runCatching{context.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)};photoUris[view]=uri.toString()}
     }
     val extraoral=listOf("Frontal extraoral","Perfil derecho","Perfil izquierdo","Sonrisa")
     val intraoral=listOf("Frontal intraoral","Lateral derecha","Lateral izquierda","Oclusal superior","Oclusal inferior","Detalle de lesión / procedimiento")
