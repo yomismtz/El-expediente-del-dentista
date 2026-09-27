@@ -101,6 +101,7 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
         Pair("Diastema · fotografía clínica real",R.drawable.occlusion_diastema)
     )
     ResponsiveScreenV17(tr(lang,"Examen clínico de oclusión","Clinical occlusal examination"),tr(lang,"Exploración por subapartados con registro seleccionable y apoyo visual.","Sectioned examination with selectable findings and visual support."),onBack) { profile ->
+        LocalClinicalImageSectionV46(lang,profile,"Oclusión","Occlusion")
         ResponsiveSectionV17("Subapartados") {
             Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(6.dp)){
                 sections.forEachIndexed{i,s->FilterChip(selected==i,{selected=i;choice=""},{Text(s)})}
