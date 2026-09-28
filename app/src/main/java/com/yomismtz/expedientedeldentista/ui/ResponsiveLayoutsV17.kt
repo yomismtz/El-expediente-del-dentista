@@ -166,8 +166,14 @@ internal fun responsiveColumnsV17(profile: ScreenProfileV17, preferredExpanded: 
 internal fun SectionHelpV22(text:String?) {
     if(text.isNullOrBlank()) return
     var open by remember { mutableStateOf(false) }
-    OutlinedButton(onClick={open=!open}) { Text("?") }
-    if(open) Surface(color=MaterialTheme.colorScheme.secondaryContainer,shape=MaterialTheme.shapes.medium) { Text(text,Modifier.padding(10.dp),style=MaterialTheme.typography.bodySmall) }
+    OutlinedButton(onClick={open=!open}) { Text("ⓘ") }
+    if(open) Surface(color=MaterialTheme.colorScheme.secondaryContainer,shape=MaterialTheme.shapes.medium) {
+        Column(Modifier.fillMaxWidth().padding(10.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
+            Text("ⓘ Información clínica",fontWeight=FontWeight.Bold,style=MaterialTheme.typography.labelLarge)
+            Text(text,style=MaterialTheme.typography.bodySmall)
+            Text("Úsalo como orientación para registrar e interpretar el contexto; no genera diagnósticos ni modifica índices, cálculos o datos del expediente.",style=MaterialTheme.typography.labelSmall)
+        }
+    }
 }
 
 @Composable
