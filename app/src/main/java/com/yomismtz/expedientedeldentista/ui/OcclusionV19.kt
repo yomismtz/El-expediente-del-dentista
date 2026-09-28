@@ -49,8 +49,8 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
     val options=listOf(
         listOf("Temporal","Mixta temprana","Mixta tardía","Permanente joven","Permanente adulta","No valorable"),
         listOf("Recto bilateral","Mesial bilateral","Distal bilateral","Asimétrico","No valorable"),
-        listOf("Clase I bilateral","Clase II bilateral","Clase III bilateral","Asimétrica derecha/izquierda","No valorable"),
-        listOf("Clase I bilateral","Clase II bilateral","Clase III bilateral","Asimétrica","No valorable"),
+        listOf("Derecha Clase I","Derecha Clase II","Derecha Clase III","Izquierda Clase I","Izquierda Clase II","Izquierda Clase III","No valorable"),
+        listOf("Derecha Clase I","Derecha Clase II","Derecha Clase III","Izquierda Clase I","Izquierda Clase II","Izquierda Clase III","No valorable"),
         listOf("Positivo habitual","Aumentado","Reducido","Borde a borde","Invertido","No medido"),
         listOf("Traslape habitual","Profunda","Borde a borde","Abierta anterior","Abierta posterior","No valorable"),
         listOf("Sin mordida cruzada","Anterior","Posterior derecha","Posterior izquierda","Posterior bilateral","Con desplazamiento funcional"),
@@ -146,15 +146,21 @@ private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int
   "Distal bilateral"->Triple("Plano terminal distal",R.drawable.new77_plano_terminal_distal,"Referencia visual de escalón distal.")
   else->null}
  2->when(choice){
-  "Clase I bilateral"->Triple("Angle Clase I · derecha",R.drawable.new77_clase_i_molar_derecha,"Referencia visual específica del lado derecho; valorar también el lado izquierdo.")
-  "Clase II bilateral"->Triple("Angle Clase II · derecha",R.drawable.new77_clase_ii_molar_derecha,"Referencia visual específica del lado derecho; valorar también el lado izquierdo.")
-  "Clase III bilateral"->Triple("Angle Clase III · derecha",R.drawable.new77_clase_iii_molar_derecha,"Referencia visual específica del lado derecho; valorar también el lado izquierdo.")
+  "Derecha Clase I"->Triple("Angle molar derecha · Clase I",R.drawable.new77_clase_i_molar_derecha,"Referencia visual específica de relación molar derecha Clase I.")
+  "Derecha Clase II"->Triple("Angle molar derecha · Clase II",R.drawable.new77_clase_ii_molar_derecha,"Referencia visual específica de relación molar derecha Clase II.")
+  "Derecha Clase III"->Triple("Angle molar derecha · Clase III",R.drawable.new77_clase_iii_molar_derecha,"Referencia visual específica de relación molar derecha Clase III.")
+  "Izquierda Clase I"->Triple("Angle molar izquierda · Clase I",R.drawable.new77_clase_i_molar_izquierda,"Referencia visual específica de relación molar izquierda Clase I.")
+  "Izquierda Clase II"->Triple("Angle molar izquierda · Clase II",R.drawable.new77_clase_ii_molar_izquierda,"Referencia visual específica de relación molar izquierda Clase II.")
+  "Izquierda Clase III"->Triple("Angle molar izquierda · Clase III",R.drawable.new77_clase_iii_molar_izquierda,"Referencia visual específica de relación molar izquierda Clase III.")
   "No valorable"->Triple("Clasificación de Angle · no valorable",R.drawable.new77_clasificacion_de_angle_no_valorable,"Imagen representativa de la opción seleccionada.")
   else->null}
  3->when(choice){
-  "Clase I bilateral"->Triple("Relación canina Clase I · derecha",R.drawable.new77_clase_i_canina_derecha,"Referencia visual específica del lado derecho; valorar también el lado izquierdo.")
-  "Clase II bilateral"->Triple("Relación canina Clase II · derecha",R.drawable.new77_clase_ii_canina_derecha,"Referencia visual específica del lado derecho; valorar también el lado izquierdo.")
-  "Clase III bilateral"->Triple("Relación canina Clase III · derecha",R.drawable.new77_clase_iii_canina_derecha,"Referencia visual específica del lado derecho; valorar también el lado izquierdo.")
+  "Derecha Clase I"->Triple("Relación canina derecha · Clase I",R.drawable.new77_clase_i_canina_derecha,"Referencia visual específica de relación canina derecha Clase I.")
+  "Derecha Clase II"->Triple("Relación canina derecha · Clase II",R.drawable.new77_clase_ii_canina_derecha,"Referencia visual específica de relación canina derecha Clase II.")
+  "Derecha Clase III"->Triple("Relación canina derecha · Clase III",R.drawable.new77_clase_iii_canina_derecha,"Referencia visual específica de relación canina derecha Clase III.")
+  "Izquierda Clase I"->Triple("Relación canina izquierda · Clase I",R.drawable.new77_clase_i_canina_izquierda,"Referencia visual específica de relación canina izquierda Clase I.")
+  "Izquierda Clase II"->Triple("Relación canina izquierda · Clase II",R.drawable.new77_clase_ii_canina_izquierda,"Referencia visual específica de relación canina izquierda Clase II.")
+  "Izquierda Clase III"->Triple("Relación canina izquierda · Clase III",R.drawable.new77_clase_iii_canina_izquierda,"Referencia visual específica de relación canina izquierda Clase III.")
   "No valorable"->Triple("Relación canina · no valorable",R.drawable.new77_relacion_canina_no_valorable,"Imagen representativa de la opción seleccionada.")
   else->null}
  4->when(choice){
