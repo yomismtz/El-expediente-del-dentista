@@ -840,6 +840,16 @@ private data class E(val n:String,val d:String)
    Triple(R.drawable.allimg_039_exudado_amigdalino,"Exudado amigdalino","Referencia clínica local."),
    Triple(R.drawable.allimg_051_hipertrofia_amigdalina,"Hipertrofia amigdalina","Referencia clínica local; el aspecto aislado no establece etiología.")
   )
+  "Lengua · dorso"->listOf(
+   Triple(R.drawable.allimg_052_lengua_fisurada,"Lengua fisurada","Referencia clínica local."),
+   Triple(R.drawable.allimg_053_lengua_geografica,"Lengua geográfica","Referencia clínica local."),
+   Triple(R.drawable.allimg_054_lengua_saburral,"Lengua saburral","Referencia clínica local."),
+   Triple(R.drawable.allimg_014_candidiasis_lengua,"Candidiasis · lengua","Referencia clínica local; correlacionar con exploración y antecedentes.")
+  )
+  "Lengua · bordes laterales","Lengua · cara ventral"->listOf(
+   Triple(R.drawable.allimg_104_ulcera_traumatica_lengua,"Úlcera traumática · lengua","Referencia clínica local."),
+   Triple(R.drawable.allimg_044_fibroma_traumatico_lengua,"Fibroma traumático · lengua","Referencia clínica local; la imagen no establece diagnóstico automático.")
+  )
   else->emptyList()
  }
  refs.forEach{v->LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)}
