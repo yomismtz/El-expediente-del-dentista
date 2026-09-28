@@ -1,11 +1,8 @@
 package com.yomismtz.expedientedeldentista
 
-import androidx.compose.ui.test.assertExists
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodes
-import androidx.compose.ui.test.onNode
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import org.junit.Rule
@@ -33,32 +30,22 @@ class RecordOpenCloseTest {
             .assertExists()
             .performClick()
 
-        compose.waitUntilAtLeastOneExists(
-            hasText("Abrir expediente", substring = true),
-            timeoutMillis = 15_000
-        )
         compose.onNode(hasText("Abrir expediente", substring = true))
+            .assertExists()
             .performClick()
 
-        compose.waitUntilAtLeastOneExists(
-            hasText("Secciones del expediente", substring = true),
-            timeoutMillis = 15_000
-        )
+        compose.onNode(hasText("Secciones del expediente", substring = true))
+            .assertExists()
 
         compose.onNode(hasText("‹", substring = false))
             .assertExists()
             .performClick()
 
-        compose.waitUntilAtLeastOneExists(
-            hasText("Abrir expediente", substring = true),
-            timeoutMillis = 15_000
-        )
         compose.onNode(hasText("Abrir expediente", substring = true))
+            .assertExists()
             .performClick()
 
-        compose.waitUntilAtLeastOneExists(
-            hasText("Secciones del expediente", substring = true),
-            timeoutMillis = 15_000
-        )
+        compose.onNode(hasText("Secciones del expediente", substring = true))
+            .assertExists()
     }
 }
