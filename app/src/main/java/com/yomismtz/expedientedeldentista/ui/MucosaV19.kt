@@ -171,6 +171,19 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                         val option=pathologies[i]
                         FilterChip(tissuePathology[selected.id]==option,{tissuePathology[selected.id]=option},{Text(option)},modifier=Modifier.fillMaxWidth())
                     }
+                    val selectedPathology=tissuePathology[selected.id].orEmpty()
+                    val pathologyVisual=when(selected.id to selectedPathology){
+                        "lengua" to "Lengua geográfica" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.allimg_053_lengua_geografica,"Lengua geográfica","Referencia visual educativa de lengua geográfica.")
+                        "lengua" to "Lengua fisurada" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.allimg_052_lengua_fisurada,"Lengua fisurada","Referencia visual educativa de lengua fisurada.")
+                        "lengua" to "Lengua saburral" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.allimg_054_lengua_saburral,"Lengua saburral","Referencia visual educativa de lengua saburral.")
+                        "lengua" to "Candidiasis" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.allimg_014_candidiasis_lengua,"Candidiasis lingual","Referencia visual educativa de candidiasis en lengua.")
+                        "lengua" to "Úlcera traumática" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.allimg_104_ulcera_traumatica_lengua,"Úlcera traumática de lengua","Referencia visual educativa de úlcera traumática en lengua.")
+                        "lengua" to "Fibroma traumático" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.allimg_044_fibroma_traumatico_lengua,"Fibroma traumático de lengua","Referencia visual educativa de fibroma traumático en lengua.")
+                        else -> null
+                    }
+                    pathologyVisual?.let{v->
+                        LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
+                    }
                 }
                 Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){
                     Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
