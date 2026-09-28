@@ -13,6 +13,10 @@ import android.graphics.RectF
 import android.graphics.pdf.PdfDocument
 import android.widget.Toast
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import com.yomismtz.expedientedeldentista.clinical.ClinicalRecordStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -35,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -141,24 +146,37 @@ private fun framedPhotoV43(source:Bitmap,brightness:Float,contrast:Float,sharpne
     return output
 }
 
-private fun createPhotoPdfV43(context:android.content.Context,photos:Map<String,String>,brightness:Map<String,Float>,contrast:Map<String,Float>,sharpness:Map<String,Float>,rotation:Map<String,Int>,zoom:Map<String,Float>,offsetX:Map<String,Float>,offsetY:Map<String,Float>):Uri? = runCatching {
+private fun createPhotoPdfV43(context:android.content.Context,photos:Map<String,String>,brightness:Map<String,Float>,contrast:Map<String,Float>,sharpness:Map<String,Float>,rotation:Map<String,Int>,zoom:Map<String,Float>,offsetX:Map<String,Float>,offsetY:Map<String,Float>,patient:String,recordId:String,dateText:String,purpose:String,notes:String,compact:Boolean):Uri? = runCatching {
     val pdf=PdfDocument()
-    photos.entries.filter{it.value.isNotBlank()}.chunked(4).forEachIndexed{pageIndex,chunk->
+    val ordered=listOf("Frontal extraoral","Perfil derecho","Perfil izquierdo","Sonrisa","Frontal intraoral","Lateral derecha","Lateral izquierda","Oclusal superior","Oclusal inferior","Detalle de lesión / procedimiento")
+    val entries=ordered.mapNotNull{k->photos[k]?.takeIf{it.isNotBlank()}?.let{k to it}}
+    val perPage=if(compact)6 else 4
+    entries.chunked(perPage).forEachIndexed{pageIndex,chunk->
         val page=pdf.startPage(PdfDocument.PageInfo.Builder(595,842,pageIndex+1).create())
         val canvas=page.canvas
-        val textPaint=Paint(Paint.ANTI_ALIAS_FLAG).apply{textSize=18f}
-        canvas.drawText("Registro fotográfico clínico",32f,36f,textPaint)
+        val textPaint=Paint(Paint.ANTI_ALIAS_FLAG).apply{textSize=18f;isFakeBoldText=true}
+        val bodyPaint=Paint(Paint.ANTI_ALIAS_FLAG).apply{textSize=10f}
+        canvas.drawText("EL EXPEDIENTE DEL DENTISTA · REGISTRO FOTOGRÁFICO",28f,30f,textPaint)
+        canvas.drawText("Paciente: "+patient.ifBlank{"Sin identificar"},28f,48f,bodyPaint)
+        canvas.drawText("Fecha: "+dateText,310f,48f,bodyPaint)
+        if(recordId.isNotBlank()) canvas.drawText("Expediente: "+recordId,28f,63f,bodyPaint)
+        canvas.drawText("Finalidad: "+purpose.ifBlank{"No especificada"},28f,78f,bodyPaint)
         chunk.forEachIndexed{i,e->
             val source=photoBitmapV43(context,e.value,2200) ?: return@forEachIndexed
             val bmp=framedPhotoV43(source,brightness[e.key]?:0f,contrast[e.key]?:1f,sharpness[e.key]?:0f,rotation[e.key]?:0,zoom[e.key]?:1f,offsetX[e.key]?:0f,offsetY[e.key]?:0f)
-            val top=62+i*188
-            val rect=android.graphics.Rect(32,top,563,top+150)
+            val imageHeight=if(compact)100 else 140
+            val rowHeight=if(compact)122 else 170
+            val top=94+i*rowHeight
+            val rect=android.graphics.Rect(28,top,567,top+imageHeight)
             canvas.drawBitmap(bmp,null,rect,Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG))
-            canvas.drawText(e.key,32f,(top+170).toFloat(),Paint(Paint.ANTI_ALIAS_FLAG).apply{textSize=12f})
+            canvas.drawText(e.first,28f,(top+imageHeight+14).toFloat(),Paint(Paint.ANTI_ALIAS_FLAG).apply{textSize=11f;isFakeBoldText=true})
             bmp.recycle();source.recycle()
         }
+        if(pageIndex==entries.chunked(perPage).lastIndex && notes.isNotBlank()) canvas.drawText("Notas: "+notes.replace("\n"," ").take(160),28f,812f,bodyPaint)
+        canvas.drawText("Página "+(pageIndex+1),520f,828f,bodyPaint)
         pdf.finishPage(page)
     }
+    if(entries.isEmpty()){pdf.close();return@runCatching null}
     val file=File(context.cacheDir,"registro_fotografico_clinico.pdf")
     file.outputStream().use{pdf.writeTo(it)}
     pdf.close()
@@ -172,6 +190,12 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     var view by rememberRecordState("photo.view","Frontal extraoral")
     var purpose by rememberRecordState("photo.purpose","Documentación inicial")
     var notes by rememberRecordState("photo.notes","")
+    var pdfCompact by rememberRecordState("photo.pdfCompact",false)
+    var pdfIncludeIdentity by rememberRecordState("photo.pdfIncludeIdentity",true)
+    val activeRecordId=LocalActiveRecordId.current.orEmpty()
+    val activeProfile=remember(activeRecordId){runCatching{ClinicalRecordStore(context).loadAll().firstOrNull{it.id==activeRecordId}?.session?.profile}.getOrNull()}
+    val patientLabel=listOfNotNull(activeProfile?.patientInitials?.takeIf{it.isNotBlank()},activeProfile?.exerciseName?.takeIf{it.isNotBlank()}).joinToString(" · ")
+    val pdfDate=remember{SimpleDateFormat("dd/MM/yyyy HH:mm",Locale.getDefault()).format(Date())}
     val photoUris=rememberRecordStateMap<String,String>("photo.uris")
     val photoBrightness=rememberRecordStateMap<String,Float>("photo.brightnessByView")
     val photoContrast=rememberRecordStateMap<String,Float>("photo.contrastByView")
@@ -255,9 +279,11 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
             AdaptiveGridV17(purposes.size,if(profile.largeSystemText)1 else if(profile.width==ScreenWidthV17.COMPACT)2 else 3){i->FilterChip(purpose==purposes[i],{purpose=purposes[i]},{Text(purposes[i])},Modifier.fillMaxWidth())}
             OutlinedTextField(notes,{notes=it},Modifier.fillMaxWidth(),label={Text(tr(lang,"Hallazgos, calidad, orientación o notas","Findings, quality, orientation or notes"))})
         }
-        ResponsiveSectionV17(tr(lang,"4 · Expediente físico","4 · Physical record"),tr(lang,"Genera una composición PDF local con las fotografías vinculadas para guardarla o imprimirla.","Creates a local PDF composition with linked photos for saving or printing.")){
+        ResponsiveSectionV17(tr(lang,"4 · Expediente físico","4 · Physical record"),tr(lang,"Genera una hoja clínica local con identificación, fecha, etiquetas, finalidad y notas. Elige composición completa o compacta.","Creates a local clinical sheet with identification, date, labels, purpose and notes. Choose full or compact layout.")){
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(!pdfCompact,{pdfCompact=false},{Text(tr(lang,"Completo","Full"))},Modifier.weight(1f));FilterChip(pdfCompact,{pdfCompact=true},{Text(tr(lang,"Compacto","Compact"))},Modifier.weight(1f))}
+            Row(Modifier.fillMaxWidth()){Checkbox(pdfIncludeIdentity,{pdfIncludeIdentity=it});Text(tr(lang,"Incluir identificación y número de expediente","Include identification and record number"),Modifier.padding(top=12.dp))}
             Button(onClick={
-                val uri=createPhotoPdfV43(context,photoUris.toMap(),photoBrightness.toMap(),photoContrast.toMap(),photoSharpness.toMap(),photoRotation.toMap(),photoZoom.toMap(),photoOffsetX.toMap(),photoOffsetY.toMap())
+                val uri=createPhotoPdfV43(context,photoUris.toMap(),photoBrightness.toMap(),photoContrast.toMap(),photoSharpness.toMap(),photoRotation.toMap(),photoZoom.toMap(),photoOffsetX.toMap(),photoOffsetY.toMap(),if(pdfIncludeIdentity)patientLabel else "",if(pdfIncludeIdentity)activeRecordId else "",pdfDate,purpose,notes,pdfCompact)
                 if(uri!=null){
                     val send=Intent(Intent.ACTION_SEND).apply{type="application/pdf";putExtra(Intent.EXTRA_STREAM,uri);addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)}
                     context.startActivity(Intent.createChooser(send,tr(lang,"Guardar, imprimir o compartir PDF","Save, print or share PDF")))
