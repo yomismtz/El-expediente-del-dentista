@@ -9,7 +9,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-@Composable private fun PText45(key:String,label:String){ var v by rememberRecordState(key,""); OutlinedTextField(v,{v=it},Modifier.fillMaxWidth(),label={Text(label)}) }
+private fun pediatricOptionsV50(key:String):List<String> = when {
+ key.contains("dentition") || key.contains("eruption") -> listOf("Temporal","Mixta temprana","Mixta tardía","Permanente joven","Permanente adulta","No valorable")
+ key.contains("behavior") -> listOf("Cooperador","Cooperación variable","No cooperador","No valorado")
+ key.contains("feeding") -> listOf("Baja frecuencia de azúcares","Frecuencia moderada","Alta frecuencia","No valorado")
+ key.contains("fluoride") -> listOf("Adecuada","Parcial","No referida","No valorada")
+ key.contains("hygiene") -> listOf("Adecuada con supervisión","Adecuada sin supervisión","Deficiente","No valorada")
+ key.contains("trauma") -> listOf("Sin trauma observado","Trauma coronario","Trauma periodontal","Trauma combinado","No valorado")
+ key.contains("caries") -> listOf("Sin lesión evidente","Lesión no cavitada","Lesión cavitada","Múltiples lesiones","No valorado")
+ key.contains("soft") -> listOf("Sin alteración aparente","Alteración localizada","Alteración generalizada","No valorado")
+ key.contains("occlusion") -> listOf("Sin alteración aparente","Alteración sagital","Alteración transversal","Alteración vertical","No valorable")
+ key.contains("radiographs") -> listOf("No indicados","Periapical","Aleta de mordida","Panorámica","Otro auxiliar")
+ key.contains("plan") -> listOf("Preventivo","Restaurador","Pulpar","Ortopédico","Combinado","Reevaluación")
+ key.contains("followup") -> listOf("Control preventivo","Reevaluación clínica","Control radiográfico","Remisión","Alta educativa")
+ key.contains("guardian") -> listOf("Madre","Padre","Tutor","Otro cuidador","No aplica")
+ key.contains("firstVisit") -> listOf("Primera visita","Experiencia previa favorable","Experiencia previa desfavorable","No referido")
+ else -> listOf("Adecuado","Parcial","Requiere refuerzo","No valorado","No aplica")
+}
+@Composable private fun PText45(key:String,label:String){ var v by rememberRecordState(key,""); Column(Modifier.fillMaxWidth()){Text(label,fontWeight=FontWeight.SemiBold);val opts=pediatricOptionsV50(key);AdaptiveGridV17(opts.size,2){i->val o=opts[i];FilterChip(v==o,{v=o},{Text(o)},Modifier.fillMaxWidth())}} }
 @Composable private fun PChoice45(key:String,options:List<String>,columns:Int){ var v by rememberRecordState(key,""); AdaptiveGridV17(options.size,columns){i->FilterChip(v==options[i],{v=options[i]},{Text(options[i])},Modifier.fillMaxWidth())} }
 
 @Composable fun PediatricDentistryV45(lang:String,onBack:()->Unit){
