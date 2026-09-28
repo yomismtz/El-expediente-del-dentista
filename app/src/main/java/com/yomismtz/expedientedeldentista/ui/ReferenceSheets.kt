@@ -310,9 +310,6 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
                 Text(tr(lang,"Relaciona el movimiento o la palpación seleccionada con simetría, amplitud, trayectoria, dolor reproducible y limitación funcional, según corresponda.","Relate the selected movement or palpation to symmetry, range, trajectory, reproducible pain and functional limitation as appropriate."))
                 Text(tr(lang,"Imagen representativa","Representative image"),fontWeight=FontWeight.SemiBold)
                 LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
-                if(atmVisual=="Apertura y cierre") LocalClinicalHelpImageV47(lang,"Animación · apertura y cierre","Animation · opening and closing",R.drawable.atm_apertura_cierre,"Secuencia animada complementaria del movimiento.","Complementary animated movement sequence.")
-                if(atmVisual=="Lateralidades") LocalClinicalHelpImageV47(lang,"Animación · lateralidad","Animation · excursion",R.drawable.edu_atm_lateralidad_,"Secuencia animada complementaria.","Complementary animated sequence.")
-                if(atmVisual=="Protrusión") LocalClinicalHelpImageV47(lang,"Animación · protrusión","Animation · protrusion",R.drawable.edu_atm_protrusion_anim,"Secuencia animada complementaria.","Complementary animated sequence.")
             }}
         }}
         item{SectionCard(tr(lang,"18 · Seguimiento","18 · Follow-up")){
