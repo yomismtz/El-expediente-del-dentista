@@ -393,7 +393,7 @@ private fun LocalClinicalZoomDialogV48(lang:String,titleEs:String,titleEn:String
 }
 
 @Composable
-internal fun LocalClinicalImageSectionV46(lang:String,profile:ScreenProfileV17?=null,groupEs:String,groupEn:String){
+internal fun LocalClinicalImageSectionV46(lang:String,profile:ScreenProfileV17?=null,groupEs:String,groupEn:String,showThumbnails:Boolean=true){
     var expanded by remember{mutableStateOf<LocalClinicalGuideV45?>(null)}
     val items=localClinicalGuidesV45.filter{it.groupEs==groupEs}
     if(items.isEmpty())return
@@ -403,7 +403,7 @@ internal fun LocalClinicalImageSectionV46(lang:String,profile:ScreenProfileV17?=
             val item=items[i]
             Card(Modifier.fillMaxWidth().clickable{expanded=item},shape=RoundedCornerShape(14.dp)){
                 Column(Modifier.padding(8.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){
-                    Image(painterResource(item.drawable),if(lang=="en")item.titleEn else item.titleEs,Modifier.fillMaxWidth().heightIn(min=110.dp,max=190.dp),contentScale=ContentScale.Fit)
+                    if(showThumbnails) Image(painterResource(item.drawable),if(lang=="en")item.titleEn else item.titleEs,Modifier.fillMaxWidth().heightIn(min=110.dp,max=190.dp),contentScale=ContentScale.Fit) else Text("🖼️",style=MaterialTheme.typography.headlineMedium)
                     Text(if(lang=="en")item.titleEn else item.titleEs,fontWeight=FontWeight.Bold)
                     Text(if(lang=="en")item.noteEn else item.noteEs,style=MaterialTheme.typography.bodySmall)
                 }
