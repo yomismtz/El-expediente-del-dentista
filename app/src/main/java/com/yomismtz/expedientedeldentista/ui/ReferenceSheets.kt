@@ -248,6 +248,27 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
         item{SectionCard(tr(lang,"1 · Síntomas y antecedentes","1 · Symptoms and history")){
             Text(tr(lang,"Marca los hallazgos referidos. Se muestran en 2–3 celdas según el espacio disponible.","Mark reported findings. They display in 2–3 cells according to available space."),style=MaterialTheme.typography.bodySmall)
             ChipChoices(findings.map{f->(if(lang=="en")f.en else f.es) to on(f.key)},{i->val f=findings[i];checked[f.key]=!on(f.key)},columns=3)
+            val atmFindingVisuals=mapOf(
+                "painJoint" to listOf(Triple(R.drawable.atm_new_dolor_localizado,"Dolor localizado de ATM","Referencia visual educativa del sitio articular referido.")),
+                "muscle" to listOf(Triple(R.drawable.atm_new_dolor_musculos,"Dolor de músculos masticatorios","Referencia visual educativa de dolor/sensibilidad muscular.")),
+                "click" to listOf(Triple(R.drawable.atm_new_chasquido,"Chasquido reproducible","Referencia visual educativa de chasquido articular reproducible.")),
+                "crepitus" to listOf(Triple(R.drawable.atm_new_crepitacion,"Crepitación","Referencia visual educativa de crepitación articular.")),
+                "headache" to listOf(Triple(R.drawable.atm_new_cefalea,"Cefalea modificada por masticación","Referencia visual educativa del síntoma referido.")),
+                "locking" to listOf(Triple(R.drawable.atm_new_bloqueo,"Bloqueo mandibular","Referencia visual educativa de bloqueo o atoramiento mandibular.")),
+                "lockOpen" to listOf(Triple(R.drawable.atm_new_boca_abierta,"Bloqueo con boca abierta","Referencia visual educativa de boca abierta que no puede cerrar.")),
+                "ear" to listOf(
+                    Triple(R.drawable.atm_new_dolor_periauricular,"Dolor periauricular","Referencia visual educativa de localización periauricular."),
+                    Triple(R.drawable.atm_new_otalgia,"Otalgia","Referencia visual educativa de dolor referido al oído.")
+                ),
+                "parafunction" to listOf(Triple(R.drawable.atm_new_bruxismo,"Bruxismo / apretamiento","Referencia visual educativa de parafunción referida.")),
+                "trauma" to listOf(Triple(R.drawable.atm_new_trauma,"Trauma de ATM","Referencia visual educativa de antecedente traumático de ATM/mandíbula."))
+            )
+            findings.filter{on(it.key)}.forEach { finding ->
+                atmFindingVisuals[finding.key].orEmpty().forEach { v ->
+                    LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
+                }
+            }
+            if(findings.none{on(it.key)}) Text(tr(lang,"Selecciona un síntoma para mostrar su referencia visual.","Select a symptom to show its visual reference."),style=MaterialTheme.typography.bodySmall)
         }}
         item{Pick(tr(lang,"2 · Intensidad del dolor · EVA/NRS 0–10","2 · Pain intensity · 0–10 NRS"),tr(lang,"0 significa ausencia de dolor y 10 el peor dolor imaginable referido. La cifra describe intensidad, no la causa.","0 means no pain and 10 the worst pain imaginable as reported. The number describes intensity, not cause."),(0..10).map(Int::toString),painIntensity){painIntensity=it}}
         item{Pick(tr(lang,"3 · Localización principal","3 · Main location"),tr(lang,"Registra dónde se percibe principalmente el dolor; una localización puede tener fuentes diferentes.","Record where pain is mainly perceived; one location may have different sources."),listOf("Sin dolor","ATM/preauricular","Masetero","Temporal","Mandíbula","Maxilar","Diente/alvéolo","Oído referido","Cabeza/cara","Difuso/otro"),painSite){painSite=it}}
