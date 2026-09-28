@@ -1,5 +1,7 @@
 package com.yomismtz.expedientedeldentista.ui
 
+import androidx.compose.foundation.layout.Column
+
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.TextButton
