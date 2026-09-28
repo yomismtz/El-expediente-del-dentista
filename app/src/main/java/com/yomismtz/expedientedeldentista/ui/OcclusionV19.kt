@@ -182,8 +182,52 @@ private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int
   "Coincidentes"->Triple("Línea media centrada",R.drawable.new77_edu_oclusion_linea_media_centrada,"Imagen representativa de la opción seleccionada.")
   ""->null
   else->Triple("Línea media desviada",R.drawable.new77_edu_oclusion_linea_media_desviada,"Imagen representativa de la opción seleccionada.")}
- 10->when(choice){"Mordida profunda"->Triple("Mordida profunda",R.drawable.edu_oclusion_mordida_profunda_1,"Referencia visual.");"Mordida abierta"->Triple("Mordida abierta",R.drawable.edu_oclusion_mordida_abierta,"Referencia visual.");else->null}
- 11->when(choice){"Cruzada unilateral"->Triple("Cruzada posterior unilateral",R.drawable.edu_oclusion_cruzada_posterior_unilateral_2,"Referencia visual.");"Cruzada bilateral"->Triple("Cruzada posterior bilateral",R.drawable.edu_oclusion_cruzada_posterior_bilateral_2,"Referencia visual.");else->null}
+ 8->when(choice){
+  "Apiñamiento leve","Apiñamiento moderado"->Triple("Apiñamiento dental anterior",R.drawable.allimg_006_apinamiento_dental_anterior,"Referencia clínica local de apiñamiento anterior.")
+  "Apiñamiento severo"->Triple("Apiñamiento dental",R.drawable.allimg_008_apinamiento_dental,"Referencia clínica local de apiñamiento.")
+  "Diastemas/espacios"->Triple("Espaciamiento / diastema",R.drawable.allimg_035_espaciamiento_dental_diastema,"Referencia clínica local de espaciamiento dental.")
+  else->null}
+ 9->when(choice){
+  "Ovoide simétrica"->Triple("Arcada ovoide",R.drawable.new17_arcada_de_forma_ovoide,"Referencia visual de forma de arcada ovoide.")
+  "Triangular"->Triple("Arcada triangular",R.drawable.new17_arcada_de_forma_triangular,"Referencia visual de forma de arcada triangular.")
+  "Cuadrada/amplia"->Triple("Arcada cuadrada",R.drawable.new17_arcada_de_forma_cuadrada,"Referencia visual de forma de arcada cuadrada.")
+  "Estrecha"->Triple("Arcada estrecha",R.drawable.new17_arcada_de_forma_estrecha,"Referencia visual de arcada estrecha.")
+  "Asimétrica"->Triple("Arcada asimétrica",R.drawable.new17_arcada_de_forma_asimetrica,"Referencia visual de asimetría de arcada.")
+  else->null}
+ 10->when(choice){
+  "Curva de Spee discreta"->Triple("Curva de Spee discreta",R.drawable.allimg_021_curva_de_spee_discreta,"Referencia visual local.")
+  "Curva aumentada"->Triple("Curva de Spee profunda",R.drawable.allimg_024_curva_de_spee_profunda,"Referencia visual local.")
+  "Curva plana"->Triple("Curva de Spee plana",R.drawable.allimg_022_curva_de_spee_plana,"Referencia visual local.")
+  "Mordida profunda"->Triple("Mordida profunda",R.drawable.edu_oclusion_mordida_profunda_1,"Referencia visual.")
+  "Mordida abierta"->Triple("Mordida abierta",R.drawable.edu_oclusion_mordida_abierta,"Referencia visual.")
+  else->null}
+ 11->when(choice){
+  "Relación transversal habitual"->Triple("Relación transversal habitual",R.drawable.allimg_095_relacion_transversal_habitual,"Referencia clínica local.")
+  "Cruzada unilateral"->Triple("Cruzada posterior unilateral",R.drawable.edu_oclusion_cruzada_posterior_unilateral_2,"Referencia visual.")
+  "Cruzada bilateral"->Triple("Cruzada posterior bilateral",R.drawable.edu_oclusion_cruzada_posterior_bilateral_2,"Referencia visual.")
+  "Mordida en tijera/Brodie"->Triple("Mordida de Brodie",R.drawable.allimg_012_brodie_bite,"Referencia clínica local.")
+  "Asimetría transversal"->Triple("Asimetría transversal oclusal",R.drawable.allimg_011_asimetria_transversal_oclusal,"Referencia clínica local.")
+  else->null}
+ 12->when(choice){
+  "Posteriores bilaterales"->Triple("Contactos oclusales bilaterales",R.drawable.allimg_019_contactos_oclusales_bilaterales,"Referencia visual local.")
+  "Predominio derecho"->Triple("Contacto oclusal predominante derecho",R.drawable.allimg_017_contacto_oclusal_predominante_derecho,"Referencia visual local.")
+  "Predominio izquierdo"->Triple("Contacto oclusal predominante izquierdo",R.drawable.allimg_018_contacto_oclusal_predominante_izquierdo,"Referencia visual local.")
+  "Contacto prematuro aparente"->Triple("Contacto prematuro",R.drawable.allimg_020_contatco_preaturo_de_contacto_anterior,"Referencia visual local.")
+  else->null}
+ 13->when(choice){
+  "Cierre sin desplazamiento"->Triple("Cierre sin desplazamiento",R.drawable.allimg_001_cierre_sin_desplazamiento,"Referencia visual local.")
+  "Deslizamiento funcional derecho"->Triple("Desplazamiento funcional a la derecha",R.drawable.allimg_028_desplazamiento_funcional_a_la_derecha,"Referencia visual local.")
+  "Deslizamiento funcional izquierdo"->Triple("Desplazamiento funcional a la izquierda",R.drawable.allimg_029_desplazamiento_funcional_a_la_izquierda,"Referencia visual local.")
+  "Discrepancia RC/MI aparente"->Triple("Discrepancia entre RC y máxima intercuspidación",R.drawable.allimg_030_discrepancia_entre_maxima_interscupidacion_y_,"Referencia visual local.")
+  else->null}
+ 14->when(choice){
+  "Sin desgaste aparente"->Triple("Sin desgaste aparente",R.drawable.allimg_004_sin_desgaste_aparente,"Referencia clínica local.")
+  "Facetas anteriores"->Triple("Facetas anteriores",R.drawable.allimg_040_facetas_anteriores,"Referencia clínica local.")
+  "Facetas posteriores"->Triple("Facetas posteriores",R.drawable.allimg_041_facetas_posteriorers,"Referencia clínica local.")
+  "Generalizado"->Triple("Desgaste generalizado",R.drawable.allimg_025_desgaste_generalizado,"Referencia clínica local.")
+  "Unilateral"->Triple("Desgaste oclusal unilateral",R.drawable.allimg_027_desgasteoclusal_unilateral,"Referencia clínica local.")
+  "Severo"->Triple("Desgaste oclusal severo",R.drawable.allimg_026_desgaste_oclusal_severo,"Referencia clínica local.")
+  else->null}
  15->when(choice){"Mordida profunda"->Triple("Mordida profunda",R.drawable.edu_oclusion_mordida_profunda,"Referencia visual.");"Mordida abierta"->Triple("Mordida abierta",R.drawable.edu_oclusion_mordida_abierta,"Referencia visual.");"Mordida invertida/underbite"->Triple("Relación anterior invertida",R.drawable.edu_oclusion_cruzada_anterior,"Referencia visual.");else->null}
  else->null
 }
