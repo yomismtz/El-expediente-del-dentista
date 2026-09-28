@@ -125,31 +125,44 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
                     Text(tr(lang,"Imagen representativa","Representative image"),fontWeight=FontWeight.SemiBold)
                     LocalClinicalInlineZoomImageV48(lang,visual.first,visual.first,visual.second,visual.third,visual.third)
                 }}
-            } else if(ph.second!=0) OcclusionPhoto19(ph.first,ph.second) else TerminalPlanes19(lang)
-            when(selected){
-                1->TerminalPlanes19(lang)
-                2->AngleMolar19()
-                3->Canine19(lang)
-                4->Overjet19(lang)
-                5->Overbite19(lang)
-                6->Crossbite19(lang)
             }
         }
-        LocalClinicalImageSectionV46(lang,profile,"Oclusión y dentición · referencias ampliadas","Occlusion and dentition · expanded references")
-        LocalClinicalImageSectionV46(lang,profile,"Dentición · referencias ampliadas","Dentition · expanded references")
-        LocalClinicalImageSectionV46(lang,profile,"Líneas medias dentales","Dental midlines")
-        LocalClinicalImageSectionV46(lang,profile,"Forma de arcada","Arch form")
-        LocalClinicalImageSectionV46(lang,profile,"Oclusión y alineación dental","Occlusion and dental alignment")
-        NoticeCard(tr(lang,"Los espacios visuales clínicos están preparados para recursos locales del APK. Mientras un recurso siga pendiente de integración, no debe interpretarse el marcador visual como fotografía clínica. Los esquemas de medición se identifican como esquemas. Registrar hallazgos no equivale a emitir automáticamente un diagnóstico.","Clinical visual slots are prepared for local APK resources. While a resource is still pending integration, its visual placeholder must not be interpreted as a clinical photograph. Measurement diagrams are identified as diagrams. Recording findings does not automatically establish a diagnosis."))
+        NoticeCard(tr(lang,"Los espacios visuales clínicos están preparados para recursos locales del APK. Registrar hallazgos no equivale a emitir automáticamente un diagnóstico.","Clinical visual slots are prepared for local APK resources. Recording findings does not automatically establish a diagnosis."))
     }
 }
 
 private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int,String>?=when(section){
- 2->when{choice.startsWith("Clase I ")->Triple("Angle Clase I",R.drawable.edu_oclusion_angle_clase_1_png,"Ejemplo visual de relación molar Clase I.");choice.startsWith("Clase II ")->Triple("Angle Clase II",R.drawable.edu_oclusion_angle_clase_2_png,"Ejemplo visual de relación molar Clase II.");choice.startsWith("Clase III ")->Triple("Angle Clase III",R.drawable.edu_oclusion_angle_clase_3_png,"Ejemplo visual de relación molar Clase III.");else->null}
- 4->when(choice){"Aumentado"->Triple("Overjet aumentado",R.drawable.edu_oclusion_overjet,"Ejemplo y explicación visual de overjet.");"Reducido","Borde a borde","Invertido"->Triple("Relación anterior · overjet",R.drawable.edu_oclusion_oveerjetoverbite,"Referencia visual para comparar la relación horizontal anterior.");else->null}
- 5->when(choice){"Profunda"->Triple("Mordida profunda",R.drawable.edu_oclusion_mordida_profunda,"Ejemplo visual de sobremordida aumentada.");"Abierta anterior"->Triple("Mordida abierta anterior",R.drawable.edu_oclusion_mordida_abierta,"Ejemplo visual de mordida abierta anterior.");"Abierta posterior"->Triple("Mordida abierta posterior",R.drawable.edu_oclusion_mordida_abierta_posterior,"Ejemplo visual de mordida abierta posterior.");"Traslape habitual","Borde a borde"->Triple("Overbite",R.drawable.edu_oclusion_overbite,"Referencia visual de relación vertical anterior.");else->null}
+ 2->when(choice){
+  "Clase I bilateral"->Triple("Angle Clase I",R.drawable.edu_oclusion_angle_clase_1_png,"Ejemplo visual de relación molar Clase I.")
+  "Clase II bilateral"->Triple("Angle Clase II",R.drawable.edu_oclusion_angle_clase_2_png,"Ejemplo visual de relación molar Clase II.")
+  "Clase III bilateral"->Triple("Angle Clase III",R.drawable.edu_oclusion_angle_clase_3_png,"Ejemplo visual de relación molar Clase III.")
+  "No valorable"->Triple("Clasificación de Angle · no valorable",R.drawable.new77_clasificacion_de_angle_no_valorable,"Imagen representativa de la opción seleccionada.")
+  else->null}
+ 3->when(choice){
+  "Clase I bilateral"->Triple("Relación canina Clase I",R.drawable.new77_clase_i_canina_derecha,"Imagen representativa de relación canina Clase I.")
+  "Clase II bilateral"->Triple("Relación canina Clase II",R.drawable.new77_clase_ii_canina_derecha,"Imagen representativa de relación canina Clase II.")
+  "Clase III bilateral"->Triple("Relación canina Clase III",R.drawable.new77_clase_iii_canina_derecha,"Imagen representativa de relación canina Clase III.")
+  "No valorable"->Triple("Relación canina · no valorable",R.drawable.new77_relacion_canina_no_valorable,"Imagen representativa de la opción seleccionada.")
+  else->null}
+ 4->when(choice){
+  "Positivo habitual"->Triple("Overjet normal",R.drawable.new77_edu_oclusion_overjet_normal,"Imagen representativa de la opción seleccionada.")
+  "Aumentado"->Triple("Overjet positivo / aumentado",R.drawable.new77_edu_oclusion_overjet_positivo,"Imagen representativa de la opción seleccionada.")
+  "Reducido","Borde a borde","Invertido"->Triple("Overjet disminuido / negativo",R.drawable.new77_edu_oclusion_overjet_disminuido_negativo,"Imagen representativa de la opción seleccionada.")
+  "No medido"->Triple("Overjet · no valorable",R.drawable.new77_edu_oclusion_overjet_no_valorable,"Imagen representativa de la opción seleccionada.")
+  else->null}
+ 5->when(choice){
+  "Traslape habitual"->Triple("Overbite normal",R.drawable.new77_edu_oclusion_overbite_normal,"Imagen representativa de la opción seleccionada.")
+  "Profunda"->Triple("Overbite aumentado / mordida profunda",R.drawable.new77_edu_oclusion_overbite_aqumentado_o_positivo,"Imagen representativa de la opción seleccionada.")
+  "Borde a borde"->Triple("Overbite disminuido",R.drawable.new77_edu_oclusion_overbite_negativo_disminuido,"Imagen representativa de la opción seleccionada.")
+  "Abierta anterior"->Triple("Mordida abierta anterior",R.drawable.edu_oclusion_mordida_abierta,"Imagen representativa de la opción seleccionada.")
+  "Abierta posterior"->Triple("Mordida abierta posterior",R.drawable.edu_oclusion_mordida_abierta_posterior,"Imagen representativa de la opción seleccionada.")
+  "No valorable"->Triple("Overbite · no valorable",R.drawable.new77_edu_oclusion_overbite_no_valorable,"Imagen representativa de la opción seleccionada.")
+  else->null}
  6->when(choice){"Anterior"->Triple("Mordida cruzada anterior",R.drawable.edu_oclusion_cruzada_anterior,"Ejemplo visual de mordida cruzada anterior.");"Posterior derecha","Posterior izquierda"->Triple("Mordida cruzada posterior unilateral",R.drawable.edu_oclusion_cruzada_posterior_unilateral,"Ejemplo visual de mordida cruzada posterior unilateral.");"Posterior bilateral"->Triple("Mordida cruzada posterior bilateral",R.drawable.edu_oclusion_cruzada_posterior_bilateral,"Ejemplo visual de mordida cruzada posterior bilateral.");else->null}
- 7->if(choice!="Coincidentes") Triple("Líneas medias",R.drawable.edu_oclusion_linea_media,"Referencia visual para valorar discrepancias de línea media.") else null
+ 7->when(choice){
+  "Coincidentes"->Triple("Línea media centrada",R.drawable.new77_edu_oclusion_linea_media_centrada,"Imagen representativa de la opción seleccionada.")
+  ""->null
+  else->Triple("Línea media desviada",R.drawable.new77_edu_oclusion_linea_media_desviada,"Imagen representativa de la opción seleccionada.")}
  10->when(choice){"Mordida profunda"->Triple("Mordida profunda",R.drawable.edu_oclusion_mordida_profunda_1,"Referencia visual.");"Mordida abierta"->Triple("Mordida abierta",R.drawable.edu_oclusion_mordida_abierta,"Referencia visual.");else->null}
  11->when(choice){"Cruzada unilateral"->Triple("Cruzada posterior unilateral",R.drawable.edu_oclusion_cruzada_posterior_unilateral_2,"Referencia visual.");"Cruzada bilateral"->Triple("Cruzada posterior bilateral",R.drawable.edu_oclusion_cruzada_posterior_bilateral_2,"Referencia visual.");else->null}
  15->when(choice){"Mordida profunda"->Triple("Mordida profunda",R.drawable.edu_oclusion_mordida_profunda,"Referencia visual.");"Mordida abierta"->Triple("Mordida abierta",R.drawable.edu_oclusion_mordida_abierta,"Referencia visual.");"Mordida invertida/underbite"->Triple("Relación anterior invertida",R.drawable.edu_oclusion_cruzada_anterior,"Referencia visual.");else->null}
