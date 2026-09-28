@@ -548,6 +548,7 @@ private data class E(val n:String,val d:String)
    item{Pick("Hundimiento craneal · identificación",listOf("No se observa","Frontal","Parietal","Temporal","Occipital","Múltiple","No valorable"),"Hundimiento = depresión o pérdida aparente del contorno craneal. Registrar localización, simetría y antecedente traumático o quirúrgico cuando corresponda.")}
    item{Pick("Hundimiento craneal · aspecto frecuente",listOf("Depresión frontal","Depresión parietal","Depresión temporal","Depresión occipital","Depresión posquirúrgica / postraumática","No valorable"),"Las depresiones pueden corresponder a anatomía individual, secuela traumática o posquirúrgica, entre otras causas. Una selección educativa no equivale a diagnóstico.")}
    item{ClinicalPhotoV38("Referencia clínica real · asimetría de expresión facial",R.drawable.clinical_facial_asymmetry,"James Heilman, MD · Wikimedia Commons · licencia abierta; publicación con consentimiento declarado por el autor.")}
+   item{LocalClinicalImageSectionV46(lang,null,"Tez y coloración facial","Skin tone and facial coloration")}
    item{LocalClinicalImageSectionV46(lang,null,"Análisis facial · formas del rostro","Facial analysis · face shapes")}
   }
   if(section=="Músculos"){
