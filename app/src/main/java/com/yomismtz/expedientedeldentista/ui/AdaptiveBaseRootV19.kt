@@ -282,6 +282,7 @@ private fun FolderV19(lang:String,onOpenGroup:(Int)->Unit,onClose:()->Unit) {
                 }
             }
         }
+        LocalClinicalImageSectionV46(lang,profile,"Identidad visual y créditos","Visual identity and credits")
     }
 }
 
