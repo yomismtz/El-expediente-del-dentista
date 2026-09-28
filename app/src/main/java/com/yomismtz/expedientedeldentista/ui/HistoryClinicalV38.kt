@@ -592,7 +592,9 @@ private data class E(val n:String,val d:String)
    item{ClinicalPhotoV38("Referencia clínica real · evaluación de sonrisa en parálisis facial",R.drawable.clinical_smile,"Shantoo · Wikimedia Commons · CC0; uso educativo para ilustrar parálisis facial.")}
    item{Pick("Músculos de la expresión · tono/función",listOf("Función aparentemente conservada","Hipotonía aparente","Hipertonía aparente","Movimiento involuntario","Dolor referido","No valorable"))}
    item{Pick("Temporal",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"))}
+   item{ClinicalPhotoV38("Músculo temporal · referencia anatómica",R.drawable.new77_exploacion_fisica_y_extraoral_musculos_temporal,"Imagen local ya incluida en el proyecto para apoyo de la exploración del músculo temporal.")}
    item{Pick("Masetero",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"))}
+   item{ClinicalPhotoV38("Músculo masetero · referencia anatómica",R.drawable.new77_exploacion_fisica_y_extraoral_musculos_masetero,"Imagen local ya incluida en el proyecto para apoyo de la exploración del músculo masetero.")}
    item{Pick("Pterigoideos / función clínica",listOf("Sin hallazgos aparentes","Dolor reproducible en maniobra","Limitación funcional","No valorable"),"Correlacionar palpación accesible y movimientos contra resistencia; no atribuir dolor inespecífico a un músculo profundo sin sustento clínico.")}
    item{LocalClinicalImageSectionV46(lang,null,"Exploración muscular y función facial","Muscle and facial function examination")}
   }
@@ -606,7 +608,8 @@ private data class E(val n:String,val d:String)
   }
   if(section=="Ganglios"){
    item{LocalClinicalImageSectionV46(lang,null,"Cuello y ganglios","Neck and lymph nodes")}
-   item{ClinicalPhotoV38("Técnica de palpación ganglionar",R.drawable.clinical_node_palpation,"Fotografía clínica real de palpación ganglionar · Fernandovet · Wikimedia Commons.")}
+   item{ClinicalPhotoV38("Técnica de palpación ganglionar",R.drawable.allimg_099_tecnica_de_palpacion_de_cadenas_ganglionares,"Imagen local ya subida · técnica de palpación de cadenas ganglionares.")}
+   item{ClinicalPhotoV38("Mapa anatómico de cadenas cervicales · imagen subida",R.drawable.allimg_067_mapa_anatomico_de_cadenas_cervicales,"Imagen local ya subida para identificar las cadenas cervicales.")}
    item{ClinicalPhotoV38("Hallazgo · linfadenopatía cervical",R.drawable.clinical_cervical_nodes,"Fotografía clínica real · Whispyhistory · CC0.")}
    item{ClinicalPhotoV38("Mapa anatómico de cadenas cervicales",R.drawable.clinical_cervical_map,"Referencia anatómica didáctica · Wikimedia Commons. No es fotografía clínica.")}
    item{Pick("Cadena ganglionar",listOf("Preauriculares","Mastoideos/postauriculares","Occipitales","Submentonianos","Submandibulares","Cervicales superficiales/anterior","Cervicales profundos","Cervicales posteriores","Supraclaviculares"))}
