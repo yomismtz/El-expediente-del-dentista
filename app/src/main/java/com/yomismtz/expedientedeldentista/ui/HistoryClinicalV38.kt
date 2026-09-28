@@ -517,13 +517,32 @@ private data class E(val n:String,val d:String)
 
   if(section=="Cráneo y cara"){
    item{Pick("Forma craneal",listOf("Dolicocefálico","Mesocéfalo","Braquicéfalo","No valorable"),"Dolicocefálico: cráneo relativamente largo y estrecho. Mesocéfalo: proporciones intermedias. Braquicéfalo: cráneo relativamente corto y ancho.")}
+   item{when(selected["Forma craneal"]){
+    "Dolicocefálico"->ClinicalPhotoV38("Dolicocefálico",R.drawable.face13_dolicocefalico,"Referencia visual educativa local.")
+    "Mesocéfalo"->ClinicalPhotoV38("Mesocéfalo",R.drawable.face13_mesocefalico,"Referencia visual educativa local.")
+    "Braquicéfalo"->ClinicalPhotoV38("Braquicéfalo",R.drawable.face13_braquicefalico,"Referencia visual educativa local.")
+    "No valorable"->ClinicalPhotoV38("Cráneo no valorable",R.drawable.face13_craneo_no_valorable,"Referencia visual educativa local.")
+   }}
    item{ClinicalPhotoV38("Dolicocefálico y braquicéfalo · comparación morfológica real",R.drawable.clinical_cranial_morphology,"Fotografía antropométrica histórica real · Popular Science Monthly, 1897–1898 · dominio público. Úsese sólo como referencia morfológica, no diagnóstica.")}
    item{Pick("Patrón facial",listOf("Dolicofacial","Mesofacial","Braquifacial","No valorable"),"Dolicofacial: cara relativamente larga y estrecha. Mesofacial: proporción intermedia. Braquifacial: cara relativamente corta y ancha.")}
+   item{when(selected["Patrón facial"]){
+    "Dolicofacial"->ClinicalPhotoV38("Dolicofacial",R.drawable.face13_dolicofacial,"Referencia visual educativa local.")
+    "Mesofacial"->ClinicalPhotoV38("Mesofacial",R.drawable.face13_mesofacial,"Referencia visual educativa local.")
+    "Braquifacial"->ClinicalPhotoV38("Braquifacial",R.drawable.face13_braquifacial,"Referencia visual educativa local.")
+    "No valorable"->ClinicalPhotoV38("Patrón facial no valorable",R.drawable.face13_perfil_no_valorable,"Referencia visual educativa local.")
+   }}
    item{Pick("Forma de la cara",listOf("Ovalada","Redonda","Cuadrada","Rectangular / alargada","Triangular","Triangular invertida / corazón","Romboidal","Asimétrica","No valorable"),"Describe el contorno facial observado. La forma de la cara es descriptiva y no constituye por sí sola un diagnóstico.")}
    item{Pick("Tez · pigmentación basal aparente",listOf("Muy clara","Clara","Intermedia","Morena clara","Morena","Oscura","No valorable"),"Registrar de forma descriptiva la pigmentación basal aparente, separándola de cambios patológicos de coloración.")}
    item{Pick("Coloración cutánea · alteraciones",listOf("Sin alteración aparente","Palidez cutaneomucosa","Ictericia","Cianosis","Eritema / rubicundez","Coloración grisácea / cenicienta","Hiperpigmentación","Hipopigmentación","Discromía localizada","Discromía difusa","No valorable"),"Palidez = disminución aparente de coloración; ictericia = tonalidad amarillenta; cianosis = tonalidad azulada/violácea; eritema o rubicundez = enrojecimiento; coloración grisácea/cenicienta = tono gris anormal. Registrar el hallazgo observado sin atribuir una causa automáticamente.")}
    item{Pick("Distribución de la alteración de color",listOf("No aplica","Generalizada","Facial difusa","Perioral","Periorbitaria","Localizada","Simétrica","Asimétrica","No valorable"),"La distribución ayuda a describir el hallazgo. Correlacionar con mucosas, iluminación, antecedentes y contexto clínico.")}
    item{Pick("Simetría facial",listOf("Simétrica aparente","Asimetría derecha","Asimetría izquierda","Asimetría compleja","No valorable"))}
+   item{when(selected["Simetría facial"]){
+    "Simétrica aparente"->ClinicalPhotoV38("Simetría facial aparente",R.drawable.face13_simetria_aparente,"Referencia visual educativa local.")
+    "Asimetría derecha"->ClinicalPhotoV38("Asimetría facial derecha",R.drawable.face13_asimetria_derecha,"Referencia visual educativa local.")
+    "Asimetría izquierda"->ClinicalPhotoV38("Asimetría facial izquierda",R.drawable.face13_asimetria_izquierda,"Referencia visual educativa local.")
+    "Asimetría compleja"->ClinicalPhotoV38("Asimetría facial compleja",R.drawable.face13_asimetria_compleja,"Referencia visual educativa local.")
+    "No valorable"->ClinicalPhotoV38("Simetría no valorable",R.drawable.face13_simetria_no_valorable,"Referencia visual educativa local.")
+   }}
    item{Pick("Exostosis craneal · identificación",listOf("No se observa","Frontal","Parietal","Occipital","Temporal / mastoidea","Múltiple","No valorable"),"Exostosis = prominencia ósea localizada. Selecciona la región observada o palpada; este hallazgo por sí solo no establece la causa.")}
    item{Pick("Exostosis craneal · aspecto frecuente",listOf("Prominencia frontal localizada","Prominencia parietal localizada","Prominencia occipital localizada","Prominencia mastoidea / temporal","Prominencias múltiples","No valorable"),"Al seleccionar una opción se muestran ejemplos anatómicos frecuentes por localización; distinguir una variante/prominencia ósea de una masa de tejidos blandos requiere exploración clínica.")}
    item{Pick("Hundimiento craneal · identificación",listOf("No se observa","Frontal","Parietal","Temporal","Occipital","Múltiple","No valorable"),"Hundimiento = depresión o pérdida aparente del contorno craneal. Registrar localización, simetría y antecedente traumático o quirúrgico cuando corresponda.")}
