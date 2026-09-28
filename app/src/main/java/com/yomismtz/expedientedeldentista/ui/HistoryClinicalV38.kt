@@ -828,6 +828,18 @@ private data class E(val n:String,val d:String)
    Triple(R.drawable.allimg_032_eritema_inflaatorio_paladar_blando,"Eritema inflamatorio · paladar blando","Referencia clínica local."),
    Triple(R.drawable.allimg_076_petquias_paladar_blando,"Petequias · paladar blando","Referencia clínica local.")
   )
+  "Orofaringe / pared posterior"->listOf(
+   Triple(R.drawable.allimg_005_afta_de_bednar_orofaringe,"Afta de Bednar · orofaringe","Referencia clínica local."),
+   Triple(R.drawable.allimg_102_ulcera_orofaringe,"Úlcera · orofaringe","Referencia clínica local.")
+  )
+  "Úvula"->listOf(
+   Triple(R.drawable.allimg_107_ulcera_uvula,"Úlcera · úvula","Referencia clínica local.")
+  )
+  "Amígdala derecha","Amígdala izquierda"->listOf(
+   Triple(R.drawable.allimg_009_asimetria_amigdalina,"Asimetría amigdalina","Referencia clínica local para comparación bilateral."),
+   Triple(R.drawable.allimg_039_exudado_amigdalino,"Exudado amigdalino","Referencia clínica local."),
+   Triple(R.drawable.allimg_051_hipertrofia_amigdalina,"Hipertrofia amigdalina","Referencia clínica local; el aspecto aislado no establece etiología.")
+  )
   else->emptyList()
  }
  refs.forEach{v->LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)}
