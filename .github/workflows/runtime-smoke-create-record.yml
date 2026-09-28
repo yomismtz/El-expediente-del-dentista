@@ -1,0 +1,96 @@
+name: Runtime smoke create record
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-record-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APK
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Reproduce create-record flow
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: |
+            set -euo pipefail
+            PKG="com.yomismtz.expedientedeldentista"
+            APK="app/build/outputs/apk/debug/app-debug.apk"
+
+            adb install -r "$APK"
+            adb logcat -c
+            adb shell am force-stop "$PKG"
+            adb shell am start -W -n "$PKG/.MainActivity"
+            sleep 3
+
+            tap_text() {
+              QUERY="$1"
+              adb shell uiautomator dump /sdcard/window.xml >/dev/null
+              adb pull /sdcard/window.xml /tmp/window.xml >/dev/null
+              QUERY="$QUERY" python3 - <<'PY'
+import os, re, subprocess, sys, xml.etree.ElementTree as ET
+query=os.environ["QUERY"]
+root=ET.parse("/tmp/window.xml").getroot()
+for node in root.iter("node"):
+    hay=(node.attrib.get("text","") + " " + node.attrib.get("content-desc",""))
+    if query.lower() in hay.lower():
+        m=re.match(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", node.attrib.get("bounds",""))
+        if not m:
+            continue
+        x1,y1,x2,y2=map(int,m.groups())
+        subprocess.check_call(["adb","shell","input","tap",str((x1+x2)//2),str((y1+y2)//2)])
+        sys.exit(0)
+print("Could not find UI text:", query)
+for node in root.iter("node"):
+    t=node.attrib.get("text","")
+    d=node.attrib.get("content-desc","")
+    if t or d:
+        print("NODE",repr(t),repr(d),node.attrib.get("bounds"))
+sys.exit(2)
+PY
+              sleep 1
+            }
+
+            tap_text "NUEVO EXPEDIENTE"
+            tap_text "Iniciales"
+            adb shell input text ABC
+            tap_text "Edad"
+            adb shell input text 25
+            tap_text "Femenino"
+            tap_text "Crear y abrir expediente"
+            sleep 5
+
+            echo "=== Process state ==="
+            adb shell pidof "$PKG" || true
+            echo "=== AndroidRuntime ==="
+            adb logcat -d -v threadtime AndroidRuntime:E '*:S' || true
+            echo "=== Last app logs ==="
+            adb logcat -d -v threadtime | tail -n 400
+
+            if ! adb shell pidof "$PKG" >/dev/null; then
+              echo "App process died after creating a record."
+              exit 1
+            fi
+
+            adb shell uiautomator dump /sdcard/after.xml >/dev/null
+            adb pull /sdcard/after.xml /tmp/after.xml >/dev/null
+            grep -E "El expediente|Abrir expediente|Nota de ingreso" /tmp/after.xml
