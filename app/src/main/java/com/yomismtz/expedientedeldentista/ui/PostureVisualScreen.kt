@@ -44,7 +44,8 @@ fun PostureVisualScreen(lang: String, onBack: () -> Unit) {
         VisualPosture("Flexión", "Flexion", "El mentón se orienta hacia abajo por rotación de la cabeza. Distingue una postura sostenida de una inclinación accidental de la fotografía.", "The chin rotates downward. Distinguish sustained posture from accidental photo positioning.", R.drawable.allimg_080_postura_cervical_cabeza_flexion),
         VisualPosture("Extensión", "Extension", "El mentón se eleva y la cabeza rota hacia atrás. Describe el hallazgo sin asumir una causa.", "The chin elevates and the head rotates backward. Describe the finding without assuming a cause.", R.drawable.allimg_079_postura_cervical_cabeza_extension),
         VisualPosture("Rectificación cervical", "Cervical straightening", "La curvatura cervical se aprecia disminuida. Requiere correlación con exploración y estudios adecuados.", "The cervical curve appears reduced. Correlate with examination and appropriate studies.", R.drawable.allimg_082_postura_cervical_cabeza_rectificacion),
-        VisualPosture("Lordosis cervical aumentada", "Increased cervical lordosis", "La curvatura cervical se observa más pronunciada. Es una descripción postural, no un diagnóstico etiológico aislado.", "The cervical curve appears more pronounced. It is a postural description, not an isolated etiologic diagnosis.", R.drawable.allimg_081_postura_cervical_cabeza_lordosis_cervical_aum)
+        VisualPosture("Lordosis cervical aumentada", "Increased cervical lordosis", "La curvatura cervical se observa más pronunciada. Es una descripción postural, no un diagnóstico etiológico aislado.", "The cervical curve appears more pronounced. It is a postural description, not an isolated etiologic diagnosis.", R.drawable.allimg_081_postura_cervical_cabeza_lordosis_cervical_aum),
+        VisualPosture("Cifosis", "Kyphotic posture", "Referencia visual local de postura cervical asociada a cifosis. Describe el hallazgo observado y correlaciónalo con la exploración clínica.", "Local visual reference of cervical posture associated with kyphosis. Describe the observed finding and correlate it with the clinical examination.", R.drawable.allimg_078_postura_cervical_cabeza_cifosis)
     )
     val safeSelected=selected.coerceIn(0,list.lastIndex)
     val p = list[safeSelected]
@@ -83,8 +84,11 @@ fun PostureVisualScreen(lang: String, onBack: () -> Unit) {
         item {
             SectionCard(tr(lang, "Perfil facial", "Facial profile")) {
                 Text("• ${tr(lang, "Recto: frente, labios y mentón se observan relativamente equilibrados.", "Straight: forehead, lips and chin appear relatively balanced.")}")
+                LocalZoomableImageV21(title=tr(lang,"Perfil recto","Straight profile"),resource=R.drawable.allimg_075_perfil_recto,attribution=tr(lang,"Imagen local ya subida.","Previously uploaded local image."))
                 Text("• ${tr(lang, "Convexo: el mentón se aprecia relativamente retruido.", "Convex: the chin appears relatively retruded.")}")
+                LocalZoomableImageV21(title=tr(lang,"Perfil convexo","Convex profile"),resource=R.drawable.allimg_074_perfil_convexo,attribution=tr(lang,"Imagen local ya subida.","Previously uploaded local image."))
                 Text("• ${tr(lang, "Cóncavo: el mentón se aprecia relativamente prominente/adelantado.", "Concave: the chin appears relatively prominent/forward.")}")
+                LocalZoomableImageV21(title=tr(lang,"Perfil cóncavo","Concave profile"),resource=R.drawable.allimg_073_perfil_concavo,attribution=tr(lang,"Imagen local ya subida.","Previously uploaded local image."))
             }
         }
         item {
