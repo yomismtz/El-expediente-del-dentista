@@ -813,6 +813,21 @@ private data class E(val n:String,val d:String)
    Triple(R.drawable.allimg_045_fibroma_traumatico_carrillo,"Fibroma traumático · carrillo","Referencia clínica local."),
    Triple(R.drawable.allimg_064_liquen_plano_oral_carrillos,"Liquen plano oral · carrillos","Referencia clínica local; correlacionar con evaluación clínica.")
   )
+  "Piso de boca"->listOf(
+   Triple(R.drawable.allimg_093_ranula_piso_de_boca,"Ránula · piso de boca","Referencia clínica local; describir el hallazgo y correlacionarlo clínicamente."),
+   Triple(R.drawable.allimg_092_quiste_piso_de_boca,"Lesión quística · piso de boca","Referencia clínica local; la imagen no establece diagnóstico automático."),
+   Triple(R.drawable.allimg_059_lesion_vascular_piso_de_boca,"Lesión vascular · piso de boca","Referencia clínica local."),
+   Triple(R.drawable.allimg_106_ulcera_traumatica_piso_de_boca,"Úlcera traumática · piso de boca","Referencia clínica local.")
+  )
+  "Paladar duro"->listOf(
+   Triple(R.drawable.allimg_016_candidiasis_paladar,"Candidiasis · paladar","Referencia clínica local; correlacionar con exploración y antecedentes."),
+   Triple(R.drawable.allimg_105_ulcera_traumatica_paladar,"Úlcera traumática · paladar","Referencia clínica local.")
+  )
+  "Paladar blando"->listOf(
+   Triple(R.drawable.allimg_015_candidiasis_paladar_blando,"Candidiasis · paladar blando","Referencia clínica local; correlacionar con exploración y antecedentes."),
+   Triple(R.drawable.allimg_032_eritema_inflaatorio_paladar_blando,"Eritema inflamatorio · paladar blando","Referencia clínica local."),
+   Triple(R.drawable.allimg_076_petquias_paladar_blando,"Petequias · paladar blando","Referencia clínica local.")
+  )
   else->emptyList()
  }
  refs.forEach{v->LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)}
