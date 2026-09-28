@@ -33,4 +33,4 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
-          script: bash .github/scripts/runtime-smoke-create-record.sh
+          script: gradle :app:connectedDebugAndroidTest --no-build-cache --rerun-tasks --stacktrace
