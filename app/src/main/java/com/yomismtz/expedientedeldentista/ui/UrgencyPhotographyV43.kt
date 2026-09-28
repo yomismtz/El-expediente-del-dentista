@@ -162,8 +162,8 @@ private fun createPhotoPdfV43(context:android.content.Context,photos:Map<String,
         if(recordId.isNotBlank()) canvas.drawText("Expediente: "+recordId,28f,63f,bodyPaint)
         canvas.drawText("Finalidad: "+purpose.ifBlank{"No especificada"},28f,78f,bodyPaint)
         chunk.forEachIndexed{i,e->
-            val source=photoBitmapV43(context,e.value,2200) ?: return@forEachIndexed
-            val bmp=framedPhotoV43(source,brightness[e.key]?:0f,contrast[e.key]?:1f,sharpness[e.key]?:0f,rotation[e.key]?:0,zoom[e.key]?:1f,offsetX[e.key]?:0f,offsetY[e.key]?:0f)
+            val source=photoBitmapV43(context,e.second,2200) ?: return@forEachIndexed
+            val bmp=framedPhotoV43(source,brightness[e.first]?:0f,contrast[e.first]?:1f,sharpness[e.first]?:0f,rotation[e.first]?:0,zoom[e.first]?:1f,offsetX[e.first]?:0f,offsetY[e.first]?:0f)
             val imageHeight=if(compact)100 else 140
             val rowHeight=if(compact)122 else 170
             val top=94+i*rowHeight
