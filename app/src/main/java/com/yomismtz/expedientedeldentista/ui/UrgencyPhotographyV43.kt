@@ -21,9 +21,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -172,8 +178,18 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
                 listOf("Extraoral","Intraoral").forEach{o->FilterChip(category==o,{category=o;view=if(o=="Intraoral")intraoral.first() else extraoral.first()},{Text(o)},Modifier.weight(1f))}
             }
+            val allViews=extraoral+intraoral
+            val completed=allViews.count{!photoUris[it].isNullOrBlank()}
+            Text(tr(lang,"Tomas registradas: $completed / ${allViews.size}","Recorded views: $completed / ${allViews.size}"),fontWeight=FontWeight.Bold)
             AdaptiveGridV17(views.size,when{profile.largeSystemText->1;profile.width==ScreenWidthV17.COMPACT->2;profile.width==ScreenWidthV17.MEDIUM->3;else->5}){i->
-                FilterChip(safeView==views[i],{view=views[i]},{Text(views[i])},Modifier.fillMaxWidth())
+                val slot=views[i]
+                val filled=!photoUris[slot].isNullOrBlank()
+                Card(onClick={view=slot},modifier=Modifier.fillMaxWidth()){
+                    Column(Modifier.fillMaxWidth().padding(10.dp)){
+                        Text(if(filled)"✓ $slot" else "○ $slot",fontWeight=if(safeView==slot)FontWeight.Black else FontWeight.Medium)
+                        Text(if(filled)tr(lang,"Fotografía registrada","Photo registered") else tr(lang,"Pendiente","Pending"),style=MaterialTheme.typography.bodySmall)
+                    }
+                }
             }
         }
         ResponsiveSectionV17(tr(lang,"2 · Fotografía del paciente","2 · Patient photograph"),tr(lang,"Las fotografías permanecen vinculadas localmente al expediente activo.","Photos remain locally linked to the active record.")){
@@ -184,18 +200,19 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
                     OutlinedButton(onClick={photoRotation[safeView]=(rotation+270)%360},modifier=Modifier.weight(1f)){Text("↶ 90°")}
                     OutlinedButton(onClick={photoRotation[safeView]=(rotation+90)%360},modifier=Modifier.weight(1f)){Text("↷ 90°")}
                 }
-                Text(tr(lang,"Zoom / encuadre","Zoom / framing"));Slider(zoom,{photoZoom[safeView]=it},valueRange=1f..3f)
+                Text(tr(lang,"Zoom / recorte visual","Zoom / visual crop"));Slider(zoom,{photoZoom[safeView]=it},valueRange=1f..3f)
                 Text(tr(lang,"Posición horizontal","Horizontal position"));Slider(offsetX,{photoOffsetX[safeView]=it},valueRange=-1f..1f)
                 Text(tr(lang,"Posición vertical","Vertical position"));Slider(offsetY,{photoOffsetY[safeView]=it},valueRange=-1f..1f)
                 Text(tr(lang,"Brillo","Brightness"));Slider(brightness,{photoBrightness[safeView]=it},valueRange=-1f..1f)
                 Text(tr(lang,"Contraste","Contrast"));Slider(contrast,{photoContrast[safeView]=it},valueRange=.5f..1.8f)
                 Text(tr(lang,"Nitidez","Sharpness"));Slider(sharpness,{photoSharpness[safeView]=it},valueRange=0f..1f)
                 OutlinedButton(onClick={photoBrightness[safeView]=0f;photoContrast[safeView]=1f;photoSharpness[safeView]=0f;photoRotation[safeView]=0;photoZoom[safeView]=1f;photoOffsetX[safeView]=0f;photoOffsetY[safeView]=0f},modifier=Modifier.fillMaxWidth()){Text("↺ "+tr(lang,"Restablecer foto original y encuadre","Reset original photo and framing"))}
+                Text(tr(lang,"El zoom y la posición funcionan como recorte no destructivo: la fotografía original se conserva y puedes volver a ella con Restablecer.","Zoom and position act as a non-destructive crop: the original photo is preserved and can be restored with Reset."),style=MaterialTheme.typography.bodySmall)
                 OutlinedButton(onClick={
                     val source=Uri.parse(uriText)
                     val intent=Intent("com.android.camera.action.CROP").apply{setDataAndType(source,"image/*");putExtra("crop",true);putExtra("return-data",false);addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)}
-                    runCatching{cropLauncher.launch(intent)}.onFailure{Toast.makeText(context,tr(lang,"El dispositivo no ofrece un editor de recorte compatible.","No compatible crop editor is available on this device."),Toast.LENGTH_SHORT).show()}
-                },modifier=Modifier.fillMaxWidth()){Text("✂️ "+tr(lang,"Recortar / acomodar","Crop / reposition"))}
+                    runCatching{cropLauncher.launch(intent)}.onFailure{Toast.makeText(context,tr(lang,"El dispositivo no ofrece un editor externo compatible. Puedes usar el recorte no destructivo de esta ficha.","No compatible external editor is available. You can use this sheet's non-destructive crop."),Toast.LENGTH_SHORT).show()}
+                },modifier=Modifier.fillMaxWidth()){Text("✂️ "+tr(lang,"Editor externo opcional","Optional external editor"))}
             }
         }
         LocalClinicalImageSectionV46(lang,profile,"Fotografía extraoral","Extraoral photography")
