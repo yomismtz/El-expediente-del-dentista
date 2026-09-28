@@ -9,12 +9,14 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.graphics.Matrix
+import android.graphics.RectF
 import android.graphics.pdf.PdfDocument
 import android.widget.Toast
 import java.io.File
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -91,8 +94,14 @@ fun EmergencyDentalSheetV43(lang:String,onBack:()->Unit){
     }
 }
 
-private fun photoBitmapV43(context:android.content.Context,uriText:String):Bitmap? = runCatching {
-    context.contentResolver.openInputStream(Uri.parse(uriText))?.use { BitmapFactory.decodeStream(it) }
+private fun photoBitmapV43(context:android.content.Context,uriText:String,maxSide:Int=1800):Bitmap? = runCatching {
+    val uri=Uri.parse(uriText)
+    val bounds=BitmapFactory.Options().apply{inJustDecodeBounds=true}
+    context.contentResolver.openInputStream(uri)?.use{BitmapFactory.decodeStream(it,null,bounds)}
+    var sample=1
+    while(bounds.outWidth/sample>maxSide*2 || bounds.outHeight/sample>maxSide*2) sample*=2
+    val options=BitmapFactory.Options().apply{inSampleSize=sample.coerceAtLeast(1)}
+    context.contentResolver.openInputStream(uri)?.use{BitmapFactory.decodeStream(it,null,options)}
 }.getOrNull()
 
 private fun adjustedPhotoV43(source:Bitmap,brightness:Float,contrast:Float,sharpness:Float):Bitmap {
@@ -110,7 +119,29 @@ private fun adjustedPhotoV43(source:Bitmap,brightness:Float,contrast:Float,sharp
     return output
 }
 
-private fun createPhotoPdfV43(context:android.content.Context,photos:Map<String,String>,brightness:Float,contrast:Float,sharpness:Float):Uri? = runCatching {
+private fun framedPhotoV43(source:Bitmap,brightness:Float,contrast:Float,sharpness:Float,rotation:Int,zoom:Float,offsetX:Float,offsetY:Float,outWidth:Int=1200,outHeight:Int=800):Bitmap {
+    val adjusted=adjustedPhotoV43(source,brightness,contrast,sharpness)
+    val output=Bitmap.createBitmap(outWidth,outHeight,Bitmap.Config.ARGB_8888)
+    val canvas=Canvas(output)
+    canvas.drawColor(android.graphics.Color.BLACK)
+    val matrix=Matrix()
+    val normalized=((rotation%360)+360)%360
+    val rotatedWidth=if(normalized==90||normalized==270) adjusted.height.toFloat() else adjusted.width.toFloat()
+    val rotatedHeight=if(normalized==90||normalized==270) adjusted.width.toFloat() else adjusted.height.toFloat()
+    val baseScale=maxOf(outWidth/rotatedWidth,outHeight/rotatedHeight)
+    val scale=baseScale*zoom.coerceIn(1f,3f)
+    matrix.postTranslate(-adjusted.width/2f,-adjusted.height/2f)
+    matrix.postRotate(normalized.toFloat())
+    matrix.postScale(scale,scale)
+    val maxPanX=(outWidth*(zoom.coerceIn(1f,3f)-1f)/2f)
+    val maxPanY=(outHeight*(zoom.coerceIn(1f,3f)-1f)/2f)
+    matrix.postTranslate(outWidth/2f+offsetX.coerceIn(-1f,1f)*maxPanX,outHeight/2f+offsetY.coerceIn(-1f,1f)*maxPanY)
+    canvas.drawBitmap(adjusted,matrix,Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG))
+    if(adjusted!==source) adjusted.recycle()
+    return output
+}
+
+private fun createPhotoPdfV43(context:android.content.Context,photos:Map<String,String>,brightness:Map<String,Float>,contrast:Map<String,Float>,sharpness:Map<String,Float>,rotation:Map<String,Int>,zoom:Map<String,Float>,offsetX:Map<String,Float>,offsetY:Map<String,Float>):Uri? = runCatching {
     val pdf=PdfDocument()
     photos.entries.filter{it.value.isNotBlank()}.chunked(4).forEachIndexed{pageIndex,chunk->
         val page=pdf.startPage(PdfDocument.PageInfo.Builder(595,842,pageIndex+1).create())
@@ -118,11 +149,13 @@ private fun createPhotoPdfV43(context:android.content.Context,photos:Map<String,
         val textPaint=Paint(Paint.ANTI_ALIAS_FLAG).apply{textSize=18f}
         canvas.drawText("Registro fotográfico clínico",32f,36f,textPaint)
         chunk.forEachIndexed{i,e->
-            val bmp=photoBitmapV43(context,e.value)?.let{adjustedPhotoV43(it,brightness,contrast,sharpness)} ?: return@forEachIndexed
+            val source=photoBitmapV43(context,e.value,2200) ?: return@forEachIndexed
+            val bmp=framedPhotoV43(source,brightness[e.key]?:0f,contrast[e.key]?:1f,sharpness[e.key]?:0f,rotation[e.key]?:0,zoom[e.key]?:1f,offsetX[e.key]?:0f,offsetY[e.key]?:0f)
             val top=62+i*188
             val rect=android.graphics.Rect(32,top,563,top+150)
-            canvas.drawBitmap(bmp,null,rect,Paint(Paint.ANTI_ALIAS_FLAG))
+            canvas.drawBitmap(bmp,null,rect,Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG))
             canvas.drawText(e.key,32f,(top+170).toFloat(),Paint(Paint.ANTI_ALIAS_FLAG).apply{textSize=12f})
+            bmp.recycle();source.recycle()
         }
         pdf.finishPage(page)
     }
@@ -169,7 +202,7 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     val zoom=(photoZoom[safeView] ?: 1f).coerceIn(1f,3f)
     val offsetX=(photoOffsetX[safeView] ?: 0f).coerceIn(-1f,1f)
     val offsetY=(photoOffsetY[safeView] ?: 0f).coerceIn(-1f,1f)
-    val original=remember(uriText){if(uriText.isBlank())null else photoBitmapV43(context,uriText)}
+    val original=remember(uriText){if(uriText.isBlank())null else photoBitmapV43(context,uriText,1400)}
     val preview=remember(original,brightness,contrast,sharpness){original?.let{adjustedPhotoV43(it,brightness,contrast,sharpness)}}
 
     ResponsiveScreenV17("📷 "+tr(lang,"Ficha de Fotografía Clínica","Clinical Photography Sheet"),
@@ -195,7 +228,7 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
         ResponsiveSectionV17(tr(lang,"2 · Fotografía del paciente","2 · Patient photograph"),tr(lang,"Las fotografías permanecen vinculadas localmente al expediente activo.","Photos remain locally linked to the active record.")){
             Button(onClick={launcher.launch(arrayOf("image/*"))},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Seleccionar / reemplazar fotografía","Select / replace photograph"),fontWeight=FontWeight.Bold)}
             if(preview!=null){
-                Image(preview.asImageBitmap(),safeView,Modifier.fillMaxWidth().height(260.dp).graphicsLayer{rotationZ=rotation.toFloat();scaleX=zoom;scaleY=zoom;translationX=offsetX*180f;translationY=offsetY*180f},contentScale=ContentScale.Fit)
+                Image(preview.asImageBitmap(),safeView,Modifier.fillMaxWidth().height(260.dp).pointerInput(safeView,zoom,offsetX,offsetY){detectTransformGestures{_,pan,gestureZoom,_->photoZoom[safeView]=(zoom*gestureZoom).coerceIn(1f,3f);photoOffsetX[safeView]=(offsetX+pan.x/300f).coerceIn(-1f,1f);photoOffsetY[safeView]=(offsetY+pan.y/300f).coerceIn(-1f,1f)}}.graphicsLayer{rotationZ=rotation.toFloat();scaleX=zoom;scaleY=zoom;translationX=offsetX*180f;translationY=offsetY*180f},contentScale=ContentScale.Fit)
                 Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
                     OutlinedButton(onClick={photoRotation[safeView]=(rotation+270)%360},modifier=Modifier.weight(1f)){Text("↶ 90°")}
                     OutlinedButton(onClick={photoRotation[safeView]=(rotation+90)%360},modifier=Modifier.weight(1f)){Text("↷ 90°")}
@@ -224,7 +257,7 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
         }
         ResponsiveSectionV17(tr(lang,"4 · Expediente físico","4 · Physical record"),tr(lang,"Genera una composición PDF local con las fotografías vinculadas para guardarla o imprimirla.","Creates a local PDF composition with linked photos for saving or printing.")){
             Button(onClick={
-                val uri=createPhotoPdfV43(context,photoUris.toMap(),brightness,contrast,sharpness)
+                val uri=createPhotoPdfV43(context,photoUris.toMap(),photoBrightness.toMap(),photoContrast.toMap(),photoSharpness.toMap(),photoRotation.toMap(),photoZoom.toMap(),photoOffsetX.toMap(),photoOffsetY.toMap())
                 if(uri!=null){
                     val send=Intent(Intent.ACTION_SEND).apply{type="application/pdf";putExtra(Intent.EXTRA_STREAM,uri);addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)}
                     context.startActivity(Intent.createChooser(send,tr(lang,"Guardar, imprimir o compartir PDF","Save, print or share PDF")))
