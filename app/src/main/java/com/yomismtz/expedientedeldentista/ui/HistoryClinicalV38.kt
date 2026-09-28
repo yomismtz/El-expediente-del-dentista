@@ -549,6 +549,7 @@ private data class E(val n:String,val d:String)
    item{Pick("Hundimiento craneal · aspecto frecuente",listOf("Depresión frontal","Depresión parietal","Depresión temporal","Depresión occipital","Depresión posquirúrgica / postraumática","No valorable"),"Las depresiones pueden corresponder a anatomía individual, secuela traumática o posquirúrgica, entre otras causas. Una selección educativa no equivale a diagnóstico.")}
    item{ClinicalPhotoV38("Referencia clínica real · asimetría de expresión facial",R.drawable.clinical_facial_asymmetry,"James Heilman, MD · Wikimedia Commons · licencia abierta; publicación con consentimiento declarado por el autor.")}
    item{LocalClinicalImageSectionV46(lang,null,"Tez y coloración facial","Skin tone and facial coloration")}
+   item{LocalClinicalImageSectionV46(lang,null,"Cráneo y cara","Cranium and face")}
    item{LocalClinicalImageSectionV46(lang,null,"Análisis facial · formas del rostro","Facial analysis · face shapes")}
   }
   if(section=="Músculos"){
@@ -564,6 +565,7 @@ private data class E(val n:String,val d:String)
    item{LocalClinicalImageSectionV46(lang,null,"Exploración muscular y función facial","Muscle and facial function examination")}
   }
   if(section=="Cuello"){
+   item{LocalClinicalImageSectionV46(lang,null,"Cuello y ganglios","Neck and lymph nodes")}
    item{Pick("Simetría del cuello",listOf("Simétrico aparente","Asimetría derecha","Asimetría izquierda","Aumento de volumen localizado","No valorable"))}
    item{Pick("Movilidad cervical",listOf("Conservada","Limitada a derecha","Limitada a izquierda","Limitada en flexión/extensión","Limitación global","Dolorosa","No valorable"),"Observar flexión, extensión y rotación sin forzar movimientos dolorosos.")}
    item{Pick("Dolor a exploración",listOf("Sin dolor","Derecho","Izquierdo","Bilateral","Localizado anterior","Localizado posterior","No valorable"))}
@@ -571,6 +573,7 @@ private data class E(val n:String,val d:String)
    item{Pick("Tiroides · hallazgo clínico",listOf("Sin aumento aparente","Aumento aparente","Asimetría aparente","Nódulo/masa referida o palpable","Antecedente tiroideo sin hallazgo visible","No valorable"),"Registrar sólo el hallazgo o antecedente; no diagnosticar enfermedad tiroidea por inspección/palpación aislada.")}
   }
   if(section=="Ganglios"){
+   item{LocalClinicalImageSectionV46(lang,null,"Cuello y ganglios","Neck and lymph nodes")}
    item{ClinicalPhotoV38("Técnica de palpación ganglionar",R.drawable.clinical_node_palpation,"Fotografía clínica real de palpación ganglionar · Fernandovet · Wikimedia Commons.")}
    item{ClinicalPhotoV38("Hallazgo · linfadenopatía cervical",R.drawable.clinical_cervical_nodes,"Fotografía clínica real · Whispyhistory · CC0.")}
    item{ClinicalPhotoV38("Mapa anatómico de cadenas cervicales",R.drawable.clinical_cervical_map,"Referencia anatómica didáctica · Wikimedia Commons. No es fotografía clínica.")}
