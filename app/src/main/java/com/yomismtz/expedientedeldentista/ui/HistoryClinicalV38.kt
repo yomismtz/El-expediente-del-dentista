@@ -795,6 +795,29 @@ private data class E(val n:String,val d:String)
  }
 }
 
+@Composable private fun OralSiteImagesV50(lang:String,site:String){
+ val refs=when(site){
+  "Labio superior"->listOf(
+   Triple(R.drawable.allimg_089_quelitis_irritativa_labio_superior,"Queilitis irritativa · labio superior","Referencia clínica local de un hallazgo documentado."),
+   Triple(R.drawable.allimg_090_quelitis_traumatica_labio_superior,"Queilitis traumática · labio superior","Referencia clínica local de un hallazgo documentado.")
+  )
+  "Labio inferior"->listOf(
+   Triple(R.drawable.allimg_058_lesion_por_mordisueo_labio_inferior,"Lesión por mordisqueo · labio inferior","Referencia clínica local de un hallazgo documentado."),
+   Triple(R.drawable.allimg_088_quelitis_irritativa_labio_inferior,"Queilitis irritativa · labio inferior","Referencia clínica local de un hallazgo documentado."),
+   Triple(R.drawable.allimg_043_fibroma_traumatico_labio,"Fibroma traumático · labio","Referencia clínica local; correlacionar con la exploración.")
+  )
+  "Carrillo derecho / mucosa bucal","Carrillo izquierdo / mucosa bucal"->listOf(
+   Triple(R.drawable.allimg_062_linea_laba_carrillo,"Línea alba · carrillo","Referencia clínica local."),
+   Triple(R.drawable.allimg_069_morsicatio_o_mordisque_carrillo,"Morsicatio / mordisqueo · carrillo","Referencia clínica local."),
+   Triple(R.drawable.allimg_103_ulcera_traumatica_carrillos,"Úlcera traumática · carrillo","Referencia clínica local."),
+   Triple(R.drawable.allimg_045_fibroma_traumatico_carrillo,"Fibroma traumático · carrillo","Referencia clínica local."),
+   Triple(R.drawable.allimg_064_liquen_plano_oral_carrillos,"Liquen plano oral · carrillos","Referencia clínica local; correlacionar con evaluación clínica.")
+  )
+  else->emptyList()
+ }
+ refs.forEach{v->LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)}
+}
+
 @Composable fun HistoryOralExamV38(lang:String,onBack:()->Unit){
  val sites=listOf(
   E("Piel peribucal","Normal: piel íntegra, sin lesiones evidentes y simetría conservada. Selección de hallazgos: eritema/cambio de color, descamación, costra, fisura, úlcera, vesícula/ampolla, pápula/nódulo, aumento de volumen, cicatriz, pigmentación o asimetría. Describir antes de diagnosticar."),
@@ -824,7 +847,7 @@ private data class E(val n:String,val d:String)
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Examen peribucal e intrabucal / mucosas",onBack,"Exploración por sitio anatómico. Toca cada estructura para ver aspecto normal, qué observar y alteraciones seleccionables. Primero se describe el hallazgo; después se orienta el diagnóstico.")}
   item{NoticeCard("Secuencia sugerida: piel peribucal → labios y comisuras → mucosa labial/frenillos → carrillos → encía → paladares → orofaringe/úvula/pilares/amígdalas → lengua → frenillo lingual → piso de boca.")}
-  items(sites.size){i->val x=sites[i];Card(onClick={selected=if(selected==i)null else i},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){Text(x.n,fontWeight=FontWeight.Bold);if(selected==i){Text(x.d);Text("□ Normal / sin alteración evidente   □ Hallazgo presente   □ No valorable",style=MaterialTheme.typography.bodySmall)}else Text("Toca para explorar",style=MaterialTheme.typography.bodySmall)}}}
+  items(sites.size){i->val x=sites[i];Card(onClick={selected=if(selected==i)null else i},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){Text(x.n,fontWeight=FontWeight.Bold);if(selected==i){Text(x.d);Text("□ Normal / sin alteración evidente   □ Hallazgo presente   □ No valorable",style=MaterialTheme.typography.bodySmall);OralSiteImagesV50(lang,x.n)}else Text("Toca para explorar",style=MaterialTheme.typography.bodySmall)}}}
   item{NoticeCard("Las fotografías clínicas que acompañen este módulo serán referencias reales con fuente/cita y se identificarán como normal, variante anatómica o lesión documentada; no se usarán imágenes inventadas como sustituto diagnóstico.")}
  }
 }
