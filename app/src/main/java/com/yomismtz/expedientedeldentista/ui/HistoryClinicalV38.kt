@@ -521,6 +521,7 @@ private data class E(val n:String,val d:String)
    item{Pick("Patrón facial",listOf("Dolicofacial","Mesofacial","Braquifacial","No valorable"),"Dolicofacial: cara relativamente larga y estrecha. Mesofacial: proporción intermedia. Braquifacial: cara relativamente corta y ancha.")}
    item{Pick("Simetría facial",listOf("Simétrica aparente","Asimetría derecha","Asimetría izquierda","Asimetría compleja","No valorable"))}
    item{ClinicalPhotoV38("Referencia clínica real · asimetría de expresión facial",R.drawable.clinical_facial_asymmetry,"James Heilman, MD · Wikimedia Commons · licencia abierta; publicación con consentimiento declarado por el autor.")}
+   item{LocalClinicalImageSectionV46(lang,null,"Análisis facial · formas del rostro","Facial analysis · face shapes")}
   }
   if(section=="Músculos"){
    item{ClinicalPhotoV38("Expresión facial · sonrisa",R.drawable.clinical_smile,"Fotografía clínica real · Shantoo · CC0 · muestra asimetría facial durante sonrisa.")}
@@ -532,6 +533,7 @@ private data class E(val n:String,val d:String)
    item{Pick("Temporal",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"))}
    item{Pick("Masetero",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"))}
    item{Pick("Pterigoideos / función clínica",listOf("Sin hallazgos aparentes","Dolor reproducible en maniobra","Limitación funcional","No valorable"),"Correlacionar palpación accesible y movimientos contra resistencia; no atribuir dolor inespecífico a un músculo profundo sin sustento clínico.")}
+   item{LocalClinicalImageSectionV46(lang,null,"Exploración muscular y función facial","Muscle and facial function examination")}
   }
   if(section=="Cuello"){
    item{Pick("Simetría del cuello",listOf("Simétrico aparente","Asimetría derecha","Asimetría izquierda","Aumento de volumen localizado","No valorable"))}
