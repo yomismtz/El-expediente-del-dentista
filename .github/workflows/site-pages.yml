@@ -35,7 +35,7 @@ jobs:
           gradle-version: '8.9'
 
       - name: Build latest APK
-        run: gradle :app:assembleDebug --stacktrace
+        run: gradle clean :app:assembleDebug --no-build-cache --rerun-tasks --stacktrace
 
       - name: Prepare public site
         run: |
