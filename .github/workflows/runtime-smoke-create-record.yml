@@ -34,7 +34,7 @@ jobs:
           profile: pixel_6
           disable-animations: true
           script: |
-            set -euo pipefail
+            set -eu
             PKG="com.yomismtz.expedientedeldentista"
             APK="app/build/outputs/apk/debug/app-debug.apk"
 
