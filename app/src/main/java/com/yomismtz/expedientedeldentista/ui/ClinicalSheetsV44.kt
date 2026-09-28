@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -17,10 +16,35 @@ internal fun ClinicalRegisterHelpV49(lang:String,titleEs:String,titleEn:String,b
     if(open) AlertDialog(onDismissRequest={open=false},confirmButton={TextButton(onClick={open=false}){Text(tr(lang,"Cerrar","Close"))}},title={Text(if(lang=="en")titleEn else titleEs)},text={Text(if(lang=="en")bodyEn else bodyEs)})
 }
 
+private fun guidedOptionsV50(key:String):List<String> = when {
+    key.contains("phase") || key.contains("interval") || key.contains("next") -> listOf("Inicial","Corto plazo","Mediano plazo","Largo plazo","No valorado")
+    key.contains("dentition") -> listOf("Temporal","Mixta temprana","Mixta tardía","Permanente joven","Permanente adulta","No valorable")
+    key.contains("growth") -> listOf("Prepuberal","Pico puberal","Postpuberal","No valorado")
+    key.contains("sagittal") -> listOf("Clase I","Clase II","Clase III","No valorable")
+    key.contains("transverse") -> listOf("Sin alteración aparente","Mordida cruzada unilateral","Mordida cruzada bilateral","Compresión transversal","No valorable")
+    key.contains("vertical") -> listOf("Relación vertical conservada","Mordida abierta","Sobremordida aumentada","No valorable")
+    key.contains("hygiene") || key.contains("plaque") -> listOf("Adecuada","Regular","Deficiente","No valorada")
+    key.contains("bop") || key.contains("bleed") -> listOf("Ausente","Localizado","Generalizado","No valorado")
+    key.contains("mobility") -> listOf("Sin movilidad","Grado I","Grado II","Grado III","No valorado")
+    key.contains("recession") -> listOf("Ausente","Localizada","Generalizada","No valorada")
+    key.contains("torque") || key.contains("stability") -> listOf("Baja","Moderada","Alta","No registrada")
+    key.contains("graft") -> listOf("No aplica","Injerto óseo","Regeneración guiada","Tejido blando","Combinado")
+    key.contains("imaging") || key.contains("radiograph") -> listOf("No indicado","Periapical","Panorámica","CBCT","Otro auxiliar seleccionado")
+    key.contains("use") || key.contains("appliance") -> listOf("Removible","Fijo","Funcional","Expansión / transversal","Sin aparato")
+    key.contains("followup") || key.contains("control") -> listOf("Evolución favorable","Sin cambios relevantes","Requiere reevaluación","Requiere remisión","No valorado")
+    key.contains("plan") || key.contains("objective") || key.contains("indication") -> listOf("Preventivo","Restaurador","Periodontal","Quirúrgico","Protésico","Ortopédico / ortodóncico","Reevaluación")
+    key.contains("systemic") -> listOf("Sin riesgo referido","Riesgo médico controlado","Requiere interconsulta","No valorado")
+    key.contains("site") || key.contains("position") -> listOf("Anterior","Posterior","Derecho","Izquierdo","Bilateral","No valorado")
+    else -> listOf("Dentro de parámetros esperados","Alteración leve","Alteración moderada","Alteración marcada","No valorado","No aplica")
+}
 @Composable
 private fun PersistTextV44(key:String,label:String){
     var value by rememberRecordState(key,"")
-    OutlinedTextField(value,{value=it},Modifier.fillMaxWidth(),label={Text(label)})
+    Column(Modifier.fillMaxWidth()){
+        Text(label,fontWeight=FontWeight.SemiBold)
+        val options=guidedOptionsV50(key)
+        AdaptiveGridV17(options.size,2){i->val o=options[i];FilterChip(value==o,{value=o},{Text(o)},Modifier.fillMaxWidth())}
+    }
 }
 @Composable
 private fun PersistChoiceV44(key:String,options:List<String>,columns:Int){
