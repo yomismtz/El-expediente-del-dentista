@@ -222,7 +222,7 @@ private fun CoverV19(lang:String,onOpen:()->Unit) {
         Image(painterResource(R.drawable.doctora_agaporni_anime),tr(lang,"Doctora con agaporni","Dentist with lovebird"),Modifier.fillMaxSize(),contentScale=ContentScale.Crop)
         Box(Modifier.fillMaxSize().background(Color(0x663A145F))) {
             Column(Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal=if(compact)16.dp else 28.dp,vertical=20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.Center) {
-                Image(painterResource(R.drawable.ysm_logo),tr(lang,"Logo YSM con ave y expediente dental","YSM bird and dental record logo"),Modifier.size(if(compact)118.dp else 158.dp),contentScale=ContentScale.Fit)
+                Image(painterResource(R.drawable.allimg_065_logo_de_la_app),tr(lang,"Logo oficial de El expediente del dentista","Official El expediente del dentista logo"),Modifier.size(if(compact)118.dp else 158.dp),contentScale=ContentScale.Fit)
                 Spacer(Modifier.height(10.dp))
                 Text(tr(lang,"El expediente","The record"),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Black,textAlign=TextAlign.Center,color=Color.White)
                 Text(tr(lang,"El expediente del dentista","The dentist's record"),style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black,textAlign=TextAlign.Center,color=Color(0xFF49D7D0))
