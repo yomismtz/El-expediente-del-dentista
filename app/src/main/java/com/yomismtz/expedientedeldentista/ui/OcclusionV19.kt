@@ -47,7 +47,7 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
     var selected by rememberRecordState("occlusion.selected",0)
     var choice by rememberRecordState("occlusion.choice","")
     val options=listOf(
-        listOf("Temporal","Mixta temprana","Mixta tardía","Permanente","No valorable"),
+        listOf("Temporal","Mixta temprana","Mixta tardía","Permanente joven","Permanente adulta","No valorable"),
         listOf("Recto bilateral","Mesial bilateral","Distal bilateral","Asimétrico","No valorable"),
         listOf("Clase I bilateral","Clase II bilateral","Clase III bilateral","Asimétrica derecha/izquierda","No valorable"),
         listOf("Clase I bilateral","Clase II bilateral","Clase III bilateral","Asimétrica","No valorable"),
@@ -132,16 +132,29 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
 }
 
 private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int,String>?=when(section){
+ 0->when(choice){
+  "Temporal"->Triple("Dentición temporal",R.drawable.new17_dentcion_temporal,"Imagen representativa de dentición temporal.")
+  "Mixta temprana"->Triple("Dentición mixta temprana",R.drawable.new17_denticion_mixta_temprana,"Imagen representativa de dentición mixta temprana.")
+  "Mixta tardía"->Triple("Dentición mixta tardía",R.drawable.new17_denticion_mixta_tardia,"Imagen representativa de dentición mixta tardía.")
+  "Permanente joven"->Triple("Dentición permanente joven",R.drawable.new17_denticion_permanente_joven,"Imagen representativa de dentición permanente joven.")
+  "Permanente adulta"->Triple("Dentición permanente adulta",R.drawable.new17_denticion_permanente_adulta,"Imagen representativa de dentición permanente adulta.")
+  "No valorable"->Triple("Dentición no valorable / edentulismo",R.drawable.new17_denticion_no_valorable_edentulismo,"Imagen representativa de la opción no valorable.")
+  else->null}
+ 1->when(choice){
+  "Recto bilateral"->Triple("Plano terminal recto",R.drawable.new77_plano_terminalm_recto,"Referencia visual de plano terminal recto.")
+  "Mesial bilateral"->Triple("Plano terminal mesial",R.drawable.new77_plano_terminal_mesial,"Referencia visual de escalón mesial.")
+  "Distal bilateral"->Triple("Plano terminal distal",R.drawable.new77_plano_terminal_distal,"Referencia visual de escalón distal.")
+  else->null}
  2->when(choice){
-  "Clase I bilateral"->Triple("Angle Clase I",R.drawable.edu_oclusion_angle_clase_1_png,"Ejemplo visual de relación molar Clase I.")
-  "Clase II bilateral"->Triple("Angle Clase II",R.drawable.edu_oclusion_angle_clase_2_png,"Ejemplo visual de relación molar Clase II.")
-  "Clase III bilateral"->Triple("Angle Clase III",R.drawable.edu_oclusion_angle_clase_3_png,"Ejemplo visual de relación molar Clase III.")
+  "Clase I bilateral"->Triple("Angle Clase I · derecha",R.drawable.new77_clase_i_molar_derecha,"Referencia visual específica del lado derecho; valorar también el lado izquierdo.")
+  "Clase II bilateral"->Triple("Angle Clase II · derecha",R.drawable.new77_clase_ii_molar_derecha,"Referencia visual específica del lado derecho; valorar también el lado izquierdo.")
+  "Clase III bilateral"->Triple("Angle Clase III · derecha",R.drawable.new77_clase_iii_molar_derecha,"Referencia visual específica del lado derecho; valorar también el lado izquierdo.")
   "No valorable"->Triple("Clasificación de Angle · no valorable",R.drawable.new77_clasificacion_de_angle_no_valorable,"Imagen representativa de la opción seleccionada.")
   else->null}
  3->when(choice){
-  "Clase I bilateral"->Triple("Relación canina Clase I",R.drawable.new77_clase_i_canina_derecha,"Imagen representativa de relación canina Clase I.")
-  "Clase II bilateral"->Triple("Relación canina Clase II",R.drawable.new77_clase_ii_canina_derecha,"Imagen representativa de relación canina Clase II.")
-  "Clase III bilateral"->Triple("Relación canina Clase III",R.drawable.new77_clase_iii_canina_derecha,"Imagen representativa de relación canina Clase III.")
+  "Clase I bilateral"->Triple("Relación canina Clase I · derecha",R.drawable.new77_clase_i_canina_derecha,"Referencia visual específica del lado derecho; valorar también el lado izquierdo.")
+  "Clase II bilateral"->Triple("Relación canina Clase II · derecha",R.drawable.new77_clase_ii_canina_derecha,"Referencia visual específica del lado derecho; valorar también el lado izquierdo.")
+  "Clase III bilateral"->Triple("Relación canina Clase III · derecha",R.drawable.new77_clase_iii_canina_derecha,"Referencia visual específica del lado derecho; valorar también el lado izquierdo.")
   "No valorable"->Triple("Relación canina · no valorable",R.drawable.new77_relacion_canina_no_valorable,"Imagen representativa de la opción seleccionada.")
   else->null}
  4->when(choice){
