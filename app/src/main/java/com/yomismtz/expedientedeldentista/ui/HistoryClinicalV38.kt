@@ -523,17 +523,51 @@ private data class E(val n:String,val d:String)
     "Braquicéfalo"->ClinicalPhotoV38("Braquicéfalo",R.drawable.face13_braquicefalico,"Referencia visual educativa local.")
     "No valorable"->ClinicalPhotoV38("Cráneo no valorable",R.drawable.face13_craneo_no_valorable,"Referencia visual educativa local.")
    }}
-   item{ClinicalPhotoV38("Dolicocefálico y braquicéfalo · comparación morfológica real",R.drawable.clinical_cranial_morphology,"Fotografía antropométrica histórica real · Popular Science Monthly, 1897–1898 · dominio público. Úsese sólo como referencia morfológica, no diagnóstica.")}
    item{Pick("Patrón facial",listOf("Dolicofacial","Mesofacial","Braquifacial","No valorable"),"Dolicofacial: cara relativamente larga y estrecha. Mesofacial: proporción intermedia. Braquifacial: cara relativamente corta y ancha.")}
    item{when(selected["Patrón facial"]){
-    "Dolicofacial"->ClinicalPhotoV38("Dolicofacial",R.drawable.face13_dolicofacial,"Referencia visual educativa local.")
-    "Mesofacial"->ClinicalPhotoV38("Mesofacial",R.drawable.face13_mesofacial,"Referencia visual educativa local.")
-    "Braquifacial"->ClinicalPhotoV38("Braquifacial",R.drawable.face13_braquifacial,"Referencia visual educativa local.")
-    "No valorable"->ClinicalPhotoV38("Patrón facial no valorable",R.drawable.face13_perfil_no_valorable,"Referencia visual educativa local.")
+    "Dolicofacial"->ClinicalPhotoV38("Dolicofacial",R.drawable.face13_dolicofacial,"Imagen representativa de la opción seleccionada.")
+    "Mesofacial"->ClinicalPhotoV38("Mesofacial",R.drawable.face13_mesofacial,"Imagen representativa de la opción seleccionada.")
+    "Braquifacial"->ClinicalPhotoV38("Braquifacial",R.drawable.face13_braquifacial,"Imagen representativa de la opción seleccionada.")
+    "No valorable"->ClinicalPhotoV38("Patrón facial no valorable",R.drawable.face13_perfil_no_valorable,"Imagen representativa de la opción seleccionada.")
    }}
    item{Pick("Forma de la cara",listOf("Ovalada","Redonda","Cuadrada","Rectangular / alargada","Triangular","Triangular invertida / corazón","Romboidal","Asimétrica","No valorable"),"Describe el contorno facial observado. La forma de la cara es descriptiva y no constituye por sí sola un diagnóstico.")}
-   item{Pick("Tez · pigmentación basal aparente",listOf("Muy clara","Clara","Intermedia","Morena clara","Morena","Oscura","No valorable"),"Registrar de forma descriptiva la pigmentación basal aparente, separándola de cambios patológicos de coloración.")}
+   item{when(selected["Forma de la cara"]){
+    "Ovalada"->ClinicalPhotoV38("Forma de la cara · ovalada",R.drawable.new77_edu_extraoral_formas_del_rostro_ovalado,"Imagen representativa de la opción seleccionada.")
+    "Redonda"->ClinicalPhotoV38("Forma de la cara · redonda",R.drawable.new77_edu_extraoral_formas_del_rostro_redondo,"Imagen representativa de la opción seleccionada.")
+    "Cuadrada"->ClinicalPhotoV38("Forma de la cara · cuadrada",R.drawable.new77_edu_extraoral_formas_del_rostro_cuadrado,"Imagen representativa de la opción seleccionada.")
+    "Rectangular / alargada"->ClinicalPhotoV38("Forma de la cara · rectangular / alargada",R.drawable.new77_edu_extraoral_formas_del_rostro_rectangular,"Imagen representativa de la opción seleccionada.")
+    "Triangular"->ClinicalPhotoV38("Forma de la cara · triangular",R.drawable.new77_edu_extraoral_formas_del_rostro_triangular,"Imagen representativa de la opción seleccionada.")
+    "Triangular invertida / corazón"->ClinicalPhotoV38("Forma de la cara · corazón",R.drawable.new77_edu_extraoral_formas_del_rostro_corazon,"Imagen representativa de la opción seleccionada.")
+    "Romboidal"->ClinicalPhotoV38("Forma de la cara · romboidal",R.drawable.new77_edu_extraoral_formas_del_rostro_rombo,"Imagen representativa de la opción seleccionada.")
+    "Asimétrica"->ClinicalPhotoV38("Forma de la cara · asimétrica",R.drawable.face13_asimetria_compleja,"Imagen representativa de la opción seleccionada.")
+    "No valorable"->ClinicalPhotoV38("Forma de la cara · no valorable",R.drawable.face13_perfil_no_valorable,"Imagen representativa de la opción seleccionada.")
+   }}
+   item{Pick("Tez · pigmentación basal aparente",listOf("Albinismo","Muy clara","Clara","Claro medio","Medio","Morena clara","Morena media","Morena oscura","Oscura","Muy oscura","No valorable"),"Registrar de forma descriptiva la pigmentación basal aparente, separándola de cambios patológicos de coloración.")}
+   item{when(selected["Tez · pigmentación basal aparente"]){
+    "Albinismo"->ClinicalPhotoV38("Tez · albinismo",R.drawable.skin20_02,"Imagen representativa de la opción seleccionada.")
+    "Muy clara"->ClinicalPhotoV38("Tez · muy clara",R.drawable.skin20_09,"Imagen representativa de la opción seleccionada.")
+    "Clara"->ClinicalPhotoV38("Tez · clara",R.drawable.skin20_03,"Imagen representativa de la opción seleccionada.")
+    "Claro medio"->ClinicalPhotoV38("Tez · claro medio",R.drawable.skin20_04,"Imagen representativa de la opción seleccionada.")
+    "Medio"->ClinicalPhotoV38("Tez · medio",R.drawable.skin20_05,"Imagen representativa de la opción seleccionada.")
+    "Morena clara"->ClinicalPhotoV38("Tez · morena clara",R.drawable.skin20_06,"Imagen representativa de la opción seleccionada.")
+    "Morena media"->ClinicalPhotoV38("Tez · morena media",R.drawable.skin20_07,"Imagen representativa de la opción seleccionada.")
+    "Morena oscura"->ClinicalPhotoV38("Tez · morena oscura",R.drawable.skin20_08,"Imagen representativa de la opción seleccionada.")
+    "Oscura"->ClinicalPhotoV38("Tez · oscura",R.drawable.skin20_11,"Imagen representativa de la opción seleccionada.")
+    "Muy oscura"->ClinicalPhotoV38("Tez · muy oscura",R.drawable.skin20_10,"Imagen representativa de la opción seleccionada.")
+   }}
    item{Pick("Coloración cutánea · alteraciones",listOf("Sin alteración aparente","Palidez cutaneomucosa","Ictericia","Cianosis","Eritema / rubicundez","Coloración grisácea / cenicienta","Hiperpigmentación","Hipopigmentación","Discromía localizada","Discromía difusa","No valorable"),"Palidez = disminución aparente de coloración; ictericia = tonalidad amarillenta; cianosis = tonalidad azulada/violácea; eritema o rubicundez = enrojecimiento; coloración grisácea/cenicienta = tono gris anormal. Registrar el hallazgo observado sin atribuir una causa automáticamente.")}
+   item{when(selected["Coloración cutánea · alteraciones"]){
+    "Sin alteración aparente"->ClinicalPhotoV38("Coloración cutánea · sin alteración aparente",R.drawable.skin20_20,"Imagen representativa de pigmentación basal.")
+    "Palidez cutaneomucosa"->ClinicalPhotoV38("Palidez cutaneomucosa",R.drawable.skin20_19,"Imagen representativa de la opción seleccionada.")
+    "Ictericia"->ClinicalPhotoV38("Ictericia",R.drawable.skin20_18,"Imagen representativa de la opción seleccionada.")
+    "Cianosis"->ClinicalPhotoV38("Cianosis",R.drawable.skin20_01,"Imagen representativa de la opción seleccionada.")
+    "Eritema / rubicundez"->ClinicalPhotoV38("Eritema / rubicundez",R.drawable.skin20_14,"Imagen representativa de la opción seleccionada.")
+    "Coloración grisácea / cenicienta"->ClinicalPhotoV38("Coloración grisácea / cenicienta",R.drawable.skin20_15,"Imagen representativa de la opción seleccionada.")
+    "Hiperpigmentación"->ClinicalPhotoV38("Hiperpigmentación / melasma",R.drawable.skin20_16,"Imagen representativa de la opción seleccionada.")
+    "Hipopigmentación"->ClinicalPhotoV38("Hipopigmentación",R.drawable.skin20_17,"Imagen representativa de la opción seleccionada.")
+    "Discromía localizada"->ClinicalPhotoV38("Discromía localizada",R.drawable.skin20_13,"Imagen representativa de la opción seleccionada.")
+    "Discromía difusa"->ClinicalPhotoV38("Discromía difusa",R.drawable.skin20_12,"Imagen representativa de la opción seleccionada.")
+   }}
    item{Pick("Distribución de la alteración de color",listOf("No aplica","Generalizada","Facial difusa","Perioral","Periorbitaria","Localizada","Simétrica","Asimétrica","No valorable"),"La distribución ayuda a describir el hallazgo. Correlacionar con mucosas, iluminación, antecedentes y contexto clínico.")}
    item{Pick("Simetría facial",listOf("Simétrica aparente","Asimetría derecha","Asimetría izquierda","Asimetría compleja","No valorable"))}
    item{when(selected["Simetría facial"]){
@@ -548,9 +582,7 @@ private data class E(val n:String,val d:String)
    item{Pick("Hundimiento craneal · identificación",listOf("No se observa","Frontal","Parietal","Temporal","Occipital","Múltiple","No valorable"),"Hundimiento = depresión o pérdida aparente del contorno craneal. Registrar localización, simetría y antecedente traumático o quirúrgico cuando corresponda.")}
    item{Pick("Hundimiento craneal · aspecto frecuente",listOf("Depresión frontal","Depresión parietal","Depresión temporal","Depresión occipital","Depresión posquirúrgica / postraumática","No valorable"),"Las depresiones pueden corresponder a anatomía individual, secuela traumática o posquirúrgica, entre otras causas. Una selección educativa no equivale a diagnóstico.")}
    item{ClinicalPhotoV38("Referencia clínica real · asimetría de expresión facial",R.drawable.clinical_facial_asymmetry,"James Heilman, MD · Wikimedia Commons · licencia abierta; publicación con consentimiento declarado por el autor.")}
-   item{LocalClinicalImageSectionV46(lang,null,"Tez y coloración facial","Skin tone and facial coloration")}
-   item{LocalClinicalImageSectionV46(lang,null,"Cráneo y cara","Cranium and face")}
-   item{LocalClinicalImageSectionV46(lang,null,"Análisis facial · formas del rostro","Facial analysis · face shapes")}
+   // Las imágenes de cráneo, patrón facial, forma de cara y tez se muestran sólo al seleccionar su opción, igual que en Hábitos y parafunciones.
   }
   if(section=="Músculos"){
    item{ClinicalPhotoV38("Expresión facial · sonrisa",R.drawable.clinical_smile,"Fotografía clínica real · Shantoo · CC0 · muestra asimetría facial durante sonrisa.")}
