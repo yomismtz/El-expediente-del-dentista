@@ -8,6 +8,15 @@ android {
     namespace = "com.yomismtz.expedientedeldentista"
     compileSdk = 35
 
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("debug-stable.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     defaultConfig {
         applicationId = "com.yomismtz.expedientedeldentista"
         minSdk = 26
