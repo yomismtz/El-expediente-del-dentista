@@ -115,7 +115,7 @@ fun AdaptiveBaseRootV19(
     onSessionChanged:(EducationalSession)->Unit
 ) {
     var screenName by rememberSaveable { mutableStateOf(AppScreen.HOME.name) }
-    val screen = AppScreen.valueOf(screenName)
+    val screen = AppScreen.entries.firstOrNull { it.name == screenName } ?: AppScreen.HOME
     var completedCount by rememberSaveable { mutableStateOf(0) }
     var celebrate by rememberSaveable { mutableStateOf(false) }
     var selectedGroup by rememberSaveable { mutableStateOf(0) }
@@ -131,12 +131,19 @@ fun AdaptiveBaseRootV19(
     }
 
     fun goBack() {
-        if (historyNames.isNotEmpty()) {
-            screenName = historyNames.last()
-            historyNames = historyNames.dropLast(1)
-        } else {
-            screenName = AppScreen.HOME.name
+        var remaining = historyNames
+        while (remaining.isNotEmpty()) {
+            val previousName = remaining.last()
+            remaining = remaining.dropLast(1)
+            val previous = AppScreen.entries.firstOrNull { it.name == previousName }
+            if (previous != null) {
+                historyNames = remaining
+                screenName = previous.name
+                return
+            }
         }
+        historyNames = emptyList()
+        screenName = AppScreen.HOME.name
     }
 
     val backPrevious = { goBack() }
