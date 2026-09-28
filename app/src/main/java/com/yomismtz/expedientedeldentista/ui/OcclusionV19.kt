@@ -139,6 +139,7 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
         LocalClinicalImageSectionV46(lang,profile,"Dentición · referencias ampliadas","Dentition · expanded references")
         LocalClinicalImageSectionV46(lang,profile,"Líneas medias dentales","Dental midlines")
         LocalClinicalImageSectionV46(lang,profile,"Forma de arcada","Arch form")
+        LocalClinicalImageSectionV46(lang,profile,"Oclusión y alineación dental","Occlusion and dental alignment")
         NoticeCard(tr(lang,"Los espacios visuales clínicos están preparados para recursos locales del APK. Mientras un recurso siga pendiente de integración, no debe interpretarse el marcador visual como fotografía clínica. Los esquemas de medición se identifican como esquemas. Registrar hallazgos no equivale a emitir automáticamente un diagnóstico.","Clinical visual slots are prepared for local APK resources. While a resource is still pending integration, its visual placeholder must not be interpreted as a clinical photograph. Measurement diagrams are identified as diagrams. Recording findings does not automatically establish a diagnosis."))
     }
 }
