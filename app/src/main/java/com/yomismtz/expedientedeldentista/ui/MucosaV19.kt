@@ -173,12 +173,54 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                     }
                     val selectedPathology=tissuePathology[selected.id].orEmpty()
                     val pathologyVisual=when(selected.id to selectedPathology){
-                        "lengua" to "Lengua geográfica" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.allimg_053_lengua_geografica,"Lengua geográfica","Referencia visual educativa de lengua geográfica.")
-                        "lengua" to "Lengua fisurada" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.allimg_052_lengua_fisurada,"Lengua fisurada","Referencia visual educativa de lengua fisurada.")
-                        "lengua" to "Lengua saburral" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.allimg_054_lengua_saburral,"Lengua saburral","Referencia visual educativa de lengua saburral.")
-                        "lengua" to "Candidiasis" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.allimg_014_candidiasis_lengua,"Candidiasis lingual","Referencia visual educativa de candidiasis en lengua.")
-                        "lengua" to "Úlcera traumática" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.allimg_104_ulcera_traumatica_lengua,"Úlcera traumática de lengua","Referencia visual educativa de úlcera traumática en lengua.")
-                        "lengua" to "Fibroma traumático" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.allimg_044_fibroma_traumatico_lengua,"Fibroma traumático de lengua","Referencia visual educativa de fibroma traumático en lengua.")
+                        "labio_sup" to "Queilitis irritativa/traumática" -> Triple(R.drawable.allimg_089_quelitis_irritativa_labio_superior,"Queilitis irritativa/traumática","Referencia visual educativa de la opción seleccionada.")
+                        "labio_sup" to "Herpes labial" -> Triple(R.drawable.allimg_049_herpes_labial,"Herpes labial","Referencia visual educativa de la opción seleccionada.")
+                        "labio_sup" to "Fibroma traumático" -> Triple(R.drawable.allimg_043_fibroma_traumatico_labio,"Fibroma traumático","Referencia visual educativa de la opción seleccionada.")
+                        "labio_inf" to "Mucocele" -> Triple(R.drawable.allimg_070_mucocele,"Mucocele","Referencia visual educativa de la opción seleccionada.")
+                        "labio_inf" to "Queilitis irritativa/traumática" -> Triple(R.drawable.allimg_088_quelitis_irritativa_labio_inferior,"Queilitis irritativa/traumática","Referencia visual educativa de la opción seleccionada.")
+                        "labio_inf" to "Herpes labial" -> Triple(R.drawable.allimg_049_herpes_labial,"Herpes labial","Referencia visual educativa de la opción seleccionada.")
+                        "labio_inf" to "Fibroma traumático" -> Triple(R.drawable.allimg_043_fibroma_traumatico_labio,"Fibroma traumático","Referencia visual educativa de la opción seleccionada.")
+                        "labio_inf" to "Lesión por mordisqueo" -> Triple(R.drawable.allimg_058_lesion_por_mordisueo_labio_inferior,"Lesión por mordisqueo","Referencia visual educativa de la opción seleccionada.")
+                        "carrillo_der" to "Línea alba","carrillo_izq" to "Línea alba" -> Triple(R.drawable.allimg_062_linea_laba_carrillo,"Línea alba","Referencia visual educativa de la opción seleccionada.")
+                        "carrillo_der" to "Morsicatio / mordisqueo","carrillo_izq" to "Morsicatio / mordisqueo" -> Triple(R.drawable.allimg_069_morsicatio_o_mordisque_carrillo,"Morsicatio / mordisqueo","Referencia visual educativa de la opción seleccionada.")
+                        "carrillo_der" to "Fibroma traumático","carrillo_izq" to "Fibroma traumático" -> Triple(R.drawable.allimg_045_fibroma_traumatico_carrillo,"Fibroma traumático","Referencia visual educativa de la opción seleccionada.")
+                        "carrillo_der" to "Leucoedema","carrillo_izq" to "Leucoedema" -> Triple(R.drawable.allimg_061_leucodema,"Leucoedema","Referencia visual educativa de la opción seleccionada.")
+                        "carrillo_der" to "Liquen plano oral","carrillo_izq" to "Liquen plano oral" -> Triple(R.drawable.allimg_064_liquen_plano_oral_carrillos,"Liquen plano oral","Referencia visual educativa de la opción seleccionada.")
+                        "carrillo_der" to "Úlcera traumática","carrillo_izq" to "Úlcera traumática" -> Triple(R.drawable.allimg_103_ulcera_traumatica_carrillos,"Úlcera traumática","Referencia visual educativa de la opción seleccionada.")
+                        "encia" to "Gingivitis" -> Triple(R.drawable.allimg_047_gingivitis,"Gingivitis","Referencia visual educativa de la opción seleccionada.")
+                        "encia" to "Recesión gingival" -> Triple(R.drawable.allimg_094_recesion_gingival,"Recesión gingival","Referencia visual educativa de la opción seleccionada.")
+                        "encia" to "Hiperplasia gingival" -> Triple(R.drawable.allimg_050_hiperplasia_gingival820x383,"Hiperplasia gingival","Referencia visual educativa de la opción seleccionada.")
+                        "encia" to "Absceso/fístula a valorar" -> Triple(R.drawable.allimg_046_fistula_encia,"Fístula gingival","Referencia visual educativa de la opción seleccionada.")
+                        "encia" to "Granuloma piógeno" -> Triple(R.drawable.allimg_048_granuloma_piogeno,"Granuloma piógeno","Referencia visual educativa de la opción seleccionada.")
+                        "encia" to "Lesión periodontal a valorar" -> Triple(R.drawable.allimg_056_lesion_peridontontal,"Lesión periodontal","Referencia visual educativa de la opción seleccionada.")
+                        "paladar_duro" to "Torus palatino" -> Triple(R.drawable.allimg_100_torus_palatino,"Torus palatino","Referencia visual educativa de la opción seleccionada.")
+                        "paladar_duro" to "Quemadura térmica" -> Triple(R.drawable.allimg_091_quemadura_termica_pladar,"Quemadura térmica","Referencia visual educativa de la opción seleccionada.")
+                        "paladar_duro" to "Estomatitis nicotínica" -> Triple(R.drawable.allimg_037_estomatitis_nicotinica,"Estomatitis nicotínica","Referencia visual educativa de la opción seleccionada.")
+                        "paladar_duro" to "Candidiasis" -> Triple(R.drawable.allimg_016_candidiasis_paladar,"Candidiasis palatina","Referencia visual educativa de la opción seleccionada.")
+                        "paladar_duro" to "Úlcera traumática" -> Triple(R.drawable.allimg_105_ulcera_traumatica_paladar,"Úlcera traumática","Referencia visual educativa de la opción seleccionada.")
+                        "paladar_duro" to "Lesión pigmentada a valorar" -> Triple(R.drawable.allimg_057_lesion_pigmentaria_pladar_a_valorar,"Lesión pigmentada","Referencia visual educativa de la opción seleccionada.")
+                        "paladar_blando" to "Eritema inflamatorio" -> Triple(R.drawable.allimg_032_eritema_inflaatorio_paladar_blando,"Eritema inflamatorio","Referencia visual educativa de la opción seleccionada.")
+                        "paladar_blando" to "Petequias" -> Triple(R.drawable.allimg_076_petquias_paladar_blando,"Petequias","Referencia visual educativa de la opción seleccionada.")
+                        "paladar_blando" to "Candidiasis" -> Triple(R.drawable.allimg_015_candidiasis_paladar_blando,"Candidiasis","Referencia visual educativa de la opción seleccionada.")
+                        "paladar_blando" to "Úlcera aftosa" -> Triple(R.drawable.allimg_101_ulcera_aftosa_pladar_blando,"Úlcera aftosa","Referencia visual educativa de la opción seleccionada.")
+                        "paladar_blando" to "Lesión viral a valorar" -> Triple(R.drawable.allimg_060_lesion_viral_en_pladar_blando,"Lesión viral","Referencia visual educativa de la opción seleccionada.")
+                        "paladar_blando" to "Asimetría funcional a valorar" -> Triple(R.drawable.allimg_010_asimetria_funcional_paladar_a_valorar,"Asimetría funcional","Referencia visual educativa de la opción seleccionada.")
+                        "lengua" to "Lengua geográfica" -> Triple(R.drawable.allimg_053_lengua_geografica,"Lengua geográfica","Referencia visual educativa de la opción seleccionada.")
+                        "lengua" to "Lengua fisurada" -> Triple(R.drawable.allimg_052_lengua_fisurada,"Lengua fisurada","Referencia visual educativa de la opción seleccionada.")
+                        "lengua" to "Lengua saburral" -> Triple(R.drawable.allimg_054_lengua_saburral,"Lengua saburral","Referencia visual educativa de la opción seleccionada.")
+                        "lengua" to "Candidiasis" -> Triple(R.drawable.allimg_014_candidiasis_lengua,"Candidiasis lingual","Referencia visual educativa de la opción seleccionada.")
+                        "lengua" to "Úlcera traumática" -> Triple(R.drawable.allimg_104_ulcera_traumatica_lengua,"Úlcera traumática de lengua","Referencia visual educativa de la opción seleccionada.")
+                        "lengua" to "Fibroma traumático" -> Triple(R.drawable.allimg_044_fibroma_traumatico_lengua,"Fibroma traumático de lengua","Referencia visual educativa de la opción seleccionada.")
+                        "piso" to "Ránula" -> Triple(R.drawable.allimg_093_ranula_piso_de_boca,"Ránula","Referencia visual educativa de la opción seleccionada.")
+                        "piso" to "Sialolitiasis/obstrucción a valorar" -> Triple(R.drawable.allimg_098_sialolitiasis,"Sialolitiasis","Referencia visual educativa de la opción seleccionada.")
+                        "piso" to "Quiste/masa a valorar" -> Triple(R.drawable.allimg_092_quiste_piso_de_boca,"Quiste / masa","Referencia visual educativa de la opción seleccionada.")
+                        "piso" to "Lesión vascular a valorar" -> Triple(R.drawable.allimg_059_lesion_vascular_piso_de_boca,"Lesión vascular","Referencia visual educativa de la opción seleccionada.")
+                        "piso" to "Úlcera traumática" -> Triple(R.drawable.allimg_106_ulcera_traumatica_piso_de_boca,"Úlcera traumática","Referencia visual educativa de la opción seleccionada.")
+                        "orofaringe" to "Faringoamigdalitis a valorar" -> Triple(R.drawable.allimg_042_faringo_amigdalitis_streptocica,"Faringoamigdalitis","Referencia visual educativa de la opción seleccionada.")
+                        "orofaringe" to "Hipertrofia amigdalina" -> Triple(R.drawable.allimg_051_hipertrofia_amigdalina,"Hipertrofia amigdalina","Referencia visual educativa de la opción seleccionada.")
+                        "orofaringe" to "Exudado amigdalino" -> Triple(R.drawable.allimg_039_exudado_amigdalino,"Exudado amigdalino","Referencia visual educativa de la opción seleccionada.")
+                        "orofaringe" to "Úlcera/lesión mucosa" -> Triple(R.drawable.allimg_102_ulcera_orofaringe,"Úlcera / lesión mucosa","Referencia visual educativa de la opción seleccionada.")
+                        "orofaringe" to "Asimetría amigdalina a valorar" -> Triple(R.drawable.allimg_009_asimetria_amigdalina,"Asimetría amigdalina","Referencia visual educativa de la opción seleccionada.")
                         else -> null
                     }
                     pathologyVisual?.let{v->
@@ -195,15 +237,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 }
             }
         }
-        when(selected.id){
-            "labio_sup","labio_inf"->LocalClinicalImageSectionV46(lang,profile,"Labios","Lips")
-            "carrillo_der","carrillo_izq"->LocalClinicalImageSectionV46(lang,profile,"Carrillos","Buccal mucosa")
-            "encia"->LocalClinicalImageSectionV46(lang,profile,"Encía y periodonto","Gingiva and periodontium")
-            "paladar_duro","paladar_blando"->LocalClinicalImageSectionV46(lang,profile,"Paladar","Palate")
-            "lengua"->LocalClinicalImageSectionV46(lang,profile,"Lengua","Tongue")
-            "piso"->LocalClinicalImageSectionV46(lang,profile,"Piso de boca y glándulas salivales","Floor of mouth and salivary glands")
-            "orofaringe"->{LocalClinicalImageSectionV46(lang,profile,"Orofaringe y amígdalas","Oropharynx and tonsils");LocalClinicalImageSectionV46(lang,profile,"Manifestaciones infecciosas","Infectious manifestations")}
-        }
+        // Las imágenes regionales ya no se muestran como galerías; cada imagen aparece sólo al seleccionar su opción.
         if(tissueStatus[selected.id]=="Alteración" && !tissueLesion[selected.id].isNullOrBlank()){
             ResponsiveSectionV17(tr(lang,"Características de la alteración seleccionada","Characteristics of the selected alteration")) {
                 MucosaPick19("Tamaño mayor aproximado",listOf("<2 mm","2–4 mm","5–9 mm","10–19 mm","20–29 mm","≥30 mm","No medido"),sizeMm){sizeMm=it}
