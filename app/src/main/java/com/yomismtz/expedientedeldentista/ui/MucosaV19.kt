@@ -182,6 +182,15 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 }
             }
         }
+        when(selected.id){
+            "labio_sup","labio_inf"->LocalClinicalImageSectionV46(lang,profile,"Labios","Lips")
+            "carrillo_der","carrillo_izq"->LocalClinicalImageSectionV46(lang,profile,"Carrillos","Buccal mucosa")
+            "encia"->LocalClinicalImageSectionV46(lang,profile,"Encía y periodonto","Gingiva and periodontium")
+            "paladar_duro","paladar_blando"->LocalClinicalImageSectionV46(lang,profile,"Paladar","Palate")
+            "lengua"->LocalClinicalImageSectionV46(lang,profile,"Lengua","Tongue")
+            "piso"->LocalClinicalImageSectionV46(lang,profile,"Piso de boca y glándulas salivales","Floor of mouth and salivary glands")
+            "orofaringe"->{LocalClinicalImageSectionV46(lang,profile,"Orofaringe y amígdalas","Oropharynx and tonsils");LocalClinicalImageSectionV46(lang,profile,"Manifestaciones infecciosas","Infectious manifestations")}
+        }
         if(tissueStatus[selected.id]=="Alteración" && !tissueLesion[selected.id].isNullOrBlank()){
             ResponsiveSectionV17(tr(lang,"Características de la alteración seleccionada","Characteristics of the selected alteration")) {
                 MucosaPick19("Tamaño mayor aproximado",listOf("<2 mm","2–4 mm","5–9 mm","10–19 mm","20–29 mm","≥30 mm","No medido"),sizeMm){sizeMm=it}
