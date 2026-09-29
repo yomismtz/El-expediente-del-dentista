@@ -227,6 +227,7 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
     var followup by rememberRecordState("atm.followup","Sin seguimiento registrado")
     var atmVisual by rememberRecordState("atm.visual","Apertura y cierre")
     var openFindingKey by remember { mutableStateOf("") }
+    var openFindingImageIndex by remember(openFindingKey) { mutableStateOf(0) }
     var showAtmVisual by remember { mutableStateOf(false) }
 
     val orientation=when {
@@ -271,7 +272,12 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
                 "trauma" to listOf(Triple(R.drawable.atm_new_trauma,"Trauma de ATM","Imagen de antecedente traumático de ATM/mandíbula."))
             )
             findings.firstOrNull{it.key==openFindingKey && on(it.key)}?.let { finding ->
-                atmFindingVisuals[finding.key].orEmpty().forEach { v ->
+                val visuals=atmFindingVisuals[finding.key].orEmpty()
+                val safeVisualIndex=if(visuals.isEmpty())0 else openFindingImageIndex.coerceIn(0,visuals.lastIndex)
+                if(visuals.size>1){
+                    ChipChoices(visuals.mapIndexed{i,v->v.second to (safeVisualIndex==i)},{i->openFindingImageIndex=i},columns=2)
+                }
+                visuals.getOrNull(safeVisualIndex)?.let { v ->
                     LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
                 }
             }
