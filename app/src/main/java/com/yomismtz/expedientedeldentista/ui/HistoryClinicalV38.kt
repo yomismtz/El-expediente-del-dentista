@@ -1030,6 +1030,8 @@ private data class E(val n:String,val d:String)
  }
 }
 
+private fun OralSiteImagesV50HasRefs(site:String)=site in setOf("Labio superior","Labio inferior","Carrillo derecho / mucosa bucal","Carrillo izquierdo / mucosa bucal","Piso de boca","Paladar duro","Paladar blando","Orofaringe / pared posterior","Úvula","Amígdala derecha","Amígdala izquierda","Lengua · dorso","Lengua · bordes laterales","Lengua · cara ventral")
+
 @Composable private fun OralSiteImagesV50(lang:String,site:String){
  val refs=when(site){
   "Labio superior"->listOf(
@@ -1120,8 +1122,8 @@ private data class E(val n:String,val d:String)
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Examen peribucal e intrabucal / mucosas",onBack,"Exploración por sitio anatómico. Toca cada estructura para ver aspecto normal, qué observar y alteraciones seleccionables. Primero se describe el hallazgo; después se orienta el diagnóstico.")}
   item{NoticeCard("Secuencia sugerida: piel peribucal → labios y comisuras → mucosa labial/frenillos → carrillos → encía → paladares → orofaringe/úvula/pilares/amígdalas → lengua → frenillo lingual → piso de boca.")}
-  items(sites.size){i->val x=sites[i];Card(onClick={selected=if(selected==i)null else i;if(selected!=i && helpSite==i)helpSite=null},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){Text(x.n,fontWeight=FontWeight.Bold);if(selected==i){Text(x.d);Text("□ Normal / sin alteración evidente   □ Hallazgo presente   □ No valorable",style=MaterialTheme.typography.bodySmall);TextButton(onClick={helpSite=if(helpSite==i)null else i}){Text(if(helpSite==i) "Ocultar referencias" else "?  Ver referencias")};if(helpSite==i)OralSiteImagesV50(lang,x.n)}else Text("Toca para explorar",style=MaterialTheme.typography.bodySmall)}}}
-  item{NoticeCard("Las fotografías clínicas que acompañen este módulo serán referencias reales con fuente/cita y se identificarán como normal, variante anatómica o lesión documentada; no se usarán imágenes inventadas como sustituto diagnóstico.")}
+  items(sites.size){i->val x=sites[i];Card(onClick={selected=if(selected==i)null else i;if(selected!=i && helpSite==i)helpSite=null},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){Text(x.n,fontWeight=FontWeight.Bold);if(selected==i){Text(x.d);Text("□ Normal / sin alteración evidente   □ Hallazgo presente   □ No valorable",style=MaterialTheme.typography.bodySmall);if(OralSiteImagesV50HasRefs(x.n)){TextButton(onClick={helpSite=if(helpSite==i)null else i}){Text(if(helpSite==i) "Ocultar referencias" else "?  Ver referencias")};if(helpSite==i)OralSiteImagesV50(lang,x.n)}}else Text("Toca para explorar",style=MaterialTheme.typography.bodySmall)}}}
+  item{NoticeCard("Las referencias clínicas locales se muestran sólo cuando están disponibles para el sitio explorado y se solicitan con ?. Sirven para comparación educativa; el hallazgo debe describirse y correlacionarse con la exploración.")}
  }
 }
 
