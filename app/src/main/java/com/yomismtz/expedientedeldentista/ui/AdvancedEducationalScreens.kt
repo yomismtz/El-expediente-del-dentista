@@ -364,6 +364,18 @@ fun SurgicalSheetScreen(lang: String, onBack: () -> Unit) {
         item { Pick(tr(lang,"7 · Hemostasia","7 · Hemostasis"),hemostasisOptions,hemostasis){hemostasis=it} }
         item { Pick(tr(lang,"8 · Sutura","8 · Suture"),sutures,suture){suture=it} }
         item { Pick(tr(lang,"9 · Incidentes / complicaciones","9 · Incidents / complications"),incidents,incident){incident=it} }
+        item {
+            val needsReevaluation = incident != "Sin incidentes" || hemostasis == "Requiere reevaluación del sangrado" || finding == "Hallazgo que obliga a reevaluar"
+            SectionCard(tr(lang,"Control transoperatorio","Intraoperative safety check")) {
+                Text(
+                    if (needsReevaluation)
+                        tr(lang,"⚠️ Hay un hallazgo que requiere detenerse, reevaluar y solicitar supervisión clínica antes de continuar o cerrar el ejercicio.","⚠️ A finding requires stopping, reassessing, and obtaining clinical supervision before continuing or closing the exercise.")
+                    else
+                        tr(lang,"✓ No se registraron incidentes ni señales de reevaluación en los campos seleccionados. Continúa con el registro posoperatorio.","✓ No incidents or reassessment flags are recorded in the selected fields. Continue with postoperative documentation."),
+                    fontWeight=FontWeight.Bold
+                )
+            }
+        }
         item { Pick(tr(lang,"10 · Indicaciones posoperatorias","10 · Postoperative instructions"),postops,postop){postop=it} }
         item { Pick(tr(lang,"11 · Seguimiento","11 · Follow-up"),followups,followup){followup=it} }
         item {
