@@ -724,6 +724,66 @@ private data class E(val n:String,val d:String)
   item{SectionCard("3 · Anomalía / hallazgo"){
    ChipChoices(s.findings.map{x->x to (selected[g.name+"|"+s.name]==x)},{i->selected[g.name+"|"+s.name]=s.findings[i]},columns=3)
   }}
+  val finding=selected[g.name+"|"+s.name]
+  val anomalyImages=when(finding){
+   "Anodoncia"->listOf(R.drawable.anomaly49_02)
+   "Hipodoncia"->listOf(R.drawable.anomaly49_28)
+   "Oligodoncia"->listOf(R.drawable.anomaly49_37)
+   "Mesiodens"->listOf(R.drawable.anomaly49_26)
+   "Paramolar"->listOf(R.drawable.anomaly49_06)
+   "Distomolar / cuarto molar"->listOf(R.drawable.anomaly49_05)
+   "Premolar supernumerario"->listOf(R.drawable.anomaly49_07)
+   "Suplementario"->listOf(R.drawable.anomaly49_24)
+   "Conoidal"->listOf(R.drawable.anomaly49_04)
+   "Tuberculado"->listOf(R.drawable.anomaly49_08)
+   "Microdoncia localizada"->listOf(R.drawable.anomaly49_34,R.drawable.anomaly49_35)
+   "Microdoncia generalizada verdadera"->listOf(R.drawable.anomaly49_33)
+   "Microdoncia generalizada relativa"->listOf(R.drawable.anomaly49_32)
+   "Incisivo lateral conoide"->listOf(R.drawable.anomaly49_30)
+   "Macrodoncia localizada"->listOf(R.drawable.anomaly49_15)
+   "Macrodoncia generalizada verdadera"->listOf(R.drawable.anomaly49_14)
+   "Incisivo conoide"->listOf(R.drawable.anomaly49_13)
+   "Dens invaginatus"->listOf(R.drawable.anomaly49_23)
+   "Dens evaginatus"->listOf(R.drawable.anomaly49_22)
+   "Cúspide en talón"->listOf(R.drawable.anomaly49_19)
+   "Cúspides accesorias"->listOf(R.drawable.anomaly49_20)
+   "Tubérculo de Carabelli"->listOf(R.drawable.anomaly49_49)
+   "Protostílido"->listOf(R.drawable.anomaly49_41)
+   "Incisivos en pala"->listOf(R.drawable.anomaly49_36)
+   "Surco palatorradicular"->listOf(R.drawable.anomaly49_47)
+   "Dilaceración"->listOf(R.drawable.anomaly49_09)
+   "Raíces supernumerarias / accesorias"->listOf(R.drawable.anomaly49_45)
+   "Raíz corta"->listOf(R.drawable.anomaly49_43)
+   "Raíces fusionadas"->listOf(R.drawable.anomaly49_44)
+   "Curvaturas radiculares pronunciadas"->listOf(R.drawable.anomaly49_18)
+   "Hipotaurodontismo"->listOf(R.drawable.anomaly49_29,R.drawable.anomaly49_48)
+   "Mesotaurodontismo"->listOf(R.drawable.anomaly49_31,R.drawable.anomaly49_48)
+   "Hipertaurodontismo"->listOf(R.drawable.anomaly49_27,R.drawable.anomaly49_48)
+   "Perla de esmalte"->listOf(R.drawable.anomaly49_17)
+   "Proyección cervical de esmalte"->listOf(R.drawable.anomaly49_42)
+   "Fusión"->listOf(R.drawable.anomaly49_11)
+   "Geminación"->listOf(R.drawable.anomaly49_25)
+   "Concrescencia"->listOf(R.drawable.anomaly49_03)
+   "Fusión de diente normal con supernumerario"->listOf(R.drawable.anomaly49_10)
+   "HSPM"->listOf(R.drawable.anomaly49_12)
+   "Defectos postraumáticos"->listOf(R.drawable.anomaly49_21)
+   "Amelogénesis imperfecta hipoplásica","Amelogénesis imperfecta hipomadurativa","Amelogénesis imperfecta hipocalcificada / hipomineralizada","Amelogénesis imperfecta mixta","Amelogénesis imperfecta"->listOf(R.drawable.anomaly49_01)
+   "Odontodisplasia regional / ghost teeth"->listOf(R.drawable.anomaly49_16)
+   "Tetraciclinas"->listOf(R.drawable.anomaly49_40)
+   "Reabsorción interna / pink spot"->listOf(R.drawable.anomaly49_46)
+   "Tabaco"->listOf(R.drawable.anomaly49_39)
+   "Clorhexidina"->listOf(R.drawable.anomaly49_38)
+   else->emptyList()
+  }
+  if(anomalyImages.isNotEmpty()){
+   item{SectionCard("Referencia visual"){
+    anomalyImages.forEachIndexed{i,res->
+     LocalClinicalInlineZoomImageV48(lang,(finding?:"Anomalía")+" · referencia "+(i+1),(finding?:"Dental anomaly")+" · reference "+(i+1),res,
+      "Imagen local correspondiente al hallazgo seleccionado. Úsala junto con los criterios clínicos y radiográficos; no genera diagnóstico automático.",
+      "Local image corresponding to the selected finding. Use it with clinical and radiographic criteria; it does not generate an automatic diagnosis.")
+    }
+   }}
+  }
   val extension=listOf("Un diente","Varios dientes","Localizado por cuadrante","Generalizado","No valorable")
   item{SectionCard("4 · Extensión"){ChipChoices(extension.map{x->x to (selected["Extensión"]==x)},{i->selected["Extensión"]=extension[i]},columns=3)}}
   val confirmation=listOf("Sólo clínica","Clínica + radiografía","Antecedente documentado","Requiere estudio complementario","No aplica")
