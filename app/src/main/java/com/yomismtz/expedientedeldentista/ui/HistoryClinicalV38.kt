@@ -213,7 +213,7 @@ private data class E(val n:String,val d:String)
  var sub by rememberRecordState("history.nonpath.sub","")
  val chosen=rememberRecordStateMap<String,String>("history.nonpath.chosen")
  val multi=rememberRecordStateMap<String,Boolean>("history.nonpath.multi")
- val sections=listOf("Vivienda","Higiene","Alimentación","Inmunizaciones","Hábitos y exposiciones")
+ val sections=listOf("Alimentación","Vivienda","Higiene","Inmunizaciones","Hábitos y exposiciones")
  fun optionsCard(title:String,options:List<String>,note:String="",columns:Int=3)=@Composable{
   SectionCard(title){
    if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)
@@ -261,7 +261,7 @@ private data class E(val n:String,val d:String)
  )
  val vaccineEntries=vaccines.entries.toList()
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Antecedentes personales no patológicos",onBack,"Selecciona una categoría y registra las opciones. Cada bloque explica qué dato se recoge y por qué puede ser útil como contexto clínico.")}
+  item{ScreenHeader("Antecedentes personales no patológicos",onBack,"Alimentación abre primero por su relevancia odontológica. Selecciona frecuencias y el resumen orientativo se actualiza con las respuestas registradas.")}
   item{SectionCard("Categorías"){ChipChoices(sections.map{x->x to (section==x)},{i->section=sections[i];sub=""},columns=3)}}
 
   if(section=="Vivienda"){
@@ -303,7 +303,7 @@ private data class E(val n:String,val d:String)
 
   if(section=="Alimentación"){
    item{SectionCard("Alimentación · evaluación dietética"){
-    Text("Registra frecuencia de grupos protectores y de exposiciones cariogénicas. Este apartado queda visible desde la entrada a antecedentes personales no patológicos y conserva las respuestas en el expediente.",fontWeight=FontWeight.SemiBold)
+    Text("Registra la frecuencia real de consumo. Empieza por grupos protectores y después revisa las exposiciones cariogénicas; las respuestas quedan conservadas en el expediente.",fontWeight=FontWeight.SemiBold)
     Text("Prioridad odontológica: frecuencia de azúcares, consumo entre comidas y nocturno, bebidas azucaradas/ácidas, agua simple y patrón general de alimentación.",style=MaterialTheme.typography.bodySmall)
    }}
    val freqOptions=listOf("Nunca","Menos de 1/semana","1–3/semana","4–6/semana","1/día","2–3/día","4 o más/día")
