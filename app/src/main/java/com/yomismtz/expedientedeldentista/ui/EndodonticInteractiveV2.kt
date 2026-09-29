@@ -186,10 +186,10 @@ fun EndodonticInteractiveV2Screen(
                 }
                 item {
                     SectionCard(tr(lang, "3 · Diagnóstico endodóntico", "3 · Endodontic diagnosis")) {
-                        Text(tr(lang, "Pulpar", "Pulpal"), fontWeight = FontWeight.Black, color = EndoDeep)
+                        Text(tr(lang, "Pulpar", "Pulpal"), fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onSurface)
                         Text(pulpal, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.height(6.dp))
-                        Text(tr(lang, "Periapical", "Apical"), fontWeight = FontWeight.Black, color = EndoDeep)
+                        Text(tr(lang, "Periapical", "Apical"), fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onSurface)
                         Text(apical, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.height(8.dp))
                         OutlinedButton(onClick = onOpenPulpal, modifier = Modifier.fillMaxWidth()) {
@@ -226,12 +226,12 @@ fun EndodonticInteractiveV2Screen(
                 item {
                     SectionCard(tr(lang, "4 · Orientación terapéutica", "4 · Treatment orientation")) {
                         Card(
-                            colors = CardDefaults.cardColors(containerColor = EndoMint.copy(alpha = .18f)),
-                            border = BorderStroke(1.dp, EndoTurquoise),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
                             shape = RoundedCornerShape(16.dp)
                         ) {
                             Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                                Text(tr(lang, "Más compatible con", "Most compatible with"), fontWeight = FontWeight.Black, color = EndoDeep)
+                                Text(tr(lang, "Más compatible con", "Most compatible with"), fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onSurface)
                                 Text(orientation, fontWeight = FontWeight.Bold)
                             }
                         }
@@ -296,7 +296,7 @@ fun EndodonticInteractiveV2Screen(
                                 "No fixed subtraction replaces clinical confirmation. If the apex locator, anatomy and image disagree, stop and reassess before instrumentation."
                             ),
                             style = MaterialTheme.typography.bodySmall,
-                            color = EndoPurple
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -330,14 +330,14 @@ fun EndodonticInteractiveV2Screen(
                     val isDone = completed[step.key] == true
                     Card(
                         modifier = Modifier.fillMaxWidth().clickable { completed[step.key] = !isDone },
-                        colors = CardDefaults.cardColors(containerColor = if (isDone) EndoMint.copy(alpha = .16f) else EndoPaper),
-                        border = BorderStroke(1.dp, if (isDone) EndoTurquoise else EndoLilac),
+                        colors = CardDefaults.cardColors(containerColor = if (isDone) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface),
+                        border = BorderStroke(1.dp, if (isDone) EndoTurquoise else MaterialTheme.colorScheme.outlineVariant),
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Row(Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
                             Checkbox(checked = isDone, onCheckedChange = { completed[step.key] = it })
                             Column(Modifier.weight(1f)) {
-                                Text(if (lang == "en") step.en else step.es, fontWeight = FontWeight.Bold, color = EndoDeep)
+                                Text(if (lang == "en") step.en else step.es, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                                 Text(if (lang == "en") step.whyEn else step.whyEs, style = MaterialTheme.typography.bodySmall)
                             }
                         }
@@ -415,7 +415,7 @@ fun EndodonticInteractiveV2Screen(
             else -> {
                 item {
                     SectionCard(tr(lang, "1 · Resumen para el expediente físico", "1 · Summary for the physical record")) {
-                        Text("OD $selectedTooth", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black, color = EndoDeep)
+                        Text("OD $selectedTooth", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onSurface)
                         Text("${tr(lang, "Diagnóstico pulpar", "Pulpal diagnosis")}: $pulpal")
                         Text("${tr(lang, "Diagnóstico periapical", "Apical diagnosis")}: $apical")
                         Text("${tr(lang, "Procedimiento practicado", "Procedure practiced")}: $procedureLabel")
@@ -449,9 +449,9 @@ fun EndodonticInteractiveV2Screen(
                     }
                 }
                 item {
-                    Card(colors = CardDefaults.cardColors(containerColor = EndoMint.copy(alpha = .18f)), border = BorderStroke(1.dp, EndoTurquoise), shape = RoundedCornerShape(18.dp)) {
+                    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer), border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary), shape = RoundedCornerShape(18.dp)) {
                         Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            Text("✍️ ${tr(lang, "¿Qué escribo al final?", "What do I write at the end?")}", fontWeight = FontWeight.Black, color = EndoDeep)
+                            Text("✍️ ${tr(lang, "¿Qué escribo al final?", "What do I write at the end?")}", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onSurface)
                             Text(finalEndoWriting(lang, selectedTooth, pulpal, apical, procedureLabel, canals, referencePoint, restoration, notes))
                         }
                     }
@@ -463,9 +463,9 @@ fun EndodonticInteractiveV2Screen(
 
 @Composable
 private fun PediatricEndoCard(title: String, body: String) {
-    Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = EndoLavender.copy(alpha = .42f)), border = BorderStroke(1.dp, EndoLilac), shape = RoundedCornerShape(16.dp)) {
+    Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant), shape = RoundedCornerShape(16.dp)) {
         Column(Modifier.padding(13.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-            Text(title, fontWeight = FontWeight.Black, color = EndoDeep)
+            Text(title, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onSurface)
             Text(body)
         }
     }
