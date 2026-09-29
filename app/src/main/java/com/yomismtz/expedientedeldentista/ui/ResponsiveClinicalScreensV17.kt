@@ -380,6 +380,7 @@ fun IhosResponsiveV17Screen(
             profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT -> 2
             else -> 3
         }
+        ResponsiveSectionV17(tr(lang,"Referencias visuales IHOS","OHI-S visual references")) { UploadedIhosRefsV51(lang) }
         ResponsiveSectionV17(tr(lang,"1 · Dientes índice","1 · Index teeth")) {
             AdaptiveGridV17(v17IhosSlots.size, slotColumns) { index ->
                 val slot = v17IhosSlots[index]
