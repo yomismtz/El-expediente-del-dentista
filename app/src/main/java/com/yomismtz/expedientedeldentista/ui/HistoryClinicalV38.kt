@@ -551,13 +551,13 @@ private data class E(val n:String,val d:String)
   }
  }
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Exploración física y extraoral",onBack,"Registro de inspección general, cráneo/cara, músculos extraorales, cuello y ganglios. Signos vitales y ATM se registran en sus módulos especializados para evitar duplicación.")}
+  item{ScreenHeader("Exploración física y extraoral",onBack,"Explora por apartados: inspección general, cráneo/cara, músculos, cuello y ganglios. Las imágenes clínicas aparecen sólo cuando seleccionas el hallazgo correspondiente; signos vitales y ATM permanecen en sus módulos especializados.")}
   item{SectionCard("Apartado de exploración"){
    val physicalSections=listOf("Inspección general","Cráneo y cara","Músculos","Cuello","Ganglios")
    ChipChoices(
     physicalSections.map{x->x to (section==x)},
     {i->section=physicalSections[i]},
-    columns=3
+    columns=2
    )
    Text("Signos vitales, somatometría y glucosa se registran en Signos vitales. ATM y movimientos mandibulares se registran en el módulo ATM.",style=MaterialTheme.typography.bodySmall)
   }}
@@ -783,8 +783,7 @@ private data class E(val n:String,val d:String)
    item{Pick("Consistencia",listOf("Blanda","Elástica","Firme","Dura","No aplica/no palpable","No valorable"),"Qué es: sensación obtenida durante la palpación. Por qué importa: blandura, elasticidad, firmeza o dureza son datos descriptivos que deben correlacionarse con sitio, tamaño, movilidad, dolor, evolución y antecedentes; un solo dato no establece etiología.")}
   }
 
-  item{Button(onClick={},modifier=Modifier.fillMaxWidth()){Text("💾 Guardar exploración")}}
-  item{NoticeCard("Los valores de referencia son educativos y deben interpretarse con edad, sexo, anatomía, síntomas, técnica de medición y contexto clínico. Los hallazgos no generan un diagnóstico automático.")}
+  item{NoticeCard("Los cambios quedan registrados al seleccionar cada hallazgo. Los valores de referencia son educativos y deben interpretarse con edad, anatomía, síntomas, técnica de medición y contexto clínico. Los hallazgos no generan un diagnóstico automático.")}
  }
 }
 
