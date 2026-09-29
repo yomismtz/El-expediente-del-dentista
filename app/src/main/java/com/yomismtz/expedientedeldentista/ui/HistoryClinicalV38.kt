@@ -123,11 +123,11 @@ private data class E(val n:String,val d:String)
  var modifiers by rememberRecordState("history.reason.modifiers","")
  val current=selectedReason?.let{catalog.getOrNull(it)}
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
-  item{ScreenHeader("Motivo de consulta y padecimiento actual",onBack,"Selecciona el motivo referido. Al elegirlo, la lista se compacta y los pasos 2 y 3 aparecen inmediatamente debajo para conservar la secuencia clínica.")}
+  item{ScreenHeader("Motivo de consulta y padecimiento actual",onBack,"Selecciona el motivo referido. Al tocarlo, el catálogo se cierra y los diagnósticos diferenciales aparecen inmediatamente en su lugar, sin obligarte a recorrer una lista larga.")}
   item{NoticeCard("Los diagnósticos mostrados son posibilidades educativas. El diagnóstico clínico requiere integrar interrogatorio, exploración y pruebas indicadas.")}
   if(showCatalog || current==null){
    item{SectionCard("1 · Motivo de consulta"){
-    Text("Selecciona una opción. La lista se cerrará al elegirla para mostrar enseguida los siguientes pasos.",style=MaterialTheme.typography.bodySmall)
+    Text("Selecciona una opción. Al elegirla, esta lista se sustituye por el motivo seleccionado y los siguientes pasos quedan visibles justo debajo.",style=MaterialTheme.typography.bodySmall)
     ChipChoices(
      catalog.mapIndexed{i,x->x.reason to (selectedReason==i)},
      {i->selectedReason=i;selectedDx=null;showCatalog=false},
