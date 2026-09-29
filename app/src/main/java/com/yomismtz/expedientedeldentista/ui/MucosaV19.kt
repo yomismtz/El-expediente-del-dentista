@@ -1,6 +1,7 @@
 package com.yomismtz.expedientedeldentista.ui
 
 import com.yomismtz.expedientedeldentista.R
+import androidx.annotation.DrawableRes
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
