@@ -445,9 +445,13 @@ private data class E(val n:String,val d:String)
  }
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Antecedentes gineco-obstétricos",onBack,"Registro educativo con opciones predeterminadas. Primero selecciona sexo; el interrogatorio gineco-obstétrico sólo se despliega cuando corresponde.")}
-  item{SectionCard("Aplicación del interrogatorio"){\n   Text("Selecciona si corresponde desplegar este apartado clínico.",style=MaterialTheme.typography.bodySmall)\n   Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(sex=="H",{sex="H"},{Text("No aplica")});FilterChip(sex=="M",{sex="M"},{Text("Sí aplica")})}\n  }}
+  item{SectionCard("Aplicación del interrogatorio"){
+   Text("Selecciona si corresponde desplegar este apartado clínico.",style=MaterialTheme.typography.bodySmall)
+   Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(sex=="H",{sex="H"},{Text("No aplica")});FilterChip(sex=="M",{sex="M"},{Text("Sí aplica")})}
+  }}
   if(sex=="H")item{NoticeCard("Interrogatorio gineco-obstétrico marcado como no aplicable. Los campos sensibles permanecen ocultos.")}
-  if(sex=="M"){\n   item{NoticeCard("Registra únicamente datos clínicamente pertinentes y referidos por la paciente. Las opciones «Prefiere no responder» y «No recuerda» deben conservarse cuando estén disponibles; no completes información por inferencia.")}
+  if(sex=="M"){
+   item{NoticeCard("Registra únicamente datos clínicamente pertinentes y referidos por la paciente. Las opciones «Prefiere no responder» y «No recuerda» deben conservarse cuando estén disponibles; no completes información por inferencia.")}
    item{OptionsCard("Menarca",listOf("Aún no presenta","8–9 años","10–11 años","12–13 años","14–15 años","16 años o más","No recuerda"),"Menarca = primera menstruación. Se registra la edad referida; una edad aislada no establece diagnóstico.")}
    item{OptionsCard("Inicio de vida sexual activa (IVSA)",listOf("No ha iniciado","Antes de 15 años","15–17 años","18–20 años","21–25 años","26 años o más","Prefiere no responder","No recuerda"),"Dato confidencial; registrar sólo lo referido por la paciente.")}
    item{OptionsCard("Embarazos / gestas",nums,"Número total de embarazos referidos, independientemente de su desenlace.")}
