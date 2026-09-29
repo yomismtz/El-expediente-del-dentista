@@ -96,4 +96,38 @@ class RecordOpenCloseTest {
             .assertExists()
     }
 
+
+    private fun createAndOpenRecord(code: String) {
+        compose.onNode(hasText("NUEVO EXPEDIENTE", substring = true))
+            .assertExists()
+            .performClick()
+        val fields = compose.onAllNodes(hasSetTextAction())
+        fields[0].performTextInput(code)
+        fields[1].performTextInput("30")
+        compose.onNode(hasText("Femenino", substring = false)).assertExists().performClick()
+        compose.onNode(hasText("Crear y abrir expediente", substring = true)).assertExists().performClick()
+        compose.onNode(hasText("Abrir expediente", substring = true)).assertExists().performClick()
+        compose.onNode(hasText("Secciones del expediente", substring = true)).assertExists()
+    }
+
+    @Test
+    fun dentalAnalysis_openOdontogram_andReturn() {
+        createAndOpenRecord("DENTAL")
+        compose.onNode(hasText("Análisis dentales", substring = true)).assertExists().performClick()
+        compose.onNode(hasText("Odontograma e índices dentales", substring = true)).assertExists().performClick()
+        compose.onNode(hasText("Odontograma", substring = true)).assertExists()
+        compose.onNode(hasText("‹", substring = false)).assertExists().performClick()
+        compose.onNode(hasText("Análisis dentales", substring = true)).assertExists()
+    }
+
+    @Test
+    fun treatmentSheets_openSurgicalSheet_andReturn() {
+        createAndOpenRecord("SURG")
+        compose.onNode(hasText("Tratamiento y fichas clínicas", substring = true)).assertExists().performClick()
+        compose.onNode(hasText("Ficha quirúrgica", substring = true)).assertExists().performClick()
+        compose.onNode(hasText("Ficha quirúrgica", substring = true)).assertExists()
+        compose.onNode(hasText("‹", substring = false)).assertExists().performClick()
+        compose.onNode(hasText("Tratamiento y fichas clínicas", substring = true)).assertExists()
+    }
+
 }
