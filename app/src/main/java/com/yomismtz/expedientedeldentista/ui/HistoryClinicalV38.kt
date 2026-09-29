@@ -802,6 +802,7 @@ private data class E(val n:String,val d:String)
    "HSPM"->listOf(R.drawable.anomaly49_12)
    "Defectos postraumáticos"->listOf(R.drawable.anomaly49_21)
    "Amelogénesis imperfecta hipoplásica","Amelogénesis imperfecta hipomadurativa","Amelogénesis imperfecta hipocalcificada / hipomineralizada","Amelogénesis imperfecta mixta","Amelogénesis imperfecta"->listOf(R.drawable.anomaly49_01)
+   "Dentinogénesis imperfecta"->listOf(R.drawable.anomaly_dentinogenesis_imperfecta)
    "Odontodisplasia regional / ghost teeth"->listOf(R.drawable.anomaly49_16)
    "Tetraciclinas"->listOf(R.drawable.anomaly49_40)
    "Reabsorción interna / pink spot"->listOf(R.drawable.anomaly49_46)
@@ -813,9 +814,9 @@ private data class E(val n:String,val d:String)
    else->emptyList()
   }
   if(anomalyImages.isNotEmpty()){
-   item{SectionCard("Referencia visual"){
+   item{SectionCard("Imagen del hallazgo"){
     anomalyImages.forEachIndexed{i,res->
-     LocalClinicalInlineZoomImageV48(lang,(finding?:"Anomalía")+" · referencia "+(i+1),(finding?:"Dental anomaly")+" · reference "+(i+1),res,
+     LocalClinicalInlineZoomImageV48(lang,(finding?:"Anomalía")+" · imagen "+(i+1),(finding?:"Dental anomaly")+" · image "+(i+1),res,
       "Imagen local correspondiente al hallazgo seleccionado. Úsala junto con los criterios clínicos y radiográficos; no genera diagnóstico automático.",
       "Local image corresponding to the selected finding. Use it with clinical and radiographic criteria; it does not generate an automatic diagnosis.")
     }
@@ -825,7 +826,7 @@ private data class E(val n:String,val d:String)
   item{SectionCard("4 · Extensión"){ChipChoices(extension.map{x->x to (selected["Extensión"]==x)},{i->selected["Extensión"]=extension[i]},columns=3)}}
   val confirmation=listOf("Sólo clínica","Clínica + radiografía","Antecedente documentado","Requiere estudio complementario","No aplica")
   item{SectionCard("5 · Confirmación disponible"){ChipChoices(confirmation.map{x->x to (selected["Confirmación"]==x)},{i->selected["Confirmación"]=confirmation[i]},columns=3)}}
-  item{NoticeCard("Las categorías organizan el registro educativo y no generan diagnóstico automático. Correlaciona los hallazgos con historia clínica, exploración y estudios apropiados. Las imágenes específicas de anomalías se incorporarán como referencias locales cuando estén disponibles.")}
+  item{NoticeCard("Las categorías organizan el registro educativo y no generan diagnóstico automático. Correlaciona los hallazgos con historia clínica, exploración y estudios apropiados. Las imágenes locales aparecen únicamente al seleccionar el hallazgo correspondiente.")}
  }
 }
 
@@ -847,9 +848,9 @@ private data class E(val n:String,val d:String)
  val durationOpts=listOf("<1 mes","1–6 meses","7–12 meses","1–2 años","3–5 años",">5 años","Desde infancia","No sabe")
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Hábitos y parafunciones",onBack,"Selecciona los hábitos presentes. Las opciones se organizan en 2–3 celdas y cada una incluye explicación, qué observar y una fotografía local opcional asociada al expediente.")}
-  item{SectionCard("Ayuda visual · hábitos orales"){
-   Text("Panorama general de hábitos orales. Úsalo como orientación educativa; selecciona después el hábito referido para ver su explicación e imagen específica.",style=MaterialTheme.typography.bodySmall)
-   LocalClinicalHelpImageV47(lang,"Panorama de hábitos orales","Oral habits overview",R.drawable.edu_habitos_orales,"Lámina general de apoyo para reconocer los principales hábitos y parafunciones.","General educational overview of common oral habits and parafunctions.")
+  item{SectionCard("Panorama de hábitos orales"){
+   Text("Toca el recuadro para abrir la imagen general; después selecciona el hábito referido para ver su explicación e imagen específica.",style=MaterialTheme.typography.bodySmall)
+   LocalClinicalHelpImageV47(lang,"Panorama de hábitos orales","Oral habits overview",R.drawable.edu_habitos_orales,"Imagen general de los principales hábitos y parafunciones.","General image of common oral habits and parafunctions.")
   }}
   item{SectionCard("Hábitos referidos"){
    ChipChoices(habits.map{h->h.name to (present[h.id]==true)},{i->
@@ -870,20 +871,20 @@ private data class E(val n:String,val d:String)
       Text("¿Qué es?",fontWeight=FontWeight.SemiBold);Text(h.description)
       Text("¿Qué observar?",fontWeight=FontWeight.SemiBold);Text(h.observe)
       val habitVisual=when(h.id){
-       "suction"->Triple(R.drawable.edu_habito_succion_digital,"Succión digital","Aspecto visual asociado a succión digital")
-       "pacifier"->Triple(R.drawable.edu_habito_chupon,"Chupón","Aspecto visual asociado a uso de chupón")
-       "mouthbreathing"->Triple(R.drawable.edu_habito_respiracion_oral,"Respiración oral","Aspecto visual asociado a respiración oral")
-       "tongue"->Triple(R.drawable.edu_habito_interposicion_lingual,"Interposición lingual","Aspecto visual asociado a interposición lingual")
-       "nail"->Triple(R.drawable.edu_habito_onicofagia,"Onicofagia / mordisqueo","Ejemplo visual de hábito oral")
-       "bruxism"->Triple(R.drawable.edu_habito_bruxismo,"Bruxismo / apretamiento","Ejemplo visual; ningún signo aislado confirma bruxismo")
+       "suction"->Triple(R.drawable.edu_habito_succion_digital,"Succión digital","Imagen asociado a succión digital")
+       "pacifier"->Triple(R.drawable.edu_habito_chupon,"Chupón","Imagen asociado a uso de chupón")
+       "mouthbreathing"->Triple(R.drawable.edu_habito_respiracion_oral,"Respiración oral","Imagen asociado a respiración oral")
+       "tongue"->Triple(R.drawable.edu_habito_interposicion_lingual,"Interposición lingual","Imagen asociado a interposición lingual")
+       "nail"->Triple(R.drawable.edu_habito_onicofagia,"Onicofagia / mordisqueo","Imagen de hábito oral")
+       "bruxism"->Triple(R.drawable.edu_habito_bruxismo,"Bruxismo / apretamiento","Imagen; ningún signo aislado confirma bruxismo")
        else->null
       }
       habitVisual?.let{v->
        Text("Imagen representativa",fontWeight=FontWeight.SemiBold)
        LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
       }
-      if(h.id=="pacifier") LocalClinicalHelpImageV47(lang,"Mamila prolongada","Prolonged bottle use",R.drawable.edu_habito_mamila,"Ejemplo visual complementario asociado al uso prolongado de mamila.","Additional visual example associated with prolonged bottle use.")
-      if(h.id=="nail") LocalClinicalHelpImageV47(lang,"Mordisqueo labial","Lip biting",R.drawable.edu_habito_mordisqueo_labial,"Ejemplo visual de mordisqueo labial.","Visual example of lip biting.")
+      if(h.id=="pacifier") LocalClinicalHelpImageV47(lang,"Mamila prolongada","Prolonged bottle use",R.drawable.edu_habito_mamila,"Imagen complementario asociado al uso prolongado de mamila.","Additional visual example associated with prolonged bottle use.")
+      if(h.id=="nail") LocalClinicalHelpImageV47(lang,"Mordisqueo labial","Lip biting",R.drawable.edu_habito_mordisqueo_labial,"Imagen de mordisqueo labial.","Visual example of lip biting.")
       Text("Frecuencia",fontWeight=FontWeight.SemiBold)
       ChipChoices(freqOpts.map{x->x to (frequency[h.id]==x)},{i->frequency[h.id]=freqOpts[i]},columns=3)
       Text("Tiempo de evolución / duración",fontWeight=FontWeight.SemiBold)

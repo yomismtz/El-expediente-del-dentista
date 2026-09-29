@@ -256,7 +256,7 @@ fun IpcResponsiveV17Screen(
             profile.width == ScreenWidthV17.MEDIUM -> 3
             else -> 3
         }
-        ResponsiveSectionV17(tr(lang,"Referencias visuales IPC","CPI visual references")) { UploadedIpcRefsV51(lang) }
+        ResponsiveSectionV17(tr(lang,"Imágenes IPC","CPI images")) { UploadedIpcRefsV51(lang) }
         ResponsiveSectionV17(tr(lang, "1 · Selecciona sextante", "1 · Select sextant")) {
             AdaptiveGridV17(v17Sextants.size, sextantColumns) { index ->
                 val s = v17Sextants[index]
@@ -380,7 +380,7 @@ fun IhosResponsiveV17Screen(
             profile.largeSystemText || profile.width == ScreenWidthV17.COMPACT -> 2
             else -> 3
         }
-        ResponsiveSectionV17(tr(lang,"Referencias visuales IHOS","OHI-S visual references")) { UploadedIhosRefsV51(lang) }
+        ResponsiveSectionV17(tr(lang,"Imágenes IHOS","OHI-S images")) { UploadedIhosRefsV51(lang) }
         ResponsiveSectionV17(tr(lang,"1 · Dientes índice","1 · Index teeth")) {
             AdaptiveGridV17(v17IhosSlots.size, slotColumns) { index ->
                 val slot = v17IhosSlots[index]

@@ -37,7 +37,8 @@ private data class VisualPosture(
 
 @Composable
 fun PostureVisualScreen(lang: String, onBack: () -> Unit) {
-    var selected by rememberRecordState("posture.visual.selected",0)
+    var selected by rememberRecordState("posture.visual.selected",-1)
+    var profileSelected by rememberRecordState("posture.visual.profile","")
     val list = listOf(
         VisualPosture("Natural / equilibrada", "Natural / balanced", "Cabeza erguida con relación visual equilibrada respecto al cuello. Se usa como referencia descriptiva.", "Upright head with a visually balanced relation to the neck. Used as a descriptive reference.", R.drawable.allimg_083_postura_cervical_equilibrada),
         VisualPosture("Cabeza adelantada", "Forward head posture", "El cráneo se observa desplazado hacia anterior respecto al tronco; describe la postura y busca compensaciones cervicales.", "The head appears translated anteriorly relative to the trunk; describe the posture and look for cervical compensation.", R.drawable.allimg_077_postura_cervical_cabeza_adelaantada),
@@ -45,55 +46,41 @@ fun PostureVisualScreen(lang: String, onBack: () -> Unit) {
         VisualPosture("Extensión", "Extension", "El mentón se eleva y la cabeza rota hacia atrás. Describe el hallazgo sin asumir una causa.", "The chin elevates and the head rotates backward. Describe the finding without assuming a cause.", R.drawable.allimg_079_postura_cervical_cabeza_extension),
         VisualPosture("Rectificación cervical", "Cervical straightening", "La curvatura cervical se aprecia disminuida. Requiere correlación con exploración y estudios adecuados.", "The cervical curve appears reduced. Correlate with examination and appropriate studies.", R.drawable.allimg_082_postura_cervical_cabeza_rectificacion),
         VisualPosture("Lordosis cervical aumentada", "Increased cervical lordosis", "La curvatura cervical se observa más pronunciada. Es una descripción postural, no un diagnóstico etiológico aislado.", "The cervical curve appears more pronounced. It is a postural description, not an isolated etiologic diagnosis.", R.drawable.allimg_081_postura_cervical_cabeza_lordosis_cervical_aum),
-        VisualPosture("Cifosis", "Kyphotic posture", "Referencia visual local de postura cervical asociada a cifosis. Describe el hallazgo observado y correlaciónalo con la exploración clínica.", "Local visual reference of cervical posture associated with kyphosis. Describe the observed finding and correlate it with the clinical examination.", R.drawable.allimg_078_postura_cervical_cabeza_cifosis)
+        VisualPosture("Cifosis", "Kyphotic posture", "Imagen local de postura cervical asociada a cifosis. Describe el hallazgo observado y correlaciónalo con la exploración clínica.", "Local image of cervical posture associated with kyphosis. Describe the observed finding and correlate it with the clinical examination.", R.drawable.allimg_078_postura_cervical_cabeza_cifosis)
     )
-    val safeSelected=selected.coerceIn(0,list.lastIndex)
-    val p = list[safeSelected]
+    val profiles=listOf(
+        Triple("Recto",R.drawable.allimg_075_perfil_recto,"Frente, labios y mentón se observan relativamente equilibrados."),
+        Triple("Convexo",R.drawable.allimg_074_perfil_convexo,"El mentón se aprecia relativamente retruido."),
+        Triple("Cóncavo",R.drawable.allimg_073_perfil_concavo,"El mentón se aprecia relativamente prominente o adelantado."),
+        Triple("No valorable",R.drawable.face13_perfil_no_valorable,"La fotografía o la posición no permiten clasificar el perfil con seguridad.")
+    )
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             ScreenHeader(
-                tr(lang, "Postura craneocervical · guía visual", "Craniocervical posture · visual guide"),
+                tr(lang, "Postura craneocervical", "Craniocervical posture"),
                 onBack,
-                tr(lang, "Selecciona el hallazgo observado. La selección queda asociada al expediente activo y muestra su fotografía correspondiente.", "Select the observed finding. The selection is stored with the active record and shows its corresponding photograph.")
+                tr(lang, "Selecciona el hallazgo observado; al tocar el recuadro aparece únicamente su imagen correspondiente.", "Select the observed finding; tapping its card shows only the corresponding image.")
             )
         }
         item {
-            Row(horizontalArrangement = Arrangement.spacedBy(5.dp), modifier = Modifier.fillMaxWidth()) {
-                list.take(3).forEachIndexed { i, v ->
-                    FilterChip(safeSelected == i, { selected = i }, { Text(if (lang == "en") v.nameEn else v.nameEs) }, modifier = Modifier.weight(1f))
-                }
+            SectionCard(tr(lang,"Postura observada","Observed posture")){
+                ChipChoices(list.mapIndexed{i,v->(if(lang=="en")v.nameEn else v.nameEs) to (selected==i)},{selected=it},columns=3)
             }
         }
-        item {
-            Row(horizontalArrangement = Arrangement.spacedBy(5.dp), modifier = Modifier.fillMaxWidth()) {
-                list.drop(3).forEachIndexed { i, v ->
-                    val n = i + 3
-                    FilterChip(safeSelected == n, { selected = n }, { Text(if (lang == "en") v.nameEn else v.nameEs) }, modifier = Modifier.weight(1f))
-                }
-            }
-        }
-        item {
-            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(if (lang == "en") p.nameEn else p.nameEs, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
-                    Image(painterResource(p.drawable), if (lang == "en") p.nameEn else p.nameEs, Modifier.fillMaxWidth().heightIn(min=220.dp,max=420.dp), contentScale=ContentScale.Fit)
-                    Text(if (lang == "en") p.descriptionEn else p.descriptionEs)
-                }
-            }
+        val p=list.getOrNull(selected)
+        if(p!=null){
+            item { LocalClinicalInlineZoomImageV48(lang,p.nameEs,p.nameEn,p.drawable,p.descriptionEs,p.descriptionEn) }
         }
         item {
             SectionCard(tr(lang, "Perfil facial", "Facial profile")) {
-                Text("• ${tr(lang, "Recto: frente, labios y mentón se observan relativamente equilibrados.", "Straight: forehead, lips and chin appear relatively balanced.")}")
-                LocalZoomableImageV21(title=tr(lang,"Perfil recto","Straight profile"),resource=R.drawable.allimg_075_perfil_recto,attribution=tr(lang,"Imagen local ya subida.","Previously uploaded local image."))
-                Text("• ${tr(lang, "Convexo: el mentón se aprecia relativamente retruido.", "Convex: the chin appears relatively retruded.")}")
-                LocalZoomableImageV21(title=tr(lang,"Perfil convexo","Convex profile"),resource=R.drawable.allimg_074_perfil_convexo,attribution=tr(lang,"Imagen local ya subida.","Previously uploaded local image."))
-                Text("• ${tr(lang, "Cóncavo: el mentón se aprecia relativamente prominente/adelantado.", "Concave: the chin appears relatively prominent/forward.")}")
-                LocalZoomableImageV21(title=tr(lang,"Perfil cóncavo","Concave profile"),resource=R.drawable.allimg_073_perfil_concavo,attribution=tr(lang,"Imagen local ya subida.","Previously uploaded local image."))
+                ChipChoices(profiles.map{it.first to (profileSelected==it.first)},{i->profileSelected=profiles[i].first},columns=4)
+                profiles.firstOrNull{it.first==profileSelected}?.let{v->
+                    LocalClinicalInlineZoomImageV48(lang,"Perfil "+v.first.lowercase(),"Facial profile · "+v.first,v.second,v.third,v.third)
+                }
             }
         }
         item {
-            NoticeCard(tr(lang, "La selección registrada describe postura craneocervical observada y no establece una etiología. La fotografía es una referencia visual educativa y no sustituye análisis cefalométrico, valoración funcional ni diagnóstico cervical.", "The stored selection describes observed craniocervical posture and does not establish an etiology. The photograph is an educational visual reference and does not replace cephalometric, functional or cervical diagnosis."))
+            NoticeCard(tr(lang, "La selección describe el hallazgo observado y no establece una etiología. Interpreta las imágenes junto con la exploración clínica y los estudios indicados.", "The selection describes the observed finding and does not establish an etiology. Interpret the images together with the clinical examination and indicated studies."))
         }
     }
 }
-

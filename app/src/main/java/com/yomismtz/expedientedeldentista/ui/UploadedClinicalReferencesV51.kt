@@ -1,21 +1,33 @@
 package com.yomismtz.expedientedeldentista.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.yomismtz.expedientedeldentista.R
 
 private data class UploadedClinicalRefV51(val drawable:Int,val titleEs:String,val titleEn:String)
 
 @Composable
 private fun UploadedClinicalRefsV51(lang:String, refs:List<UploadedClinicalRefV51>) {
-    refs.forEach { r ->
-        LocalClinicalInlineZoomImageV48(
-            lang,
-            if(lang=="en") r.titleEn else r.titleEs,
-            if(lang=="en") r.titleEn else r.titleEs,
-            r.drawable,
-            "Referencia clínica local. Úsala junto con los criterios escritos y la exploración; no genera diagnóstico automático.",
-            "Local clinical reference. Use it with written criteria and examination; it does not generate an automatic diagnosis."
-        )
+    var selectedIndex by remember(refs) { mutableStateOf<Int?>(null) }
+    ChipChoices(
+        refs.mapIndexed { i,r -> (if(lang=="en") r.titleEn else r.titleEs) to (selectedIndex==i) },
+        { selectedIndex=it },
+        columns=3
+    )
+    selectedIndex?.let { i ->
+        refs.getOrNull(i)?.let { r ->
+            LocalClinicalInlineZoomImageV48(
+                lang,
+                if(lang=="en") r.titleEn else r.titleEs,
+                if(lang=="en") r.titleEn else r.titleEs,
+                r.drawable,
+                "Imagen clínica local. Úsala junto con los criterios escritos y la exploración; no genera diagnóstico automático.",
+                "Local clinical image. Use it with written criteria and examination; it does not generate an automatic diagnosis."
+            )
+        }
     }
 }
 

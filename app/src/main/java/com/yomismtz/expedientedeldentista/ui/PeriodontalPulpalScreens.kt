@@ -64,7 +64,7 @@ fun PeriodontogramScreen(
                     "Six sites per tooth: three buccal and three lingual/palatal. Learn which finding belongs in each periodontal-chart row.")
             )
         }
-        item { SectionCard(tr(lang,"Referencias clínicas periodontales","Periodontal clinical references")) { UploadedPeriodontalRefsV51(lang) } }
+        item { SectionCard(tr(lang,"Imágenes periodontales","Periodontal images")) { UploadedPeriodontalRefsV51(lang) } }
         item {
             ClinicalRegisterHelpV49(lang,"Ayuda · Periodoncia","Help · Periodontics","Selecciona el diente y registra cada sitio medido. Anota profundidad de sondaje, recesión y sangrado, placa o supuración sólo cuando fueron evaluados. Mantén el sitio correcto y los milímetros; el resumen organiza datos y no sustituye la interpretación periodontal.","Select the tooth and record each measured site. Enter probing depth, recession, bleeding, plaque or suppuration only when assessed. Keep the correct site and millimeters; the summary organizes data and does not replace periodontal interpretation.")
             SectionCard(tr(lang, "Selecciona diente", "Select tooth")) {

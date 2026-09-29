@@ -54,7 +54,7 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { ScreenHeader("O’Leary", onBack,
             tr(lang, "Marca una, varias o las cuatro caras. O’Leary usa vestibular, lingual/palatina, mesial y distal; no incluye oclusal.", "Mark one, several or all four surfaces. O’Leary uses buccal, lingual/palatal, mesial and distal; occlusal is not included.")) }
-        item { SectionCard(tr(lang,"Referencias visuales O’Leary","O’Leary visual references")) { UploadedOlearyRefsV51(lang) } }
+        item { SectionCard(tr(lang,"Imágenes O’Leary","O’Leary images")) { UploadedOlearyRefsV51(lang) } }
         item { Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(!primary,{primary=false},{Text(tr(lang,"Permanentes","Permanent"))}); FilterChip(primary,{primary=true},{Text(tr(lang,"Temporales","Primary"))})
         } }
