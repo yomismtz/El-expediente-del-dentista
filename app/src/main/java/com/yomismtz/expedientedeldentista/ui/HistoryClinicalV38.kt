@@ -751,13 +751,6 @@ private data class E(val n:String,val d:String)
  val g=groups[safeGroup]
  val safeSub=subgroup.coerceIn(0,g.subs.lastIndex)
  val s=g.subs[safeSub]
- LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Anomalías dentales",onBack,"Clasificación por número, tamaño, forma, unión/división, estructura, color y erupción. Selecciona primero el grupo y después la subclasificación.")}
-  item{SectionCard("1 · Grupo principal"){ChipChoices(groups.mapIndexed{i,x->x.name to (safeGroup==i)},{i->group=i;subgroup=0},columns=2)}}
-  item{SectionCard("2 · Subclasificación"){ChipChoices(g.subs.mapIndexed{i,x->x.name to (safeSub==i)},{i->subgroup=i},columns=2)}}
-  item{SectionCard("3 · Anomalía / hallazgo"){
-   ChipChoices(s.findings.map{x->x to (selected[g.name+"|"+s.name]==x)},{i->selected[g.name+"|"+s.name]=s.findings[i]},columns=3)
-  }}
   val finding=selected[g.name+"|"+s.name]
   val anomalyImages=when(finding){
    "Anodoncia"->listOf(R.drawable.anomaly49_02)
@@ -813,13 +806,25 @@ private data class E(val n:String,val d:String)
    "Impactación","Inclusión","Retención primaria","Retención secundaria","Fallo primario de erupción (PFE)","Fallo mecánico de erupción","Anquilosis","Infraoclusión"->listOf(R.drawable.anomaly_erupcion_fracaso)
    else->emptyList()
   }
+ var anomalyImageIndex by remember(finding){mutableStateOf(0)}
+ val safeAnomalyImageIndex=if(anomalyImages.isEmpty())0 else anomalyImageIndex.coerceIn(0,anomalyImages.lastIndex)
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
+  item{ScreenHeader("Anomalías dentales",onBack,"Clasificación por número, tamaño, forma, unión/división, estructura, color y erupción. Selecciona primero el grupo y después la subclasificación.")}
+  item{SectionCard("1 · Grupo principal"){ChipChoices(groups.mapIndexed{i,x->x.name to (safeGroup==i)},{i->group=i;subgroup=0},columns=2)}}
+  item{SectionCard("2 · Subclasificación"){ChipChoices(g.subs.mapIndexed{i,x->x.name to (safeSub==i)},{i->subgroup=i},columns=2)}}
+  item{SectionCard("3 · Anomalía / hallazgo"){
+   ChipChoices(s.findings.map{x->x to (selected[g.name+"|"+s.name]==x)},{i->selected[g.name+"|"+s.name]=s.findings[i]},columns=3)
+  }}
   if(anomalyImages.isNotEmpty()){
    item{SectionCard("Imagen del hallazgo"){
-    anomalyImages.forEachIndexed{i,res->
-     LocalClinicalInlineZoomImageV48(lang,(finding?:"Anomalía")+" · imagen "+(i+1),(finding?:"Dental anomaly")+" · image "+(i+1),res,
-      "Imagen local correspondiente al hallazgo seleccionado. Úsala junto con los criterios clínicos y radiográficos; no genera diagnóstico automático.",
-      "Local image corresponding to the selected finding. Use it with clinical and radiographic criteria; it does not generate an automatic diagnosis.")
+    if(anomalyImages.size>1){
+     Text("Selecciona una imagen",fontWeight=FontWeight.SemiBold)
+     ChipChoices(anomalyImages.indices.map{i->"Imagen "+(i+1) to (safeAnomalyImageIndex==i)},{i->anomalyImageIndex=i},columns=2)
     }
+    val res=anomalyImages[safeAnomalyImageIndex]
+    LocalClinicalInlineZoomImageV48(lang,(finding?:"Anomalía")+" · imagen "+(safeAnomalyImageIndex+1),(finding?:"Dental anomaly")+" · image "+(safeAnomalyImageIndex+1),res,
+     "Imagen local correspondiente al hallazgo seleccionado. Úsala junto con los criterios clínicos y radiográficos; no genera diagnóstico automático.",
+     "Local image corresponding to the selected finding. Use it with clinical and radiographic criteria; it does not generate an automatic diagnosis.")
    }}
   }
   val extension=listOf("Un diente","Varios dientes","Localizado por cuadrante","Generalizado","No valorable")
