@@ -849,6 +849,16 @@ private data class E(val n:String,val d:String)
    Subgroup38("D · Asociadas a la erupción",listOf("Sin alteración","Quiste de erupción","Hematoma de erupción","Secuestro eruptivo","Pericoronitis","Retención prolongada del temporal","Sobreerupción"))
   ))
  )
+ val quickFindings=listOf("Mancha blanca","Mancha marrón","Mancha negra","Pérdida de estructura")
+ var quickFinding by rememberRecordState("history.dentalAlterations.quickFinding","")
+ val quickRelated=when(quickFinding){
+  "Mancha blanca"->listOf("Lesión de mancha blanca activa","Lesión de mancha blanca inactiva","Mancha blanca temporal por deshidratación","Hipoplasia del esmalte","Hipomineralización","MIH / HMI","Fluorosis","Amelogénesis imperfecta")
+  "Mancha marrón"->listOf("Fluorosis","MIH / HMI","Hipoplasia del esmalte","Dentinogénesis imperfecta","Tetraciclinas","Café","Té","Tabaco","Hierro","Clorhexidina","Pigmentación por materiales / endodoncia")
+  "Mancha negra"->listOf("Caries activa","Caries inactiva","Caries cavitada","Placa cromógena negra","Tabaco","Hierro","Metales","Pigmentaciones ocupacionales")
+  "Pérdida de estructura"->listOf("Atrición","Abrasión","Erosión","Abfracción","Desgaste generalizado","Desgaste oclusal severo","Caries cavitada","Fractura / trauma")
+  else->emptyList()
+ }
+ val quickSelected=rememberRecordStateMap<String,String>("history.dentalAlterations.quickSelected")
  val safeGroup=group.coerceIn(0,groups.lastIndex)
  val g=groups[safeGroup]
  val safeSub=subgroup.coerceIn(0,g.subs.lastIndex)
@@ -912,6 +922,19 @@ private data class E(val n:String,val d:String)
  val safeAnomalyImageIndex=if(anomalyImages.isEmpty())0 else anomalyImageIndex.coerceIn(0,anomalyImages.lastIndex)
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Anomalías dentales",onBack,"Clasificación por número, tamaño, forma, unión/división, estructura, color y erupción. Selecciona primero el grupo y después la subclasificación.")}
+  item{SectionCard("Opciones rápidas"){
+   Text("Acceso por apariencia clínica. Selecciona el hallazgo inicial para desplegar posibilidades relacionadas; después confirma el diagnóstico en la clasificación completa.",fontWeight=FontWeight.SemiBold)
+   ChipChoices(quickFindings.map{x->x to (quickFinding==x)},{i->quickFinding=quickFindings[i]},columns=2)
+   if(quickRelated.isNotEmpty()){
+    Text("Relacionadas con: "+quickFinding,fontWeight=FontWeight.SemiBold)
+    ChipChoices(quickRelated.map{x->x to (quickSelected[quickFinding]==x)},{i->quickSelected[quickFinding]=quickRelated[i]},columns=2)
+    when(quickSelected[quickFinding]){
+     "Lesión de mancha blanca activa"->ClinicalPhotoV38("Lesión de mancha blanca activa",R.drawable.allimg_056_lesion_de_mancha_blanca_activa,"Referencia clínica local.")
+     "Lesión de mancha blanca inactiva"->ClinicalPhotoV38("Lesión de mancha blanca inactiva",R.drawable.allimg_057_lesion_de_mancha_blanca_inactiva,"Referencia clínica local.")
+     "Mancha blanca temporal por deshidratación"->ClinicalPhotoV38("Mancha blanca temporal por deshidratación",R.drawable.allimg_060_mancha_blanca_temporal_por_deshidratacion,"Referencia clínica local.")
+    }
+   }
+  }}
   item{SectionCard("1 · Grupo principal"){ChipChoices(groups.mapIndexed{i,x->x.name to (safeGroup==i)},{i->group=i;subgroup=0},columns=2)}}
   item{SectionCard("2 · Subclasificación"){ChipChoices(g.subs.mapIndexed{i,x->x.name to (safeSub==i)},{i->subgroup=i},columns=2)}}
   item{SectionCard("3 · Anomalía / hallazgo"){
