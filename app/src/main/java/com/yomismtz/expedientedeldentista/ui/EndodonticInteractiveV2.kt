@@ -258,7 +258,7 @@ fun EndodonticInteractiveV2Screen(
 
             1 -> {
                 item {
-                    SectionCard(tr(lang, "Conductometría / longitud de trabajo", "Working length")) {
+                    SectionCard(tr(lang, "1 · Conductometría / longitud de trabajo", "1 · Working length")) {
                         Text(
                             tr(
                                 lang,
@@ -316,7 +316,7 @@ fun EndodonticInteractiveV2Screen(
 
             2 -> {
                 item {
-                    SectionCard("$procedureLabel · ${tr(lang, "secuencia guiada", "guided sequence")}") {
+                    SectionCard("1 · $procedureLabel · ${tr(lang, "secuencia guiada", "guided sequence")}") {
                         Text(
                             tr(
                                 lang,
@@ -347,7 +347,7 @@ fun EndodonticInteractiveV2Screen(
 
             3 -> {
                 item {
-                    SectionCard(tr(lang, "Terapia pulpar en niños y dientes jóvenes", "Pediatric and immature-tooth pulp therapy")) {
+                    SectionCard(tr(lang, "1 · Terapia pulpar en niños y dientes jóvenes", "1 · Pediatric and immature-tooth pulp therapy")) {
                         Text(
                             tr(
                                 lang,
@@ -374,7 +374,7 @@ fun EndodonticInteractiveV2Screen(
 
             4 -> {
                 item {
-                    SectionCard(tr(lang, "Irrigación: objetivos", "Irrigation: goals")) {
+                    SectionCard(tr(lang, "1 · Irrigación: objetivos", "1 · Irrigation: goals")) {
                         Text(tr(lang, "• Favorecer arrastre de detritos y reducción microbiana.", "• Flush debris and reduce microbial load."))
                         Text(tr(lang, "• Complementar, no sustituir, la preparación mecánica y el control de longitud.", "• Complement, not replace, mechanical preparation and length control."))
                         Text(tr(lang, "• Renovar irrigante según el protocolo clínico y mantener control de seguridad.", "• Refresh irrigant according to the clinical protocol while maintaining safety controls."))
@@ -414,7 +414,7 @@ fun EndodonticInteractiveV2Screen(
 
             else -> {
                 item {
-                    SectionCard(tr(lang, "Resumen para el expediente físico", "Summary for the physical record")) {
+                    SectionCard(tr(lang, "1 · Resumen para el expediente físico", "1 · Summary for the physical record")) {
                         Text("OD $selectedTooth", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black, color = EndoDeep)
                         Text("${tr(lang, "Diagnóstico pulpar", "Pulpal diagnosis")}: $pulpal")
                         Text("${tr(lang, "Diagnóstico periapical", "Apical diagnosis")}: $apical")
@@ -425,7 +425,7 @@ fun EndodonticInteractiveV2Screen(
                     }
                 }
                 item {
-                    SectionCard(tr(lang, "Restauración y control", "Restoration and follow-up")) {
+                    SectionCard(tr(lang, "2 · Restauración y control", "2 · Restoration and follow-up")) {
                         Text(tr(lang, "Restauración provisional/definitiva prevista", "Planned provisional/definitive restoration"), fontWeight = FontWeight.Bold)
                         val restorationOptions = listOf(
                             tr(lang, "Sellado provisional", "Provisional seal"),
