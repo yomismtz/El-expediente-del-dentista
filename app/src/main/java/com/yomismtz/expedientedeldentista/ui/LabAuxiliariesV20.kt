@@ -141,7 +141,7 @@ fun LaboratoryAuxiliariesV20Screen(lang:String,onBack:()->Unit){
   val tabCols=when{profile.largeSystemText->3;profile.width==ScreenWidthV17.COMPACT->3;profile.width==ScreenWidthV17.MEDIUM->4;else->5}
   AdaptiveGridV17(tabs.size,tabCols){i->FilterChip(tab==i,{tab=i},{Text(tabs[i])},Modifier.fillMaxWidth())}
   if(tab<5){
-   ResponsiveSectionV17(tr(lang,"Sexo para intervalos que cambian","Sex for intervals that differ")){ChipChoices(listOf(tr(lang,"Hombre","Male") to male,tr(lang,"Mujer","Female") to !male),{male=it==0},columns=3)}
+   ResponsiveSectionV17(tr(lang,"1 · Sexo para intervalos que cambian","1 · Sex for intervals that differ")){ChipChoices(listOf(tr(lang,"Hombre","Male") to male,tr(lang,"Mujer","Female") to !male),{male=it==0},columns=3)}
    val params=when(tab){
     0->cbcV20
     1->chemistryV20
@@ -206,7 +206,7 @@ private fun HistopathologyV20(lang:String){
         Triple("Alteraciones del desarrollo","Developmental alterations","Aplasia significa ausencia del desarrollo de un órgano/tejido; hipoplasia significa desarrollo incompleto. Son términos del desarrollo y no deben confundirse con displasia o neoplasia."),
         Triple("Inconcluso / muestra insuficiente","Inconclusive / insufficient sample","El patólogo puede informar material insuficiente, tejido no representativo o recomendar nueva toma, inmunohistoquímica u otros estudios.")
     )
-    ResponsiveSectionV17(tr(lang,"Cómo leer un informe de biopsia","How to read a biopsy report"),tr(lang,"No intentes convertir cada palabra en un diagnóstico automático. Identifica primero el tipo de proceso y conserva literalmente el diagnóstico del patólogo.","Do not turn every word into an automatic diagnosis. First identify the process category and preserve the pathologist's exact diagnosis.")){
+    ResponsiveSectionV17(tr(lang,"1 · Cómo leer un informe de biopsia","1 · How to read a biopsy report"),tr(lang,"No intentes convertir cada palabra en un diagnóstico automático. Identifica primero el tipo de proceso y conserva literalmente el diagnóstico del patólogo.","Do not turn every word into an automatic diagnosis. First identify the process category and preserve the pathologist's exact diagnosis.")){
         Text(tr(lang,"Busca: tipo de espécimen y sitio → descripción microscópica → diagnóstico → grado si aplica → márgenes si aplica → estudios adicionales/comentarios.","Look for: specimen/site → microscopic description → diagnosis → grade if applicable → margins if applicable → ancillary studies/comments."))
     }
     categories.forEach{item->
@@ -227,7 +227,7 @@ private fun histologyEnglishV20(es:String)=when(es){
 }
 
 @Composable private fun MicrobiologyV23(lang:String){
-    ResponsiveSectionV17(tr(lang,"Cultivos y pruebas microbiológicas frecuentes","Common microbiology cultures and tests"),tr(lang,"Selecciona el estudio según la pregunta clínica y el tipo de muestra; no se solicitan de rutina para toda infección odontogénica.","Choose testing according to the clinical question and specimen; these are not routine for every odontogenic infection.")){
+    ResponsiveSectionV17(tr(lang,"1 · Cultivos y pruebas microbiológicas frecuentes","1 · Common microbiology cultures and tests"),tr(lang,"Selecciona el estudio según la pregunta clínica y el tipo de muestra; no se solicitan de rutina para toda infección odontogénica.","Choose testing according to the clinical question and specimen; these are not routine for every odontogenic infection.")){
         microV23.forEach{x->Card(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp)){Text(x.name,fontWeight=FontWeight.Bold);Text("Muestra: "+x.sample);Text("Interpretación: "+x.meaning)}}}
     }
     NoticeCard(tr(lang,"Un resultado «positivo» puede representar infección, colonización o contaminación según microorganismo, sitio y técnica. Correlaciona con clínica y antibiograma cuando corresponda.","A positive result may represent infection, colonization or contamination depending on organism, site and technique. Correlate with clinical findings and susceptibility testing when appropriate."))
@@ -237,7 +237,7 @@ private fun histologyEnglishV20(es:String)=when(es){
     var child by rememberRecordState("lab.child",false)
     val selected=rememberRecordStateMap<String,Boolean>("lab.selected")
     val items=if(child)cambraChildV23 else cambraAdultV23
-    ResponsiveSectionV17("CAMBRA · "+tr(lang,"riesgo de caries","caries risk"),tr(lang,"Herramienta educativa para seleccionar indicadores, factores de riesgo y factores protectores.","Teaching tool to select disease indicators, risk factors and protective factors.")){
+    ResponsiveSectionV17("1 · CAMBRA · "+tr(lang,"riesgo de caries","caries risk"),tr(lang,"Herramienta educativa para seleccionar indicadores, factores de riesgo y factores protectores.","Teaching tool to select disease indicators, risk factors and protective factors.")){
         ChipChoices(listOf(tr(lang,"Adulto / >6 años","Adult / >6 years") to !child,tr(lang,"Niño 0–6 años","Child 0–6 years") to child),{child=it==1;selected.clear()},columns=2)
         items.forEach{x->Row(Modifier.fillMaxWidth()){Checkbox(selected[x.label]==true,{selected[x.label]=it});Text(x.label,Modifier.weight(1f))}}
         val high=items.any{it.kind==2&&selected[it.label]==true}
