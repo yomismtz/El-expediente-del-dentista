@@ -687,9 +687,29 @@ private data class E(val n:String,val d:String)
      "Imagen anatómica local del músculo seleccionado. Correlaciona con palpación y maniobras clínicas.",
      "Local anatomical image of the selected muscle. Correlate with palpation and clinical maneuvers.")
    }
-   item{Pick("Temporal",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"))}
-   item{Pick("Masetero",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"))}
-   item{Pick("Pterigoideos / función clínica",listOf("Sin hallazgos aparentes","Dolor reproducible en maniobra","Limitación funcional","No valorable"),"Correlacionar palpación accesible y movimientos contra resistencia; no atribuir dolor inespecífico a un músculo profundo sin sustento clínico.")}
+   item{Pick("Temporal",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"),"Qué es: músculo masticatorio de la región temporal que participa principalmente en elevación y retrusión mandibular. Por qué importa: dolor reproducible, asimetría o hipertrofia deben correlacionarse con palpación, movimientos mandibulares y síntomas.")}
+   if(selected["Temporal"]!=null && selected["Temporal"]!="No valorable")item{
+    LocalClinicalInlineZoomImageV48(lang,"Temporal","Temporal",R.drawable.new77_exploacion_fisica_y_extraoral_musculos_temporal,
+     "Referencia anatómica local del temporal. Palpa comparativamente ambos lados y relaciona el hallazgo con dolor, volumen y función mandibular.",
+     "Local anatomical reference of the temporalis. Compare both sides and correlate the finding with pain, volume and mandibular function.")
+   }
+   item{Pick("Masetero",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"),"Qué es: músculo masticatorio superficial potente que participa principalmente en la elevación mandibular. Por qué importa: dolor, aumento de volumen o asimetría deben compararse bilateralmente y correlacionarse con función y parafunciones.")}
+   if(selected["Masetero"]!=null && selected["Masetero"]!="No valorable")item{
+    LocalClinicalInlineZoomImageV48(lang,"Masetero","Masetero",R.drawable.new77_exploacion_fisica_y_extraoral_musculos_masetero,
+     "Referencia anatómica local del masetero. Compara ambos lados durante reposo y contracción y registra dolor, asimetría o hipertrofia.",
+     "Local anatomical reference of the masseter. Compare both sides at rest and during contraction and record pain, asymmetry or hypertrophy.")
+   }
+   item{Pick("Pterigoideos / función clínica",listOf("Sin hallazgos aparentes","Dolor reproducible en maniobra","Limitación funcional","No valorable"),"Qué es: valoración funcional orientativa de músculos pterigoideos profundos relacionados con movimientos mandibulares. Por qué importa: dolor reproducible o limitación puede aportar información al examen masticatorio, pero no debe atribuirse dolor inespecífico a un músculo profundo sin sustento clínico. Correlacionar con movimientos contra resistencia.")}
+   if(selected["Pterigoideos / función clínica"]!=null && selected["Pterigoideos / función clínica"]!="No valorable")item{
+    Column(verticalArrangement=Arrangement.spacedBy(8.dp)){
+     LocalClinicalInlineZoomImageV48(lang,"Pterigoideo interno","Pterigoideo interno",R.drawable.new77_exploacion_fisica_y_extraoral_musculos_pterigoideo_interno,
+      "Referencia anatómica local del pterigoideo interno. Relaciona anatomía y función sin sustituir la valoración clínica.",
+      "Local anatomical reference of the medial pterygoid. Relate anatomy and function without replacing clinical assessment.")
+     LocalClinicalInlineZoomImageV48(lang,"Pterigoideo externo","Pterigoideo externo",R.drawable.new77_exploacion_fisica_y_extraoral_musculos_pterigoideo_externo7,
+      "Referencia anatómica local del pterigoideo externo. Correlaciona con lateralidades, protrusión, apertura y síntomas.",
+      "Local anatomical reference of the lateral pterygoid. Correlate with lateral movements, protrusion, opening and symptoms.")
+    }
+   }
   }
   if(section=="Cuello"){
    item{NoticeCard("Explora el cuello de forma descriptiva: postura, simetría, movilidad, dolor, aumentos de volumen y región tiroidea. Los hallazgos orientan la exploración, pero no establecen por sí solos una causa o diagnóstico.")}
