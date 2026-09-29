@@ -8,6 +8,7 @@ import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.clipToBounds
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -388,7 +389,7 @@ private fun LocalClinicalZoomDialogV48(lang:String,titleEs:String,titleEn:String
         confirmButton={TextButton(onClick=onClose){Text(tr(lang,"Cerrar","Close"))}},
         title={Text(if(lang=="en")titleEn else titleEs)},
         text={Column(verticalArrangement=Arrangement.spacedBy(8.dp)){
-            Box(Modifier.fillMaxWidth().heightIn(min=220.dp,max=560.dp).transformable(transformState),contentAlignment=Alignment.Center){
+            Box(Modifier.fillMaxWidth().heightIn(min=220.dp,max=560.dp).clipToBounds().transformable(transformState),contentAlignment=Alignment.Center){
                 Image(painterResource(drawable),if(lang=="en")titleEn else titleEs,Modifier.fillMaxWidth().graphicsLayer{scaleX=scale;scaleY=scale},contentScale=ContentScale.Fit)
             }
             Text(tr(lang,"Pellizca con dos dedos para acercar o alejar.","Pinch with two fingers to zoom in or out."),style=MaterialTheme.typography.bodySmall)
