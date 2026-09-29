@@ -569,6 +569,13 @@ private data class E(val n:String,val d:String)
     "Braquifacial"->ClinicalPhotoV38("Braquifacial",R.drawable.face13_braquifacial,"Imagen de la opción seleccionada.")
     "No valorable"->ClinicalPhotoV38("Patrón facial no valorable",R.drawable.face13_perfil_no_valorable,"Imagen de la opción seleccionada.")
    }}
+   item{Pick("Perfil facial",listOf("Recto","Convexo","Cóncavo","No valorable"),"Qué es: relación anteroposterior aparente entre frente, región media facial, labios y mentón observada de perfil. Por qué importa: complementa el análisis facial y orienta la descripción de relaciones esqueletales y dentofaciales; no establece por sí solo un diagnóstico.")}
+   item{when(selected["Perfil facial"]){
+    "Recto"->ClinicalPhotoV38("Perfil facial · recto",R.drawable.allimg_075_perfil_recto,"Frente, labios y mentón se observan relativamente equilibrados. Interpretar junto con el resto de la exploración facial.")
+    "Convexo"->ClinicalPhotoV38("Perfil facial · convexo",R.drawable.allimg_074_perfil_convexo,"El mentón se aprecia relativamente retruido. Correlacionar con la exploración facial, oclusal y esqueletal.")
+    "Cóncavo"->ClinicalPhotoV38("Perfil facial · cóncavo",R.drawable.allimg_073_perfil_concavo,"El mentón se aprecia relativamente prominente o adelantado. Correlacionar con la exploración facial, oclusal y esqueletal.")
+    "No valorable"->ClinicalPhotoV38("Perfil facial · no valorable",R.drawable.face13_perfil_no_valorable,"La fotografía o la posición no permiten clasificar el perfil con seguridad.")
+   }}
    item{Pick("Forma de la cara",listOf("Ovalada","Redonda","Cuadrada","Rectangular / alargada","Triangular","Triangular invertida / corazón","Romboidal","Asimétrica","No valorable"),"Describe el contorno facial observado. La forma de la cara es descriptiva y no constituye por sí sola un diagnóstico.")}
    item{when(selected["Forma de la cara"]){
     "Ovalada"->ClinicalPhotoV38("Forma de la cara · ovalada",R.drawable.new77_edu_extraoral_formas_del_rostro_ovalado,"Imagen de la opción seleccionada.")
