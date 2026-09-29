@@ -372,7 +372,7 @@ internal fun LocalClinicalInlineZoomImageV48(lang:String,titleEs:String,titleEn:
     var open by remember{mutableStateOf(false)}
     Card(Modifier.fillMaxWidth().clickable{open=true},shape=RoundedCornerShape(14.dp)){
         Column(Modifier.fillMaxWidth().padding(8.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
-            Image(painterResource(drawable),if(lang=="en")titleEn else titleEs,Modifier.fillMaxWidth().heightIn(min=150.dp,max=280.dp),contentScale=ContentScale.Fit)
+            Image(painterResource(drawable),if(lang=="en")titleEn else titleEs,Modifier.fillMaxWidth().heightIn(min=110.dp,max=190.dp),contentScale=ContentScale.Fit)
             Text(tr(lang,"Toca para ampliar y hacer zoom","Tap to enlarge and zoom"),style=MaterialTheme.typography.bodySmall)
         }
     }
