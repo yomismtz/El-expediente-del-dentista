@@ -175,15 +175,22 @@ private data class E(val n:String,val d:String)
  val selected=rememberRecordStateMap<String,Boolean>("history.hereditary.selected")
  val status=rememberRecordStateMap<String,String>("history.hereditary.status")
  var openHelp by remember{mutableStateOf(false)}
+ var showRelatives by remember{mutableStateOf(false)}
  val current=relatives[relative]
  val diseases=category?.let{categories[it]}?:emptyList()
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Antecedentes heredo-familiares",onBack,"Primero selecciona el familiar y después la categoría de enfermedad. Ante un positivo, amplía inicio, evolución, estado actual, medicamentos y complicaciones.")}
   item{NoticeCard("Este apartado busca antecedentes familiares que puedan aportar predisposición o contexto clínico. No significa que el paciente padezca la misma enfermedad.")}
   item{SectionCard("1 · Familiar"){
-   ChipChoices(relatives.mapIndexed{i,x->x to (relative==i)},{i->relative=i;category=null},columns=3)
+   Text("Seleccionado: $current",fontWeight=FontWeight.Bold)
+   OutlinedButton(onClick={showRelatives=!showRelatives}){Text(if(showRelatives)"Ocultar familiares" else "Cambiar familiar")}
+   if(showRelatives){
+    Spacer(Modifier.height(8.dp))
+    ChipChoices(relatives.mapIndexed{i,x->x to (relative==i)},{i->relative=i;category=null;showRelatives=false},columns=3)
+   }
   }}
   item{SectionCard("2 · Categoría"){
+   Text("Elige una categoría; sus enfermedades se abren aquí mismo para evitar desplazamiento innecesario.",style=MaterialTheme.typography.bodySmall)
    ChipChoices(categories.keys.map{x->x to (category==x)},{i->category=categories.keys.elementAt(i)},columns=2)
    category?.let { cat ->
     Spacer(Modifier.height(10.dp))
