@@ -17,7 +17,7 @@ android {
         }
 
         val releaseStoreFile = System.getenv("RELEASE_STORE_FILE")
-        if (!releaseStoreFile.isNullOrBlank()) {
+        if (!releaseStoreFile.isNullOrBlank() && file(releaseStoreFile).exists()) {
             create("release") {
                 storeFile = file(releaseStoreFile)
                 storePassword = System.getenv("RELEASE_STORE_PASSWORD")
