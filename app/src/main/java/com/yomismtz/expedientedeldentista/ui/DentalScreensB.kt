@@ -54,10 +54,10 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { ScreenHeader("O’Leary", onBack,
             tr(lang, "Marca una, varias o las cuatro caras. O’Leary usa vestibular, lingual/palatina, mesial y distal; no incluye oclusal.", "Mark one, several or all four surfaces. O’Leary uses buccal, lingual/palatal, mesial and distal; occlusal is not included.")) }
-        item { Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(!primary,{primary=false},{Text(tr(lang,"Permanentes","Permanent"))}); FilterChip(primary,{primary=true},{Text(tr(lang,"Temporales","Primary"))})
-        } }
-        item { SectionCard(tr(lang,"Arcada y dientes evaluables","Arch and evaluable teeth")) {
+        item { SectionCard(tr(lang,"1 · Dentición","1 · Dentition")) { Row(horizontalArrangement = Arrangement.spacedBy(8.dp),modifier=Modifier.fillMaxWidth()) {
+            FilterChip(!primary,{primary=false},{Text(tr(lang,"Permanente","Permanent"))},modifier=Modifier.weight(1f)); FilterChip(primary,{primary=true},{Text(tr(lang,"Temporal","Primary"))},modifier=Modifier.weight(1f))
+        } } }
+        item { SectionCard(tr(lang,"2 · Diente evaluable","2 · Evaluable tooth"),tr(lang,"Selecciona el órgano dentario y confirma si entra en el denominador.","Select the tooth and confirm whether it belongs in the denominator.")) {
             DentalArchSelector(shown,selectedTooth,{selectedTooth=it}) { tooth -> session.oleary[tooth]?.any{it in surfaces}==true }
             Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                 FilterChip(selectedTooth in present,{onSessionChanged(session.copy(presentTeeth=present+selectedTooth))},{Text(tr(lang,"Presente","Present"))})
@@ -67,7 +67,7 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
                 },{Text(tr(lang,"Ausente / excluir","Missing / exclude"))})
             }
         } }
-        item { SectionCard("OD $selectedTooth") {
+        item { SectionCard(tr(lang,"3 · Superficies del OD $selectedTooth","3 · Tooth $selectedTooth surfaces")) {
             if(selectedTooth !in present) Text(tr(lang,"Diente excluido del denominador.","Tooth excluded from denominator.")) else {
                 DentalSurfaceDiagram(centerEnabled=false,surfaceColor={s->if(s in selectedSurfaces)Color(0xFFD64545) else MaterialTheme.colorScheme.surfaceVariant},onSurfaceTap={s->
                     if(s in surfaces){val set=selectedSurfaces.toMutableSet();if(!set.add(s))set.remove(s);setMarks(set)}
@@ -100,7 +100,7 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
                 Text(tr(lang,"Rojo = placa dentobacteriana. Puedes marcar tantas caras como correspondan.","Red = plaque. Mark as many surfaces as needed."),color=Color(0xFFD64545),fontWeight=FontWeight.Bold)
             }
         } }
-        item { SectionCard(tr(lang,"Cálculo automático","Automatic calculation")) {
+        item { SectionCard(tr(lang,"4 · Cálculo automático","4 · Automatic calculation"),tr(lang,"Porcentaje = superficies con placa ÷ superficies evaluables × 100.","Percentage = plaque-positive surfaces ÷ evaluable surfaces × 100.")) {
             Text("$plaqueFaces / $totalFaces × 100",style=MaterialTheme.typography.titleMedium)
             Text("$percentage %",style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold)
             Text(tr(lang,"Caras evaluables = dientes presentes × 4. Los dientes ausentes quedan fuera del denominador.","Evaluable surfaces = present teeth × 4. Missing teeth are excluded from the denominator."))
