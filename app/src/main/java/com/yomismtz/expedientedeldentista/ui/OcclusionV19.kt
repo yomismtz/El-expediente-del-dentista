@@ -125,6 +125,7 @@ private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int
   "Recto bilateral"->Triple("Plano terminal recto",R.drawable.new77_plano_terminalm_recto,"Imagen de plano terminal recto.")
   "Mesial bilateral"->Triple("Plano terminal mesial",R.drawable.new77_plano_terminal_mesial,"Imagen de escalón mesial.")
   "Distal bilateral"->Triple("Plano terminal distal",R.drawable.new77_plano_terminal_distal,"Imagen de escalón distal.")
+  "No valorable"->Triple("Planos terminales · no valorables",R.drawable.new77_planos_terminales_no_valorables,"Referencia local para cuando la relación terminal no puede valorarse.")
   else->null}
  2->when(choice){
   "Derecha Clase I"->Triple("Angle molar derecha · Clase I",R.drawable.new77_clase_i_molar_derecha,"Imagen específica de relación molar derecha Clase I.")
@@ -200,6 +201,7 @@ private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int
   "Deslizamiento funcional derecho"->Triple("Desplazamiento funcional a la derecha",R.drawable.allimg_028_desplazamiento_funcional_a_la_derecha,"Imagen local.")
   "Deslizamiento funcional izquierdo"->Triple("Desplazamiento funcional a la izquierda",R.drawable.allimg_029_desplazamiento_funcional_a_la_izquierda,"Imagen local.")
   "Discrepancia RC/MI aparente"->Triple("Discrepancia entre RC y máxima intercuspidación",R.drawable.allimg_030_discrepancia_entre_maxima_interscupidacion_y_,"Imagen local.")
+  "No valorable"->Triple("Máxima intercuspidación · no valorable",R.drawable.allimg_068_maxima_intercupidacion_no_valorable,"Imagen local de la opción no valorable.")
   else->null}
  14->when(choice){
   "Sin desgaste aparente"->Triple("Sin desgaste aparente",R.drawable.allimg_004_sin_desgaste_aparente,"Imagen clínica local.")
@@ -209,6 +211,14 @@ private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int
   "Unilateral"->Triple("Desgaste oclusal unilateral",R.drawable.allimg_027_desgasteoclusal_unilateral,"Imagen clínica local.")
   "Severo"->Triple("Desgaste oclusal severo",R.drawable.allimg_026_desgaste_oclusal_severo,"Imagen clínica local.")
   else->null}
- 15->when(choice){"Mordida profunda"->Triple("Mordida profunda",R.drawable.edu_oclusion_mordida_profunda,"Imagen.");"Mordida abierta"->Triple("Mordida abierta",R.drawable.edu_oclusion_mordida_abierta,"Imagen.");"Mordida invertida/underbite"->Triple("Relación anterior invertida",R.drawable.edu_oclusion_cruzada_anterior,"Imagen.");else->null}
+ 15->when(choice){
+  "Sin alteración adicional"->Triple("Sin alteración oclusal adicional",R.drawable.allimg_071_oclusion_sin_alteraciona_dicional,"Imagen local de la opción seleccionada.")
+  "Protrusión incisiva"->Triple("Protrusión incisiva",R.drawable.allimg_084_protrusion_incisiva,"Imagen clínica local de protrusión incisiva.")
+  "Apiñamiento"->Triple("Apiñamiento dental",R.drawable.allimg_008_apinamiento_dental,"Imagen clínica local de apiñamiento.")
+  "Espaciamiento"->Triple("Espaciamiento dental",R.drawable.allimg_036_espaciamiento_dental,"Imagen clínica local de espaciamiento.")
+  "Mordida profunda"->Triple("Mordida profunda",R.drawable.edu_oclusion_mordida_profunda,"Imagen.")
+  "Mordida abierta"->Triple("Mordida abierta",R.drawable.edu_oclusion_mordida_abierta,"Imagen.")
+  "Mordida invertida/underbite"->Triple("Relación anterior invertida",R.drawable.edu_oclusion_cruzada_anterior,"Imagen.")
+  else->null}
  else->null
 }
