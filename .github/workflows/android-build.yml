@@ -56,14 +56,21 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build debug APK
-        run: gradle clean :app:assembleDebug --no-build-cache --rerun-tasks --stacktrace
+      - name: Build debug APK and release AAB
+        run: gradle clean :app:assembleDebug :app:bundleRelease --no-build-cache --rerun-tasks --stacktrace
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: El-expediente-del-dentista-debug
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+
+      - name: Upload unsigned release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: El-expediente-del-dentista-release-aab-unsigned
+          path: app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
 
 # build-trigger: mascotas-30-retry-no-remote-cache

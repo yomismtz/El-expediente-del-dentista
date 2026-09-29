@@ -773,6 +773,9 @@ private data class E(val n:String,val d:String)
    "Reabsorción interna / pink spot"->listOf(R.drawable.anomaly49_46)
    "Tabaco"->listOf(R.drawable.anomaly49_39)
    "Clorhexidina"->listOf(R.drawable.anomaly49_38)
+   "Erupción precoz / adelantada","Erupción prematura","Dientes natales","Dientes neonatales","Erupción retardada localizada","Erupción retardada generalizada"->listOf(R.drawable.anomaly_erupcion_cronologia)
+   "Erupción ectópica","Transposición dentaria","Transmigración","Erupción vestibular","Erupción lingual / palatina","Erupción mesial anómala","Erupción distal anómala","Rotación"->listOf(R.drawable.anomaly_erupcion_posicion)
+   "Impactación","Inclusión","Retención primaria","Retención secundaria","Fallo primario de erupción (PFE)","Fallo mecánico de erupción","Anquilosis","Infraoclusión"->listOf(R.drawable.anomaly_erupcion_fracaso)
    else->emptyList()
   }
   if(anomalyImages.isNotEmpty()){
