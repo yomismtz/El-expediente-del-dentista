@@ -18,13 +18,14 @@ import kotlin.math.min
 fun Modifier.edgeSwipeBackV21(onBack: () -> Unit): Modifier = composed {
     val density = LocalDensity.current
     val triggerPx = with(density) { 76.dp.toPx() }
+    val edgePx = with(density) { 32.dp.toPx() }
 
-    pointerInput(onBack, triggerPx) {
+    pointerInput(onBack, triggerPx, edgePx) {
         var eligible = false
         var accumulated = 0f
         detectHorizontalDragGestures(
             onDragStart = { start ->
-                eligible = true
+                eligible = start.x <= edgePx
                 accumulated = 0f
             },
             onHorizontalDrag = { _, dragAmount ->
