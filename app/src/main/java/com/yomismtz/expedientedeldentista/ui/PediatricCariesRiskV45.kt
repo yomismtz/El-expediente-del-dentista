@@ -83,7 +83,7 @@ private data class RiskFactor45(val key:String,val label:String,val kind:String)
      LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
      when(cariesVisual){
       "Lesión no cavitada"->LocalClinicalHelpImageV47(lang,"Explicación · lesión no cavitada","Explanation · non-cavitated lesion",R.drawable.edu_explicacion_lesion_cariosa_no_cavitada,"Imagen explicativa complementaria.","Complementary explanatory image.")
-      "Lesión cavitada"->LocalClinicalHelpImageV47(lang,"Explicación · lesión cavitada","Explanation · cavitated lesion",R.drawable.edu_explicacion_lesion_cariosa_cavitada,"Lámina explicativa complementaria.","Complementary explanatory plate.")
+      "Lesión cavitada"->LocalClinicalHelpImageV47(lang,"Explicación · lesión cavitada","Explanation · cavitated lesion",R.drawable.edu_explicacion_lesion_cariosa_cavitada,"Imagen explicativa complementaria.","Complementary explanatory image.")
       "Caries activa"->LocalClinicalHelpImageV47(lang,"Explicación · caries activa","Explanation · active caries",R.drawable.edu_explicacion_caries_activa,"Imagen sobre actividad.","Image about activity.")
       "Caries inactiva"->LocalClinicalHelpImageV47(lang,"Explicación · caries no activa","Explanation · inactive caries",R.drawable.edu_explicacion_caries_no_activa,"Imagen sobre inactividad.","Image about inactivity.")
      }
