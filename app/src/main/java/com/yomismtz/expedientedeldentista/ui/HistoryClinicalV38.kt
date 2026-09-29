@@ -790,9 +790,9 @@ private data class E(val n:String,val d:String)
   item{ScreenHeader("Antecedentes ortodónticos y ortopédicos",onBack,"Registro guiado del tratamiento previo, aparatología, duración, retención y resultado referido. Las opciones se reorganizan de 2 a 4 celdas según el ancho disponible.")}
   item{SectionCard("¿Recibió tratamiento previo?"){ChipChoices(listOf("No recibió" to (prior==false),"Sí recibió" to (prior==true)),{prior=it==1},columns=2)}}
   if(prior==true) sections.forEach{(name,opts)->
-   item{SectionCard(name){ChipChoices(opts.map{o->o to (selected[name]==o)},{i->selected[name]=opts[i]},columns=4)}}
-   if(name=="Tratamiento previo") item{
-    when(selected[name]){
+   item{SectionCard(name){
+    ChipChoices(opts.map{o->o to (selected[name]==o)},{i->selected[name]=opts[i]},columns=4)
+    if(name=="Tratamiento previo") when(selected[name]){
      "Brackets metálicos"->ClinicalPhotoV38("Brackets metálicos",R.drawable.new77_edu_brackets_metalicos,"Imagen de la opción seleccionada.")
      "Brackets estéticos"->ClinicalPhotoV38("Brackets estéticos",R.drawable.new77_edu_brackets_esteticos,"Imagen de la opción seleccionada.")
      "Alineadores transparentes"->ClinicalPhotoV38("Alineadores transparentes",R.drawable.new77_edu_alineadores_tranparentes,"Imagen de la opción seleccionada.")
@@ -800,16 +800,14 @@ private data class E(val n:String,val d:String)
      "Expansor palatino"->ClinicalPhotoV38("Expansor de paladar",R.drawable.new77_edu_expansor_de_paladar,"Imagen de la opción seleccionada.")
      "Cirugía ortognática asociada"->ClinicalPhotoV38("Cirugía ortognática",R.drawable.new77_edu_cirugia_ortognatica,"Imagen de la opción seleccionada.")
     }
-   }
-   if(name=="Retención") item{
-    when(selected[name]){
+    if(name=="Retención") when(selected[name]){
      "Sin retención"->ClinicalPhotoV38("Sin retenedores",R.drawable.new77_edu_sin_retenedores,"Imagen de la opción seleccionada.")
      "Retenedor Hawley"->ClinicalPhotoV38("Retenedor removible Hawley",R.drawable.new77_edu_retendedor_removible_hawley,"Imagen de la opción seleccionada.")
      "Retenedor transparente"->ClinicalPhotoV38("Retenedor transparente",R.drawable.new77_edi_retenedor_transparente,"Imagen de la opción seleccionada.")
      "Retenedor fijo"->ClinicalPhotoV38("Retenedor fijo",R.drawable.new77_edu_retenedor_fijo,"Imagen de la opción seleccionada.")
      "Fijo + removible"->ClinicalPhotoV38("Retenedor fijo inferior y removible superior",R.drawable.new77_edu_retenedor_fijo_inferior_y_removible_superior,"Imagen de la opción seleccionada.")
     }
-   }
+   }}
   }
   item{NoticeCard("El antecedente ortodóntico se registra según lo referido y lo observable. No asumir diagnóstico previo, indicación original ni estabilidad futura sin expediente, exploración y estudios.")}
  }
