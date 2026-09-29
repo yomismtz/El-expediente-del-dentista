@@ -45,14 +45,6 @@ private fun ImagingFindingImageV20(lang:String,group:String,finding:String){
  LocalClinicalInlineZoomImageV48(lang,if(lang=="en")r.third else r.second,if(lang=="en")r.third else r.second,r.first,"Imagen clínica/radiográfica local relacionada con el hallazgo seleccionado; correlaciona con el estudio completo.","Local clinical/radiographic image related to the selected finding; correlate with the complete study.")
 }
 
-@Composable private fun ImagingFindingImageV20(lang:String,group:String,value:String){ val r=when(group to value){
-"Región periapical" to "Ensanchamiento del espacio periodontal"->Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_004,"Ensanchamiento del ligamento periodontal","Widened periodontal ligament")
-"Región periapical" to "Pérdida de lámina dura"->Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_011,"Pérdida de lámina dura","Loss of lamina dura")
-"Región periapical" to "Radiolucidez periapical"->Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_017,"Radiolucidez periapical","Periapical radiolucency")
-"Periodonto / hueso alveolar" to "Furcación radiográfica aparente"->Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_045,"Furcación","Furcation")
-"Raíces" to "Reabsorción interna aparente"->Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_019,"Reabsorción radicular interna","Internal root resorption")
-"Raíces" to "Reabsorción externa aparente"->Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_018,"Reabsorción radicular externa","External root resorption")
-else->return}; LocalClinicalInlineZoomImageV48(lang,if(lang=="en")r.third else r.second,if(lang=="en")r.third else r.second,r.first,"Imagen clínica local relacionada con el hallazgo seleccionado.","Local clinical image related to the selected finding.") }
 @Composable fun ImagingAuxiliariesV20Screen(lang:String,onBack:()->Unit){
  var study by rememberRecordState("imaging.study",imagingTypes15.first().name);var group by rememberRecordState("imaging.group",findingGroups15.first().first)
  val selected=rememberRecordStateMap<String,String>("imaging.selected")
@@ -65,7 +57,8 @@ else->return}; LocalClinicalInlineZoomImageV48(lang,if(lang=="en")r.third else r
   ResponsiveSectionV17("Revisión sistemática","Selecciona lo observado. Los términos «aparente» y «sospechada» evitan convertir una imagen aislada en diagnóstico definitivo."){
    AdaptiveGridV17(findingGroups15.size,if(profile.width==ScreenWidthV17.COMPACT)2 else 3){i->val name=findingGroups15[i].first;FilterChip(group==name,{group=name},{Text(name)},Modifier.fillMaxWidth())}
    val opts=findingGroups15.first{it.first==group}.second
-   AdaptiveGridV17(opts.size,if(profile.width==ScreenWidthV17.COMPACT)1 else 2){i->val x=opts[i];FilterChip(selected[group]==x,{selected[group]=x},{Text(x)},Modifier.fillMaxWidth())}\n   selected[group]?.let{ImagingFindingImageV20(lang,group,it)}\n   selected[group]?.let{ ImagingFindingImageV20(lang,group,it) }
+   AdaptiveGridV17(opts.size,if(profile.width==ScreenWidthV17.COMPACT)1 else 2){i->val x=opts[i];FilterChip(selected[group]==x,{selected[group]=x},{Text(x)},Modifier.fillMaxWidth())}
+   selected[group]?.let{ ImagingFindingImageV20(lang,group,it) }
   }
   ResponsiveSectionV17("Resumen automático"){
    Text("Estudio: "+study,fontWeight=FontWeight.Black)
