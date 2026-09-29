@@ -84,6 +84,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
     var duration by rememberRecordState("mucosa.duration","No referido")
     var evolution by rememberRecordState("mucosa.evolution","No referida")
     var count by rememberRecordState("mucosa.count","Única")
+    var showElementaryHelp by remember { mutableStateOf(false) }
     val selected=zones19.firstOrNull{it.id==selectedId} ?: zones19.first()
     val name=if(lang=="en")selected.en else selected.es
     val example=if(finding=="Normal") "$name: ${if(lang=="en")selected.normalEn else selected.normalEs}"
@@ -132,10 +133,24 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                     "piso" to listOf("Ránula","Sialolitiasis/obstrucción a valorar","Quiste/masa a valorar","Lesión vascular a valorar","Úlcera traumática"),
                     "orofaringe" to listOf("Faringoamigdalitis a valorar","Hipertrofia amigdalina","Exudado amigdalino","Úlcera/lesión mucosa","Asimetría amigdalina a valorar")
                 )
-                Text(tr(lang,"Lesión elemental observada","Observed elementary lesion"),fontWeight=FontWeight.Black)
-                AdaptiveGridV17(elementary.size,zoneColumns){i->
-                    val option=elementary[i]
-                    FilterChip(tissueLesion[selected.id]==option,{tissueLesion[selected.id]=option;finding=option},{Text(option)},modifier=Modifier.fillMaxWidth())
+                Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){
+                    Text(tr(lang,"Lesión elemental observada","Observed elementary lesion"),fontWeight=FontWeight.Black)
+                    TextButton(onClick={showElementaryHelp=!showElementaryHelp}){Text("?")}
+                }
+                if(showElementaryHelp){
+                    Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){
+                        Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+                            Text(tr(lang,"Lesiones elementales","Elementary lesions"),fontWeight=FontWeight.Black)
+                            Text(tr(lang,"Selecciona la lesión elemental que mejor describa el hallazgo. Esta referencia se puede cerrar con el botón ? para mantener compacta la pantalla.","Select the elementary lesion that best describes the finding. Close this reference with the ? button to keep the screen compact."),style=MaterialTheme.typography.bodySmall)
+                            AdaptiveGridV17(elementary.size,zoneColumns){i->
+                                val option=elementary[i]
+                                FilterChip(tissueLesion[selected.id]==option,{tissueLesion[selected.id]=option;finding=option},{Text(option)},modifier=Modifier.fillMaxWidth())
+                            }
+                        }
+                    }
+                } else {
+                    val current=tissueLesion[selected.id].orEmpty()
+                    Text(if(current.isBlank()) tr(lang,"Toca ? para elegir o consultar una lesión elemental.","Tap ? to choose or review an elementary lesion.") else tr(lang,"Seleccionada: $current · Toca ? para cambiarla o consultar la referencia.","Selected: $current · Tap ? to change it or review the reference."),style=MaterialTheme.typography.bodySmall)
                 }
                 val selectedLesion=tissueLesion[selected.id].orEmpty()
                 val lesionVisual=when {
@@ -152,7 +167,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                     selectedLesion.startsWith("Fístula") -> Triple(com.yomismtz.expedientedeldentista.R.drawable.edu_lesion_fistula,"Fístula / trayecto sinusal","Trayecto de drenaje. Observa localización, secreción y correlaciona clínicamente el posible origen.")
                     else -> null
                 }
-                lesionVisual?.let{v->
+                if(showElementaryHelp) lesionVisual?.let{v->
                     Card(Modifier.fillMaxWidth()){
                         Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
                             Text(v.second,fontWeight=FontWeight.Black)
@@ -160,7 +175,6 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                             Text(v.third)
                             Text(tr(lang,"¿Qué observar?","What to observe?"),fontWeight=FontWeight.SemiBold)
                             Text(tr(lang,"Describe sitio, número, tamaño, color, forma, superficie, bordes, base, consistencia, síntomas, duración y evolución.","Describe site, number, size, color, shape, surface, borders, base, consistency, symptoms, duration and evolution."))
-                            Text(tr(lang,"Imagen","Image"),fontWeight=FontWeight.SemiBold)
                             LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
                         }
                     }
