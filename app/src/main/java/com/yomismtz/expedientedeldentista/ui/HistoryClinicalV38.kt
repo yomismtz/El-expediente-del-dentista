@@ -639,7 +639,7 @@ private data class E(val n:String,val d:String)
     "Sonreír exageradamente" to R.drawable.new77_evaluacion_de_musculos_faciales_sonriendocexageradamente,
     "Succionar cachetes" to R.drawable.new77_evaluacion_de_musculos_faciales_succionando_sus_cachetes
    )
-   item{Pick("Maniobra de músculos faciales",facialManeuvers.map{it.first},"Selecciona la maniobra realizada. Al elegirla se muestra únicamente su imagen correspondiente para comparar simetría y movimiento.")}
+   item{Pick("Maniobra de músculos faciales",facialManeuvers.map{it.first},"Qué es: una prueba breve del movimiento facial. Por qué importa: permite comparar ambos lados y registrar asimetría, debilidad o limitación observada.")}
    val facialVisual=facialManeuvers.firstOrNull{it.first==selected["Maniobra de músculos faciales"]}
    if(facialVisual!=null)item{
     LocalClinicalInlineZoomImageV48(lang,facialVisual.first,facialVisual.first,facialVisual.second,
@@ -655,7 +655,7 @@ private data class E(val n:String,val d:String)
     "Pterigoideo interno" to R.drawable.new77_exploacion_fisica_y_extraoral_musculos_pterigoideo_interno,
     "Pterigoideo externo" to R.drawable.new77_exploacion_fisica_y_extraoral_musculos_pterigoideo_externo7
    )
-   item{Pick("Músculo masticatorio · localización",masticatoryMuscles.map{it.first},"Selecciona el músculo para mostrar su imagen y después registra dolor, asimetría o limitación funcional.")}
+   item{Pick("Músculo masticatorio · localización",masticatoryMuscles.map{it.first},"Qué es: localización de los principales músculos de la masticación. Por qué importa: al seleccionarlo se muestra su referencia anatómica para relacionar la exploración con dolor, asimetría o limitación funcional.")}
    val muscleVisual=masticatoryMuscles.firstOrNull{it.first==selected["Músculo masticatorio · localización"]}
    if(muscleVisual!=null)item{
     LocalClinicalInlineZoomImageV48(lang,muscleVisual.first,muscleVisual.first,muscleVisual.second,
