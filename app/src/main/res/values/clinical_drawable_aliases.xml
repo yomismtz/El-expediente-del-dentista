@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Stable semantic aliases for clinical screens.
+         Entries that still point to ic_app_logo are explicit placeholders;
+         replace them only when a verified clinical reference is available. -->
     <item type="drawable" name="clinical_cranial_morphology">@drawable/ic_app_logo</item>
     <item type="drawable" name="clinical_facial_asymmetry">@drawable/ic_app_logo</item>
     <item type="drawable" name="clinical_smile">@drawable/ic_app_logo</item>
