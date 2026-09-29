@@ -226,6 +226,8 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
     var musclePalpation by rememberRecordState("atm.musclePalpation","Sin dolor reproducible")
     var followup by rememberRecordState("atm.followup","Sin seguimiento registrado")
     var atmVisual by rememberRecordState("atm.visual","Apertura y cierre")
+    var openFindingKey by remember { mutableStateOf("") }
+    var showAtmVisual by remember { mutableStateOf(false) }
 
     val orientation=when {
         on("lockOpen") -> tr(lang,"Boca abierta sin poder cerrar: requiere valoración clínica inmediata y diagnóstico diferencial.","Open mouth unable to close: prompt clinical assessment and differential diagnosis are required.")
@@ -247,28 +249,33 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
         item{ScreenHeader(tr(lang,"ATM + dolor orofacial","TMJ + orofacial pain"),onBack,tr(lang,"Ficha interactiva de síntomas, características del dolor, función, movimientos y palpación. Cada dato queda asociado al expediente.","Interactive sheet for symptoms, pain characteristics, function, movements and palpation. Each item is associated with the record."))}
         item{SectionCard(tr(lang,"1 · Síntomas y antecedentes","1 · Symptoms and history")){
             Text(tr(lang,"Marca los hallazgos referidos. Se muestran en 2–3 celdas según el espacio disponible.","Mark reported findings. They display in 2–3 cells according to available space."),style=MaterialTheme.typography.bodySmall)
-            ChipChoices(findings.map{f->(if(lang=="en")f.en else f.es) to on(f.key)},{i->val f=findings[i];checked[f.key]=!on(f.key)},columns=3)
+            ChipChoices(findings.map{f->(if(lang=="en")f.en else f.es) to on(f.key)},{i->
+                val f=findings[i]
+                val newValue=!on(f.key)
+                checked[f.key]=newValue
+                openFindingKey=if(newValue) f.key else if(openFindingKey==f.key) "" else openFindingKey
+            },columns=3)
             val atmFindingVisuals=mapOf(
-                "painJoint" to listOf(Triple(R.drawable.atm_new_dolor_localizado,"Dolor localizado de ATM","Referencia visual educativa del sitio articular referido.")),
-                "muscle" to listOf(Triple(R.drawable.atm_new_dolor_musculos,"Dolor de músculos masticatorios","Referencia visual educativa de dolor/sensibilidad muscular.")),
-                "click" to listOf(Triple(R.drawable.atm_new_chasquido,"Chasquido reproducible","Referencia visual educativa de chasquido articular reproducible.")),
-                "crepitus" to listOf(Triple(R.drawable.atm_new_crepitacion,"Crepitación","Referencia visual educativa de crepitación articular.")),
-                "headache" to listOf(Triple(R.drawable.atm_new_cefalea,"Cefalea modificada por masticación","Referencia visual educativa del síntoma referido.")),
-                "locking" to listOf(Triple(R.drawable.atm_new_bloqueo,"Bloqueo mandibular","Referencia visual educativa de bloqueo o atoramiento mandibular.")),
-                "lockOpen" to listOf(Triple(R.drawable.atm_new_boca_abierta,"Bloqueo con boca abierta","Referencia visual educativa de boca abierta que no puede cerrar.")),
+                "painJoint" to listOf(Triple(R.drawable.atm_new_dolor_localizado,"Dolor localizado de ATM","Imagen del sitio articular referido.")),
+                "muscle" to listOf(Triple(R.drawable.atm_new_dolor_musculos,"Dolor de músculos masticatorios","Imagen de dolor/sensibilidad muscular.")),
+                "click" to listOf(Triple(R.drawable.atm_new_chasquido,"Chasquido reproducible","Imagen de chasquido articular reproducible.")),
+                "crepitus" to listOf(Triple(R.drawable.atm_new_crepitacion,"Crepitación","Imagen de crepitación articular.")),
+                "headache" to listOf(Triple(R.drawable.atm_new_cefalea,"Cefalea modificada por masticación","Imagen del síntoma referido.")),
+                "locking" to listOf(Triple(R.drawable.atm_new_bloqueo,"Bloqueo mandibular","Imagen de bloqueo o atoramiento mandibular.")),
+                "lockOpen" to listOf(Triple(R.drawable.atm_new_boca_abierta,"Bloqueo con boca abierta","Imagen de boca abierta que no puede cerrar.")),
                 "ear" to listOf(
-                    Triple(R.drawable.atm_new_dolor_periauricular,"Dolor periauricular","Referencia visual educativa de localización periauricular."),
-                    Triple(R.drawable.atm_new_otalgia,"Otalgia","Referencia visual educativa de dolor referido al oído.")
+                    Triple(R.drawable.atm_new_dolor_periauricular,"Dolor periauricular","Imagen de localización periauricular."),
+                    Triple(R.drawable.atm_new_otalgia,"Otalgia","Imagen de dolor referido al oído.")
                 ),
-                "parafunction" to listOf(Triple(R.drawable.atm_new_bruxismo,"Bruxismo / apretamiento","Referencia visual educativa de parafunción referida.")),
-                "trauma" to listOf(Triple(R.drawable.atm_new_trauma,"Trauma de ATM","Referencia visual educativa de antecedente traumático de ATM/mandíbula."))
+                "parafunction" to listOf(Triple(R.drawable.atm_new_bruxismo,"Bruxismo / apretamiento","Imagen de parafunción referida.")),
+                "trauma" to listOf(Triple(R.drawable.atm_new_trauma,"Trauma de ATM","Imagen de antecedente traumático de ATM/mandíbula."))
             )
-            findings.filter{on(it.key)}.forEach { finding ->
+            findings.firstOrNull{it.key==openFindingKey && on(it.key)}?.let { finding ->
                 atmFindingVisuals[finding.key].orEmpty().forEach { v ->
                     LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
                 }
             }
-            if(findings.none{on(it.key)}) Text(tr(lang,"Selecciona un síntoma para mostrar su referencia visual.","Select a symptom to show its visual reference."),style=MaterialTheme.typography.bodySmall)
+            if(openFindingKey.isBlank() || !on(openFindingKey)) Text(tr(lang,"Toca un síntoma para mostrar su imagen.","Tap a symptom to show its image."),style=MaterialTheme.typography.bodySmall)
         }}
         item{Pick(tr(lang,"2 · Intensidad del dolor · EVA/NRS 0–10","2 · Pain intensity · 0–10 NRS"),tr(lang,"0 significa ausencia de dolor y 10 el peor dolor imaginable referido. La cifra describe intensidad, no la causa.","0 means no pain and 10 the worst pain imaginable as reported. The number describes intensity, not cause."),(0..10).map(Int::toString),painIntensity){painIntensity=it}}
         item{Pick(tr(lang,"3 · Localización principal","3 · Main location"),tr(lang,"Registra dónde se percibe principalmente el dolor; una localización puede tener fuentes diferentes.","Record where pain is mainly perceived; one location may have different sources."),listOf("Sin dolor","ATM/preauricular","Masetero","Temporal","Mandíbula","Maxilar","Diente/alvéolo","Oído referido","Cabeza/cara","Difuso/otro"),painSite){painSite=it}}
@@ -289,19 +296,20 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
         item{Pick(tr(lang,"15 · Trayectoria de apertura","15 · Opening trajectory"),tr(lang,"Desviación regresa hacia la línea media durante la apertura; deflexión permanece hacia un lado al final. Registra lo observado sin asumir etiología.","Deviation returns toward midline during opening; deflection remains to one side at the end. Record what is observed without assuming etiology."),listOf("Recta / sin desviación evidente","Desviación a derecha","Desviación a izquierda","Deflexión a derecha","Deflexión a izquierda","Bloqueo durante movimiento"),trajectory){trajectory=it}}
         item{Pick(tr(lang,"16 · Palpación articular","16 · Joint palpation"),tr(lang,"Registra si la palpación reproduce el dolor familiar del paciente y el lado.","Record whether palpation reproduces the patient's familiar pain and the side."),listOf("Sin dolor reproducible","Dolor derecho","Dolor izquierdo","Dolor bilateral","Dolor familiar reproducido"),jointPalpation){jointPalpation=it}}
         item{Pick(tr(lang,"17 · Palpación muscular","17 · Muscle palpation"),tr(lang,"Explora de forma comparable maseteros y temporales. Dolor a la palpación aislado no establece diagnóstico.","Examine masseters and temporalis comparably. Isolated palpation pain does not establish diagnosis."),listOf("Sin dolor reproducible","Masetero derecho","Masetero izquierdo","Temporal derecho","Temporal izquierdo","Bilateral/múltiples","Dolor familiar reproducido"),musclePalpation){musclePalpation=it}}
-        item{SectionCard(tr(lang,"Referencia visual de ATM y movimientos","TMJ and movement visual reference")){
+        item{SectionCard(tr(lang,"Imágenes de ATM y movimientos","TMJ and movement images")){
             val visualOptions=listOf("Apertura y cierre","Trayectoria normal","Desviación","Deflexión","Lateralidades","Protrusión","Palpación de ATM","Palpación muscular")
             val v=when(atmVisual){
-                "Trayectoria normal"->Triple(R.drawable.edu_atm_trayectoria_normal,"Trayectoria normal","Referencia de trayectoria de apertura.")
+                "Trayectoria normal"->Triple(R.drawable.edu_atm_trayectoria_normal,"Trayectoria normal","Imagen de trayectoria de apertura.")
                 "Desviación"->Triple(R.drawable.edu_atm_desviacion,"Desviación","La desviación retorna hacia la línea media.")
                 "Deflexión"->Triple(R.drawable.edu_atm_deflexion,"Deflexión","La deflexión permanece hacia un lado al final.")
                 "Lateralidades"->Triple(R.drawable.edu_atm_lateralidad_derecha_izquierda,"Lateralidades","Movimiento de lateralidad derecha e izquierda.")
                 "Protrusión"->Triple(R.drawable.edu_atm_protrusion,"Protrusión","Movimiento anterior mandibular.")
-                "Palpación de ATM"->Triple(R.drawable.edu_atm_palpacion,"Palpación de ATM","Referencia educativa de palpación articular.")
-                "Palpación muscular"->Triple(R.drawable.edu_atm_palpacion_muscular,"Palpación muscular","Referencia educativa de palpación muscular.")
+                "Palpación de ATM"->Triple(R.drawable.edu_atm_palpacion,"Palpación de ATM","Imagen de palpación articular.")
+                "Palpación muscular"->Triple(R.drawable.edu_atm_palpacion_muscular,"Palpación muscular","Imagen de palpación muscular.")
                 else->Triple(R.drawable.edu_atm_apertura_y_cierre,"Apertura y cierre","Secuencia educativa del movimiento mandibular.")
             }
-            ChipChoices(visualOptions.map{it to (atmVisual==it)},{i->atmVisual=visualOptions[i]},columns=3)
+            ChipChoices(visualOptions.map{it to (showAtmVisual && atmVisual==it)},{i->atmVisual=visualOptions[i];showAtmVisual=true},columns=3)
+            if(showAtmVisual){
             Card(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
                 Text(v.second,fontWeight=FontWeight.Bold)
                 Text(tr(lang,"¿Qué es?","What is it?"),fontWeight=FontWeight.SemiBold)
@@ -311,6 +319,7 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
                 Text(tr(lang,"Imagen representativa","Representative image"),fontWeight=FontWeight.SemiBold)
                 LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
             }}
+            }
         }}
         item{SectionCard(tr(lang,"18 · Seguimiento","18 · Follow-up")){
             Text(tr(lang,"Registra la evolución clínica en controles posteriores; no sustituye las notas de evolución.","Record clinical evolution at subsequent visits; it does not replace progress notes."),style=MaterialTheme.typography.bodySmall)

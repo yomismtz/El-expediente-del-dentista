@@ -53,7 +53,7 @@ private data class RiskFactor45(val key:String,val label:String,val kind:String)
 @Composable fun CariesRiskV45(lang:String,onBack:()->Unit){
  val factors=listOf(RiskFactor45("active","Lesiones de caries activas / cavitadas observadas","d"),RiskFactor45("recent","Caries/restauraciones recientes relevantes","d"),RiskFactor45("sugar","Exposición frecuente a azúcares fermentables","r"),RiskFactor45("plaque","Control de biopelícula insuficiente","r"),RiskFactor45("saliva","Hiposalivación / xerostomía referida o medida","r"),RiskFactor45("appliance","Aparato que dificulta higiene","r"),RiskFactor45("social","Barreras relevantes para prevención/atención","r"),RiskFactor45("fluoride","Uso apropiado de pasta fluorada","p"),RiskFactor45("professional","Medidas profesionales preventivas indicadas","p"),RiskFactor45("hygiene","Higiene efectiva / apoyo del cuidador","p"),RiskFactor45("diet","Frecuencia de azúcares controlada","p"))
  val states=factors.associate{it.key to rememberRecordState("cariesRisk."+it.key,"No valorado")}
- ResponsiveSectionV17(tr(lang,"Referencias clínicas de caries y opacidades","Clinical caries and opacity references")) { UploadedCariesRefsV51(lang) }
+ ResponsiveSectionV17(tr(lang,"Imágenes de caries y opacidades","Caries and opacity images")) { UploadedCariesRefsV51(lang) }
   ClinicalRegisterHelpV49(lang,"Ayuda · Caries y riesgo","Help · Caries and risk","Marca sólo factores interrogados u observados. Describe localización, cavitación, actividad y contexto cuando hayan sido evaluados; usa ICDAS en su módulo específico. Los factores de riesgo y protección organizan el registro y no producen por sí solos un diagnóstico.","Mark only factors that were asked about or observed. Describe location, cavitation, activity and context when assessed; use ICDAS in its dedicated module. Risk and protective factors organize documentation and do not independently produce a diagnosis.")
  ClinicalRegisterHelpV49(lang,"Ayuda · Caries y riesgo","Help · Caries and risk","Marca sólo factores interrogados u observados. Describe localización, cavitación, actividad y contexto cuando hayan sido evaluados; usa ICDAS en su módulo específico. Los factores organizan el registro y no producen por sí solos un diagnóstico.","Mark only factors that were asked about or observed. Describe location, cavitation, activity and context when assessed; use ICDAS in its dedicated module. Factors organize documentation and do not independently produce a diagnosis.")
  ResponsiveScreenV17("🛡️ "+tr(lang,"Ficha de Caries y Riesgo de Caries","Caries and Caries-Risk Sheet"),tr(lang,"Instrumento educativo propio de la app, multifactorial y no equivalente ni afiliado a CAMBRA. Organiza enfermedad observada, factores de riesgo y protección; no sustituye una herramienta validada ni el juicio clínico.","App-owned multifactorial educational instrument; it is not CAMBRA and is not affiliated with CAMBRA. It organizes observed disease, risk and protective factors; it does not replace a validated tool or clinical judgment."),onBack){p->
@@ -61,16 +61,16 @@ private data class RiskFactor45(val key:String,val label:String,val kind:String)
   var cariesVisual by rememberRecordState("cariesRisk.visual","")
   val visualOptions=listOf("Lesión no cavitada","Lesión cavitada","Caries activa","Caries inactiva","Caries de corona","Caries radicular","ICDAS 0")
   val visual=when(cariesVisual){
-   "Lesión no cavitada"->Triple(R.drawable.edu_lesion_no_cavitada,"Lesión no cavitada","Referencia educativa para distinguir una lesión sin cavitación visible.")
-   "Lesión cavitada"->Triple(R.drawable.edu_lesion_cavitada,"Lesión cavitada","Referencia educativa de pérdida de integridad superficial/cavitación.")
+   "Lesión no cavitada"->Triple(R.drawable.edu_lesion_no_cavitada,"Lesión no cavitada","Imagen para distinguir una lesión sin cavitación visible.")
+   "Lesión cavitada"->Triple(R.drawable.edu_lesion_cavitada,"Lesión cavitada","Imagen de pérdida de integridad superficial/cavitación.")
    "Caries activa"->Triple(R.drawable.edu_caries_activa,"Caries activa","Características visuales compatibles con actividad; integrar exploración clínica.")
    "Caries inactiva"->Triple(R.drawable.edu_caries_inactiva,"Caries inactiva","Características visuales compatibles con inactividad; integrar textura, brillo y contexto.")
-   "Caries de corona"->Triple(R.drawable.edu_caries_de_corona,"Caries de corona","Referencia educativa de lesión coronaria.")
-   "Caries radicular"->Triple(R.drawable.edu_caries_radicular,"Caries radicular","Referencia educativa de lesión en superficie radicular expuesta.")
-   "ICDAS 0"->Triple(R.drawable.edu_icdas_0,"ICDAS 0","Referencia visual educativa; no modifica los criterios del módulo ICDAS.")
+   "Caries de corona"->Triple(R.drawable.edu_caries_de_corona,"Caries de corona","Imagen de lesión coronaria.")
+   "Caries radicular"->Triple(R.drawable.edu_caries_radicular,"Caries radicular","Imagen de lesión en superficie radicular expuesta.")
+   "ICDAS 0"->Triple(R.drawable.edu_icdas_0,"ICDAS 0","Imagen; no modifica los criterios del módulo ICDAS.")
    else->null
   }
-  ResponsiveSectionV17(tr(lang,"Cariología · referencia contextual","Cariology · contextual reference")){
+  ResponsiveSectionV17(tr(lang,"Cariología · imágenes por hallazgo","Cariology · images by finding")){
    AdaptiveGridV17(visualOptions.size,cols){i->val o=visualOptions[i];FilterChip(cariesVisual==o,{cariesVisual=o},{Text(o)},Modifier.fillMaxWidth())}
    visual?.let{v->
     Card(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp)){
@@ -82,10 +82,10 @@ private data class RiskFactor45(val key:String,val label:String,val kind:String)
      Text(tr(lang,"Imagen representativa","Representative image"),fontWeight=FontWeight.SemiBold)
      LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
      when(cariesVisual){
-      "Lesión no cavitada"->LocalClinicalHelpImageV47(lang,"Explicación · lesión no cavitada","Explanation · non-cavitated lesion",R.drawable.edu_explicacion_lesion_cariosa_no_cavitada,"Lámina explicativa complementaria.","Complementary explanatory plate.")
+      "Lesión no cavitada"->LocalClinicalHelpImageV47(lang,"Explicación · lesión no cavitada","Explanation · non-cavitated lesion",R.drawable.edu_explicacion_lesion_cariosa_no_cavitada,"Imagen explicativa complementaria.","Complementary explanatory image.")
       "Lesión cavitada"->LocalClinicalHelpImageV47(lang,"Explicación · lesión cavitada","Explanation · cavitated lesion",R.drawable.edu_explicacion_lesion_cariosa_cavitada,"Lámina explicativa complementaria.","Complementary explanatory plate.")
-      "Caries activa"->LocalClinicalHelpImageV47(lang,"Explicación · caries activa","Explanation · active caries",R.drawable.edu_explicacion_caries_activa,"Lámina educativa sobre actividad.","Educational plate about activity.")
-      "Caries inactiva"->LocalClinicalHelpImageV47(lang,"Explicación · caries no activa","Explanation · inactive caries",R.drawable.edu_explicacion_caries_no_activa,"Lámina educativa sobre inactividad.","Educational plate about inactivity.")
+      "Caries activa"->LocalClinicalHelpImageV47(lang,"Explicación · caries activa","Explanation · active caries",R.drawable.edu_explicacion_caries_activa,"Imagen sobre actividad.","Image about activity.")
+      "Caries inactiva"->LocalClinicalHelpImageV47(lang,"Explicación · caries no activa","Explanation · inactive caries",R.drawable.edu_explicacion_caries_no_activa,"Imagen sobre inactividad.","Image about inactivity.")
      }
     }}
    }
