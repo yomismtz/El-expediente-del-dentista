@@ -57,7 +57,8 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
         item { SectionCard(tr(lang,"1 · Dentición","1 · Dentition")) { Row(horizontalArrangement = Arrangement.spacedBy(8.dp),modifier=Modifier.fillMaxWidth()) {
             FilterChip(!primary,{primary=false},{Text(tr(lang,"Permanente","Permanent"))},modifier=Modifier.weight(1f)); FilterChip(primary,{primary=true},{Text(tr(lang,"Temporal","Primary"))},modifier=Modifier.weight(1f))
         } } }
-        item { SectionCard(tr(lang,"2 · Diente evaluable","2 · Evaluable tooth"),tr(lang,"Selecciona el órgano dentario y confirma si entra en el denominador.","Select the tooth and confirm whether it belongs in the denominator.")) {
+        item { SectionCard(tr(lang,"2 · Diente evaluable","2 · Evaluable tooth")) {
+            Text(tr(lang,"Selecciona el órgano dentario y confirma si entra en el denominador.","Select the tooth and confirm whether it belongs in the denominator."),style=MaterialTheme.typography.bodySmall)
             DentalArchSelector(shown,selectedTooth,{selectedTooth=it}) { tooth -> session.oleary[tooth]?.any{it in surfaces}==true }
             Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                 FilterChip(selectedTooth in present,{onSessionChanged(session.copy(presentTeeth=present+selectedTooth))},{Text(tr(lang,"Presente","Present"))})
@@ -100,7 +101,8 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
                 Text(tr(lang,"Rojo = placa dentobacteriana. Puedes marcar tantas caras como correspondan.","Red = plaque. Mark as many surfaces as needed."),color=Color(0xFFD64545),fontWeight=FontWeight.Bold)
             }
         } }
-        item { SectionCard(tr(lang,"4 · Cálculo automático","4 · Automatic calculation"),tr(lang,"Porcentaje = superficies con placa ÷ superficies evaluables × 100.","Percentage = plaque-positive surfaces ÷ evaluable surfaces × 100.")) {
+        item { SectionCard(tr(lang,"4 · Cálculo automático","4 · Automatic calculation")) {
+            Text(tr(lang,"Porcentaje = superficies con placa ÷ superficies evaluables × 100.","Percentage = plaque-positive surfaces ÷ evaluable surfaces × 100."),style=MaterialTheme.typography.bodySmall)
             Text("$plaqueFaces / $totalFaces × 100",style=MaterialTheme.typography.titleMedium)
             Text("$percentage %",style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold)
             Text(tr(lang,"Caras evaluables = dientes presentes × 4. Los dientes ausentes quedan fuera del denominador.","Evaluable surfaces = present teeth × 4. Missing teeth are excluded from the denominator."))
