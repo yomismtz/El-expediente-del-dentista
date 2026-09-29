@@ -54,7 +54,6 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { ScreenHeader("O’Leary", onBack,
             tr(lang, "Marca una, varias o las cuatro caras. O’Leary usa vestibular, lingual/palatina, mesial y distal; no incluye oclusal.", "Mark one, several or all four surfaces. O’Leary uses buccal, lingual/palatal, mesial and distal; occlusal is not included.")) }
-        item { SectionCard(tr(lang,"Imágenes O’Leary","O’Leary images")) { UploadedOlearyRefsV51(lang) } }
         item { Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(!primary,{primary=false},{Text(tr(lang,"Permanentes","Permanent"))}); FilterChip(primary,{primary=true},{Text(tr(lang,"Temporales","Primary"))})
         } }
@@ -81,6 +80,19 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
                     }
                 }
                 Text(tr(lang,"Puedes dejar marcada 1, 2, 3 o 4 caras al mismo tiempo.","You can keep 1, 2, 3 or 4 surfaces selected at the same time."))
+                val olearyRefs=listOf(
+                    Surface.VESTIBULAR to Triple(R.drawable.uploaded80_063,"O’Leary · placa vestibular","O’Leary · buccal plaque"),
+                    Surface.LINGUAL_PALATAL to Triple(R.drawable.uploaded80_061,"O’Leary · placa lingual/palatina","O’Leary · lingual/palatal plaque"),
+                    Surface.MESIAL to Triple(R.drawable.uploaded80_062,"O’Leary · placa mesial","O’Leary · mesial plaque"),
+                    Surface.DISTAL to Triple(R.drawable.uploaded80_060,"O’Leary · placa distal","O’Leary · distal plaque")
+                )
+                if(selectedSurfaces.isEmpty()) {
+                    LocalClinicalInlineZoomImageV48(lang,tr(lang,"O’Leary · superficie sin placa","O’Leary · surface without plaque"),tr(lang,"O’Leary · superficie sin placa","O’Leary · surface without plaque"),R.drawable.uploaded80_065,tr(lang,"Referencia visual para una superficie sin placa revelada.","Visual reference for a surface without disclosed plaque."),tr(lang,"Referencia visual para una superficie sin placa revelada.","Visual reference for a surface without disclosed plaque."))
+                } else {
+                    olearyRefs.filter{it.first in selectedSurfaces}.forEach{(_,r)->
+                        LocalClinicalInlineZoomImageV48(lang,if(lang=="en")r.third else r.second,if(lang=="en")r.third else r.second,r.first,tr(lang,"Referencia visual de la cara marcada con placa. Correlaciona con la tinción reveladora y la exploración.","Visual reference for the surface marked with plaque. Correlate with plaque disclosing and examination."),tr(lang,"Referencia visual de la cara marcada con placa. Correlaciona con la tinción reveladora y la exploración.","Visual reference for the surface marked with plaque. Correlate with plaque disclosing and examination."))
+                    }
+                }
                 Row(horizontalArrangement=Arrangement.spacedBy(8.dp),modifier=Modifier.fillMaxWidth()) {
                     OutlinedButton(onClick={setMarks(surfaces.toSet())},modifier=Modifier.weight(1f)){Text(tr(lang,"Marcar 4 caras","Mark all 4"))}
                     OutlinedButton(onClick={setMarks(emptySet())},modifier=Modifier.weight(1f)){Text(tr(lang,"Limpiar","Clear"))}
