@@ -5,9 +5,9 @@
     <item type="drawable" name="clinical_smile">@drawable/ic_app_logo</item>
     <item type="drawable" name="clinical_eye_closure">@drawable/ic_app_logo</item>
     <item type="drawable" name="clinical_mouth_open">@drawable/ic_app_logo</item>
-    <item type="drawable" name="clinical_node_palpation">@drawable/ic_app_logo</item>
-    <item type="drawable" name="clinical_cervical_nodes">@drawable/ic_app_logo</item>
-    <item type="drawable" name="clinical_cervical_map">@drawable/ic_app_logo</item>
+    <item type="drawable" name="clinical_node_palpation">@drawable/allimg_099_tecnica_de_palpacion_de_cadenas_ganglionares</item>
+    <item type="drawable" name="clinical_cervical_nodes">@drawable/allimg_063_linfadenopatia_cervical</item>
+    <item type="drawable" name="clinical_cervical_map">@drawable/allimg_067_mapa_anatomico_de_cadenas_cervicales</item>
     <item type="drawable" name="clinical_vertical_dimension">@drawable/ic_app_logo</item>
     <item type="drawable" name="clinical_braces">@drawable/ic_app_logo</item>
     <item type="drawable" name="clinical_hypodontia">@drawable/ic_app_logo</item>

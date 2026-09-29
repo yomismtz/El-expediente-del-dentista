@@ -667,32 +667,50 @@ private data class E(val n:String,val d:String)
    item{Pick("Pterigoideos / función clínica",listOf("Sin hallazgos aparentes","Dolor reproducible en maniobra","Limitación funcional","No valorable"),"Correlacionar palpación accesible y movimientos contra resistencia; no atribuir dolor inespecífico a un músculo profundo sin sustento clínico.")}
   }
   if(section=="Cuello"){
-   item{Pick("Simetría del cuello",listOf("Simétrico aparente","Asimetría derecha","Asimetría izquierda","Aumento de volumen localizado","No valorable"))}
-   item{Pick("Movilidad cervical",listOf("Conservada","Limitada a derecha","Limitada a izquierda","Limitada en flexión/extensión","Limitación global","Dolorosa","No valorable"),"Observar flexión, extensión y rotación sin forzar movimientos dolorosos.")}
-   item{Pick("Dolor a exploración",listOf("Sin dolor","Derecho","Izquierdo","Bilateral","Localizado anterior","Localizado posterior","No valorable"))}
-   item{Pick("Masas / aumento de volumen",listOf("No observado/palpado","Anterior","Lateral derecho","Lateral izquierdo","Posterior","Difuso","No valorable"),"Un aumento de volumen requiere descripción clínica y valoración; la app no asigna etiología.")}
-   item{Pick("Tiroides · hallazgo clínico",listOf("Sin aumento aparente","Aumento aparente","Asimetría aparente","Nódulo/masa referida o palpable","Antecedente tiroideo sin hallazgo visible","No valorable"),"Registrar sólo el hallazgo o antecedente; no diagnosticar enfermedad tiroidea por inspección/palpación aislada.")}
+   item{NoticeCard("Explora el cuello de forma descriptiva: postura, simetría, movilidad, dolor, aumentos de volumen y región tiroidea. Los hallazgos orientan la exploración, pero no establecen por sí solos una causa o diagnóstico.")}
+   val cervicalPostureImages=listOf(
+    "Equilibrada" to R.drawable.allimg_083_postura_cervical_equilibrada,
+    "Cabeza adelantada" to R.drawable.allimg_077_postura_cervical_cabeza_adelaantada,
+    "Flexión" to R.drawable.allimg_080_postura_cervical_cabeza_flexion,
+    "Extensión" to R.drawable.allimg_079_postura_cervical_cabeza_extension,
+    "Rectificación cervical aparente" to R.drawable.allimg_082_postura_cervical_cabeza_rectificacion,
+    "Lordosis cervical aumentada aparente" to R.drawable.allimg_081_postura_cervical_cabeza_lordosis_cervical_aum,
+    "Cifosis / postura cifótica aparente" to R.drawable.allimg_078_postura_cervical_cabeza_cifosis
+   )
+   item{Pick("Postura cervical",cervicalPostureImages.map{it.first}+listOf("No valorable"),"Qué es: posición observable de cabeza y cuello en relación con el tronco. Por qué importa: cambios posturales pueden acompañar compensaciones musculares o limitación funcional y deben correlacionarse con síntomas y exploración.")}
+   val cervicalPostureVisual=cervicalPostureImages.firstOrNull{it.first==selected["Postura cervical"]}
+   if(cervicalPostureVisual!=null)item{
+    LocalClinicalInlineZoomImageV48(lang,cervicalPostureVisual.first,cervicalPostureVisual.first,cervicalPostureVisual.second,
+     "Imagen local correspondiente a la postura seleccionada. Úsala como referencia descriptiva y correlaciona con la exploración clínica; la imagen por sí sola no establece un diagnóstico.",
+     "Local image corresponding to the selected posture. Use it as a descriptive reference and correlate it with the clinical examination; the image alone does not establish a diagnosis.")
+   }
+   item{Pick("Simetría del cuello",listOf("Simétrico aparente","Asimetría derecha","Asimetría izquierda","Aumento de volumen localizado","No valorable"),"Qué es: comparación visual de ambos lados del cuello. Por qué importa: una asimetría o aumento de volumen puede señalar un hallazgo que requiere describir localización, extensión y evolución.")}
+   item{Pick("Movilidad cervical",listOf("Conservada","Limitada a derecha","Limitada a izquierda","Limitada en flexión/extensión","Limitación global","Dolorosa","No valorable"),"Qué es: valoración de flexión, extensión y rotación cervical sin forzar. Por qué importa: la limitación o el dolor pueden modificar la postura y la exploración craneofacial y deben registrarse antes de maniobras que provoquen molestias.")}
+   item{Pick("Dolor a exploración",listOf("Sin dolor","Derecho","Izquierdo","Bilateral","Localizado anterior","Localizado posterior","No valorable"),"Qué es: dolor referido o reproducido durante la exploración del cuello. Por qué importa: su localización y relación con movimiento o palpación ayudan a decidir qué estructuras requieren valoración adicional, sin asignar automáticamente una causa.")}
+   item{Pick("Masas / aumento de volumen",listOf("No observado/palpado","Anterior","Lateral derecho","Lateral izquierdo","Posterior","Difuso","No valorable"),"Qué es: aumento de volumen observado o palpado en una región cervical. Por qué importa: debe describirse por sitio, tamaño aproximado, consistencia, movilidad, dolor y evolución; la app no asigna etiología.")}
+   item{Pick("Tiroides · hallazgo clínico",listOf("Sin aumento aparente","Aumento aparente","Asimetría aparente","Nódulo/masa referida o palpable","Antecedente tiroideo sin hallazgo visible","No valorable"),"Qué es: registro descriptivo de la región tiroidea y del antecedente referido. Por qué importa: un aumento, asimetría o nódulo aparente puede requerir valoración médica; la inspección o palpación aislada no diagnostica enfermedad tiroidea.")}
   }
   if(section=="Ganglios"){
+   item{NoticeCard("La exploración ganglionar registra la cadena examinada y las características palpables. Localización, tamaño, movilidad, dolor y consistencia deben interpretarse en conjunto con síntomas, infecciones, lesiones orales y contexto clínico.")}
    val ganglionImages=listOf(
     "Técnica de palpación de cadenas ganglionares" to R.drawable.allimg_099_tecnica_de_palpacion_de_cadenas_ganglionares,
     "Mapa anatómico de cadenas cervicales" to R.drawable.allimg_067_mapa_anatomico_de_cadenas_cervicales,
     "Linfadenopatía cervical" to R.drawable.clinical_cervical_nodes
    )
-   item{Pick("Ganglios · imagen",ganglionImages.map{it.first},"Selecciona el procedimiento o hallazgo para mostrar únicamente la imagen correspondiente.")}
+   item{Pick("Ganglios · imagen",ganglionImages.map{it.first},"Qué es: referencia de la técnica, localización anatómica o aspecto de linfadenopatía. Por qué importa: al seleccionar una opción se muestra únicamente la imagen clínica local correspondiente para relacionarla con la exploración registrada.")}
    val ganglionVisual=ganglionImages.firstOrNull{it.first==selected["Ganglios · imagen"]}
    if(ganglionVisual!=null)item{
     LocalClinicalInlineZoomImageV48(lang,ganglionVisual.first,ganglionVisual.first,ganglionVisual.second,
-     "Imagen local correspondiente a la selección. Úsala junto con palpación, localización, tamaño, movilidad, dolor y consistencia.",
-     "Local image corresponding to the selection. Use it with palpation, location, size, mobility, tenderness and consistency.")
+     "Imagen local correspondiente a la selección. Correlaciónala con palpación, localización, tamaño, movilidad, dolor y consistencia; no genera un diagnóstico automático.",
+     "Local image corresponding to the selection. Correlate it with palpation, location, size, mobility, tenderness and consistency; it does not generate an automatic diagnosis.")
    }
-   item{Pick("Cadena ganglionar",listOf("Preauriculares","Mastoideos/postauriculares","Occipitales","Submentonianos","Submandibulares","Cervicales superficiales/anterior","Cervicales profundos","Cervicales posteriores","Supraclaviculares"))}
-   item{Pick("Palpabilidad",listOf("No palpable","Palpable","No valorable"))}
-   item{Pick("Movilidad",listOf("Móvil","Fijo/adherido aparente","No aplica/no palpable","No valorable"))}
-   item{Pick("Dolor",listOf("No doloroso","Doloroso","No aplica/no palpable","No valorable"))}
-   item{Pick("Lateralidad ganglionar",listOf("Derecha","Izquierda","Bilateral","No aplica/no palpable","No valorable"))}
-   item{Pick("Tamaño aproximado",listOf("<0.5 cm","0.5–0.9 cm","1.0–1.9 cm","≥2 cm","No aplica/no palpable","No medido"))}
-   item{Pick("Consistencia",listOf("Blanda","Elástica","Firme","Dura","No aplica/no palpable","No valorable"),"Registrar sitio, lateralidad y tamaño. Un ganglio palpable no establece por sí solo una etiología.")}
+   item{Pick("Cadena ganglionar",listOf("Preauriculares","Mastoideos/postauriculares","Occipitales","Submentonianos","Submandibulares","Cervicales superficiales/anterior","Cervicales profundos","Cervicales posteriores","Supraclaviculares"),"Qué es: región anatómica donde se realiza la palpación. Por qué importa: la distribución de un hallazgo orienta qué territorios de cabeza, cuello y cavidad oral deben revisarse con mayor detalle.")}
+   item{Pick("Palpabilidad",listOf("No palpable","Palpable","No valorable"),"Qué es: registro de si se identifica un ganglio durante la palpación. Por qué importa: cuando es palpable deben describirse sus demás características; la palpabilidad aislada no determina una causa.")}
+   item{Pick("Movilidad",listOf("Móvil","Fijo/adherido aparente","No aplica/no palpable","No valorable"),"Qué es: desplazamiento del ganglio respecto a planos vecinos durante la palpación. Por qué importa: aporta información descriptiva útil para decidir seguimiento o valoración adicional, siempre integrada con el resto de hallazgos.")}
+   item{Pick("Dolor",listOf("No doloroso","Doloroso","No aplica/no palpable","No valorable"),"Qué es: sensibilidad o dolor provocado a la palpación. Por qué importa: puede acompañar procesos inflamatorios u otras condiciones, pero es un dato inespecífico y no debe interpretarse de forma aislada.")}
+   item{Pick("Lateralidad ganglionar",listOf("Derecha","Izquierda","Bilateral","No aplica/no palpable","No valorable"),"Qué es: lado en el que se identifica el hallazgo. Por qué importa: registrar si es unilateral o bilateral ayuda a describir el patrón y correlacionarlo con hallazgos orales, faciales y cervicales.")}
+   item{Pick("Tamaño aproximado",listOf("<0.5 cm","0.5–0.9 cm","1.0–1.9 cm","≥2 cm","No aplica/no palpable","No medido"),"Qué es: estimación clínica del diámetro del ganglio palpable. Por qué importa: permite documentar y comparar evolución; el tamaño aislado no confirma benignidad ni malignidad y depende de localización y contexto.")}
+   item{Pick("Consistencia",listOf("Blanda","Elástica","Firme","Dura","No aplica/no palpable","No valorable"),"Qué es: sensación obtenida durante la palpación. Por qué importa: blandura, elasticidad, firmeza o dureza son datos descriptivos que deben correlacionarse con sitio, tamaño, movilidad, dolor, evolución y antecedentes; un solo dato no establece etiología.")}
   }
 
   item{Button(onClick={},modifier=Modifier.fillMaxWidth()){Text("💾 Guardar exploración")}}
