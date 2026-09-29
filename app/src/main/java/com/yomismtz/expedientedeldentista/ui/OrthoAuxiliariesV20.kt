@@ -150,7 +150,7 @@ private fun FacialFrontalV20(lang:String){
     var bitmap by remember{mutableStateOf<ImageBitmap?>(null)}
     val thirds=remember{mutableStateListOf<Offset>()}
     val fifths=remember{mutableStateListOf<Offset>()}
-    ResponsiveSectionV17(tr(lang,"Fotografía frontal: tercios y quintos","Frontal photograph: thirds and fifths"),tr(lang,"La imagen solo vive en memoria durante esta práctica y no se guarda como expediente.","The image remains only in memory during this practice and is not stored as a record.")){
+    ResponsiveSectionV17(tr(lang,"1 · Fotografía frontal: tercios y quintos","Frontal photograph: thirds and fifths"),tr(lang,"La imagen solo vive en memoria durante esta práctica y no se guarda como expediente.","The image remains only in memory during this practice and is not stored as a record.")){
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
             FilterChip(mode==0,{mode=0},{Text(tr(lang,"3 tercios","3 thirds"))},Modifier.weight(1f))
             FilterChip(mode==1,{mode=1},{Text(tr(lang,"5 quintos","5 fifths"))},Modifier.weight(1f))
@@ -185,7 +185,7 @@ private fun PowellV20(lang:String){
     var bitmap by remember{mutableStateOf<ImageBitmap?>(null)}
     val points=remember{mutableStateListOf<Offset>()}
     var male by rememberRecordState("ortho.male",false)
-    ResponsiveSectionV17(tr(lang,"Fotografía lateral · análisis de Powell","Lateral photograph · Powell analysis"),tr(lang,"Marca G’, N’, Prn, Pg’ y punto cervical. Los ángulos dependen de la exactitud de tus puntos y de una fotografía lateral estandarizada.","Mark G’, N’, Prn, Pg’ and a cervical point. Angles depend on accurate landmarks and a standardized lateral photograph.")){
+    ResponsiveSectionV17(tr(lang,"2 · Fotografía lateral · análisis de Powell","Lateral photograph · Powell analysis"),tr(lang,"Marca G’, N’, Prn, Pg’ y punto cervical. Los ángulos dependen de la exactitud de tus puntos y de una fotografía lateral estandarizada.","Mark G’, N’, Prn, Pg’ and a cervical point. Angles depend on accurate landmarks and a standardized lateral photograph.")){
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
             FilterChip(!male,{male=false},{Text(tr(lang,"Mujer","Female"))},Modifier.weight(1f))
             FilterChip(male,{male=true},{Text(tr(lang,"Hombre","Male"))},Modifier.weight(1f))
@@ -217,7 +217,7 @@ private fun PowellResultV20(name:String,value:Double,min:Double,max:Double,lang:
 private fun SteinerV20(lang:String){
     var bitmap by remember{mutableStateOf<ImageBitmap?>(null)}
     val points=remember{mutableStateListOf<Offset>()}
-    ResponsiveSectionV17(tr(lang,"Radiografía lateral de cráneo · Steiner simplificado","Lateral cephalogram · simplified Steiner"),tr(lang,"Steiner simplificado: usa únicamente los puntos S, N, A, B, Go y Gn para obtener SNA, SNB, ANB y GoGn–SN.","Simplified Steiner: use only S, N, A, B, Go and Gn to obtain SNA, SNB, ANB and GoGn–SN.")){
+    ResponsiveSectionV17(tr(lang,"3 · Radiografía lateral de cráneo · Steiner simplificado","Lateral cephalogram · simplified Steiner"),tr(lang,"Steiner simplificado: usa únicamente los puntos S, N, A, B, Go y Gn para obtener SNA, SNB, ANB y GoGn–SN.","Simplified Steiner: use only S, N, A, B, Go and Gn to obtain SNA, SNB, ANB and GoGn–SN.")){
         PickableImageV20(bitmap,{bitmap=it},listOf("S","N","A","B","Go","Gn"),points)
         if(points.size==6){
             val s=points[0];val n=points[1];val a=points[2];val b=points[3];val go=points[4];val gn=points[5]
@@ -259,7 +259,7 @@ private fun MixedDentitionV20(lang:String){
     val available=rememberRecordStateMap<String,String>("ortho.available")
     val teeth=listOf(42,41,31,32)
     val sum=teeth.mapNotNull{incisors[it]?.toDoubleOrNull()}.takeIf{it.size==4}?.sum()
-    ResponsiveSectionV17(tr(lang,"Análisis de dentición mixta","Mixed dentition analysis"),tr(lang,"Mide el ancho mesiodistal máximo de 42, 41, 31 y 32. Después registra el espacio disponible de cada segmento canino–premolar.","Measure the maximum mesiodistal width of 42, 41, 31 and 32, then enter available space for each canine–premolar segment.")){
+    ResponsiveSectionV17(tr(lang,"4 · Análisis de dentición mixta","Mixed dentition analysis"),tr(lang,"Mide el ancho mesiodistal máximo de 42, 41, 31 y 32. Después registra el espacio disponible de cada segmento canino–premolar.","Measure the maximum mesiodistal width of 42, 41, 31 and 32, then enter available space for each canine–premolar segment.")){
         ChipChoices(listOf("Moyers 75%" to (method==0),"Tanaka–Johnston" to (method==1),"Bolton" to (method==2)),{method=it},columns=3)
         if(method==2){
             Text(tr(lang,"Bolton compara la suma de anchos mesiodistales mandibulares con los maxilares. Relación total clásica = Σ12 inferiores / Σ12 superiores ×100 (≈91.3%); relación anterior = Σ6 inferiores / Σ6 superiores ×100 (≈77.2%). Mide cada diente de primer molar a primer molar para total y canino a canino para anterior. Una desviación orienta a discrepancia de tamaño dentario; debe comprobarse con mediciones completas y contexto ortodóncico.","Bolton compares summed mandibular and maxillary mesiodistal widths. Classic overall ratio = lower 12 / upper 12 ×100 (≈91.3%); anterior ratio = lower 6 / upper 6 ×100 (≈77.2%). Measure first molar to first molar for overall and canine to canine for anterior. Deviation suggests tooth-size discrepancy and requires complete measurements and orthodontic context."),fontWeight=FontWeight.Bold)
@@ -319,7 +319,7 @@ private fun PanoramicNollaV20(lang:String,profile:ScreenProfileV17){
     val upper=listOf(18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28)
     val lower=listOf(48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38)
     val review=listOf("Calidad y posicionamiento","Dentición presente/ausente y supernumerarios","Desarrollo dental y erupción","Caries/restauraciones visibles","Lesiones periapicales","Nivel óseo periodontal","Raíces, reabsorciones y dilaceraciones","Retenidos/impactados y terceros molares","Radiolucideces/radiopacidades/lesiones quísticas","Senos maxilares y cavidad nasal","Cóndilos/ATM, ramas, cuerpos y ángulos mandibulares","Canal mandibular, forámenes mentonianos y asimetrías")
-    ResponsiveSectionV17(tr(lang,"Radiografía panorámica · Nolla","Panoramic radiograph · Nolla"),tr(lang,"Carga la panorámica para verla durante la práctica. Selecciona cada OD y asigna manualmente su estadio de Nolla 0–10.","Upload the panoramic radiograph for practice. Select each tooth and manually assign Nolla stage 0–10.")){
+    ResponsiveSectionV17(tr(lang,"5 · Radiografía panorámica · Nolla","Panoramic radiograph · Nolla"),tr(lang,"Carga la panorámica para verla durante la práctica. Selecciona cada OD y asigna manualmente su estadio de Nolla 0–10.","Upload the panoramic radiograph for practice. Select each tooth and manually assign Nolla stage 0–10.")){
         PickableImageV20(bitmap,{bitmap=it},emptyList(),points)
         Text(tr(lang,"Maxilar","Maxillary"),fontWeight=FontWeight.Black)
         AdaptiveGridV17(upper.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)4 else 8){i->val t=upper[i];FilterChip(selectedTooth==t,{selectedTooth=t},{Text("$t${stages[t]?.let{"·$it"}?:""}")},Modifier.fillMaxWidth())}
@@ -333,7 +333,7 @@ private fun PanoramicNollaV20(lang:String,profile:ScreenProfileV17){
         }
         NoticeCard(tr(lang,"Nolla 0–10 describe desarrollo radiográfico desde ausencia de cripta hasta cierre apical. Esta versión no convierte la suma a edad dental porque esa conversión requiere tablas/estándares específicos por sexo y población; evita inventar una edad a partir del promedio.","Nolla 0–10 describes radiographic development from absence of crypt to apical completion. This version does not convert the score into dental age because that requires sex/population-specific standards; do not infer age from the mean stage."))
     }
-    ResponsiveSectionV17(tr(lang,"Revisión sistemática de la panorámica","Systematic panoramic review"),tr(lang,"Marca cada región revisada para evitar una lectura por saltos.","Check each reviewed region to avoid a fragmented reading.")){
+    ResponsiveSectionV17(tr(lang,"6 · Revisión sistemática de la panorámica","Systematic panoramic review"),tr(lang,"Marca cada región revisada para evitar una lectura por saltos.","Check each reviewed region to avoid a fragmented reading.")){
         review.forEach{item->
             Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically){
                 Checkbox(checks[item]==true,{checks[item]=it})
