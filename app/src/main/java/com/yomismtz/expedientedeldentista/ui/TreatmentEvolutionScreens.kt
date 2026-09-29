@@ -321,8 +321,8 @@ fun EvolutionScreen(lang: String, session: EducationalSession, onBack: () -> Uni
         if(incidentsChosen) item { SectionCard(tr(lang,"6 · Indicaciones","6 · Instructions")) { ChipChoices(instructionOptions.map{it to (instructionsChosen&&instructions==it)},{instructions=instructionOptions[it];instructionsChosen=true},columns=3) } }
         if(instructionsChosen) item { SectionCard(tr(lang,"7 · Seguimiento","7 · Follow-up")) { ChipChoices(followOptions.map{it to (followUpChosen&&followUp==it)},{followUp=followOptions[it];followUpChosen=true},columns=3) } }
         if(followUpChosen) item { SectionCard(tr(lang,"8 · Supervisión","8 · Supervision")) { ChipChoices(supervisionOptions.map{it to (supervisionChosen&&supervision==it)},{supervision=supervisionOptions[it];supervisionChosen=true},columns=3) } }
-        if(supervisionChosen&&n!=null) item { SectionCard(tr(lang,"Qué debe llevar esta nota","What this note should contain")) { Text(if(lang=="en")n.textEn else n.textEs) } }
-        item { SectionCard(tr(lang,"Ejemplo redactado","Written example")) {
+        if(supervisionChosen&&n!=null) item { SectionCard(tr(lang,"9 · Contenido de la nota","9 · Note content")) { Text(if(lang=="en")n.textEn else n.textEs) } }
+        item { SectionCard(tr(lang,"10 · Ejemplo redactado","10 · Written example")) {
             Text(generated,fontWeight=FontWeight.Bold)
             Text(tr(lang,
                 "Ejemplo educativo: Paciente acude a la cita en condiciones estables y cooperador. Se verifica el sitio de trabajo y los antecedentes pertinentes. Se realiza $procedure en $site conforme al diagnóstico y al protocolo clínico autorizado. Anestesia: $anesthesia. Durante el procedimiento: $incidents. Al finalizar se proporcionan $instructions. Se indica $followUp. $supervision. La redacción final debe sustituir estas selecciones por los hallazgos, materiales, dosis y datos que realmente correspondan a la atención realizada.",
