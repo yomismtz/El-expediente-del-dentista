@@ -90,7 +90,7 @@ fun PulpalPeriapicalInteractiveV2Screen(
         Modifier
             .fillMaxSize()
             .safeDrawingPadding()
-            .background(Brush.verticalGradient(listOf(DxLavender, Color(0xFFF9F5FC), Color.White)))
+            .background(Brush.verticalGradient(listOf(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.background)))
             .padding(14.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -154,23 +154,23 @@ fun PulpalPeriapicalInteractiveV2Screen(
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Card(
                     modifier = Modifier.weight(1f),
-                    colors = CardDefaults.cardColors(containerColor = DxLilac.copy(alpha = .45f)),
-                    border = BorderStroke(1.dp, DxPurple),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(18.dp)
                 ) {
                     Column(Modifier.padding(13.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                        Text("⚡ ${tr(lang, "PULPAR", "PULPAL")}", fontWeight = FontWeight.Black, color = DxDeep)
+                        Text("⚡ ${tr(lang, "PULPAR", "PULPAL")}", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onSurface)
                         Text(pulpalText, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                     }
                 }
                 Card(
                     modifier = Modifier.weight(1f),
-                    colors = CardDefaults.cardColors(containerColor = DxMint.copy(alpha = .28f)),
-                    border = BorderStroke(1.dp, DxTurquoise),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
                     shape = RoundedCornerShape(18.dp)
                 ) {
                     Column(Modifier.padding(13.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                        Text("◎ ${tr(lang, "PERIAPICAL", "APICAL")}", fontWeight = FontWeight.Black, color = DxDeep)
+                        Text("◎ ${tr(lang, "PERIAPICAL", "APICAL")}", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onSurface)
                         Text(apicalText, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                     }
                 }
@@ -204,12 +204,12 @@ fun PulpalPeriapicalInteractiveV2Screen(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = DxMint.copy(alpha = .20f)),
-                border = BorderStroke(1.dp, DxTurquoise),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
                 shape = RoundedCornerShape(18.dp)
             ) {
                 Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
-                    Text("✍️ ${tr(lang, "¿Qué escribo al final en el expediente?", "What do I write in the record?")}", fontWeight = FontWeight.Black, color = DxDeep)
+                    Text("✍️ ${tr(lang, "¿Qué escribo al final en el expediente?", "What do I write in the record?")}", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onSurface)
                     Text(writeExample, fontWeight = FontWeight.SemiBold)
                     Text(tr(lang, "Si faltan pruebas, agrega: “orientación diagnóstica pendiente de completar pruebas pulpares/periapicales”.", "If tests are missing, add: “diagnostic orientation pending completion of pulpal/apical tests”."))
                 }
