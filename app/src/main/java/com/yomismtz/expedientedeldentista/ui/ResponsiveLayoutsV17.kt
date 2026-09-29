@@ -87,7 +87,7 @@ internal fun ResponsiveScreenV17(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 if (onBack != null) {
-                    OutlinedButton(onClick = onBack) { Text("‹") }
+                    OutlinedButton(onClick = onBack) { Text("‹ Volver") }
                 }
                 Column(Modifier.weight(1f)) {
                     Text(title, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
