@@ -15,6 +15,16 @@ android {
             keyAlias = "androiddebugkey"
             keyPassword = "android"
         }
+
+        val releaseStoreFile = System.getenv("RELEASE_STORE_FILE")
+        if (!releaseStoreFile.isNullOrBlank()) {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+                keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+                keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+            }
+        }
     }
 
     defaultConfig {
@@ -32,6 +42,7 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
         release {
+            signingConfigs.findByName("release")?.let { signingConfig = it }
             isMinifyEnabled = false
             isCrunchPngs = false
             proguardFiles(
