@@ -316,7 +316,7 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
                 Text(v.third)
                 Text(tr(lang,"¿Qué observar?","What to observe?"),fontWeight=FontWeight.SemiBold)
                 Text(tr(lang,"Relaciona el movimiento o la palpación seleccionada con simetría, amplitud, trayectoria, dolor reproducible y limitación funcional, según corresponda.","Relate the selected movement or palpation to symmetry, range, trajectory, reproducible pain and functional limitation as appropriate."))
-                Text(tr(lang,"Imagen representativa","Representative image"),fontWeight=FontWeight.SemiBold)
+                Text(tr(lang,"Imagen","Image"),fontWeight=FontWeight.SemiBold)
                 LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
             }}
             }

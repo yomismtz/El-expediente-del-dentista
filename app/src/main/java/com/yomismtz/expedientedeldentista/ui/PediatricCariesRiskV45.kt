@@ -79,7 +79,7 @@ private data class RiskFactor45(val key:String,val label:String,val kind:String)
      Text(v.third)
      Text(tr(lang,"¿Qué observar?","What to observe?"),fontWeight=FontWeight.SemiBold)
      Text(tr(lang,"Valora integridad superficial, localización, textura, brillo, actividad y contexto clínico según corresponda. La imagen aislada no establece diagnóstico.","Assess surface integrity, location, texture, shine, activity and clinical context as appropriate. The image alone does not establish a diagnosis."))
-     Text(tr(lang,"Imagen representativa","Representative image"),fontWeight=FontWeight.SemiBold)
+     Text(tr(lang,"Imagen","Image"),fontWeight=FontWeight.SemiBold)
      LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
      when(cariesVisual){
       "Lesión no cavitada"->LocalClinicalHelpImageV47(lang,"Explicación · lesión no cavitada","Explanation · non-cavitated lesion",R.drawable.edu_explicacion_lesion_cariosa_no_cavitada,"Imagen explicativa complementaria.","Complementary explanatory image.")

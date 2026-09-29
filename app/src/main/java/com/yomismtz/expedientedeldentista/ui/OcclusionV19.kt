@@ -103,7 +103,7 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
                     Text(visual.third)
                     Text(tr(lang,"¿Qué observar?","What to observe?"),fontWeight=FontWeight.SemiBold)
                     Text(tr(lang,"Compara la relación dental seleccionada con el hallazgo clínico y registra lateralidad, magnitud y simetría cuando correspondan.","Compare the selected dental relationship with the clinical finding and record laterality, magnitude and symmetry when appropriate."))
-                    Text(tr(lang,"Imagen representativa","Representative image"),fontWeight=FontWeight.SemiBold)
+                    Text(tr(lang,"Imagen","Image"),fontWeight=FontWeight.SemiBold)
                     LocalClinicalInlineZoomImageV48(lang,visual.first,visual.first,visual.second,visual.third,visual.third)
                 }}
             }
@@ -114,12 +114,12 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
 
 private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int,String>?=when(section){
  0->when(choice){
-  "Temporal"->Triple("Dentición temporal",R.drawable.new17_dentcion_temporal,"Imagen representativa de dentición temporal.")
-  "Mixta temprana"->Triple("Dentición mixta temprana",R.drawable.new17_denticion_mixta_temprana,"Imagen representativa de dentición mixta temprana.")
-  "Mixta tardía"->Triple("Dentición mixta tardía",R.drawable.new17_denticion_mixta_tardia,"Imagen representativa de dentición mixta tardía.")
-  "Permanente joven"->Triple("Dentición permanente joven",R.drawable.new17_denticion_permanente_joven,"Imagen representativa de dentición permanente joven.")
-  "Permanente adulta"->Triple("Dentición permanente adulta",R.drawable.new17_denticion_permanente_adulta,"Imagen representativa de dentición permanente adulta.")
-  "No valorable"->Triple("Dentición no valorable / edentulismo",R.drawable.new17_denticion_no_valorable_edentulismo,"Imagen representativa de la opción no valorable.")
+  "Temporal"->Triple("Dentición temporal",R.drawable.new17_dentcion_temporal,"Imagen de dentición temporal.")
+  "Mixta temprana"->Triple("Dentición mixta temprana",R.drawable.new17_denticion_mixta_temprana,"Imagen de dentición mixta temprana.")
+  "Mixta tardía"->Triple("Dentición mixta tardía",R.drawable.new17_denticion_mixta_tardia,"Imagen de dentición mixta tardía.")
+  "Permanente joven"->Triple("Dentición permanente joven",R.drawable.new17_denticion_permanente_joven,"Imagen de dentición permanente joven.")
+  "Permanente adulta"->Triple("Dentición permanente adulta",R.drawable.new17_denticion_permanente_adulta,"Imagen de dentición permanente adulta.")
+  "No valorable"->Triple("Dentición no valorable / edentulismo",R.drawable.new17_denticion_no_valorable_edentulismo,"Imagen de la opción no valorable.")
   else->null}
  1->when(choice){
   "Recto bilateral"->Triple("Plano terminal recto",R.drawable.new77_plano_terminalm_recto,"Imagen de plano terminal recto.")
@@ -133,7 +133,7 @@ private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int
   "Izquierda Clase I"->Triple("Angle molar izquierda · Clase I",R.drawable.new77_clase_i_molar_izquierda,"Imagen específica de relación molar izquierda Clase I.")
   "Izquierda Clase II"->Triple("Angle molar izquierda · Clase II",R.drawable.new77_clase_ii_molar_izquierda,"Imagen específica de relación molar izquierda Clase II.")
   "Izquierda Clase III"->Triple("Angle molar izquierda · Clase III",R.drawable.new77_clase_iii_molar_izquierda,"Imagen específica de relación molar izquierda Clase III.")
-  "No valorable"->Triple("Clasificación de Angle · no valorable",R.drawable.new77_clasificacion_de_angle_no_valorable,"Imagen representativa de la opción seleccionada.")
+  "No valorable"->Triple("Clasificación de Angle · no valorable",R.drawable.new77_clasificacion_de_angle_no_valorable,"Imagen de la opción seleccionada.")
   else->null}
  3->when(choice){
   "Derecha Clase I"->Triple("Relación canina derecha · Clase I",R.drawable.new77_clase_i_canina_derecha,"Imagen específica de relación canina derecha Clase I.")
@@ -142,31 +142,31 @@ private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int
   "Izquierda Clase I"->Triple("Relación canina izquierda · Clase I",R.drawable.new77_clase_i_canina_izquierda,"Imagen específica de relación canina izquierda Clase I.")
   "Izquierda Clase II"->Triple("Relación canina izquierda · Clase II",R.drawable.new77_clase_ii_canina_izquierda,"Imagen específica de relación canina izquierda Clase II.")
   "Izquierda Clase III"->Triple("Relación canina izquierda · Clase III",R.drawable.new77_clase_iii_canina_izquierda,"Imagen específica de relación canina izquierda Clase III.")
-  "No valorable"->Triple("Relación canina · no valorable",R.drawable.new77_relacion_canina_no_valorable,"Imagen representativa de la opción seleccionada.")
+  "No valorable"->Triple("Relación canina · no valorable",R.drawable.new77_relacion_canina_no_valorable,"Imagen de la opción seleccionada.")
   else->null}
  4->when(choice){
-  "Positivo habitual"->Triple("Overjet normal",R.drawable.new77_edu_oclusion_overjet_normal,"Imagen representativa de la opción seleccionada.")
-  "Aumentado"->Triple("Overjet positivo / aumentado",R.drawable.new77_edu_oclusion_overjet_positivo,"Imagen representativa de la opción seleccionada.")
-  "Reducido","Borde a borde","Invertido"->Triple("Overjet disminuido / negativo",R.drawable.new77_edu_oclusion_overjet_disminuido_negativo,"Imagen representativa de la opción seleccionada.")
-  "No medido"->Triple("Overjet · no valorable",R.drawable.new77_edu_oclusion_overjet_no_valorable,"Imagen representativa de la opción seleccionada.")
+  "Positivo habitual"->Triple("Overjet normal",R.drawable.new77_edu_oclusion_overjet_normal,"Imagen de la opción seleccionada.")
+  "Aumentado"->Triple("Overjet positivo / aumentado",R.drawable.new77_edu_oclusion_overjet_positivo,"Imagen de la opción seleccionada.")
+  "Reducido","Borde a borde","Invertido"->Triple("Overjet disminuido / negativo",R.drawable.new77_edu_oclusion_overjet_disminuido_negativo,"Imagen de la opción seleccionada.")
+  "No medido"->Triple("Overjet · no valorable",R.drawable.new77_edu_oclusion_overjet_no_valorable,"Imagen de la opción seleccionada.")
   else->null}
  5->when(choice){
-  "Traslape habitual"->Triple("Overbite normal",R.drawable.new77_edu_oclusion_overbite_normal,"Imagen representativa de la opción seleccionada.")
-  "Profunda"->Triple("Overbite aumentado / mordida profunda",R.drawable.new77_edu_oclusion_overbite_aqumentado_o_positivo,"Imagen representativa de la opción seleccionada.")
-  "Borde a borde"->Triple("Overbite disminuido",R.drawable.new77_edu_oclusion_overbite_negativo_disminuido,"Imagen representativa de la opción seleccionada.")
-  "Abierta anterior"->Triple("Mordida abierta anterior",R.drawable.edu_oclusion_mordida_abierta,"Imagen representativa de la opción seleccionada.")
-  "Abierta posterior"->Triple("Mordida abierta posterior",R.drawable.edu_oclusion_mordida_abierta_posterior,"Imagen representativa de la opción seleccionada.")
-  "No valorable"->Triple("Overbite · no valorable",R.drawable.new77_edu_oclusion_overbite_no_valorable,"Imagen representativa de la opción seleccionada.")
+  "Traslape habitual"->Triple("Overbite normal",R.drawable.new77_edu_oclusion_overbite_normal,"Imagen de la opción seleccionada.")
+  "Profunda"->Triple("Overbite aumentado / mordida profunda",R.drawable.new77_edu_oclusion_overbite_aqumentado_o_positivo,"Imagen de la opción seleccionada.")
+  "Borde a borde"->Triple("Overbite disminuido",R.drawable.new77_edu_oclusion_overbite_negativo_disminuido,"Imagen de la opción seleccionada.")
+  "Abierta anterior"->Triple("Mordida abierta anterior",R.drawable.edu_oclusion_mordida_abierta,"Imagen de la opción seleccionada.")
+  "Abierta posterior"->Triple("Mordida abierta posterior",R.drawable.edu_oclusion_mordida_abierta_posterior,"Imagen de la opción seleccionada.")
+  "No valorable"->Triple("Overbite · no valorable",R.drawable.new77_edu_oclusion_overbite_no_valorable,"Imagen de la opción seleccionada.")
   else->null}
  6->when(choice){"Anterior"->Triple("Mordida cruzada anterior",R.drawable.edu_oclusion_cruzada_anterior,"Imagen de mordida cruzada anterior.");"Posterior derecha","Posterior izquierda"->Triple("Mordida cruzada posterior unilateral",R.drawable.edu_oclusion_cruzada_posterior_unilateral,"Imagen de mordida cruzada posterior unilateral.");"Posterior bilateral"->Triple("Mordida cruzada posterior bilateral",R.drawable.edu_oclusion_cruzada_posterior_bilateral,"Imagen de mordida cruzada posterior bilateral.");else->null}
  7->when(choice){
-  "Coincidentes"->Triple("Línea media centrada",R.drawable.new77_edu_oclusion_linea_media_centrada,"Imagen representativa de la opción seleccionada.")
+  "Coincidentes"->Triple("Línea media centrada",R.drawable.new77_edu_oclusion_linea_media_centrada,"Imagen de la opción seleccionada.")
   ""->null
-  else->Triple("Línea media desviada",R.drawable.new77_edu_oclusion_linea_media_desviada,"Imagen representativa de la opción seleccionada.")}
+  else->Triple("Línea media desviada",R.drawable.new77_edu_oclusion_linea_media_desviada,"Imagen de la opción seleccionada.")}
  8->when(choice){
-  "Apiñamiento leve","Apiñamiento moderado"->Triple("Apiñamiento dental anterior",R.drawable.allimg_006_apinamiento_dental_anterior,"Referencia clínica local de apiñamiento anterior.")
-  "Apiñamiento severo"->Triple("Apiñamiento dental",R.drawable.allimg_008_apinamiento_dental,"Referencia clínica local de apiñamiento.")
-  "Diastemas/espacios"->Triple("Espaciamiento / diastema",R.drawable.allimg_035_espaciamiento_dental_diastema,"Referencia clínica local de espaciamiento dental.")
+  "Apiñamiento leve","Apiñamiento moderado"->Triple("Apiñamiento dental anterior",R.drawable.allimg_006_apinamiento_dental_anterior,"Imagen clínica local de apiñamiento anterior.")
+  "Apiñamiento severo"->Triple("Apiñamiento dental",R.drawable.allimg_008_apinamiento_dental,"Imagen clínica local de apiñamiento.")
+  "Diastemas/espacios"->Triple("Espaciamiento / diastema",R.drawable.allimg_035_espaciamiento_dental_diastema,"Imagen clínica local de espaciamiento dental.")
   else->null}
  9->when(choice){
   "Ovoide simétrica"->Triple("Arcada ovoide",R.drawable.new17_arcada_de_forma_ovoide,"Imagen de forma de arcada ovoide.")
@@ -183,11 +183,11 @@ private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int
   "Mordida abierta"->Triple("Mordida abierta",R.drawable.edu_oclusion_mordida_abierta,"Imagen.")
   else->null}
  11->when(choice){
-  "Relación transversal habitual"->Triple("Relación transversal habitual",R.drawable.allimg_095_relacion_transversal_habitual,"Referencia clínica local.")
+  "Relación transversal habitual"->Triple("Relación transversal habitual",R.drawable.allimg_095_relacion_transversal_habitual,"Imagen clínica local.")
   "Cruzada unilateral"->Triple("Cruzada posterior unilateral",R.drawable.edu_oclusion_cruzada_posterior_unilateral_2,"Imagen.")
   "Cruzada bilateral"->Triple("Cruzada posterior bilateral",R.drawable.edu_oclusion_cruzada_posterior_bilateral_2,"Imagen.")
-  "Mordida en tijera/Brodie"->Triple("Mordida de Brodie",R.drawable.allimg_012_brodie_bite,"Referencia clínica local.")
-  "Asimetría transversal"->Triple("Asimetría transversal oclusal",R.drawable.allimg_011_asimetria_transversal_oclusal,"Referencia clínica local.")
+  "Mordida en tijera/Brodie"->Triple("Mordida de Brodie",R.drawable.allimg_012_brodie_bite,"Imagen clínica local.")
+  "Asimetría transversal"->Triple("Asimetría transversal oclusal",R.drawable.allimg_011_asimetria_transversal_oclusal,"Imagen clínica local.")
   else->null}
  12->when(choice){
   "Posteriores bilaterales"->Triple("Contactos oclusales bilaterales",R.drawable.allimg_019_contactos_oclusales_bilaterales,"Imagen local.")
@@ -202,12 +202,12 @@ private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int
   "Discrepancia RC/MI aparente"->Triple("Discrepancia entre RC y máxima intercuspidación",R.drawable.allimg_030_discrepancia_entre_maxima_interscupidacion_y_,"Imagen local.")
   else->null}
  14->when(choice){
-  "Sin desgaste aparente"->Triple("Sin desgaste aparente",R.drawable.allimg_004_sin_desgaste_aparente,"Referencia clínica local.")
-  "Facetas anteriores"->Triple("Facetas anteriores",R.drawable.allimg_040_facetas_anteriores,"Referencia clínica local.")
-  "Facetas posteriores"->Triple("Facetas posteriores",R.drawable.allimg_041_facetas_posteriorers,"Referencia clínica local.")
-  "Generalizado"->Triple("Desgaste generalizado",R.drawable.allimg_025_desgaste_generalizado,"Referencia clínica local.")
-  "Unilateral"->Triple("Desgaste oclusal unilateral",R.drawable.allimg_027_desgasteoclusal_unilateral,"Referencia clínica local.")
-  "Severo"->Triple("Desgaste oclusal severo",R.drawable.allimg_026_desgaste_oclusal_severo,"Referencia clínica local.")
+  "Sin desgaste aparente"->Triple("Sin desgaste aparente",R.drawable.allimg_004_sin_desgaste_aparente,"Imagen clínica local.")
+  "Facetas anteriores"->Triple("Facetas anteriores",R.drawable.allimg_040_facetas_anteriores,"Imagen clínica local.")
+  "Facetas posteriores"->Triple("Facetas posteriores",R.drawable.allimg_041_facetas_posteriorers,"Imagen clínica local.")
+  "Generalizado"->Triple("Desgaste generalizado",R.drawable.allimg_025_desgaste_generalizado,"Imagen clínica local.")
+  "Unilateral"->Triple("Desgaste oclusal unilateral",R.drawable.allimg_027_desgasteoclusal_unilateral,"Imagen clínica local.")
+  "Severo"->Triple("Desgaste oclusal severo",R.drawable.allimg_026_desgaste_oclusal_severo,"Imagen clínica local.")
   else->null}
  15->when(choice){"Mordida profunda"->Triple("Mordida profunda",R.drawable.edu_oclusion_mordida_profunda,"Imagen.");"Mordida abierta"->Triple("Mordida abierta",R.drawable.edu_oclusion_mordida_abierta,"Imagen.");"Mordida invertida/underbite"->Triple("Relación anterior invertida",R.drawable.edu_oclusion_cruzada_anterior,"Imagen.");else->null}
  else->null

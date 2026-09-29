@@ -518,64 +518,64 @@ private data class E(val n:String,val d:String)
   if(section=="Cráneo y cara"){
    item{Pick("Forma craneal",listOf("Dolicocefálico","Mesocéfalo","Braquicéfalo","No valorable"),"Dolicocefálico: cráneo relativamente largo y estrecho. Mesocéfalo: proporciones intermedias. Braquicéfalo: cráneo relativamente corto y ancho.")}
    item{when(selected["Forma craneal"]){
-    "Dolicocefálico"->ClinicalPhotoV38("Dolicocefálico",R.drawable.face13_dolicocefalico,"Referencia visual educativa local.")
-    "Mesocéfalo"->ClinicalPhotoV38("Mesocéfalo",R.drawable.face13_mesocefalico,"Referencia visual educativa local.")
-    "Braquicéfalo"->ClinicalPhotoV38("Braquicéfalo",R.drawable.face13_braquicefalico,"Referencia visual educativa local.")
-    "No valorable"->ClinicalPhotoV38("Cráneo no valorable",R.drawable.face13_craneo_no_valorable,"Referencia visual educativa local.")
+    "Dolicocefálico"->ClinicalPhotoV38("Dolicocefálico",R.drawable.face13_dolicocefalico,"Imagen local de la opción seleccionada.")
+    "Mesocéfalo"->ClinicalPhotoV38("Mesocéfalo",R.drawable.face13_mesocefalico,"Imagen local de la opción seleccionada.")
+    "Braquicéfalo"->ClinicalPhotoV38("Braquicéfalo",R.drawable.face13_braquicefalico,"Imagen local de la opción seleccionada.")
+    "No valorable"->ClinicalPhotoV38("Cráneo no valorable",R.drawable.face13_craneo_no_valorable,"Imagen local de la opción seleccionada.")
    }}
    item{Pick("Patrón facial",listOf("Dolicofacial","Mesofacial","Braquifacial","No valorable"),"Dolicofacial: cara relativamente larga y estrecha. Mesofacial: proporción intermedia. Braquifacial: cara relativamente corta y ancha.")}
    item{when(selected["Patrón facial"]){
-    "Dolicofacial"->ClinicalPhotoV38("Dolicofacial",R.drawable.face13_dolicofacial,"Imagen representativa de la opción seleccionada.")
-    "Mesofacial"->ClinicalPhotoV38("Mesofacial",R.drawable.face13_mesofacial,"Imagen representativa de la opción seleccionada.")
-    "Braquifacial"->ClinicalPhotoV38("Braquifacial",R.drawable.face13_braquifacial,"Imagen representativa de la opción seleccionada.")
-    "No valorable"->ClinicalPhotoV38("Patrón facial no valorable",R.drawable.face13_perfil_no_valorable,"Imagen representativa de la opción seleccionada.")
+    "Dolicofacial"->ClinicalPhotoV38("Dolicofacial",R.drawable.face13_dolicofacial,"Imagen de la opción seleccionada.")
+    "Mesofacial"->ClinicalPhotoV38("Mesofacial",R.drawable.face13_mesofacial,"Imagen de la opción seleccionada.")
+    "Braquifacial"->ClinicalPhotoV38("Braquifacial",R.drawable.face13_braquifacial,"Imagen de la opción seleccionada.")
+    "No valorable"->ClinicalPhotoV38("Patrón facial no valorable",R.drawable.face13_perfil_no_valorable,"Imagen de la opción seleccionada.")
    }}
    item{Pick("Forma de la cara",listOf("Ovalada","Redonda","Cuadrada","Rectangular / alargada","Triangular","Triangular invertida / corazón","Romboidal","Asimétrica","No valorable"),"Describe el contorno facial observado. La forma de la cara es descriptiva y no constituye por sí sola un diagnóstico.")}
    item{when(selected["Forma de la cara"]){
-    "Ovalada"->ClinicalPhotoV38("Forma de la cara · ovalada",R.drawable.new77_edu_extraoral_formas_del_rostro_ovalado,"Imagen representativa de la opción seleccionada.")
-    "Redonda"->ClinicalPhotoV38("Forma de la cara · redonda",R.drawable.new77_edu_extraoral_formas_del_rostro_redondo,"Imagen representativa de la opción seleccionada.")
-    "Cuadrada"->ClinicalPhotoV38("Forma de la cara · cuadrada",R.drawable.new77_edu_extraoral_formas_del_rostro_cuadrado,"Imagen representativa de la opción seleccionada.")
-    "Rectangular / alargada"->ClinicalPhotoV38("Forma de la cara · rectangular / alargada",R.drawable.new77_edu_extraoral_formas_del_rostro_rectangular,"Imagen representativa de la opción seleccionada.")
-    "Triangular"->ClinicalPhotoV38("Forma de la cara · triangular",R.drawable.new77_edu_extraoral_formas_del_rostro_triangular,"Imagen representativa de la opción seleccionada.")
-    "Triangular invertida / corazón"->ClinicalPhotoV38("Forma de la cara · corazón",R.drawable.new77_edu_extraoral_formas_del_rostro_corazon,"Imagen representativa de la opción seleccionada.")
-    "Romboidal"->ClinicalPhotoV38("Forma de la cara · romboidal",R.drawable.new77_edu_extraoral_formas_del_rostro_rombo,"Imagen representativa de la opción seleccionada.")
-    "Asimétrica"->ClinicalPhotoV38("Forma de la cara · asimétrica",R.drawable.face13_asimetria_compleja,"Imagen representativa de la opción seleccionada.")
-    "No valorable"->ClinicalPhotoV38("Forma de la cara · no valorable",R.drawable.face13_perfil_no_valorable,"Imagen representativa de la opción seleccionada.")
+    "Ovalada"->ClinicalPhotoV38("Forma de la cara · ovalada",R.drawable.new77_edu_extraoral_formas_del_rostro_ovalado,"Imagen de la opción seleccionada.")
+    "Redonda"->ClinicalPhotoV38("Forma de la cara · redonda",R.drawable.new77_edu_extraoral_formas_del_rostro_redondo,"Imagen de la opción seleccionada.")
+    "Cuadrada"->ClinicalPhotoV38("Forma de la cara · cuadrada",R.drawable.new77_edu_extraoral_formas_del_rostro_cuadrado,"Imagen de la opción seleccionada.")
+    "Rectangular / alargada"->ClinicalPhotoV38("Forma de la cara · rectangular / alargada",R.drawable.new77_edu_extraoral_formas_del_rostro_rectangular,"Imagen de la opción seleccionada.")
+    "Triangular"->ClinicalPhotoV38("Forma de la cara · triangular",R.drawable.new77_edu_extraoral_formas_del_rostro_triangular,"Imagen de la opción seleccionada.")
+    "Triangular invertida / corazón"->ClinicalPhotoV38("Forma de la cara · corazón",R.drawable.new77_edu_extraoral_formas_del_rostro_corazon,"Imagen de la opción seleccionada.")
+    "Romboidal"->ClinicalPhotoV38("Forma de la cara · romboidal",R.drawable.new77_edu_extraoral_formas_del_rostro_rombo,"Imagen de la opción seleccionada.")
+    "Asimétrica"->ClinicalPhotoV38("Forma de la cara · asimétrica",R.drawable.face13_asimetria_compleja,"Imagen de la opción seleccionada.")
+    "No valorable"->ClinicalPhotoV38("Forma de la cara · no valorable",R.drawable.face13_perfil_no_valorable,"Imagen de la opción seleccionada.")
    }}
    item{Pick("Tez · pigmentación basal aparente",listOf("Albinismo","Muy clara","Clara","Claro medio","Medio","Morena clara","Morena media","Morena oscura","Oscura","Muy oscura","No valorable"),"Registrar de forma descriptiva la pigmentación basal aparente, separándola de cambios patológicos de coloración.")}
    item{when(selected["Tez · pigmentación basal aparente"]){
-    "Albinismo"->ClinicalPhotoV38("Tez · albinismo",R.drawable.skin20_02,"Imagen representativa de la opción seleccionada.")
-    "Muy clara"->ClinicalPhotoV38("Tez · muy clara",R.drawable.skin20_09,"Imagen representativa de la opción seleccionada.")
-    "Clara"->ClinicalPhotoV38("Tez · clara",R.drawable.skin20_03,"Imagen representativa de la opción seleccionada.")
-    "Claro medio"->ClinicalPhotoV38("Tez · claro medio",R.drawable.skin20_04,"Imagen representativa de la opción seleccionada.")
-    "Medio"->ClinicalPhotoV38("Tez · medio",R.drawable.skin20_05,"Imagen representativa de la opción seleccionada.")
-    "Morena clara"->ClinicalPhotoV38("Tez · morena clara",R.drawable.skin20_06,"Imagen representativa de la opción seleccionada.")
-    "Morena media"->ClinicalPhotoV38("Tez · morena media",R.drawable.skin20_07,"Imagen representativa de la opción seleccionada.")
-    "Morena oscura"->ClinicalPhotoV38("Tez · morena oscura",R.drawable.skin20_08,"Imagen representativa de la opción seleccionada.")
-    "Oscura"->ClinicalPhotoV38("Tez · oscura",R.drawable.skin20_11,"Imagen representativa de la opción seleccionada.")
-    "Muy oscura"->ClinicalPhotoV38("Tez · muy oscura",R.drawable.skin20_10,"Imagen representativa de la opción seleccionada.")
+    "Albinismo"->ClinicalPhotoV38("Tez · albinismo",R.drawable.skin20_02,"Imagen de la opción seleccionada.")
+    "Muy clara"->ClinicalPhotoV38("Tez · muy clara",R.drawable.skin20_09,"Imagen de la opción seleccionada.")
+    "Clara"->ClinicalPhotoV38("Tez · clara",R.drawable.skin20_03,"Imagen de la opción seleccionada.")
+    "Claro medio"->ClinicalPhotoV38("Tez · claro medio",R.drawable.skin20_04,"Imagen de la opción seleccionada.")
+    "Medio"->ClinicalPhotoV38("Tez · medio",R.drawable.skin20_05,"Imagen de la opción seleccionada.")
+    "Morena clara"->ClinicalPhotoV38("Tez · morena clara",R.drawable.skin20_06,"Imagen de la opción seleccionada.")
+    "Morena media"->ClinicalPhotoV38("Tez · morena media",R.drawable.skin20_07,"Imagen de la opción seleccionada.")
+    "Morena oscura"->ClinicalPhotoV38("Tez · morena oscura",R.drawable.skin20_08,"Imagen de la opción seleccionada.")
+    "Oscura"->ClinicalPhotoV38("Tez · oscura",R.drawable.skin20_11,"Imagen de la opción seleccionada.")
+    "Muy oscura"->ClinicalPhotoV38("Tez · muy oscura",R.drawable.skin20_10,"Imagen de la opción seleccionada.")
    }}
    item{Pick("Coloración cutánea · alteraciones",listOf("Sin alteración aparente","Palidez cutaneomucosa","Ictericia","Cianosis","Eritema / rubicundez","Coloración grisácea / cenicienta","Hiperpigmentación","Hipopigmentación","Discromía localizada","Discromía difusa","No valorable"),"Palidez = disminución aparente de coloración; ictericia = tonalidad amarillenta; cianosis = tonalidad azulada/violácea; eritema o rubicundez = enrojecimiento; coloración grisácea/cenicienta = tono gris anormal. Registrar el hallazgo observado sin atribuir una causa automáticamente.")}
    item{when(selected["Coloración cutánea · alteraciones"]){
-    "Sin alteración aparente"->ClinicalPhotoV38("Coloración cutánea · sin alteración aparente",R.drawable.skin20_20,"Imagen representativa de pigmentación basal.")
-    "Palidez cutaneomucosa"->ClinicalPhotoV38("Palidez cutaneomucosa",R.drawable.skin20_19,"Imagen representativa de la opción seleccionada.")
-    "Ictericia"->ClinicalPhotoV38("Ictericia",R.drawable.skin20_18,"Imagen representativa de la opción seleccionada.")
-    "Cianosis"->ClinicalPhotoV38("Cianosis",R.drawable.skin20_01,"Imagen representativa de la opción seleccionada.")
-    "Eritema / rubicundez"->ClinicalPhotoV38("Eritema / rubicundez",R.drawable.skin20_14,"Imagen representativa de la opción seleccionada.")
-    "Coloración grisácea / cenicienta"->ClinicalPhotoV38("Coloración grisácea / cenicienta",R.drawable.skin20_15,"Imagen representativa de la opción seleccionada.")
-    "Hiperpigmentación"->ClinicalPhotoV38("Hiperpigmentación / melasma",R.drawable.skin20_16,"Imagen representativa de la opción seleccionada.")
-    "Hipopigmentación"->ClinicalPhotoV38("Hipopigmentación",R.drawable.skin20_17,"Imagen representativa de la opción seleccionada.")
-    "Discromía localizada"->ClinicalPhotoV38("Discromía localizada",R.drawable.skin20_13,"Imagen representativa de la opción seleccionada.")
-    "Discromía difusa"->ClinicalPhotoV38("Discromía difusa",R.drawable.skin20_12,"Imagen representativa de la opción seleccionada.")
+    "Sin alteración aparente"->ClinicalPhotoV38("Coloración cutánea · sin alteración aparente",R.drawable.skin20_20,"Imagen de pigmentación basal.")
+    "Palidez cutaneomucosa"->ClinicalPhotoV38("Palidez cutaneomucosa",R.drawable.skin20_19,"Imagen de la opción seleccionada.")
+    "Ictericia"->ClinicalPhotoV38("Ictericia",R.drawable.skin20_18,"Imagen de la opción seleccionada.")
+    "Cianosis"->ClinicalPhotoV38("Cianosis",R.drawable.skin20_01,"Imagen de la opción seleccionada.")
+    "Eritema / rubicundez"->ClinicalPhotoV38("Eritema / rubicundez",R.drawable.skin20_14,"Imagen de la opción seleccionada.")
+    "Coloración grisácea / cenicienta"->ClinicalPhotoV38("Coloración grisácea / cenicienta",R.drawable.skin20_15,"Imagen de la opción seleccionada.")
+    "Hiperpigmentación"->ClinicalPhotoV38("Hiperpigmentación / melasma",R.drawable.skin20_16,"Imagen de la opción seleccionada.")
+    "Hipopigmentación"->ClinicalPhotoV38("Hipopigmentación",R.drawable.skin20_17,"Imagen de la opción seleccionada.")
+    "Discromía localizada"->ClinicalPhotoV38("Discromía localizada",R.drawable.skin20_13,"Imagen de la opción seleccionada.")
+    "Discromía difusa"->ClinicalPhotoV38("Discromía difusa",R.drawable.skin20_12,"Imagen de la opción seleccionada.")
    }}
    item{Pick("Distribución de la alteración de color",listOf("No aplica","Generalizada","Facial difusa","Perioral","Periorbitaria","Localizada","Simétrica","Asimétrica","No valorable"),"La distribución ayuda a describir el hallazgo. Correlacionar con mucosas, iluminación, antecedentes y contexto clínico.")}
    item{Pick("Simetría facial",listOf("Simétrica aparente","Asimetría derecha","Asimetría izquierda","Asimetría compleja","No valorable"))}
    item{when(selected["Simetría facial"]){
-    "Simétrica aparente"->ClinicalPhotoV38("Simetría facial aparente",R.drawable.face13_simetria_aparente,"Referencia visual educativa local.")
-    "Asimetría derecha"->ClinicalPhotoV38("Asimetría facial derecha",R.drawable.face13_asimetria_derecha,"Referencia visual educativa local.")
-    "Asimetría izquierda"->ClinicalPhotoV38("Asimetría facial izquierda",R.drawable.face13_asimetria_izquierda,"Referencia visual educativa local.")
-    "Asimetría compleja"->ClinicalPhotoV38("Asimetría facial compleja",R.drawable.face13_asimetria_compleja,"Referencia visual educativa local.")
-    "No valorable"->ClinicalPhotoV38("Simetría no valorable",R.drawable.face13_simetria_no_valorable,"Referencia visual educativa local.")
+    "Simétrica aparente"->ClinicalPhotoV38("Simetría facial aparente",R.drawable.face13_simetria_aparente,"Imagen local de la opción seleccionada.")
+    "Asimetría derecha"->ClinicalPhotoV38("Asimetría facial derecha",R.drawable.face13_asimetria_derecha,"Imagen local de la opción seleccionada.")
+    "Asimetría izquierda"->ClinicalPhotoV38("Asimetría facial izquierda",R.drawable.face13_asimetria_izquierda,"Imagen local de la opción seleccionada.")
+    "Asimetría compleja"->ClinicalPhotoV38("Asimetría facial compleja",R.drawable.face13_asimetria_compleja,"Imagen local de la opción seleccionada.")
+    "No valorable"->ClinicalPhotoV38("Simetría no valorable",R.drawable.face13_simetria_no_valorable,"Imagen local de la opción seleccionada.")
    }}
    item{Pick("Exostosis craneal · identificación",listOf("No se observa","Frontal","Parietal","Occipital","Temporal / mastoidea","Múltiple","No valorable"),"Exostosis = prominencia ósea localizada. Selecciona la región observada o palpada; este hallazgo por sí solo no establece la causa.")}
    item{Pick("Exostosis craneal · aspecto frecuente",listOf("Prominencia frontal localizada","Prominencia parietal localizada","Prominencia occipital localizada","Prominencia mastoidea / temporal","Prominencias múltiples","No valorable"),"Al seleccionar una opción se muestran ejemplos anatómicos frecuentes por localización; distinguir una variante/prominencia ósea de una masa de tejidos blandos requiere exploración clínica.")}
@@ -680,21 +680,21 @@ private data class E(val n:String,val d:String)
    item{SectionCard(name){ChipChoices(opts.map{o->o to (selected[name]==o)},{i->selected[name]=opts[i]},columns=4)}}
    if(name=="Tratamiento previo") item{
     when(selected[name]){
-     "Brackets metálicos"->ClinicalPhotoV38("Brackets metálicos",R.drawable.new77_edu_brackets_metalicos,"Imagen representativa de la opción seleccionada.")
-     "Brackets estéticos"->ClinicalPhotoV38("Brackets estéticos",R.drawable.new77_edu_brackets_esteticos,"Imagen representativa de la opción seleccionada.")
-     "Alineadores transparentes"->ClinicalPhotoV38("Alineadores transparentes",R.drawable.new77_edu_alineadores_tranparentes,"Imagen representativa de la opción seleccionada.")
-     "Aparato removible"->ClinicalPhotoV38("Aparatología removible",R.drawable.new77_edu_aparatologia_removible,"Imagen representativa de la opción seleccionada.")
-     "Expansor palatino"->ClinicalPhotoV38("Expansor de paladar",R.drawable.new77_edu_expansor_de_paladar,"Imagen representativa de la opción seleccionada.")
-     "Cirugía ortognática asociada"->ClinicalPhotoV38("Cirugía ortognática",R.drawable.new77_edu_cirugia_ortognatica,"Imagen representativa de la opción seleccionada.")
+     "Brackets metálicos"->ClinicalPhotoV38("Brackets metálicos",R.drawable.new77_edu_brackets_metalicos,"Imagen de la opción seleccionada.")
+     "Brackets estéticos"->ClinicalPhotoV38("Brackets estéticos",R.drawable.new77_edu_brackets_esteticos,"Imagen de la opción seleccionada.")
+     "Alineadores transparentes"->ClinicalPhotoV38("Alineadores transparentes",R.drawable.new77_edu_alineadores_tranparentes,"Imagen de la opción seleccionada.")
+     "Aparato removible"->ClinicalPhotoV38("Aparatología removible",R.drawable.new77_edu_aparatologia_removible,"Imagen de la opción seleccionada.")
+     "Expansor palatino"->ClinicalPhotoV38("Expansor de paladar",R.drawable.new77_edu_expansor_de_paladar,"Imagen de la opción seleccionada.")
+     "Cirugía ortognática asociada"->ClinicalPhotoV38("Cirugía ortognática",R.drawable.new77_edu_cirugia_ortognatica,"Imagen de la opción seleccionada.")
     }
    }
    if(name=="Retención") item{
     when(selected[name]){
-     "Sin retención"->ClinicalPhotoV38("Sin retenedores",R.drawable.new77_edu_sin_retenedores,"Imagen representativa de la opción seleccionada.")
-     "Retenedor Hawley"->ClinicalPhotoV38("Retenedor removible Hawley",R.drawable.new77_edu_retendedor_removible_hawley,"Imagen representativa de la opción seleccionada.")
-     "Retenedor transparente"->ClinicalPhotoV38("Retenedor transparente",R.drawable.new77_edi_retenedor_transparente,"Imagen representativa de la opción seleccionada.")
-     "Retenedor fijo"->ClinicalPhotoV38("Retenedor fijo",R.drawable.new77_edu_retenedor_fijo,"Imagen representativa de la opción seleccionada.")
-     "Fijo + removible"->ClinicalPhotoV38("Retenedor fijo inferior y removible superior",R.drawable.new77_edu_retenedor_fijo_inferior_y_removible_superior,"Imagen representativa de la opción seleccionada.")
+     "Sin retención"->ClinicalPhotoV38("Sin retenedores",R.drawable.new77_edu_sin_retenedores,"Imagen de la opción seleccionada.")
+     "Retenedor Hawley"->ClinicalPhotoV38("Retenedor removible Hawley",R.drawable.new77_edu_retendedor_removible_hawley,"Imagen de la opción seleccionada.")
+     "Retenedor transparente"->ClinicalPhotoV38("Retenedor transparente",R.drawable.new77_edi_retenedor_transparente,"Imagen de la opción seleccionada.")
+     "Retenedor fijo"->ClinicalPhotoV38("Retenedor fijo",R.drawable.new77_edu_retenedor_fijo,"Imagen de la opción seleccionada.")
+     "Fijo + removible"->ClinicalPhotoV38("Retenedor fijo inferior y removible superior",R.drawable.new77_edu_retenedor_fijo_inferior_y_removible_superior,"Imagen de la opción seleccionada.")
     }
    }
   }
@@ -880,7 +880,7 @@ private data class E(val n:String,val d:String)
        else->null
       }
       habitVisual?.let{v->
-       Text("Imagen representativa",fontWeight=FontWeight.SemiBold)
+       Text("Imagen",fontWeight=FontWeight.SemiBold)
        LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
       }
       if(h.id=="pacifier") LocalClinicalHelpImageV47(lang,"Mamila prolongada","Prolonged bottle use",R.drawable.edu_habito_mamila,"Imagen complementaria asociada al uso prolongado de mamila.","Additional image associated with prolonged bottle use.")
@@ -926,57 +926,57 @@ private data class E(val n:String,val d:String)
 @Composable private fun OralSiteImagesV50(lang:String,site:String){
  val refs=when(site){
   "Labio superior"->listOf(
-   Triple(R.drawable.allimg_089_quelitis_irritativa_labio_superior,"Queilitis irritativa · labio superior","Referencia clínica local de un hallazgo documentado."),
-   Triple(R.drawable.allimg_090_quelitis_traumatica_labio_superior,"Queilitis traumática · labio superior","Referencia clínica local de un hallazgo documentado.")
+   Triple(R.drawable.allimg_089_quelitis_irritativa_labio_superior,"Queilitis irritativa · labio superior","Imagen clínica local de un hallazgo documentado."),
+   Triple(R.drawable.allimg_090_quelitis_traumatica_labio_superior,"Queilitis traumática · labio superior","Imagen clínica local de un hallazgo documentado.")
   )
   "Labio inferior"->listOf(
-   Triple(R.drawable.allimg_058_lesion_por_mordisueo_labio_inferior,"Lesión por mordisqueo · labio inferior","Referencia clínica local de un hallazgo documentado."),
-   Triple(R.drawable.allimg_088_quelitis_irritativa_labio_inferior,"Queilitis irritativa · labio inferior","Referencia clínica local de un hallazgo documentado."),
-   Triple(R.drawable.allimg_043_fibroma_traumatico_labio,"Fibroma traumático · labio","Referencia clínica local; correlacionar con la exploración.")
+   Triple(R.drawable.allimg_058_lesion_por_mordisueo_labio_inferior,"Lesión por mordisqueo · labio inferior","Imagen clínica local de un hallazgo documentado."),
+   Triple(R.drawable.allimg_088_quelitis_irritativa_labio_inferior,"Queilitis irritativa · labio inferior","Imagen clínica local de un hallazgo documentado."),
+   Triple(R.drawable.allimg_043_fibroma_traumatico_labio,"Fibroma traumático · labio","Imagen clínica local; correlacionar con la exploración.")
   )
   "Carrillo derecho / mucosa bucal","Carrillo izquierdo / mucosa bucal"->listOf(
-   Triple(R.drawable.allimg_062_linea_laba_carrillo,"Línea alba · carrillo","Referencia clínica local."),
-   Triple(R.drawable.allimg_069_morsicatio_o_mordisque_carrillo,"Morsicatio / mordisqueo · carrillo","Referencia clínica local."),
-   Triple(R.drawable.allimg_103_ulcera_traumatica_carrillos,"Úlcera traumática · carrillo","Referencia clínica local."),
-   Triple(R.drawable.allimg_045_fibroma_traumatico_carrillo,"Fibroma traumático · carrillo","Referencia clínica local."),
-   Triple(R.drawable.allimg_064_liquen_plano_oral_carrillos,"Liquen plano oral · carrillos","Referencia clínica local; correlacionar con evaluación clínica.")
+   Triple(R.drawable.allimg_062_linea_laba_carrillo,"Línea alba · carrillo","Imagen clínica local."),
+   Triple(R.drawable.allimg_069_morsicatio_o_mordisque_carrillo,"Morsicatio / mordisqueo · carrillo","Imagen clínica local."),
+   Triple(R.drawable.allimg_103_ulcera_traumatica_carrillos,"Úlcera traumática · carrillo","Imagen clínica local."),
+   Triple(R.drawable.allimg_045_fibroma_traumatico_carrillo,"Fibroma traumático · carrillo","Imagen clínica local."),
+   Triple(R.drawable.allimg_064_liquen_plano_oral_carrillos,"Liquen plano oral · carrillos","Imagen clínica local; correlacionar con evaluación clínica.")
   )
   "Piso de boca"->listOf(
-   Triple(R.drawable.allimg_093_ranula_piso_de_boca,"Ránula · piso de boca","Referencia clínica local; describir el hallazgo y correlacionarlo clínicamente."),
-   Triple(R.drawable.allimg_092_quiste_piso_de_boca,"Lesión quística · piso de boca","Referencia clínica local; la imagen no establece diagnóstico automático."),
-   Triple(R.drawable.allimg_059_lesion_vascular_piso_de_boca,"Lesión vascular · piso de boca","Referencia clínica local."),
-   Triple(R.drawable.allimg_106_ulcera_traumatica_piso_de_boca,"Úlcera traumática · piso de boca","Referencia clínica local.")
+   Triple(R.drawable.allimg_093_ranula_piso_de_boca,"Ránula · piso de boca","Imagen clínica local; describir el hallazgo y correlacionarlo clínicamente."),
+   Triple(R.drawable.allimg_092_quiste_piso_de_boca,"Lesión quística · piso de boca","Imagen clínica local; la imagen no establece diagnóstico automático."),
+   Triple(R.drawable.allimg_059_lesion_vascular_piso_de_boca,"Lesión vascular · piso de boca","Imagen clínica local."),
+   Triple(R.drawable.allimg_106_ulcera_traumatica_piso_de_boca,"Úlcera traumática · piso de boca","Imagen clínica local.")
   )
   "Paladar duro"->listOf(
-   Triple(R.drawable.allimg_016_candidiasis_paladar,"Candidiasis · paladar","Referencia clínica local; correlacionar con exploración y antecedentes."),
-   Triple(R.drawable.allimg_105_ulcera_traumatica_paladar,"Úlcera traumática · paladar","Referencia clínica local.")
+   Triple(R.drawable.allimg_016_candidiasis_paladar,"Candidiasis · paladar","Imagen clínica local; correlacionar con exploración y antecedentes."),
+   Triple(R.drawable.allimg_105_ulcera_traumatica_paladar,"Úlcera traumática · paladar","Imagen clínica local.")
   )
   "Paladar blando"->listOf(
-   Triple(R.drawable.allimg_015_candidiasis_paladar_blando,"Candidiasis · paladar blando","Referencia clínica local; correlacionar con exploración y antecedentes."),
-   Triple(R.drawable.allimg_032_eritema_inflaatorio_paladar_blando,"Eritema inflamatorio · paladar blando","Referencia clínica local."),
-   Triple(R.drawable.allimg_076_petquias_paladar_blando,"Petequias · paladar blando","Referencia clínica local.")
+   Triple(R.drawable.allimg_015_candidiasis_paladar_blando,"Candidiasis · paladar blando","Imagen clínica local; correlacionar con exploración y antecedentes."),
+   Triple(R.drawable.allimg_032_eritema_inflaatorio_paladar_blando,"Eritema inflamatorio · paladar blando","Imagen clínica local."),
+   Triple(R.drawable.allimg_076_petquias_paladar_blando,"Petequias · paladar blando","Imagen clínica local.")
   )
   "Orofaringe / pared posterior"->listOf(
-   Triple(R.drawable.allimg_005_afta_de_bednar_orofaringe,"Afta de Bednar · orofaringe","Referencia clínica local."),
-   Triple(R.drawable.allimg_102_ulcera_orofaringe,"Úlcera · orofaringe","Referencia clínica local.")
+   Triple(R.drawable.allimg_005_afta_de_bednar_orofaringe,"Afta de Bednar · orofaringe","Imagen clínica local."),
+   Triple(R.drawable.allimg_102_ulcera_orofaringe,"Úlcera · orofaringe","Imagen clínica local.")
   )
   "Úvula"->listOf(
-   Triple(R.drawable.allimg_107_ulcera_uvula,"Úlcera · úvula","Referencia clínica local.")
+   Triple(R.drawable.allimg_107_ulcera_uvula,"Úlcera · úvula","Imagen clínica local.")
   )
   "Amígdala derecha","Amígdala izquierda"->listOf(
-   Triple(R.drawable.allimg_009_asimetria_amigdalina,"Asimetría amigdalina","Referencia clínica local para comparación bilateral."),
-   Triple(R.drawable.allimg_039_exudado_amigdalino,"Exudado amigdalino","Referencia clínica local."),
-   Triple(R.drawable.allimg_051_hipertrofia_amigdalina,"Hipertrofia amigdalina","Referencia clínica local; el aspecto aislado no establece etiología.")
+   Triple(R.drawable.allimg_009_asimetria_amigdalina,"Asimetría amigdalina","Imagen clínica local para comparación bilateral."),
+   Triple(R.drawable.allimg_039_exudado_amigdalino,"Exudado amigdalino","Imagen clínica local."),
+   Triple(R.drawable.allimg_051_hipertrofia_amigdalina,"Hipertrofia amigdalina","Imagen clínica local; el aspecto aislado no establece etiología.")
   )
   "Lengua · dorso"->listOf(
-   Triple(R.drawable.allimg_052_lengua_fisurada,"Lengua fisurada","Referencia clínica local."),
-   Triple(R.drawable.allimg_053_lengua_geografica,"Lengua geográfica","Referencia clínica local."),
-   Triple(R.drawable.allimg_054_lengua_saburral,"Lengua saburral","Referencia clínica local."),
-   Triple(R.drawable.allimg_014_candidiasis_lengua,"Candidiasis · lengua","Referencia clínica local; correlacionar con exploración y antecedentes.")
+   Triple(R.drawable.allimg_052_lengua_fisurada,"Lengua fisurada","Imagen clínica local."),
+   Triple(R.drawable.allimg_053_lengua_geografica,"Lengua geográfica","Imagen clínica local."),
+   Triple(R.drawable.allimg_054_lengua_saburral,"Lengua saburral","Imagen clínica local."),
+   Triple(R.drawable.allimg_014_candidiasis_lengua,"Candidiasis · lengua","Imagen clínica local; correlacionar con exploración y antecedentes.")
   )
   "Lengua · bordes laterales","Lengua · cara ventral"->listOf(
-   Triple(R.drawable.allimg_104_ulcera_traumatica_lengua,"Úlcera traumática · lengua","Referencia clínica local."),
-   Triple(R.drawable.allimg_044_fibroma_traumatico_lengua,"Fibroma traumático · lengua","Referencia clínica local; la imagen no establece diagnóstico automático.")
+   Triple(R.drawable.allimg_104_ulcera_traumatica_lengua,"Úlcera traumática · lengua","Imagen clínica local."),
+   Triple(R.drawable.allimg_044_fibroma_traumatico_lengua,"Fibroma traumático · lengua","Imagen clínica local; la imagen no establece diagnóstico automático.")
   )
   else->emptyList()
  }
