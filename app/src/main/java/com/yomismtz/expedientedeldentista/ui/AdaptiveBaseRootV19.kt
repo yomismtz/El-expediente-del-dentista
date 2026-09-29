@@ -229,7 +229,6 @@ private fun CoverV19(lang:String,onOpen:()->Unit) {
         Column(Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal=if(compact)16.dp else 28.dp,vertical=20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.Center) {
                 Image(painterResource(R.drawable.allimg_065_logo_de_la_app),tr(lang,"Logo oficial de El expediente del dentista","Official El expediente del dentista logo"),Modifier.size(if(compact)150.dp else 205.dp),contentScale=ContentScale.Fit)
                 Spacer(Modifier.height(10.dp))
-                Text(tr(lang,"El expediente","The record"),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Black,textAlign=TextAlign.Center,color=Color(0xFF163F72))
                 Text(tr(lang,"El expediente del dentista","The dentist's record"),style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black,textAlign=TextAlign.Center,color=Color(0xFF22B8C7))
                 Text(tr(lang,"Deja volar tu imaginación y tus conocimientos renacerán","Let your imagination take flight and your knowledge be reborn"),style=MaterialTheme.typography.bodyLarge,fontWeight=FontWeight.Bold,textAlign=TextAlign.Center,color=Color(0xFF66788F))
                 Spacer(Modifier.height(12.dp))
