@@ -112,11 +112,11 @@ fun OdontogramV20Screen(
     }
 
     ResponsiveScreenV17(
-        tr(lang,"Odontograma · varias caras","Odontogram · multiple surfaces"),
-        tr(lang,"Selecciona caries, restauración o sellador y toca todas las caras que correspondan. Cada diente puede tener varias caras marcadas al mismo tiempo.","Choose caries, restoration or sealant and tap every applicable surface. A tooth may have multiple marked surfaces at the same time."),
+        tr(lang,"Odontograma","Odontogram"),
+        tr(lang,"Dentición → cuadrante → órgano dentario → estado del diente → superficies. Cada superficie conserva su propia marca.","Dentition → quadrant → tooth → whole-tooth status → surfaces. Each surface keeps its own mark."),
         onBack
     ){profile->
-        ResponsiveSectionV17(tr(lang,"Dentición","Dentition")){
+        ResponsiveSectionV17(tr(lang,"1 · Dentición","1 · Dentition"),tr(lang,"Selecciona permanente o temporal antes de elegir el órgano dentario.","Select permanent or primary dentition before choosing a tooth.")){
             AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
                 val value=i==1
                 FilterChip(primary==value,{primary=value},{Text(if(value)tr(lang,"Temporal","Primary") else tr(lang,"Permanente","Permanent"))},Modifier.fillMaxWidth())
@@ -125,7 +125,7 @@ fun OdontogramV20Screen(
 
         val wideQuadrants = profile.width == ScreenWidthV17.EXPANDED && !profile.largeSystemText
         @Composable fun quadrantContent(q:OdontoQuadrantV20) {
-            ResponsiveSectionV17(if(lang=="en")q.titleEn else q.titleEs) {
+            ResponsiveSectionV17("2 · "+(if(lang=="en")q.titleEn else q.titleEs)) {
                 AdaptiveGridV17(q.teeth.size,q.teeth.size){i->
                     val tooth=q.teeth[i]
                     val status=session.teeth[tooth]?.status
@@ -151,7 +151,8 @@ fun OdontogramV20Screen(
             quadrants.forEach { q -> quadrantContent(q) }
         }
 
-        ResponsiveSectionV17("OD $selectedTooth",if(missing)tr(lang,"Diente ausente: se muestra una X en su viñeta.","Missing tooth: an X is shown in its tile.") else tr(lang,"Puedes combinar marcas en distintas caras del mismo diente.","You can combine marks on different surfaces of the same tooth.")){
+        ResponsiveSectionV17(tr(lang,"3 · OD $selectedTooth","3 · Tooth $selectedTooth"),if(missing)tr(lang,"Diente ausente: se muestra una X en su viñeta.","Missing tooth: an X is shown in its tile.") else tr(lang,"Puedes combinar marcas en distintas caras del mismo diente.","You can combine marks on different surfaces of the same tooth.")){
+            Text(tr(lang,"Marca de superficie","Surface mark"),fontWeight=FontWeight.Black)
             AdaptiveGridV17(SurfaceMark.entries.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 4){i->
                 val mark=SurfaceMark.entries[i]
                 FilterChip(selectedMark==mark,{selectedMark=mark},{Text(markLabelV20(mark,lang))},Modifier.fillMaxWidth(),enabled=!missing)
@@ -184,12 +185,13 @@ fun OdontogramV20Screen(
                 },modifier=Modifier.fillMaxWidth()) { Text(tr(lang,"Limpiar todas las caras del OD $selectedTooth","Clear all surfaces on tooth $selectedTooth")) }
             }
 
+            Text(tr(lang,"Estado del diente completo","Whole-tooth status"),fontWeight=FontWeight.Black)
             AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
                 val targetMissing=i==1
                 FilterChip(
                     selected=missing==targetMissing,
                     onClick={setMissing(targetMissing)},
-                    label={Text(if(targetMissing)tr(lang,"✕ Diente ausente","✕ Missing tooth") else tr(lang,"🦷 Diente presente","🦷 Present tooth"))},
+                    label={Text(if(targetMissing)tr(lang,"✕ Ausente por otra causa","✕ Missing for another reason") else tr(lang,"🦷 Presente","🦷 Present"))},
                     modifier=Modifier.fillMaxWidth()
                 )
             }
