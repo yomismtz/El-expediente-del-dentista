@@ -168,7 +168,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                     selectedLesion.startsWith("Fístula") -> Triple(com.yomismtz.expedientedeldentista.R.drawable.edu_lesion_fistula,"Fístula / trayecto sinusal","Trayecto de drenaje. Observa localización, secreción y correlaciona clínicamente el posible origen.")
                     else -> null
                 }
-                if(showElementaryHelp) lesionVisual?.let{v->
+                lesionVisual?.let{v->
                     Card(Modifier.fillMaxWidth()){
                         Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
                             Text(v.second,fontWeight=FontWeight.Black)
