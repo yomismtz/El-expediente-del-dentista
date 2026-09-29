@@ -206,6 +206,10 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
                     Text(if(lang=="en")guide.en else guide.es,modifier=Modifier.weight(1f),color=if(currentCode==guide.code)MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.onSurface)
                 }
             }
+            if(currentCode==guide.code) {
+                val icdasImage=when(guide.code){0->R.drawable.icdas_uploaded_0;1->R.drawable.icdas_uploaded_1;2->R.drawable.icdas_uploaded_2;3->R.drawable.icdas_uploaded_3;4->R.drawable.icdas_uploaded_4;5->R.drawable.icdas_uploaded_5;else->R.drawable.icdas_uploaded_6}
+                LocalClinicalInlineZoomImageV48(lang,tr(lang,"ICDAS ${guide.code} · imagen clínica","ICDAS ${guide.code} · clinical image"),tr(lang,"ICDAS ${guide.code} · imagen clínica","ICDAS ${guide.code} · clinical image"),icdasImage,tr(lang,"Ejemplo clínico correspondiente al código seleccionado. Correlaciona la imagen con los criterios escritos antes de registrar la superficie.","Clinical example corresponding to the selected code. Correlate the image with the written criteria before recording the surface."),tr(lang,"Ejemplo clínico correspondiente al código seleccionado. Correlaciona la imagen con los criterios escritos antes de registrar la superficie.","Clinical example corresponding to the selected code. Correlate the image with the written criteria before recording the surface."))
+            }
         }
         item { Row(horizontalArrangement=Arrangement.spacedBy(8.dp),modifier=Modifier.fillMaxWidth()) {
             OutlinedButton(onClick={setAll(currentCode)},modifier=Modifier.weight(1f)){Text(tr(lang,"Mismo código en todo el diente","Same code on whole tooth"))}
