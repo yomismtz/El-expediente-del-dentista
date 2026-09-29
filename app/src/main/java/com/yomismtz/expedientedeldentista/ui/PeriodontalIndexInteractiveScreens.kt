@@ -49,6 +49,36 @@ private val IndexPaper = Color(0xFFFFFCFF)
 private val ipcSites = listOf("MV", "V", "DV", "ML/P", "L/P", "DL/P")
 private val ipcCodeOrder = listOf("0", "1", "2", "3", "4")
 
+@Composable
+private fun IpcCodeImage19(lang:String,code:String) {
+    val ref = when(code) {
+        "0" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_048,"IPC 0 · sin hallazgo indexado","CPI 0 · no indexed finding")
+        "1" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_079,"IPC 1 · sangrado después del sondaje","CPI 1 · bleeding after probing")
+        "2" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_049,"IPC 2 · cálculo/factor retentivo","CPI 2 · calculus/retentive factor")
+        "3" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_050,"IPC 3 · bolsa 4–5 mm","CPI 3 · 4–5 mm pocket")
+        "4" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_051,"IPC 4 · bolsa ≥6 mm","CPI 4 · ≥6 mm pocket")
+        else -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_052,"IPC X · no evaluable","CPI X · not evaluable")
+    }
+    LocalClinicalInlineZoomImageV48(lang,if(lang=="en") ref.third else ref.second,if(lang=="en") ref.third else ref.second,ref.first,"Ejemplo clínico local del código seleccionado.","Local clinical example of the selected code.")
+}
+
+@Composable
+private fun IhosScoreImage19(lang:String,debris:Boolean,score:Int) {
+    val drawable = if(debris) when(score) {
+        0 -> com.yomismtz.expedientedeldentista.R.drawable.uploaded80_075
+        1 -> com.yomismtz.expedientedeldentista.R.drawable.uploaded80_076
+        2 -> com.yomismtz.expedientedeldentista.R.drawable.uploaded80_077
+        else -> com.yomismtz.expedientedeldentista.R.drawable.uploaded80_078
+    } else when(score) {
+        0 -> com.yomismtz.expedientedeldentista.R.drawable.uploaded80_071
+        1 -> com.yomismtz.expedientedeldentista.R.drawable.uploaded80_072
+        2 -> com.yomismtz.expedientedeldentista.R.drawable.uploaded80_073
+        else -> com.yomismtz.expedientedeldentista.R.drawable.uploaded80_074
+    }
+    val kind=if(debris) tr(lang,"Detritos","Debris") else tr(lang,"Cálculo","Calculus")
+    LocalClinicalInlineZoomImageV48(lang,"$kind · código $score","$kind · score $score",drawable,"Ejemplo clínico local de la puntuación seleccionada.","Local clinical example of the selected score.")
+}
+
 private data class IpcSextant(val number: Int, val label: String, val teeth: List<Int>)
 private val ipcSextants = listOf(
     IpcSextant(1, "18–14", listOf(18, 17, 16, 15, 14)),
@@ -194,6 +224,7 @@ fun IpcInteractiveV2Screen(
                         )
                     }
                 }
+                IpcCodeImage19(lang,toothCodes(selectedTooth)[selectedSite])
                 Text("${tr(lang, "Resultado del diente", "Tooth result")}: ${toothResult(selectedTooth)}", fontWeight = FontWeight.Bold, color = IndexPurple)
             }
         }
@@ -372,6 +403,7 @@ fun IhosInteractiveV2Screen(
                             )
                         }
                     }
+                    IhosScoreImage19(lang,true,session.ihosDebris[selectedTooth] ?: 0)
                     Spacer(Modifier.height(4.dp))
                     Text(tr(lang, "Cálculo", "Calculus"), fontWeight = FontWeight.Black, color = IndexDeep)
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -384,6 +416,7 @@ fun IhosInteractiveV2Screen(
                             )
                         }
                     }
+                    IhosScoreImage19(lang,false,session.ihosCalculus[selectedTooth] ?: 0)
                 }
             }
         }
