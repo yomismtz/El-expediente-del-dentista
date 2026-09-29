@@ -142,6 +142,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                         Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
                             Text(tr(lang,"Lesiones elementales","Elementary lesions"),fontWeight=FontWeight.Black)
                             Text(tr(lang,"Selecciona la lesión elemental que mejor describa el hallazgo. Esta referencia se puede cerrar con el botón ? para mantener compacta la pantalla.","Select the elementary lesion that best describes the finding. Close this reference with the ? button to keep the screen compact."),style=MaterialTheme.typography.bodySmall)
+                            LocalClinicalInlineZoomImageV48(lang,"Lesiones elementales de mucosa","Elementary oral mucosal lesions",R.drawable.mucosa_lesiones_elementales,"Lámina de referencia para reconocer y comparar lesiones elementales de la mucosa oral. Úsala como apoyo descriptivo junto con la exploración clínica.","Reference sheet for recognizing and comparing elementary oral mucosal lesions. Use it as a descriptive aid together with the clinical examination.")
                             AdaptiveGridV17(elementary.size,zoneColumns){i->
                                 val option=elementary[i]
                                 FilterChip(tissueLesion[selected.id]==option,{tissueLesion[selected.id]=option;finding=option},{Text(option)},modifier=Modifier.fillMaxWidth())
