@@ -358,7 +358,12 @@ private val localClinicalGuidesV45=listOf(
 @Composable
 internal fun LocalClinicalHelpImageV47(lang:String,titleEs:String,titleEn:String,@DrawableRes drawable:Int,noteEs:String,noteEn:String){
     var open by remember{mutableStateOf(false)}
-    TextButton(onClick={open=true}){Text("ⓘ "+tr(lang,"Ver ayuda visual","View visual help"))}
+    Card(Modifier.fillMaxWidth().clickable{open=true},shape=RoundedCornerShape(14.dp)){
+        Column(Modifier.fillMaxWidth().padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
+            Text(if(lang=="en")titleEn else titleEs,fontWeight=FontWeight.Bold)
+            Text(tr(lang,"Toca este recuadro para ver la imagen","Tap this card to view the image"),style=MaterialTheme.typography.bodySmall)
+        }
+    }
     if(open) LocalClinicalZoomDialogV48(lang,titleEs,titleEn,drawable,noteEs,noteEn){open=false}
 }
 
@@ -397,19 +402,18 @@ internal fun LocalClinicalImageSectionV46(lang:String,profile:ScreenProfileV17?=
     var expanded by remember{mutableStateOf<LocalClinicalGuideV45?>(null)}
     val items=localClinicalGuidesV45.filter{it.groupEs==groupEs}
     if(items.isEmpty())return
-    ResponsiveSectionV17(if(lang=="en")groupEn else groupEs,tr(lang,"Referencias visuales locales incluidas en el APK. Toca para ampliar.","Local visual references included in the APK. Tap to enlarge.")){
+    ResponsiveSectionV17(if(lang=="en")groupEn else groupEs,tr(lang,"Imágenes locales del apartado. Toca un recuadro para abrir la imagen.","Local images for this section. Tap a card to open the image.")){
         val columns=when{profile==null->2;profile.largeSystemText->1;profile.width==ScreenWidthV17.COMPACT->2;profile.width==ScreenWidthV17.MEDIUM->3;else->4}
         AdaptiveGridV17(items.size,columns){i->
             val item=items[i]
             Card(Modifier.fillMaxWidth().clickable{expanded=item},shape=RoundedCornerShape(14.dp)){
                 Column(Modifier.padding(8.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){
-                    if(showThumbnails) Image(painterResource(item.drawable),if(lang=="en")item.titleEn else item.titleEs,Modifier.fillMaxWidth().heightIn(min=110.dp,max=190.dp),contentScale=ContentScale.Fit) else Text("🖼️",style=MaterialTheme.typography.headlineMedium)
                     Text(if(lang=="en")item.titleEn else item.titleEs,fontWeight=FontWeight.Bold)
-                    Text(if(lang=="en")item.noteEn else item.noteEs,style=MaterialTheme.typography.bodySmall)
+                    Text(tr(lang,"Toca este recuadro para ver la imagen","Tap this card to view the image"),style=MaterialTheme.typography.bodySmall)
                 }
             }
         }
-        Text(tr(lang,"Apoyo educativo: interpretar junto con interrogatorio y exploración; la imagen aislada no establece diagnóstico.","Educational aid: interpret with history and examination; an isolated image does not establish diagnosis."),style=MaterialTheme.typography.bodySmall)
+        Text(tr(lang,"Interpreta la imagen junto con el interrogatorio y la exploración; una imagen aislada no establece diagnóstico.","Interpret the image with the history and examination; an isolated image does not establish a diagnosis."),style=MaterialTheme.typography.bodySmall)
     }
     expanded?.let{item->AlertDialog(onDismissRequest={expanded=null},confirmButton={TextButton(onClick={expanded=null}){Text(tr(lang,"Cerrar","Close"))}},title={Text(if(lang=="en")item.titleEn else item.titleEs)},text={Box(Modifier.fillMaxWidth().sizeIn(minHeight=220.dp,maxHeight=620.dp),contentAlignment=Alignment.Center){Image(painterResource(item.drawable),if(lang=="en")item.titleEn else item.titleEs,Modifier.fillMaxSize(),contentScale=ContentScale.Fit)}})}
 }
@@ -419,8 +423,8 @@ internal fun LocalClinicalImageGalleryV45(lang:String,profile:ScreenProfileV17){
     var expanded by remember{mutableStateOf<LocalClinicalGuideV45?>(null)}
     val groups=localClinicalGuidesV45.groupBy{if(lang=="en")it.groupEn else it.groupEs}
     ResponsiveSectionV17(
-        tr(lang,"Guías visuales locales","Local visual guides"),
-        tr(lang,"Las imágenes clínicas y educativas cargadas están empaquetadas dentro de la aplicación y funcionan sin internet. Toca una imagen para ampliarla.","The uploaded clinical and educational images are packaged inside the app and work offline. Tap an image to enlarge it.")
+        tr(lang,"Imágenes clínicas locales","Local clinical images"),
+        tr(lang,"Las imágenes clínicas y educativas están incluidas en la aplicación y funcionan sin internet. Toca una imagen para ampliarla.","Clinical and educational images are included in the app and work offline. Tap an image to enlarge it.")
     ){
         groups.forEach{(group,items)->
             Text(group,fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
@@ -439,7 +443,7 @@ internal fun LocalClinicalImageGalleryV45(lang:String,profile:ScreenProfileV17){
                 }
             }
         }
-        Text(tr(lang,"Estas imágenes son referencias educativas y de estandarización fotográfica. Ninguna imagen aislada establece un diagnóstico.","These images are educational and photographic-standardization references. No isolated image establishes a diagnosis."),style=MaterialTheme.typography.bodySmall)
+        Text(tr(lang,"Ninguna imagen aislada establece un diagnóstico; debe interpretarse con los datos clínicos del paciente.","No isolated image establishes a diagnosis; it must be interpreted with the patient’s clinical data."),style=MaterialTheme.typography.bodySmall)
     }
     expanded?.let{item->
         AlertDialog(

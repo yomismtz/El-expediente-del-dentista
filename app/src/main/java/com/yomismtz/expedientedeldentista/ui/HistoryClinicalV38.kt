@@ -581,25 +581,53 @@ private data class E(val n:String,val d:String)
    item{Pick("Exostosis craneal · aspecto frecuente",listOf("Prominencia frontal localizada","Prominencia parietal localizada","Prominencia occipital localizada","Prominencia mastoidea / temporal","Prominencias múltiples","No valorable"),"Al seleccionar una opción se muestran ejemplos anatómicos frecuentes por localización; distinguir una variante/prominencia ósea de una masa de tejidos blandos requiere exploración clínica.")}
    item{Pick("Hundimiento craneal · identificación",listOf("No se observa","Frontal","Parietal","Temporal","Occipital","Múltiple","No valorable"),"Hundimiento = depresión o pérdida aparente del contorno craneal. Registrar localización, simetría y antecedente traumático o quirúrgico cuando corresponda.")}
    item{Pick("Hundimiento craneal · aspecto frecuente",listOf("Depresión frontal","Depresión parietal","Depresión temporal","Depresión occipital","Depresión posquirúrgica / postraumática","No valorable"),"Las depresiones pueden corresponder a anatomía individual, secuela traumática o posquirúrgica, entre otras causas. Una selección educativa no equivale a diagnóstico.")}
-   item{ClinicalPhotoV38("Referencia clínica real · asimetría de expresión facial",R.drawable.clinical_facial_asymmetry,"James Heilman, MD · Wikimedia Commons · licencia abierta; publicación con consentimiento declarado por el autor.")}
    // Las imágenes de cráneo, patrón facial, forma de cara y tez se muestran sólo al seleccionar su opción, igual que en Hábitos y parafunciones.
   }
   if(section=="Músculos"){
-   item{ClinicalPhotoV38("Expresión facial · sonrisa",R.drawable.clinical_smile,"Fotografía clínica real · Shantoo · CC0 · muestra asimetría facial durante sonrisa.")}
-   item{ClinicalPhotoV38("Expresión facial · cierre ocular",R.drawable.clinical_eye_closure,"Fotografía clínica real · Benjaminginterr · CC BY-SA · maniobra de cierre ocular.")}
-   item{ClinicalPhotoV38("Expresión facial · apertura oral",R.drawable.clinical_mouth_open,"Fotografía clínica real · Benjaminginterr · CC BY-SA · maniobra de apertura oral.")}
-   item{Pick("Expresión facial · inspección",listOf("Simetría conservada","Asimetría al sonreír","Asimetría al fruncir ceño","Asimetría al cerrar ojos","Asimetría al inflar mejillas","Debilidad aparente","No valorable"),"Evaluar en reposo y pedir elevar cejas/fruncir ceño, cerrar ojos, sonreír/mostrar dientes e inflar mejillas. Comparar ambos lados.")}
-   item{ClinicalPhotoV38("Referencia clínica real · evaluación de sonrisa en parálisis facial",R.drawable.clinical_smile,"Shantoo · Wikimedia Commons · CC0; uso educativo para ilustrar parálisis facial.")}
+   val facialManeuvers=listOf(
+    "Abrir la boca" to R.drawable.new77_evaluacion_de_musculos_faciales_abriendo_la_boca,
+    "Arrugar la nariz" to R.drawable.new77_evaluacion_de_musculos_faciales_arrugando_la_nariz,
+    "Cerrar los ojos fuerte" to R.drawable.new77_evaluacion_de_musculos_faciales_cerrando_los_ojos_fuerte,
+    "Elevar las cejas" to R.drawable.new77_evaluacion_de_musculos_faciales_elevando_las_cejas,
+    "Expresión de enojo" to R.drawable.new77_evaluacion_de_musculos_faciales_enojandose,
+    "Fruncir el ceño" to R.drawable.new77_evaluacion_de_musculos_faciales_frunciendo_el_cen_o,
+    "Inflar cachetes" to R.drawable.new77_evaluacion_de_musculos_faciales_inflando_cachetes,
+    "Mandar besos" to R.drawable.new77_evaluacion_de_musculos_faciales_mandando_besos,
+    "Sacar la lengua" to R.drawable.new77_evaluacion_de_musculos_faciales_sancando_la_laengua,
+    "Silbar" to R.drawable.new77_evaluacion_de_musculos_faciales_silvando,
+    "Sonreír mostrando los dientes" to R.drawable.new77_evaluacion_de_musculos_faciales_sonreir_mostrando_los_dientes,
+    "Sonreír" to R.drawable.new77_evaluacion_de_musculos_faciales_sonriendo,
+    "Sonreír exageradamente" to R.drawable.new77_evaluacion_de_musculos_faciales_sonriendocexageradamente,
+    "Succionar cachetes" to R.drawable.new77_evaluacion_de_musculos_faciales_succionando_sus_cachetes
+   )
+   item{Pick("Maniobra de músculos faciales",facialManeuvers.map{it.first},"Selecciona la maniobra realizada. Al elegirla se muestra únicamente su imagen correspondiente para comparar simetría y movimiento.")}
+   val facialVisual=facialManeuvers.firstOrNull{it.first==selected["Maniobra de músculos faciales"]}
+   if(facialVisual!=null)item{
+    LocalClinicalInlineZoomImageV48(lang,facialVisual.first,facialVisual.first,facialVisual.second,
+     "Imagen correspondiente a la maniobra seleccionada. Compara ambos lados y registra el hallazgo clínico.",
+     "Image corresponding to the selected maneuver. Compare both sides and record the clinical finding.")
+   }
+   item{Pick("Expresión facial · inspección",listOf("Simetría conservada","Asimetría al sonreír","Asimetría al fruncir ceño","Asimetría al cerrar ojos","Asimetría al inflar mejillas","Debilidad aparente","No valorable"),"Evalúa en reposo y durante las maniobras seleccionadas. Compara ambos lados.")}
    item{Pick("Músculos de la expresión · tono/función",listOf("Función aparentemente conservada","Hipotonía aparente","Hipertonía aparente","Movimiento involuntario","Dolor referido","No valorable"))}
+
+   val masticatoryMuscles=listOf(
+    "Temporal" to R.drawable.new77_exploacion_fisica_y_extraoral_musculos_temporal,
+    "Masetero" to R.drawable.new77_exploacion_fisica_y_extraoral_musculos_masetero,
+    "Pterigoideo interno" to R.drawable.new77_exploacion_fisica_y_extraoral_musculos_pterigoideo_interno,
+    "Pterigoideo externo" to R.drawable.new77_exploacion_fisica_y_extraoral_musculos_pterigoideo_externo7
+   )
+   item{Pick("Músculo masticatorio · localización",masticatoryMuscles.map{it.first},"Selecciona el músculo para mostrar su imagen y después registra dolor, asimetría o limitación funcional.")}
+   val muscleVisual=masticatoryMuscles.firstOrNull{it.first==selected["Músculo masticatorio · localización"]}
+   if(muscleVisual!=null)item{
+    LocalClinicalInlineZoomImageV48(lang,muscleVisual.first,muscleVisual.first,muscleVisual.second,
+     "Imagen anatómica local del músculo seleccionado. Correlaciona con palpación y maniobras clínicas.",
+     "Local anatomical image of the selected muscle. Correlate with palpation and clinical maneuvers.")
+   }
    item{Pick("Temporal",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"))}
-   item{ClinicalPhotoV38("Músculo temporal · referencia anatómica",R.drawable.new77_exploacion_fisica_y_extraoral_musculos_temporal,"Imagen local ya incluida en el proyecto para apoyo de la exploración del músculo temporal.")}
    item{Pick("Masetero",listOf("Sin dolor","Dolor derecho","Dolor izquierdo","Dolor bilateral","Hipertrofia/asimetría","No valorable"))}
-   item{ClinicalPhotoV38("Músculo masetero · referencia anatómica",R.drawable.new77_exploacion_fisica_y_extraoral_musculos_masetero,"Imagen local ya incluida en el proyecto para apoyo de la exploración del músculo masetero.")}
    item{Pick("Pterigoideos / función clínica",listOf("Sin hallazgos aparentes","Dolor reproducible en maniobra","Limitación funcional","No valorable"),"Correlacionar palpación accesible y movimientos contra resistencia; no atribuir dolor inespecífico a un músculo profundo sin sustento clínico.")}
-   item{LocalClinicalImageSectionV46(lang,null,"Exploración muscular y función facial","Muscle and facial function examination")}
   }
   if(section=="Cuello"){
-   item{LocalClinicalImageSectionV46(lang,null,"Cuello y ganglios","Neck and lymph nodes")}
    item{Pick("Simetría del cuello",listOf("Simétrico aparente","Asimetría derecha","Asimetría izquierda","Aumento de volumen localizado","No valorable"))}
    item{Pick("Movilidad cervical",listOf("Conservada","Limitada a derecha","Limitada a izquierda","Limitada en flexión/extensión","Limitación global","Dolorosa","No valorable"),"Observar flexión, extensión y rotación sin forzar movimientos dolorosos.")}
    item{Pick("Dolor a exploración",listOf("Sin dolor","Derecho","Izquierdo","Bilateral","Localizado anterior","Localizado posterior","No valorable"))}
@@ -607,13 +635,19 @@ private data class E(val n:String,val d:String)
    item{Pick("Tiroides · hallazgo clínico",listOf("Sin aumento aparente","Aumento aparente","Asimetría aparente","Nódulo/masa referida o palpable","Antecedente tiroideo sin hallazgo visible","No valorable"),"Registrar sólo el hallazgo o antecedente; no diagnosticar enfermedad tiroidea por inspección/palpación aislada.")}
   }
   if(section=="Ganglios"){
-   item{LocalClinicalImageSectionV46(lang,null,"Cuello y ganglios","Neck and lymph nodes")}
-   item{ClinicalPhotoV38("Técnica de palpación ganglionar",R.drawable.allimg_099_tecnica_de_palpacion_de_cadenas_ganglionares,"Imagen local ya subida · técnica de palpación de cadenas ganglionares.")}
-   item{ClinicalPhotoV38("Mapa anatómico de cadenas cervicales · imagen subida",R.drawable.allimg_067_mapa_anatomico_de_cadenas_cervicales,"Imagen local ya subida para identificar las cadenas cervicales.")}
-   item{ClinicalPhotoV38("Hallazgo · linfadenopatía cervical",R.drawable.clinical_cervical_nodes,"Fotografía clínica real · Whispyhistory · CC0.")}
-   item{ClinicalPhotoV38("Mapa anatómico de cadenas cervicales",R.drawable.clinical_cervical_map,"Referencia anatómica didáctica · Wikimedia Commons. No es fotografía clínica.")}
+   val ganglionImages=listOf(
+    "Técnica de palpación de cadenas ganglionares" to R.drawable.allimg_099_tecnica_de_palpacion_de_cadenas_ganglionares,
+    "Mapa anatómico de cadenas cervicales" to R.drawable.allimg_067_mapa_anatomico_de_cadenas_cervicales,
+    "Linfadenopatía cervical" to R.drawable.clinical_cervical_nodes
+   )
+   item{Pick("Ganglios · imagen",ganglionImages.map{it.first},"Selecciona el procedimiento o hallazgo para mostrar únicamente la imagen correspondiente.")}
+   val ganglionVisual=ganglionImages.firstOrNull{it.first==selected["Ganglios · imagen"]}
+   if(ganglionVisual!=null)item{
+    LocalClinicalInlineZoomImageV48(lang,ganglionVisual.first,ganglionVisual.first,ganglionVisual.second,
+     "Imagen local correspondiente a la selección. Úsala junto con palpación, localización, tamaño, movilidad, dolor y consistencia.",
+     "Local image corresponding to the selection. Use it with palpation, location, size, mobility, tenderness and consistency.")
+   }
    item{Pick("Cadena ganglionar",listOf("Preauriculares","Mastoideos/postauriculares","Occipitales","Submentonianos","Submandibulares","Cervicales superficiales/anterior","Cervicales profundos","Cervicales posteriores","Supraclaviculares"))}
-   item{ClinicalPhotoV38("Referencia clínica real · linfadenopatía cervical",R.drawable.clinical_cervical_nodes,"Whispyhistory · Wikimedia Commons · CC0.")}
    item{Pick("Palpabilidad",listOf("No palpable","Palpable","No valorable"))}
    item{Pick("Movilidad",listOf("Móvil","Fijo/adherido aparente","No aplica/no palpable","No valorable"))}
    item{Pick("Dolor",listOf("No doloroso","Doloroso","No aplica/no palpable","No valorable"))}
