@@ -209,7 +209,7 @@ private data class E(val n:String,val d:String)
 }
 
 @Composable fun HistoryNonPathV38(lang:String,onBack:()->Unit){
- var section by rememberRecordState("history.nonpath.section","")
+ var section by rememberRecordState("history.nonpath.section","Alimentación")
  var sub by rememberRecordState("history.nonpath.sub","")
  val chosen=rememberRecordStateMap<String,String>("history.nonpath.chosen")
  val multi=rememberRecordStateMap<String,Boolean>("history.nonpath.multi")
@@ -302,6 +302,10 @@ private data class E(val n:String,val d:String)
   }
 
   if(section=="Alimentación"){
+   item{SectionCard("Alimentación · evaluación dietética"){
+    Text("Registra frecuencia de grupos protectores y de exposiciones cariogénicas. Este apartado queda visible desde la entrada a antecedentes personales no patológicos y conserva las respuestas en el expediente.",fontWeight=FontWeight.SemiBold)
+    Text("Prioridad odontológica: frecuencia de azúcares, consumo entre comidas y nocturno, bebidas azucaradas/ácidas, agua simple y patrón general de alimentación.",style=MaterialTheme.typography.bodySmall)
+   }}
    val freqOptions=listOf("Nunca","Menos de 1/semana","1–3/semana","4–6/semana","1/día","2–3/día","4 o más/día")
    val protectiveGroups=listOf(
     Triple("Verduras","Fuentes de fibra, folato, vitaminas y minerales.","Una frecuencia muy baja puede contribuir a un patrón con baja densidad de micronutrientes; valorar el conjunto de la dieta."),
