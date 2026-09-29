@@ -929,9 +929,6 @@ private data class E(val n:String,val d:String)
     Text("Relacionadas con: "+quickFinding,fontWeight=FontWeight.SemiBold)
     ChipChoices(quickRelated.map{x->x to (quickSelected[quickFinding]==x)},{i->quickSelected[quickFinding]=quickRelated[i]},columns=2)
     when(quickSelected[quickFinding]){
-     "Lesión de mancha blanca activa"->ClinicalPhotoV38("Lesión de mancha blanca activa",R.drawable.allimg_056_lesion_de_mancha_blanca_activa,"Referencia clínica local.")
-     "Lesión de mancha blanca inactiva"->ClinicalPhotoV38("Lesión de mancha blanca inactiva",R.drawable.allimg_057_lesion_de_mancha_blanca_inactiva,"Referencia clínica local.")
-     "Mancha blanca temporal por deshidratación"->ClinicalPhotoV38("Mancha blanca temporal por deshidratación",R.drawable.allimg_060_mancha_blanca_temporal_por_deshidratacion,"Referencia clínica local.")
     }
    }
   }}
