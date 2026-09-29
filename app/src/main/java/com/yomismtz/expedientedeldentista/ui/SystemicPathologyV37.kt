@@ -34,9 +34,9 @@ private fun asa37(map:Map<String,DiseaseAnswer>):Int{val a=map.values.filter{it.
  var disease by remember{mutableStateOf<Disease37?>(null)}
  val saved=session.history.diseases
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
-  item{ScreenHeader("Antecedentes personales patológicos",onBack,"Selecciona una clasificación y después una enfermedad. La rejilla muestra 2 columnas en pantallas pequeñas y 3 cuando hay más espacio.")}
+  item{ScreenHeader("Antecedentes personales patológicos",onBack,"Selecciona categoría → enfermedad → datos del antecedente. Al guardar regresarás a la lista para continuar sin recorrer nuevamente toda la pantalla.")}
   item{NoticeCard("ASA es una orientación educativa: depende de gravedad, control, repercusión sistémica y valoración completa; el diagnóstico por sí solo no determina la clase.")}
-  item{Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){Column(Modifier.padding(14.dp)){Text("ASA "+asa37(saved)+" · orientación automática",fontWeight=FontWeight.Black);Text("Debe confirmarse clínicamente y con supervisión docente.")}}}
+  item{Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(3.dp)){Text("ASA "+asa37(saved)+" · orientación automática",fontWeight=FontWeight.Black);Text("Antecedentes registrados: "+saved.values.count{it.present},fontWeight=FontWeight.SemiBold);Text("Debe confirmarse clínicamente y con supervisión docente.",style=MaterialTheme.typography.bodySmall)}}}
   if(category==null){
    item{
     BoxWithConstraints(Modifier.fillMaxWidth()){
@@ -48,7 +48,7 @@ private fun asa37(map:Map<String,DiseaseAnswer>):Int{val a=map.values.filter{it.
          Card(onClick={category=x},modifier=Modifier.weight(1f)){
           Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
            Text(x.name,fontWeight=FontWeight.Bold)
-           Text("Toca para ver enfermedades frecuentes y relevantes",style=MaterialTheme.typography.bodySmall)
+           Text("${x.diseases.count{saved[it.id]?.present==true}}/${x.diseases.size} registrados",style=MaterialTheme.typography.bodySmall)
           }
          }
         }
@@ -59,7 +59,7 @@ private fun asa37(map:Map<String,DiseaseAnswer>):Int{val a=map.values.filter{it.
     }
    }
   }else if(disease==null){
-   item{Button(onClick={category=null}){Text("← Clasificaciones")}}
+   item{Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Button(onClick={category=null}){Text("← Clasificaciones")};Text("${category!!.diseases.count{saved[it.id]?.present==true}} guardados",style=MaterialTheme.typography.bodySmall,fontWeight=FontWeight.SemiBold)}}
    item{
     BoxWithConstraints(Modifier.fillMaxWidth()){
      val columns=if(maxWidth<700.dp)2 else 3
