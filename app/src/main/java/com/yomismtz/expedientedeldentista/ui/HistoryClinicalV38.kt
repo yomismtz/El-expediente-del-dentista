@@ -573,6 +573,7 @@ private data class E(val n:String,val d:String)
   }
 
   if(section=="Cráneo y cara"){
+   item{NoticeCard("Explora de lo general a lo específico: forma craneal → patrón y forma facial → pigmentación/coloración → simetría y proporciones → líneas medias → alteraciones del contorno craneal. La imagen aparece junto al hallazgo seleccionado.")}
    item{Pick("Forma craneal",listOf("Dolicocefálico","Mesocéfalo","Braquicéfalo","No valorable"),"Dolicocefálico: cráneo relativamente largo y estrecho. Mesocéfalo: proporciones intermedias. Braquicéfalo: cráneo relativamente corto y ancho.")}
    item{when(selected["Forma craneal"]){
     "Dolicocefálico"->ClinicalPhotoV38("Dolicocefálico",R.drawable.face13_dolicocefalico,"Imagen local de la opción seleccionada.")
@@ -658,13 +659,6 @@ private data class E(val n:String,val d:String)
     "Coincide con línea media facial/maxilar"->ClinicalPhotoV38("Líneas medias coincidentes",R.drawable.new17_lineas_medias_coincidentes,"Referencia local de coincidencia entre líneas medias. Confirmar clínicamente la relación facial, maxilar y mandibular.")
     "Desviada a la derecha"->ClinicalPhotoV38("Línea media inferior desviada a la derecha",R.drawable.new17_linea_media_inferior_desviada_a_la_derecha,"Referencia local de la opción seleccionada. Registrar clínicamente la magnitud de la desviación en milímetros.")
     "Desviada a la izquierda"->ClinicalPhotoV38("Línea media inferior desviada a la izquierda",R.drawable.new17_linea_media_inferior_desviada_a_la_izquierda,"Referencia local de la opción seleccionada. Registrar clínicamente la magnitud de la desviación en milímetros.")
-   }}
-   item{Pick("Perfil facial",listOf("Recto","Convexo","Cóncavo","No valorable"),"Qué es: relación anteroposterior aparente del perfil facial observada de lado. Por qué importa: orienta la descripción de la relación maxilomandibular y el análisis ortodóntico; no sustituye mediciones ni estudios diagnósticos.")}
-   item{when(selected["Perfil facial"]){
-    "Recto"->ClinicalPhotoV38("Perfil recto",R.drawable.allimg_075_perfil_recto,"Referencia local del perfil seleccionado. Correlacionar con examen facial, oclusión y estudios cuando estén indicados.")
-    "Convexo"->ClinicalPhotoV38("Perfil convexo",R.drawable.allimg_074_perfil_convexo,"Referencia local del perfil seleccionado. La convexidad describe el contorno y no determina por sí sola su causa.")
-    "Cóncavo"->ClinicalPhotoV38("Perfil cóncavo",R.drawable.allimg_073_perfil_concavo,"Referencia local del perfil seleccionado. La concavidad describe el contorno y no determina por sí sola su causa.")
-    "No valorable"->ClinicalPhotoV38("Perfil no valorable",R.drawable.face13_perfil_no_valorable,"Registrar como no valorable cuando la observación no permita una clasificación fiable.")
    }}
    item{Pick("Exostosis craneal · identificación",listOf("No se observa","Frontal","Parietal","Occipital","Temporal / mastoidea","Múltiple","No valorable"),"Exostosis = prominencia ósea localizada. Selecciona la región observada o palpada; este hallazgo por sí solo no establece la causa.")}
    item{Pick("Exostosis craneal · aspecto frecuente",listOf("Prominencia frontal localizada","Prominencia parietal localizada","Prominencia occipital localizada","Prominencia mastoidea / temporal","Prominencias múltiples","No valorable"),"Al seleccionar una opción se muestran ejemplos anatómicos frecuentes por localización; distinguir una variante/prominencia ósea de una masa de tejidos blandos requiere exploración clínica.")}
