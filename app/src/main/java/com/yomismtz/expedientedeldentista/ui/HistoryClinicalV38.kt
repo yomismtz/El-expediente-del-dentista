@@ -940,7 +940,8 @@ private data class E(val n:String,val d:String)
  var anomalyImageIndex by remember(finding){mutableStateOf(0)}
  val safeAnomalyImageIndex=if(anomalyImages.isEmpty())0 else anomalyImageIndex.coerceIn(0,anomalyImages.lastIndex)
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Anomalías dentales",onBack,"Clasificación por número, tamaño, forma, unión/división, estructura, color y erupción. Selecciona primero el grupo y después la subclasificación.")}
+  item{ScreenHeader("Anomalías dentales",onBack,"Registra en orden: grupo principal → subclasificación → hallazgo → extensión → confirmación disponible. La imagen aparece dentro del hallazgo seleccionado cuando existe una referencia específica.")}
+  item{NoticeCard("Puedes usar Opciones rápidas como orientación por apariencia, pero el registro clínico principal se realiza en la clasificación completa. No es necesario abrir imágenes que no correspondan al hallazgo seleccionado.")}
   item{SectionCard("Opciones rápidas"){
    Text("Acceso por apariencia clínica. Selecciona el hallazgo inicial para desplegar posibilidades relacionadas; después confirma el diagnóstico en la clasificación completa.",fontWeight=FontWeight.SemiBold)
    ChipChoices(quickFindings.map{x->x to (quickFinding==x)},{i->quickFinding=quickFindings[i]},columns=2)
@@ -954,7 +955,8 @@ private data class E(val n:String,val d:String)
   item{SectionCard("1 · Grupo principal"){ChipChoices(groups.mapIndexed{i,x->x.name to (safeGroup==i)},{i->group=i;subgroup=0},columns=2)}}
   item{SectionCard("2 · Subclasificación"){ChipChoices(g.subs.mapIndexed{i,x->x.name to (safeSub==i)},{i->subgroup=i},columns=2)}}
   item{SectionCard("3 · Anomalía / hallazgo"){
-   ChipChoices(s.findings.map{x->x to (selected[g.name+"|"+s.name]==x)},{i->selected[g.name+"|"+s.name]=s.findings[i]},columns=3)
+   val findingColumns=if(s.findings.any{it.length>18} || s.findings.size>6) 2 else 3
+   ChipChoices(s.findings.map{x->x to (selected[g.name+"|"+s.name]==x)},{i->selected[g.name+"|"+s.name]=s.findings[i]},columns=findingColumns)
    if(anomalyImages.isNotEmpty()){
     if(anomalyImages.size>1){
      Text("Selecciona una imagen",fontWeight=FontWeight.SemiBold)
@@ -967,9 +969,9 @@ private data class E(val n:String,val d:String)
    }
   }}
   val extension=listOf("Un diente","Varios dientes","Localizado por cuadrante","Generalizado","No valorable")
-  item{SectionCard("4 · Extensión"){ChipChoices(extension.map{x->x to (selected["Extensión"]==x)},{i->selected["Extensión"]=extension[i]},columns=3)}}
+  item{SectionCard("4 · Extensión"){ChipChoices(extension.map{x->x to (selected["Extensión"]==x)},{i->selected["Extensión"]=extension[i]},columns=2)}}
   val confirmation=listOf("Sólo clínica","Clínica + radiografía","Antecedente documentado","Requiere estudio complementario","No aplica")
-  item{SectionCard("5 · Confirmación disponible"){ChipChoices(confirmation.map{x->x to (selected["Confirmación"]==x)},{i->selected["Confirmación"]=confirmation[i]},columns=3)}}
+  item{SectionCard("5 · Confirmación disponible"){ChipChoices(confirmation.map{x->x to (selected["Confirmación"]==x)},{i->selected["Confirmación"]=confirmation[i]},columns=2)}}
   item{NoticeCard("Las categorías organizan el registro educativo y no generan diagnóstico automático. Correlaciona los hallazgos con historia clínica, exploración y estudios apropiados. Las imágenes locales aparecen únicamente al seleccionar el hallazgo correspondiente.")}
  }
 }
