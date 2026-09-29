@@ -10,12 +10,12 @@ import com.yomismtz.expedientedeldentista.R
 private data class UploadedClinicalRefV51(val drawable:Int,val titleEs:String,val titleEn:String)
 
 @Composable
-private fun UploadedClinicalRefsV51(lang:String, refs:List<UploadedClinicalRefV51>) {
+private fun UploadedClinicalRefsV51(lang:String, refs:List<UploadedClinicalRefV51>, columns:Int=3) {
     var selectedIndex by remember(refs) { mutableStateOf<Int?>(null) }
     ChipChoices(
         refs.mapIndexed { i,r -> (if(lang=="en") r.titleEn else r.titleEs) to (selectedIndex==i) },
         { selectedIndex=it },
-        columns=3
+        columns=columns
     )
     selectedIndex?.let { i ->
         refs.getOrNull(i)?.let { r ->
@@ -72,31 +72,43 @@ private fun UploadedClinicalRefsV51(lang:String, refs:List<UploadedClinicalRefV5
  UploadedClinicalRefV51(R.drawable.uploaded80_074,"IHOS cálculo · código 3","OHI-S calculus · code 3")
 ))
 
-@Composable internal fun UploadedPulpalRefsV51(lang:String)=UploadedClinicalRefsV51(lang,listOf(
- UploadedClinicalRefV51(R.drawable.uploaded80_013,"Prueba de frío","Cold test"),
- UploadedClinicalRefV51(R.drawable.uploaded80_012,"Prueba de calor","Heat test"),
- UploadedClinicalRefV51(R.drawable.uploaded80_015,"Prueba eléctrica pulpar","Electric pulp test"),
- UploadedClinicalRefV51(R.drawable.uploaded80_010,"Percusión vertical","Vertical percussion"),
- UploadedClinicalRefV51(R.drawable.uploaded80_009,"Percusión horizontal","Horizontal percussion"),
- UploadedClinicalRefV51(R.drawable.uploaded80_008,"Palpación apical","Apical palpation"),
- UploadedClinicalRefV51(R.drawable.uploaded80_014,"Prueba de mordida","Bite test"),
- UploadedClinicalRefV51(R.drawable.uploaded80_007,"Movilidad dental","Tooth mobility"),
- UploadedClinicalRefV51(R.drawable.uploaded80_022,"Sondaje periodontal localizado","Localized periodontal probing"),
- UploadedClinicalRefV51(R.drawable.uploaded80_023,"Transiluminación por sospecha de fisura","Transillumination for suspected crack"),
- UploadedClinicalRefV51(R.drawable.uploaded80_016,"Pulpa clínicamente normal","Clinically normal pulp"),
- UploadedClinicalRefV51(R.drawable.uploaded80_020,"Respuesta aumentada al frío","Increased cold response"),
- UploadedClinicalRefV51(R.drawable.uploaded80_021,"Respuesta persistente al frío","Lingering cold response"),
- UploadedClinicalRefV51(R.drawable.uploaded80_002,"Ausencia de respuesta","No response"),
- UploadedClinicalRefV51(R.drawable.uploaded80_042,"Dolor a la percusión","Percussion pain"),
- UploadedClinicalRefV51(R.drawable.uploaded80_003,"Dolor a la palpación","Palpation pain"),
- UploadedClinicalRefV51(R.drawable.uploaded80_005,"Fístula","Sinus tract"),
- UploadedClinicalRefV51(R.drawable.uploaded80_006,"Inflamación/absceso localizado","Localized swelling/abscess"),
- UploadedClinicalRefV51(R.drawable.uploaded80_004,"Ensanchamiento del ligamento periodontal","Widened periodontal ligament"),
- UploadedClinicalRefV51(R.drawable.uploaded80_017,"Radiolucidez periapical","Periapical radiolucency"),
- UploadedClinicalRefV51(R.drawable.uploaded80_011,"Pérdida de lámina dura","Loss of lamina dura"),
- UploadedClinicalRefV51(R.drawable.uploaded80_019,"Reabsorción radicular interna","Internal root resorption"),
- UploadedClinicalRefV51(R.drawable.uploaded80_018,"Reabsorción radicular externa","External root resorption")
-))
+@Composable internal fun UploadedPulpalRefsV51(lang:String){
+ val tests=listOf(
+  UploadedClinicalRefV51(R.drawable.uploaded80_013,"Prueba de frío","Cold test"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_012,"Prueba de calor","Heat test"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_015,"Prueba eléctrica pulpar","Electric pulp test"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_010,"Percusión vertical","Vertical percussion"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_009,"Percusión horizontal","Horizontal percussion"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_008,"Palpación apical","Apical palpation"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_014,"Prueba de mordida","Bite test"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_007,"Movilidad dental","Tooth mobility"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_022,"Sondaje periodontal localizado","Localized periodontal probing"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_023,"Transiluminación por sospecha de fisura","Transillumination for suspected crack")
+ )
+ val pulpal=listOf(
+  UploadedClinicalRefV51(R.drawable.uploaded80_016,"Pulpa clínicamente normal","Clinically normal pulp"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_020,"Respuesta aumentada al frío","Increased cold response"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_021,"Respuesta persistente al frío","Lingering cold response"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_002,"Ausencia de respuesta","No response")
+ )
+ val apical=listOf(
+  UploadedClinicalRefV51(R.drawable.uploaded80_042,"Dolor a la percusión","Percussion pain"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_003,"Dolor a la palpación","Palpation pain"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_005,"Fístula","Sinus tract"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_006,"Inflamación/absceso localizado","Localized swelling/abscess"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_004,"Ensanchamiento del ligamento periodontal","Widened periodontal ligament"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_017,"Radiolucidez periapical","Periapical radiolucency"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_011,"Pérdida de lámina dura","Loss of lamina dura"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_019,"Reabsorción radicular interna","Internal root resorption"),
+  UploadedClinicalRefV51(R.drawable.uploaded80_018,"Reabsorción radicular externa","External root resorption")
+ )
+ androidx.compose.material3.Text(if(lang=="en") "Tests" else "Pruebas",fontWeight=androidx.compose.ui.text.font.FontWeight.Bold)
+ UploadedClinicalRefsV51(lang,tests,columns=2)
+ androidx.compose.material3.Text(if(lang=="en") "Pulpal responses" else "Respuestas pulpares",fontWeight=androidx.compose.ui.text.font.FontWeight.Bold)
+ UploadedClinicalRefsV51(lang,pulpal,columns=2)
+ androidx.compose.material3.Text(if(lang=="en") "Periapical findings" else "Hallazgos periapicales",fontWeight=androidx.compose.ui.text.font.FontWeight.Bold)
+ UploadedClinicalRefsV51(lang,apical,columns=2)
+}
 
 @Composable internal fun UploadedPeriodontalRefsV51(lang:String)=UploadedClinicalRefsV51(lang,listOf(
  UploadedClinicalRefV51(R.drawable.uploaded80_043,"Encía clínicamente sana","Clinically healthy gingiva"),
