@@ -110,6 +110,7 @@ fun DentomaxillaryOrthopedicsV44(lang:String,onBack:()->Unit){
             PersistTextV44("orthoMax.control",tr(lang,"Hallazgos y ajustes del control","Follow-up findings and adjustments"))
             PersistTextV44("orthoMax.next",tr(lang,"Siguiente control / auxiliares pendientes","Next review / pending aids"))
         }
+        ResponsiveSectionV17(tr(lang,"Mantenedores y recuperadores de espacio","Space maintainers and regainers")) { UploadedOrthoApplianceRefsV51(lang) }
         LocalClinicalImageSectionV46(lang,p,"Ortopedia y aparatología","Orthopedics and appliances")
     }
 }
