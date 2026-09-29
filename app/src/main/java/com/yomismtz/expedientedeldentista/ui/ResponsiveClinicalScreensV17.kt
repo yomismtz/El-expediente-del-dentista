@@ -256,6 +256,7 @@ fun IpcResponsiveV17Screen(
             profile.width == ScreenWidthV17.MEDIUM -> 3
             else -> 3
         }
+        ResponsiveSectionV17(tr(lang,"Referencias visuales IPC","CPI visual references")) { UploadedIpcRefsV51(lang) }
         ResponsiveSectionV17(tr(lang, "1 · Selecciona sextante", "1 · Select sextant")) {
             AdaptiveGridV17(v17Sextants.size, sextantColumns) { index ->
                 val s = v17Sextants[index]
