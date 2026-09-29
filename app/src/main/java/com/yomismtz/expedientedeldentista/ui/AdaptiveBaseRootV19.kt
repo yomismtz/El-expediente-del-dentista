@@ -225,15 +225,13 @@ fun AdaptiveBaseRootV19(
 @Composable
 private fun CoverV19(lang:String,onOpen:()->Unit) {
     val compact = LocalConfiguration.current.screenWidthDp < 360 || LocalDensity.current.fontScale >= 1.30f
-    Box(Modifier.fillMaxSize()) {
-        Image(painterResource(R.drawable.new77_imagen_ofiacial_dentista_con_su_mascota),tr(lang,"Doctora con agaporni","Dentist with lovebird"),Modifier.fillMaxSize(),contentScale=ContentScale.Crop)
-        Box(Modifier.fillMaxSize().background(Color(0x663A145F))) {
-            Column(Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal=if(compact)16.dp else 28.dp,vertical=20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.Center) {
-                Image(painterResource(R.drawable.allimg_065_logo_de_la_app),tr(lang,"Logo oficial de El expediente del dentista","Official El expediente del dentista logo"),Modifier.size(if(compact)118.dp else 158.dp),contentScale=ContentScale.Fit)
+    Box(Modifier.fillMaxSize().background(Color.White)) {
+        Column(Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal=if(compact)16.dp else 28.dp,vertical=20.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.Center) {
+                Image(painterResource(R.drawable.allimg_065_logo_de_la_app),tr(lang,"Logo oficial de El expediente del dentista","Official El expediente del dentista logo"),Modifier.size(if(compact)150.dp else 205.dp),contentScale=ContentScale.Fit)
                 Spacer(Modifier.height(10.dp))
-                Text(tr(lang,"El expediente","The record"),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Black,textAlign=TextAlign.Center,color=Color.White)
-                Text(tr(lang,"El expediente del dentista","The dentist's record"),style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black,textAlign=TextAlign.Center,color=Color(0xFF49D7D0))
-                Text(tr(lang,"Deja volar tu imaginación y tus conocimientos renacerán","Let your imagination take flight and your knowledge be reborn"),style=MaterialTheme.typography.bodyLarge,fontWeight=FontWeight.Bold,textAlign=TextAlign.Center,color=Color.White)
+                Text(tr(lang,"El expediente","The record"),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Black,textAlign=TextAlign.Center,color=Color(0xFF163F72))
+                Text(tr(lang,"El expediente del dentista","The dentist's record"),style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black,textAlign=TextAlign.Center,color=Color(0xFF22B8C7))
+                Text(tr(lang,"Deja volar tu imaginación y tus conocimientos renacerán","Let your imagination take flight and your knowledge be reborn"),style=MaterialTheme.typography.bodyLarge,fontWeight=FontWeight.Bold,textAlign=TextAlign.Center,color=Color(0xFF66788F))
                 Spacer(Modifier.height(12.dp))
                 Surface(color=MaterialTheme.colorScheme.surface.copy(alpha=.92f),shape=MaterialTheme.shapes.large){
                     Text(tr(lang,"App educativa de ayuda diagnóstica. Toda orientación, cálculo, interpretación y posibilidad diagnóstica debe comprobarse con historia clínica, exploración, estudios apropiados, fuentes clínicas vigentes y supervisión profesional. No sustituye el diagnóstico ni el criterio clínico.","Educational diagnostic-support app. Every suggestion, calculation, interpretation and diagnostic possibility must be verified with history, examination, appropriate studies, current clinical sources and professional supervision. It does not replace diagnosis or clinical judgment."),Modifier.padding(12.dp),style=MaterialTheme.typography.bodyMedium,fontWeight=FontWeight.Bold,textAlign=TextAlign.Center)
@@ -241,7 +239,6 @@ private fun CoverV19(lang:String,onOpen:()->Unit) {
                 Spacer(Modifier.height(18.dp))
                 Button(onClick=onOpen,modifier=Modifier.fillMaxWidth()) { Text("📖 ${tr(lang,"Abrir expediente","Open record")}",fontWeight=FontWeight.Black) }
             }
-        }
     }
 }
 
