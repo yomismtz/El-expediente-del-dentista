@@ -302,17 +302,56 @@ private data class E(val n:String,val d:String)
   }
 
   if(section=="Alimentación"){
-   item{NoticeCard("Se registra frecuencia y consistencia, no una calificación automática de la dieta. En odontología importa especialmente cuántas veces se expone la boca a carbohidratos fermentables y bebidas azucaradas.")}
-   foodGroups.forEach{(name,description)->
-    item{optionsCard(name,listOf("0/semana","1/semana","2–3/semana","4–6/semana","1/día","2/día","3 o más/día"),description,3)}
+   val freqOptions=listOf("Nunca","Menos de 1/semana","1–3/semana","4–6/semana","1/día","2–3/día","4 o más/día")
+   val protectiveGroups=listOf(
+    Triple("Verduras","Fuentes de fibra, folato, vitaminas y minerales.","Una frecuencia muy baja puede contribuir a un patrón con baja densidad de micronutrientes; valorar el conjunto de la dieta."),
+    Triple("Fruta entera","Aporta fibra, vitamina C y otros micronutrientes.","Preferir fruta entera. Jugos y presentaciones azucaradas se valoran aparte por su exposición cariogénica."),
+    Triple("Leguminosas","Frijol, lenteja, garbanzo y similares aportan proteína vegetal, hierro, folato y fibra.","Una frecuencia baja, especialmente si también hay poco alimento de origen animal, puede sugerir ingesta insuficiente de hierro/proteína."),
+    Triple("Carne, pollo, pescado y huevo","Aportan proteína; varios de estos alimentos son fuentes relevantes de hierro, zinc y vitamina B12.","Consumo muy bajo junto con pocas leguminosas puede justificar tamizaje de posible ingesta insuficiente de proteína, hierro o B12."),
+    Triple("Lácteos sin azúcar añadido","Leche, yogur natural y queso aportan proteína y calcio; algunos también vitamina D según fortificación.","Una ingesta baja puede contribuir a aporte insuficiente de calcio; no diagnostica deficiencia."),
+    Triple("Cereales y tubérculos","Aportan energía; conviene diferenciar integrales de refinados y productos con azúcar añadido.","Un patrón muy restringido puede asociarse con ingesta energética insuficiente; refinados azucarados frecuentes aumentan exposiciones cariogénicas."),
+    Triple("Agua simple","Principal bebida de hidratación y no añade azúcares fermentables.","Elegir agua simple en lugar de bebidas azucaradas reduce exposiciones a azúcar y ácidos.")
+   )
+   val cariogenicGroups=listOf(
+    Triple("Dulces, caramelos y chocolate azucarado","Los azúcares libres son sustrato para bacterias del biofilm.","La frecuencia importa: exposiciones repetidas favorecen descensos repetidos del pH y aumentan el riesgo de desmineralización."),
+    Triple("Galletas, pan dulce y postres","Combinan carbohidratos fermentables; algunos son retentivos.","Consumirlos repetidamente entre comidas prolonga o repite el desafío cariogénico."),
+    Triple("Refrescos y bebidas azucaradas","Aportan azúcares libres; muchas además son ácidas.","La exposición frecuente aumenta riesgo cariogénico y puede contribuir a erosión dental según bebida y patrón."),
+    Triple("Jugos y bebidas de fruta","Incluso el jugo 100% fruta contiene azúcares libres y suele ser ácido.","Tomarlo repetidamente o a sorbos prolonga la exposición de los dientes a azúcar/ácidos."),
+    Triple("Bebidas deportivas o energéticas","Con frecuencia contienen azúcar y ácidos.","El consumo repetido, especialmente entre comidas, puede elevar el riesgo de caries y erosión."),
+    Triple("Botanas/almidones refinados retentivos","Papas, crackers y productos similares aportan almidones procesados que pueden permanecer en boca.","La frecuencia y retención importan; se interpreta junto con higiene, saliva y exposición a fluoruro.")
+   )
+   item{NoticeCard("Tamizaje dietético odontológico. Registra qué consume y con qué frecuencia. Las alertas describen patrones de posible riesgo; no diagnostican anemia, desnutrición ni deficiencias vitamínicas. Los hallazgos relevantes deben correlacionarse con historia clínica, exploración y, cuando proceda, valoración médica/nutricional o estudios de laboratorio.")}
+   protectiveGroups.forEach{(name,benefit,lowRisk)->
+    item{optionsCard(name,freqOptions,"Beneficio: $benefit Si el consumo es bajo: $lowRisk",3)}
    }
-   items(listOf("Dulces","Refrescos/bebidas azucaradas","Comida ultraprocesada/chatarra","Embutidos","Enlatados").size){i->
-    val x=listOf("Dulces","Refrescos/bebidas azucaradas","Comida ultraprocesada/chatarra","Embutidos","Enlatados")[i]
-    optionsCard(x,listOf("Nunca","Menos de 1/semana","1–3/semana","4–6/semana","1/día","2–3/día","4 o más/día"),if(x=="Dulces"||x.startsWith("Refrescos"))"La frecuencia de exposición a azúcares es especialmente relevante para el riesgo de caries; una selección aislada no establece el riesgo total." else "Registra la frecuencia habitual para contextualizar el patrón alimentario; no equivale por sí sola a una enfermedad.",3)
+   cariogenicGroups.forEach{(name,why,risk)->
+    item{optionsCard(name,freqOptions,"Por qué importa: $why $risk",3)}
    }
-   item{optionsCard("Alimentos fibrosos",listOf("Nunca/casi nunca","1–3/semana","4–6/semana","1/día","2 o más/día","No sabe"),"Frutas enteras, verduras y otros alimentos fibrosos forman parte del patrón dietético y requieren masticación. No sustituyen el cepillado ni «limpian» por sí solos los dientes.",3)}
-   item{optionsCard("Consistencia habitual de los alimentos",listOf("Predominio muy blando","Predominio blando","Mixta","Incluye firmes/fibrosos","Frecuentemente muy duros","Variable/no sabe"),"La consistencia modifica la demanda masticatoria. Alimentos extremadamente duros también pueden favorecer trauma o fracturas en personas susceptibles; no se clasifica una consistencia como universalmente «mejor».",3)}
-   item{optionsCard("Comidas principales al día",listOf("1","2","3","4","5","6 o más"),"Número habitual de comidas principales. Los refrigerios y bebidas entre comidas se registran aparte cuando interese evaluar exposición cariogénica.",3)}
+   item{optionsCard("Alimentos azucarados · entre comidas",freqOptions,"Las exposiciones azucaradas entre comidas aumentan la frecuencia de desafíos ácidos. Menor frecuencia suele ser más favorable para control de caries.",3)}
+   item{optionsCard("Alimentos o bebidas azucaradas · antes de dormir o durante la noche",freqOptions,"Es una exposición especialmente relevante porque durante el sueño disminuye el flujo salival. Registrar también higiene posterior cuando corresponda.",3)}
+   item{optionsCard("Comidas principales al día",listOf("1","2","3","4","5","6 o más"),"Ayuda a interpretar regularidad e ingesta global. Una respuesta aislada no diagnostica malnutrición.",3)}
+   item{optionsCard("Consistencia habitual",listOf("Predominio muy blando","Predominio blando","Mixta","Incluye firmes/fibrosos","Frecuentemente muy duros","Variable/no sabe"),"Describe demanda masticatoria. No existe una consistencia universalmente correcta y los alimentos extremadamente duros pueden producir trauma en personas susceptibles.",3)}
+   item{SectionCard("Interpretación orientativa del patrón registrado"){
+    val highSugar=listOf("Dulces, caramelos y chocolate azucarado","Galletas, pan dulce y postres","Refrescos y bebidas azucaradas","Jugos y bebidas de fruta","Bebidas deportivas o energéticas","Alimentos azucarados · entre comidas","Alimentos o bebidas azucaradas · antes de dormir o durante la noche").count{
+     chosen[it] in listOf("1/día","2–3/día","4 o más/día")
+    }
+    val ironLow=chosen["Leguminosas"] in listOf("Nunca","Menos de 1/semana") && chosen["Carne, pollo, pescado y huevo"] in listOf("Nunca","Menos de 1/semana")
+    val proteinLow=ironLow && chosen["Lácteos sin azúcar añadido"] in listOf("Nunca","Menos de 1/semana")
+    val calciumLow=chosen["Lácteos sin azúcar añadido"] in listOf("Nunca","Menos de 1/semana")
+    val produceLow=chosen["Verduras"] in listOf("Nunca","Menos de 1/semana") && chosen["Fruta entera"] in listOf("Nunca","Menos de 1/semana")
+    val broadLow=listOf("Verduras","Fruta entera","Leguminosas","Carne, pollo, pescado y huevo","Lácteos sin azúcar añadido","Cereales y tubérculos").count{chosen[it] in listOf("Nunca","Menos de 1/semana")}
+    if(chosen.none{it.key in protectiveGroups.map{x->x.first}+cariogenicGroups.map{x->x.first}+listOf("Alimentos azucarados · entre comidas","Alimentos o bebidas azucaradas · antes de dormir o durante la noche")}) Text("Selecciona frecuencias para generar el resumen orientativo.",style=MaterialTheme.typography.bodySmall)
+    else {
+     if(highSugar>=2) Text("• Riesgo cariogénico dietético aumentado: se registran varias exposiciones azucaradas diarias. Integrar con higiene, fluoruro, saliva y hallazgos clínicos.")
+     else Text("• Riesgo cariogénico: interpretar con la frecuencia de azúcares registrada y los demás factores clínicos; la dieta sola no determina el riesgo total.")
+     if(ironLow) Text("• Posible riesgo de ingesta insuficiente de hierro: baja frecuencia referida de leguminosas y alimentos de origen animal. No equivale a diagnóstico de anemia; correlacionar clínicamente y valorar estudios/derivación si están indicados.")
+     if(proteinLow) Text("• Posible ingesta insuficiente de proteína: varios grupos fuente se reportan con frecuencia muy baja.")
+     if(calciumLow) Text("• Posible ingesta insuficiente de calcio: frecuencia muy baja de lácteos referida. Considerar otras fuentes de calcio antes de concluir deficiencia.")
+     if(produceLow) Text("• Posible baja ingesta de micronutrientes/fibra: verduras y fruta entera se reportan con frecuencia muy baja; revisar variedad dietética, vitamina C, folato y otros micronutrientes.")
+     if(broadLow>=4) Text("• Riesgo de patrón alimentario poco variado / posible malnutrición: múltiples grupos básicos presentan frecuencia muy baja. Requiere valoración integral; esta pantalla no diagnostica desnutrición.")
+     if(highSugar==0 && !ironLow && !proteinLow && !calciumLow && !produceLow && broadLow<4) Text("• No se activaron alertas dietéticas principales con las respuestas actuales. Esto no sustituye una valoración nutricional ni odontológica completa.")
+    }
+   }}
   }
 
   if(section=="Inmunizaciones"){
