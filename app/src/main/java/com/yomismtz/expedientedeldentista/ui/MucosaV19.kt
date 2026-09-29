@@ -290,3 +290,61 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
         options.forEach{o->FilterChip(selected==o,{onSelected(o)},{Text(o)})}
     }
 }
+
+
+private data class ElementaryLesion23(val name:String,val definition:String,val observe:String,@DrawableRes val image:Int?=null)
+
+@Composable
+fun ElementaryMucosalLesionsV23Screen(lang:String,onBack:()->Unit){
+    val lesions=listOf(
+        ElementaryLesion23("Mácula / mancha","Cambio circunscrito de color sin elevación ni depresión palpable.","Color, límites, distribución, número, tamaño y evolución.",R.drawable.edu_lesion_macula),
+        ElementaryLesion23("Eritema","Enrojecimiento de la mucosa por aumento del componente vascular o inflamatorio.","Distribución, intensidad, síntomas, causa local y persistencia."),
+        ElementaryLesion23("Petequia","Pequeño punto hemorrágico sin elevación sólida.","Número, agrupación, localización, antecedente traumático y otros sangrados."),
+        ElementaryLesion23("Púrpura / equimosis","Extravasación sanguínea de mayor extensión que una petequia.","Tamaño, color, evolución, trauma, medicamentos y otros datos hemorrágicos."),
+        ElementaryLesion23("Pápula","Elevación sólida pequeña y circunscrita.","Tamaño, superficie, color, consistencia y número.",R.drawable.edu_lesion_papula),
+        ElementaryLesion23("Placa blanca","Área blanca elevada o engrosada, más extensa que alta.","Superficie, límites, localización y si se desprende al raspado.",R.drawable.edu_lesion_placa),
+        ElementaryLesion23("Placa roja","Área eritematosa relativamente bien delimitada.","Superficie, límites, síntomas, persistencia y factores locales.",R.drawable.edu_lesion_placa),
+        ElementaryLesion23("Nódulo","Aumento de volumen sólido, circunscrito y generalmente más profundo que una pápula.","Tamaño, profundidad, consistencia, movilidad, superficie y evolución.",R.drawable.edu_lesion_nodulo),
+        ElementaryLesion23("Masa","Aumento de volumen sólido de dimensiones o profundidad variables.","Dimensiones, límites, consistencia, fijación, crecimiento y síntomas.",R.drawable.edu_lesion_nodulo),
+        ElementaryLesion23("Vesícula","Elevación pequeña con contenido líquido.","Número, agrupación, integridad, contenido, síntomas y evolución.",R.drawable.edu_lesion_vesicula),
+        ElementaryLesion23("Ampolla / bula","Elevación con contenido líquido de mayor tamaño que una vesícula.","Extensión, integridad, contenido, dolor y lesiones asociadas.",R.drawable.edu_lesion_ampolla),
+        ElementaryLesion23("Pústula","Elevación con contenido purulento.","Tamaño, drenaje, tejido circundante, dolor y origen probable.",R.drawable.edu_lesion_pustula),
+        ElementaryLesion23("Quiste","Cavidad patológica revestida por epitelio que puede manifestarse como aumento de volumen.","Sitio, tamaño, consistencia, fluctuación, relación anatómica y auxiliares requeridos."),
+        ElementaryLesion23("Erosión","Pérdida superficial del epitelio.","Extensión, fondo, bordes, dolor, duración y posible causa local.",R.drawable.edu_lesion_erosion),
+        ElementaryLesion23("Úlcera","Pérdida del epitelio con exposición del tejido conjuntivo subyacente.","Fondo, bordes, induración, tamaño, dolor, duración y causa aparente.",R.drawable.edu_lesion_ulcera),
+        ElementaryLesion23("Fisura / grieta","Hendidura lineal de la superficie mucosa.","Profundidad, localización, síntomas, inflamación y factores locales.",R.drawable.edu_lesion_fisura),
+        ElementaryLesion23("Costra","Material seco formado sobre una superficie por exudado, sangre o secreción.","Color, extensión, sangrado, fisuras y lesión subyacente."),
+        ElementaryLesion23("Atrofia","Adelgazamiento o pérdida de componentes normales del epitelio o tejido.","Color, textura, extensión, síntomas y estructuras normalmente presentes."),
+        ElementaryLesion23("Queratosis","Engrosamiento queratósico clínicamente visible como zona blanquecina.","Distribución, superficie, límites, hábito o trauma relacionado y persistencia."),
+        ElementaryLesion23("Lesión papilar / vegetación","Crecimiento exofítico con superficie papilar, verrugosa o vegetante.","Base, superficie, tamaño, número, consistencia y crecimiento."),
+        ElementaryLesion23("Fístula / trayecto sinusal","Trayecto de drenaje hacia la superficie.","Sitio, secreción, inflamación y correlación con posible origen dental o de tejidos blandos.",R.drawable.edu_lesion_fistula),
+        ElementaryLesion23("Edema","Aumento de volumen por acumulación de líquido en los tejidos.","Extensión, simetría, consistencia, inicio, dolor y posible desencadenante."),
+        ElementaryLesion23("Hematoma","Colección localizada de sangre extravasada en el tejido.","Color, tamaño, evolución, trauma y signos hemorrágicos asociados."),
+        ElementaryLesion23("Pigmentación","Cambio de color por pigmento endógeno o exógeno.","Color, distribución, simetría, duración, cambios recientes y antecedentes.")
+    )
+    var selected by rememberRecordState("mucosa.elementary23.selected",0)
+    ResponsiveScreenV17(
+        tr(lang,"Lesiones elementales de mucosa","Elementary oral mucosal lesions"),
+        tr(lang,"Selecciona una lesión para revisar su definición y qué describir. La imagen aparece sólo cuando existe una referencia específica.","Select a lesion to review its definition and what to describe. An image appears only when a specific reference exists."),
+        onBack
+    ){profile->
+        val columns=if(profile.largeSystemText || profile.width==ScreenWidthV17.COMPACT) 2 else 3
+        ResponsiveSectionV17(tr(lang,"1 · Selecciona la lesión elemental","1 · Select the elementary lesion")){
+            AdaptiveGridV17(lesions.size,columns){i->
+                FilterChip(selected==i,{selected=i},{Text(lesions[i].name)},modifier=Modifier.fillMaxWidth())
+            }
+        }
+        val lesion=lesions.getOrElse(selected){lesions.first()}
+        ResponsiveSectionV17(tr(lang,"2 · "+lesion.name,"2 · "+lesion.name)){
+            Text(tr(lang,"¿Qué es?","What is it?"),fontWeight=FontWeight.Black)
+            Text(lesion.definition)
+            Text(tr(lang,"¿Qué observar y registrar?","What should be observed and recorded?"),fontWeight=FontWeight.Black)
+            Text(lesion.observe)
+            lesion.image?.let{LocalClinicalInlineZoomImageV48(lang,lesion.name,lesion.name,it,lesion.definition,lesion.definition)}
+        }
+        ResponsiveSectionV17(tr(lang,"3 · Lámina comparativa opcional","3 · Optional comparison sheet"),tr(lang,"Úsala sólo cuando necesites comparar morfologías; no sustituye la descripción clínica.","Use it only when morphology comparison is needed; it does not replace clinical description.")){
+            LocalClinicalInlineZoomImageV48(lang,"Lesiones elementales de mucosa","Elementary oral mucosal lesions",R.drawable.mucosa_lesiones_elementales,"Comparación visual de lesiones elementales de mucosa oral.","Visual comparison of elementary oral mucosal lesions.")
+        }
+        NoticeCard(tr(lang,"Primero describe la lesión; después integra antecedentes, localización, evolución y exploración para orientar el diagnóstico. Una lesión persistente, indurada, de crecimiento progresivo o una úlcera sin causa clara requiere valoración profesional y seguimiento.","Describe the lesion first; then integrate history, location, evolution and examination to guide diagnosis. A persistent, indurated or progressively growing lesion, or an ulcer without a clear cause, requires professional assessment and follow-up."))
+    }
+}
