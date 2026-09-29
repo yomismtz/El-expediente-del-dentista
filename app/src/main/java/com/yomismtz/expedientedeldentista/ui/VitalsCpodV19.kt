@@ -186,20 +186,20 @@ fun CpodInteractiveV19Screen(lang:String,session:EducationalSession,onSessionCha
     }
 
     ResponsiveScreenV17(tr(lang,"CPOD / ceod interactivo","Interactive DMFT / dmft"),tr(lang,"Toca cada diente, clasifícalo y observa el cálculo automático.","Tap each tooth, classify it and view the automatic calculation."),onBack) { profile ->
-        ResponsiveSectionV17(tr(lang,"Imágenes CPOD / ceod","DMFT / dmft images")) { UploadedCpodRefsV51(lang) }
-        ResponsiveSectionV17(tr(lang,"Dentición","Dentition")) {
+        ResponsiveSectionV17(tr(lang,"Referencia visual opcional","Optional visual reference"),tr(lang,"Consulta esta lámina cuando necesites recordar las categorías; el registro se realiza por diente en los pasos siguientes.","Use this sheet when you need to review the categories; tooth-by-tooth recording is done in the following steps.")) { UploadedCpodRefsV51(lang) }
+        ResponsiveSectionV17(tr(lang,"1 · Dentición","1 · Dentition")) {
             AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2) { i ->
                 val p=i==1
                 FilterChip(primary==p,{primary=p},{Text(if(p)tr(lang,"Temporal · ceod","Primary · dmft") else tr(lang,"Permanente · CPOD","Permanent · DMFT"))},modifier=Modifier.fillMaxWidth())
             }
         }
-        ResponsiveSectionV17(tr(lang,"Maxilar arriba · mandibular abajo","Maxillary above · mandibular below")) {
+        ResponsiveSectionV17(tr(lang,"2 · Selecciona el diente","2 · Select tooth"),tr(lang,"Maxilar arriba · mandibular abajo.","Maxillary above · mandibular below.")) {
             DentalArchSelector(shown,selected,{selected=it}) { tooth -> session.teeth[tooth]?.status?.let{it!=ToothStatus.HEALTHY}==true }
         }
-        ResponsiveSectionV17("OD $selected") { choices.forEach { s -> FilterChip(record.status==s,{setStatus(s)},{Text(cpodStatus19(s,lang))},modifier=Modifier.fillMaxWidth()) } }
+        ResponsiveSectionV17(tr(lang,"3 · Clasificación del OD $selected","3 · Tooth $selected classification")) { choices.forEach { s -> FilterChip(record.status==s,{setStatus(s)},{Text(cpodStatus19(s,lang))},modifier=Modifier.fillMaxWidth()) } }
         Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)) {
             Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
-                Text(if(primary)"ceod" else "CPOD",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleLarge)
+                Text(tr(lang,"4 · Resultado ","4 · Result ")+(if(primary)"ceod" else "CPOD"),fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleLarge)
                 Text(if(primary)"c = ${result.carious}   e = ${result.missing}   o = ${result.filled}" else "C = ${result.carious}   P = ${result.missing}   O = ${result.filled}")
                 Text("${if(primary)"ceod" else "CPOD"} = ${result.total}",fontWeight=FontWeight.Black,style=MaterialTheme.typography.headlineSmall)
                 Text(ClinicalEngines.cpodInterpretation(result.total,lang))
