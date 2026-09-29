@@ -186,6 +186,7 @@ fun CpodInteractiveV19Screen(lang:String,session:EducationalSession,onSessionCha
     }
 
     ResponsiveScreenV17(tr(lang,"CPOD / ceod interactivo","Interactive DMFT / dmft"),tr(lang,"Toca cada diente, clasifícalo y observa el cálculo automático.","Tap each tooth, classify it and view the automatic calculation."),onBack) { profile ->
+        ResponsiveSectionV17(tr(lang,"Referencias visuales CPOD / ceod","DMFT / dmft visual references")) { UploadedCpodRefsV51(lang) }
         ResponsiveSectionV17(tr(lang,"Dentición","Dentition")) {
             AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2) { i ->
                 val p=i==1
