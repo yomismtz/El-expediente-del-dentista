@@ -68,7 +68,7 @@ private data class RiskFactor45(val key:String,val label:String,val kind:String)
    "ICDAS 0"->Triple(R.drawable.edu_icdas_0,"ICDAS 0","Imagen; no modifica los criterios del módulo ICDAS.")
    else->null
   }
-  ResponsiveSectionV17(tr(lang,"Cariología · imágenes por hallazgo","Cariology · images by finding")){
+  ResponsiveSectionV17(tr(lang,"1 · Hallazgo de caries","1 · Caries finding"),tr(lang,"Selecciona el hallazgo observado para revisar su referencia visual. La imagen aparece sólo para la opción seleccionada.","Select the observed finding to review its visual reference. The image appears only for the selected option.")){
    AdaptiveGridV17(visualOptions.size,cols){i->val o=visualOptions[i];FilterChip(cariesVisual==o,{cariesVisual=o},{Text(o)},Modifier.fillMaxWidth())}
    visual?.let{v->
     Card(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp)){
@@ -88,13 +88,13 @@ private data class RiskFactor45(val key:String,val label:String,val kind:String)
     }}
    }
   }
-  ResponsiveSectionV17(tr(lang,"Factores","Factors"),tr(lang,"Marca Presente, Ausente o No valorado. No asumas un dato que no fue interrogado o explorado.","Mark Present, Absent or Not assessed. Do not assume information that was not obtained.")){
-   factors.forEach{f->val st=states.getValue(f.key);Text(f.label,fontWeight=FontWeight.SemiBold);AdaptiveGridV17(3,cols){i->val o=listOf("Presente","Ausente","No valorado")[i];FilterChip(st.value==o,{st.value=o},{Text(o)},Modifier.fillMaxWidth())}}
+  ResponsiveSectionV17(tr(lang,"2 · Enfermedad, riesgo y protección","2 · Disease, risk and protective factors"),tr(lang,"Marca Presente, Ausente o No valorado. No asumas un dato que no fue interrogado o explorado.","Mark Present, Absent or Not assessed. Do not assume information that was not obtained.")){
+   factors.forEach{f->val st=states.getValue(f.key);Text((when(f.kind){"d"->tr(lang,"Enfermedad · ","Disease · ");"r"->tr(lang,"Riesgo · ","Risk · ");else->tr(lang,"Protección · ","Protective · ")})+f.label,fontWeight=FontWeight.SemiBold);AdaptiveGridV17(3,if(p.largeSystemText||p.width==ScreenWidthV17.COMPACT)1 else 3){i->val o=listOf("Presente","Ausente","No valorado")[i];FilterChip(st.value==o,{st.value=o},{Text(o)},Modifier.fillMaxWidth())}}
   }
   val disease=factors.count{it.kind=="d"&&states.getValue(it.key).value=="Presente"}; val risks=factors.count{it.kind=="r"&&states.getValue(it.key).value=="Presente"}; val protective=factors.count{it.kind=="p"&&states.getValue(it.key).value=="Presente"}; val unknown=factors.count{states.getValue(it.key).value=="No valorado"}
-  ResponsiveSectionV17(tr(lang,"Resumen descriptivo de la app","App descriptive summary"),tr(lang,"Los conteos ayudan a revisar el caso; no son una puntuación validada ni generan diagnóstico automático.","Counts help review the case; they are not a validated score and do not generate an automatic diagnosis.")){
+  ResponsiveSectionV17(tr(lang,"3 · Resumen descriptivo y contexto","3 · Descriptive summary and context"),tr(lang,"Los conteos ayudan a revisar el caso; no son una puntuación validada, no asignan una categoría automática de riesgo y no generan diagnóstico.","Counts help review the case; they are not a validated score, do not assign an automatic risk category and do not generate a diagnosis.")){
    Text(tr(lang,"Indicadores de enfermedad presentes: "+disease+" · factores de riesgo presentes: "+risks+" · factores protectores presentes: "+protective+" · no valorados: "+unknown+".","Disease indicators present: "+disease+" · risk factors present: "+risks+" · protective factors present: "+protective+" · not assessed: "+unknown+"."),fontWeight=FontWeight.Bold)
-   PText45("cariesRisk.context",tr(lang,"Contexto clínico / índices / saliva / auxiliares","Clinical context / indices / saliva / aids")); PText45("cariesRisk.plan",tr(lang,"Plan preventivo individualizado y fecha de reevaluación","Individualized preventive plan and reassessment date"))
+   PText45("cariesRisk.context",tr(lang,"Contexto clínico / ICDAS / índices / saliva / auxiliares","Clinical context / ICDAS / indices / saliva / aids")); PText45("cariesRisk.plan",tr(lang,"Plan preventivo individualizado y fecha de reevaluación","Individualized preventive plan and reassessment date"))
   }
   NoticeCard(tr(lang,"La categoría final de riesgo debe establecerse integrando historia, exploración, actividad de lesiones, dieta, flúor, saliva y otros factores pertinentes. Esta ficha evita convertir un conteo aislado en diagnóstico.","Final risk category should integrate history, examination, lesion activity, diet, fluoride, saliva and other relevant factors. This sheet avoids turning an isolated count into a diagnosis."))
  }
