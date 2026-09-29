@@ -38,7 +38,6 @@ private data class VisualPosture(
 @Composable
 fun PostureVisualScreen(lang: String, onBack: () -> Unit) {
     var selected by rememberRecordState("posture.visual.selected",-1)
-    var profileSelected by rememberRecordState("posture.visual.profile","")
     val list = listOf(
         VisualPosture("Natural / equilibrada", "Natural / balanced", "Cabeza erguida con relación visual equilibrada respecto al cuello. Se usa como referencia descriptiva.", "Upright head with a visually balanced relation to the neck. Used as a descriptive reference.", R.drawable.allimg_083_postura_cervical_equilibrada),
         VisualPosture("Cabeza adelantada", "Forward head posture", "El cráneo se observa desplazado hacia anterior respecto al tronco; describe la postura y busca compensaciones cervicales.", "The head appears translated anteriorly relative to the trunk; describe the posture and look for cervical compensation.", R.drawable.allimg_077_postura_cervical_cabeza_adelaantada),
@@ -47,12 +46,6 @@ fun PostureVisualScreen(lang: String, onBack: () -> Unit) {
         VisualPosture("Rectificación cervical", "Cervical straightening", "La curvatura cervical se aprecia disminuida. Requiere correlación con exploración y estudios adecuados.", "The cervical curve appears reduced. Correlate with examination and appropriate studies.", R.drawable.allimg_082_postura_cervical_cabeza_rectificacion),
         VisualPosture("Lordosis cervical aumentada", "Increased cervical lordosis", "La curvatura cervical se observa más pronunciada. Es una descripción postural, no un diagnóstico etiológico aislado.", "The cervical curve appears more pronounced. It is a postural description, not an isolated etiologic diagnosis.", R.drawable.allimg_081_postura_cervical_cabeza_lordosis_cervical_aum),
         VisualPosture("Cifosis", "Kyphotic posture", "Imagen local de postura cervical asociada a cifosis. Describe el hallazgo observado y correlaciónalo con la exploración clínica.", "Local image of cervical posture associated with kyphosis. Describe the observed finding and correlate it with the clinical examination.", R.drawable.allimg_078_postura_cervical_cabeza_cifosis)
-    )
-    val profiles=listOf(
-        Triple("Recto",R.drawable.allimg_075_perfil_recto,"Frente, labios y mentón se observan relativamente equilibrados."),
-        Triple("Convexo",R.drawable.allimg_074_perfil_convexo,"El mentón se aprecia relativamente retruido."),
-        Triple("Cóncavo",R.drawable.allimg_073_perfil_concavo,"El mentón se aprecia relativamente prominente o adelantado."),
-        Triple("No valorable",R.drawable.face13_perfil_no_valorable,"La fotografía o la posición no permiten clasificar el perfil con seguridad.")
     )
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
@@ -70,14 +63,6 @@ fun PostureVisualScreen(lang: String, onBack: () -> Unit) {
         val p=list.getOrNull(selected)
         if(p!=null){
             item { LocalClinicalInlineZoomImageV48(lang,p.nameEs,p.nameEn,p.drawable,p.descriptionEs,p.descriptionEn) }
-        }
-        item {
-            SectionCard(tr(lang, "Perfil facial", "Facial profile")) {
-                ChipChoices(profiles.map{it.first to (profileSelected==it.first)},{i->profileSelected=profiles[i].first},columns=4)
-                profiles.firstOrNull{it.first==profileSelected}?.let{v->
-                    LocalClinicalInlineZoomImageV48(lang,"Perfil "+v.first.lowercase(),"Facial profile · "+v.first,v.second,v.third,v.third)
-                }
-            }
         }
         item {
             NoticeCard(tr(lang, "La selección describe el hallazgo observado y no establece una etiología. Interpreta las imágenes junto con la exploración clínica y los estudios indicados.", "The selection describes the observed finding and does not establish an etiology. Interpret the images together with the clinical examination and indicated studies."))
