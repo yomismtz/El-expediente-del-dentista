@@ -173,6 +173,20 @@ fun PeriodontogramScreen(
 }
 
 @Composable
+private fun PulpalClinicalImage19(lang:String,kind:String) {
+    val r = when(kind) {
+        "cold" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_013,"Prueba de frío","Cold test")
+        "cold_increased" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_020,"Respuesta aumentada al frío","Increased cold response")
+        "cold_lingering" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_021,"Respuesta persistente al frío","Lingering cold response")
+        "heat" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_012,"Prueba de calor","Heat test")
+        "negative" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_002,"Ausencia de respuesta","No response")
+        "normal" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_016,"Pulpa clínicamente normal","Clinically normal pulp")
+        else -> return
+    }
+    LocalClinicalInlineZoomImageV48(lang,if(lang=="en") r.third else r.second,if(lang=="en") r.third else r.second,r.first,"Imagen clínica local para apoyar la interpretación de la prueba seleccionada; no sustituye el diagnóstico.","Local clinical image supporting interpretation of the selected test; it does not replace diagnosis.")
+}
+
+@Composable
 fun PulpalScreen(
     lang: String,
     session: EducationalSession,
@@ -203,9 +217,14 @@ fun PulpalScreen(
         item {
             SectionCard(tr(lang, "Pruebas de sensibilidad", "Sensitivity tests")) {
                 BooleanRow(tr(lang, "Responde al frío", "Responds to cold"), a.coldPositive) { update(a.copy(coldPositive = it)) }
+                if(a.coldPositive) PulpalClinicalImage19(lang, if(a.coldLingering) "cold_lingering" else "cold_increased")
                 BooleanRow(tr(lang, "El dolor al frío persiste después de retirar el estímulo", "Cold pain lingers after the stimulus is removed"), a.coldLingering) { update(a.copy(coldLingering = it)) }
+                if(a.coldLingering) PulpalClinicalImage19(lang,"cold_lingering")
                 BooleanRow(tr(lang, "Respuesta dolorosa al calor", "Painful response to heat"), a.heatPositive) { update(a.copy(heatPositive = it)) }
+                if(a.heatPositive) PulpalClinicalImage19(lang,"heat")
                 BooleanRow(tr(lang, "No responde a pruebas de sensibilidad", "No response to sensitivity testing"), a.sensitivityNegative) { update(a.copy(sensitivityNegative = it)) }
+                if(a.sensitivityNegative) PulpalClinicalImage19(lang,"negative")
+                if(!a.coldPositive && !a.coldLingering && !a.heatPositive && !a.sensitivityNegative) PulpalClinicalImage19(lang,"normal")
             }
         }
         item {
