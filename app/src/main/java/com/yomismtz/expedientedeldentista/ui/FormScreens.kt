@@ -35,7 +35,7 @@ fun IdentificationScreen(
     onSessionChanged: (EducationalSession) -> Unit,
     onBack: () -> Unit
 ) {
-    var opened by rememberSaveable { mutableStateOf<Int?>(0) }
+    var opened by rememberSaveable { mutableStateOf<Int?>(null) }
     val fields = listOf(
         TeachingField("Nombre completo","Full name","Identifica clínica y legalmente al paciente. En el expediente físico se escribe completo y sin abreviaturas.","Clinically and legally identifies the patient.","Ejemplo de estructura: apellido paterno · apellido materno · nombre(s).","Example structure: family names · given name(s)."),
         TeachingField("Género / sexo registrado","Recorded gender / sex","Registra el dato que solicita el formato, de manera respetuosa y sin inferirlo por apariencia.","Record the information requested by the form respectfully.","Ejemplo: dato referido y asentado conforme al formato institucional.","Example: reported information recorded according to the institutional form."),
@@ -57,7 +57,7 @@ fun IdentificationScreen(
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { ScreenHeader(tr(lang,"Identificación del paciente","Patient identification"),onBack,tr(lang,"Primer apartado de la Historia Clínica. Toca cada dato para aprender qué se registra y por qué es importante.","First section of the clinical history. Tap each field to learn what is recorded and why it matters.")) }
-        item { NoticeCard(tr(lang,"La app funciona como guía de llenado. No introduzcas nombre, domicilio, teléfono ni otros datos personales reales.","This app is a completion guide. Do not enter real names, addresses, telephone numbers or other personal data.")) }
+        item { NoticeCard(tr(lang,"La app funciona como guía de llenado. No introduzcas nombre, domicilio, teléfono ni otros datos personales reales. Toca cualquier dato: su explicación se abre en la misma tarjeta, justo donde lo seleccionaste.","This app is a completion guide. Do not enter real names, addresses, telephone numbers or other personal data. Tap any field: its explanation opens in the same card, exactly where you selected it.")) }
         item {
             BoxWithConstraints(Modifier.fillMaxWidth()) {
                 val columns = when {
