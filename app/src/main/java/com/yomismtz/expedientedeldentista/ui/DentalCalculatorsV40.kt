@@ -212,22 +212,22 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
    }}
    item{NoticeCard("Fuentes del contenido: NOM-013-SSA2-2015 (Diario Oficial de la Federación) para fluoruros y documentación clínica mexicana/IMSS para clorhexidina al 0.12%. Verifica además la ficha técnica del producto concreto. Uso educativo; no sustituye valoración ni prescripción profesional.")}
   }else if(tab==3){
-   item{SectionCard("Calculadora de índice de masa corporal (IMC)"){
+   item{SectionCard("1 · Calculadora de índice de masa corporal (IMC)"){
     Text("Para adultos de 20 años o más. Fórmula: peso (kg) ÷ estatura² (m).")
     OutlinedTextField(bmiWeight,{bmiWeight=it.filter{x->x.isDigit()||x=='.'}.take(6)},label={Text("Peso (kg)")},modifier=Modifier.fillMaxWidth())
     OutlinedTextField(bmiHeightCm,{bmiHeightCm=it.filter{x->x.isDigit()||x=='.'}.take(6)},label={Text("Estatura (cm)")},modifier=Modifier.fillMaxWidth())
     Text(if(bmi==null)"Ingresa peso y estatura." else "IMC: %.1f kg/m² · %s".format(bmi,bmiCategory),fontWeight=FontWeight.Bold)
    }}
-   item{SectionCard("Interpretación en adultos"){
+   item{SectionCard("2 · Interpretación en adultos"){
     Text("Bajo peso: <18.5\nPeso saludable: 18.5–24.9\nSobrepeso: 25.0–29.9\nObesidad clase 1: 30.0–34.9\nObesidad clase 2: 35.0–39.9\nObesidad clase 3 (severa): ≥40.0")
    }}
    item{NoticeCard("Fuente clínica: CDC. El IMC es una medida de detección, no un diagnóstico. Para pacientes de 2 a 19 años debe interpretarse mediante IMC por edad y sexo/percentiles; esta calculadora no aplica esas categorías de adulto.")}
   }else{
-   item{SectionCard("Actividades de cálculo y conversión"){
+   item{SectionCard("1 · Actividades de cálculo y conversión"){
     Text("Practica conversiones sin que la app prescriba tratamientos.",fontWeight=FontWeight.Bold)
     Text("• mg ↔ mL a partir de una concentración conocida.\n• mg/kg × peso = mg por dosis cuando la dosis ya fue indicada.\n• mg por cartucho = concentración (mg/mL) × volumen (mL).\n• Número teórico de cartuchos = límite total (mg) ÷ mg por cartucho.\n• Revisión de unidades antes de aceptar el resultado.")
    }}
-   item{SectionCard("Protocolo de comprobación"){
+   item{SectionCard("2 · Protocolo de comprobación"){
     listOf("1. Confirmar identidad, edad y peso del paciente.","2. Confirmar medicamento/anestésico y concentración exacta de la presentación.","3. Consultar ficha técnica o protocolo docente vigente.","4. Revisar alergias, embarazo cuando aplique, función renal/hepática, enfermedades e interacciones.","5. Realizar la conversión matemática.","6. Comprobar máximo por dosis y máximo diario cuando correspondan.","7. Hacer una segunda verificación antes de administrar o registrar.").forEach{Text(it)}
    }}
    item{NoticeCard("Actividad educativa: la calculadora verifica operaciones matemáticas; no selecciona fármaco, indicación, dosis, intervalo ni duración.")}
