@@ -34,6 +34,19 @@ import com.yomismtz.expedientedeldentista.clinical.PerioRecord
 import com.yomismtz.expedientedeldentista.clinical.PulpalAssessment
 
 @Composable
+private fun PeriodontalFindingImage19(lang:String,kind:String) {
+    val ref = when(kind) {
+        "bleeding" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_079,"Sangrado después del sondaje","Bleeding after probing")
+        "pocket" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_026,"Bolsa periodontal","Periodontal pocket")
+        "attachment" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_067,"Pérdida de inserción clínica","Clinical attachment loss")
+        "mobility" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_058,"Movilidad dental grados I, II y III","Tooth mobility grades I, II and III")
+        "furcation" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_045,"Furcación","Furcation")
+        else -> return
+    }
+    LocalClinicalInlineZoomImageV48(lang,if(lang=="en") ref.third else ref.second,if(lang=="en") ref.third else ref.second,ref.first,"Ejemplo clínico local del hallazgo seleccionado.","Local clinical example of the selected finding.")
+}
+
+@Composable
 fun PeriodontogramScreen(
     lang: String,
     session: EducationalSession,
@@ -94,6 +107,7 @@ fun PeriodontogramScreen(
                         }
                     }
                 }
+                if ((record.probingDepths.maxOrNull() ?: 0) >= 4) PeriodontalFindingImage19(lang,"pocket")
                 Text(tr(lang, "Margen/recesión gingival por sitio (mm)", "Gingival margin/recession by site (mm)"), fontWeight = FontWeight.SemiBold)
                 siteNames.forEachIndexed { index, site ->
                     Text(site, fontWeight = FontWeight.SemiBold)
@@ -111,18 +125,22 @@ fun PeriodontogramScreen(
                         FilterChip(index in record.suppurationSites,{val s=record.suppurationSites.toMutableSet();if(!s.add(index))s.remove(index);update(record.copy(suppurationSites=s,suppuration=s.isNotEmpty()))},{Text(tr(lang,"Supuración","Suppuration"))},modifier=Modifier.weight(1f))
                     }
                 }
+                if(record.bleedingSites.isNotEmpty()) PeriodontalFindingImage19(lang,"bleeding")
+                if(record.recessionBySite.any { it != 0 }) PeriodontalFindingImage19(lang,"attachment")
                 Text(tr(lang, "Movilidad", "Mobility"), fontWeight = FontWeight.SemiBold)
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     (0..3).forEach { grade ->
                         FilterChip(record.mobility == grade, { update(record.copy(mobility = grade)) }, { Text(grade.toString()) }, modifier = Modifier.weight(1f))
                     }
                 }
+                if(record.mobility > 0) PeriodontalFindingImage19(lang,"mobility")
                 Text(tr(lang, "Furcación", "Furcation"), fontWeight = FontWeight.SemiBold)
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     (0..3).forEach { grade ->
                         FilterChip(record.furcation == grade, { update(record.copy(furcation = grade)) }, { Text(grade.toString()) }, modifier = Modifier.weight(1f))
                     }
                 }
+                if(record.furcation > 0) PeriodontalFindingImage19(lang,"furcation")
             }
         }
         item {
