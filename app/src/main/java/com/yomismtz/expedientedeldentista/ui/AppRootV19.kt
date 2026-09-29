@@ -369,7 +369,7 @@ private fun RecordMenuV19(
                 Card(onClick={onLoad(record)}, modifier=Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(14.dp), verticalArrangement=Arrangement.spacedBy(6.dp)) {
                         val p=record.session.profile
-                        Text((if(record.id==activeId)"▶ " else "📁 ")+(p.patientInitials.ifBlank{record.title}),fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
+                        Text((if(record.id==activeId)"▶ " else "")+(p.patientInitials.ifBlank{record.title}),fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
                         Text("Edad: "+p.age.ifBlank{"—"}+" · Sexo: "+p.sex.ifBlank{"—"})
                         val date=remember(record.updatedAt){java.text.SimpleDateFormat("dd/MM/yyyy · HH:mm",java.util.Locale.getDefault()).format(java.util.Date(record.updatedAt))}
                         Text("Última consulta: $date", style=MaterialTheme.typography.bodySmall)
