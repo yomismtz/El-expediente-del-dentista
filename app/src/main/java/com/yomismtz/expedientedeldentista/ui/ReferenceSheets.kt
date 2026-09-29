@@ -245,12 +245,15 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
     @Composable fun Pick(title:String,help:String,values:List<String>,selected:String,set:(String)->Unit) {
         SectionCard(title) {
             Text(help,style=MaterialTheme.typography.bodySmall)
-            ChipChoices(values.map{v->v to (selected==v)},{i->set(values[i])},columns=3)
+            val longest=values.maxOfOrNull{it.length}?:0
+            val columns=if(longest>14 || values.size>6) 2 else 3
+            ChipChoices(values.map{v->v to (selected==v)},{i->set(values[i])},columns=columns)
         }
     }
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-        item{ScreenHeader(tr(lang,"ATM + dolor orofacial","TMJ + orofacial pain"),onBack,tr(lang,"Ficha interactiva de síntomas, características del dolor, función, movimientos y palpación. Cada dato queda asociado al expediente.","Interactive sheet for symptoms, pain characteristics, function, movements and palpation. Each item is associated with the record."))}
+        item{ScreenHeader(tr(lang,"ATM y músculos","TMJ and muscles"),onBack,tr(lang,"Explora en orden: síntomas y dolor → función → movimientos mandibulares → palpación articular y muscular → seguimiento. Las selecciones quedan asociadas al expediente y las imágenes se muestran como apoyo contextual.","Examine in order: symptoms and pain → function → mandibular movements → joint and muscle palpation → follow-up. Selections remain associated with the record and images appear as contextual support."))}
+        item{NoticeCard(tr(lang,"No es necesario abrir todas las imágenes. Selecciona primero el hallazgo clínico y usa la referencia visual sólo cuando ayude a comprobar qué observar.","You do not need to open every image. Select the clinical finding first and use the visual reference only when it helps confirm what to observe."))}
         item{SectionCard(tr(lang,"1 · Síntomas y antecedentes","1 · Symptoms and history")){
             Text(tr(lang,"Marca los hallazgos referidos. Se muestran en 2–3 celdas según el espacio disponible.","Mark reported findings. They display in 2–3 cells according to available space."),style=MaterialTheme.typography.bodySmall)
             ChipChoices(findings.map{f->(if(lang=="en")f.en else f.es) to on(f.key)},{i->
@@ -258,7 +261,7 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
                 val newValue=!on(f.key)
                 checked[f.key]=newValue
                 openFindingKey=if(newValue) f.key else if(openFindingKey==f.key) "" else openFindingKey
-            },columns=3)
+            },columns=2)
             val atmFindingVisuals=mapOf(
                 "painJoint" to listOf(Triple(R.drawable.atm_new_dolor_localizado,"Dolor localizado de ATM","Imagen del sitio articular referido.")),
                 "muscle" to listOf(Triple(R.drawable.atm_new_dolor_musculos,"Dolor de músculos masticatorios","Imagen de dolor/sensibilidad muscular.")),
@@ -329,7 +332,7 @@ fun AtmScreen(lang:String,onBack:()->Unit) {
                 "Palpación muscular"->Triple(R.drawable.edu_atm_palpacion_muscular,"Palpación muscular","Imagen de palpación muscular.")
                 else->Triple(R.drawable.edu_atm_apertura_y_cierre,"Apertura y cierre","Secuencia educativa del movimiento mandibular.")
             }
-            ChipChoices(visualOptions.map{it to (showAtmVisual && atmVisual==it)},{i->atmVisual=visualOptions[i];showAtmVisual=true},columns=3)
+            ChipChoices(visualOptions.map{it to (showAtmVisual && atmVisual==it)},{i->atmVisual=visualOptions[i];showAtmVisual=true},columns=2)
             if(showAtmVisual){
             Card(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
                 Text(v.second,fontWeight=FontWeight.Bold)
