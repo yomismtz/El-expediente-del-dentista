@@ -183,9 +183,9 @@ fun IntakeInteractiveV3Screen(
                     )
                 }
                 val asa = ClinicalContent.asa.first { it.value == selectedAsa }
-                Card(colors = CardDefaults.cardColors(containerColor = IntakeMint.copy(alpha = .18f))) {
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                        Text(if(lang=="en") asa.titleEn else asa.titleEs, fontWeight = FontWeight.Bold, color = IntakeDeep)
+                        Text(if(lang=="en") asa.titleEn else asa.titleEs, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                         Text(if(lang=="en") asa.examplesEn else asa.examplesEs)
                     }
                 }
@@ -221,9 +221,9 @@ fun IntakeInteractiveV3Screen(
                         if (row.size == 1) Column(Modifier.weight(1f)) {}
                     }
                 }
-                Card(colors = CardDefaults.cardColors(containerColor = IntakeLavender.copy(alpha = .55f))) {
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(selectedMedication.name, fontWeight = FontWeight.Black, color = IntakeDeep)
+                        Text(selectedMedication.name, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onSurface)
                         Text(if(lang=="en") selectedMedication.purposeEn else selectedMedication.purposeEs)
                         Text(if(lang=="en") selectedMedication.dentalEn else selectedMedication.dentalEs)
                         Text(tr(lang,"Esquema referido para practicar el registro:","Reported regimen for documentation practice:"), fontWeight = FontWeight.Bold)
@@ -263,12 +263,12 @@ fun IntakeInteractiveV3Screen(
 
         item {
             Card(
-                colors = CardDefaults.cardColors(containerColor = IntakeTurquoise.copy(alpha = .14f)),
-                border = BorderStroke(1.dp, IntakeTurquoise),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
                 shape = RoundedCornerShape(18.dp)
             ) {
                 Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text(tr(lang,"Regla de la app","App rule"), fontWeight = FontWeight.Black, color = IntakeDeep, style = MaterialTheme.typography.titleMedium)
+                    Text(tr(lang,"Regla de la app","App rule"), fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium)
                     Text(tr(lang,
                         "Explorar → interpretar → revisar por qué → ver cómo redactarlo → volver a Nota de ingreso.",
                         "Examine → interpret → review why → see how to write it → return to Intake note."))
@@ -282,12 +282,12 @@ fun IntakeInteractiveV3Screen(
 private fun IntakeSectionCard(number:String,title:String,content:@Composable ()->Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = IntakePaper),
-        border = BorderStroke(1.dp, IntakeLilac),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         shape = RoundedCornerShape(18.dp)
     ) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
-            Text("$number  $title", fontWeight = FontWeight.Black, color = IntakeDeep, style = MaterialTheme.typography.titleLarge)
+            Text("$number  $title", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleLarge)
             content()
         }
     }
@@ -297,12 +297,12 @@ private fun IntakeSectionCard(number:String,title:String,content:@Composable ()-
 private fun WhatToWriteCard(title:String,text:String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = IntakeMint.copy(alpha = .18f)),
-        border = BorderStroke(1.dp, IntakeTurquoise),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
         shape = RoundedCornerShape(14.dp)
     ) {
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-            Text("✍️ $title", fontWeight = FontWeight.Black, color = IntakeDeep)
+            Text("✍️ $title", fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onSurface)
             Text(text)
         }
     }
