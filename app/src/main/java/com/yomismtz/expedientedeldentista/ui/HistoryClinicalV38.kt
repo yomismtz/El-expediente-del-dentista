@@ -221,7 +221,7 @@ private data class E(val n:String,val d:String)
  val chosen=rememberRecordStateMap<String,String>("history.nonpath.chosen")
  val multi=rememberRecordStateMap<String,Boolean>("history.nonpath.multi")
  val sections=listOf("Alimentación","Vivienda","Higiene","Inmunizaciones","Hábitos y exposiciones")
- fun optionsCard(title:String,options:List<String>,note:String="",columns:Int=3)=@Composable{
+ fun OptionsCard38(title:String,options:List<String>,note:String="",columns:Int=3)=@Composable{
   SectionCard(title){
    if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)
    ChipChoices(options.map{x->x to (chosen[title]==x)},{i->chosen[title]=options[i]},columns=columns)
@@ -272,13 +272,13 @@ private data class E(val n:String,val d:String)
   item{SectionCard("Categorías"){ChipChoices(sections.map{x->x to (section==x)},{i->section=sections[i];sub=""},columns=3)}}
 
   if(section=="Vivienda"){
-   item{optionsCard("Número de cuartos",listOf("1","2","3","4","5","6 o más"),"Se interpreta junto con el número de habitantes para describir densidad habitacional; no genera por sí solo una clasificación.",3)}
-   item{optionsCard("Número de habitantes",listOf("1","2","3","4","5","6","7 o más"),"Permite contextualizar posible hacinamiento junto con el número de habitaciones.",3)}
-   item{optionsCard("Techo",listOf("Concreto/losa","Lámina metálica","Fibrocemento sin asbesto referido","Asbesto/amianto referido","Teja","Madera","Palma/material vegetal","Otro/no sabe"),"Describe el material principal del techo. Si se refiere asbesto/amianto, registra la exposición sin diagnosticar enfermedad.",3)}
-   item{optionsCard("Paredes",listOf("Concreto/block/ladrillo","Adobe","Madera","Lámina","Material vegetal","Mixto","Otro/no sabe"),"El material de las paredes forma parte de las condiciones físicas de vivienda y puede orientar preguntas sobre humedad, polvo, ventilación o exposición ambiental.",3)}
-   item{optionsCard("Pintura de las paredes",listOf("Sin pintura","Pintura actual/sin plomo referido","Pintura antigua con plomo conocida","Pintura antigua descascarada o deteriorada","Tipo de pintura desconocido"),"La pintura con plomo y su polvo pueden ser fuente de exposición, sobre todo cuando se deterioran, lijan o remueven. Registrar lo referido; no diagnosticar intoxicación.",3)}
-   item{optionsCard("Piso",listOf("Tierra","Cemento/concreto","Loseta/cerámica","Madera","Vinilo/laminado","Otro/no sabe"),"Describe la superficie predominante del piso y complementa el contexto de saneamiento, humedad y facilidad de limpieza.",3)}
-   item{optionsCard("Ventilación",listOf("Adecuada referida","Limitada","Sin ventilación aparente","No sabe"),"La ventilación modifica la exposición a humedad, humo y contaminantes interiores; es un dato de contexto, no un diagnóstico.",3)}
+   item{OptionsCard38("Número de cuartos",listOf("1","2","3","4","5","6 o más"),"Se interpreta junto con el número de habitantes para describir densidad habitacional; no genera por sí solo una clasificación.",3)}
+   item{OptionsCard38("Número de habitantes",listOf("1","2","3","4","5","6","7 o más"),"Permite contextualizar posible hacinamiento junto con el número de habitaciones.",3)}
+   item{OptionsCard38("Techo",listOf("Concreto/losa","Lámina metálica","Fibrocemento sin asbesto referido","Asbesto/amianto referido","Teja","Madera","Palma/material vegetal","Otro/no sabe"),"Describe el material principal del techo. Si se refiere asbesto/amianto, registra la exposición sin diagnosticar enfermedad.",3)}
+   item{OptionsCard38("Paredes",listOf("Concreto/block/ladrillo","Adobe","Madera","Lámina","Material vegetal","Mixto","Otro/no sabe"),"El material de las paredes forma parte de las condiciones físicas de vivienda y puede orientar preguntas sobre humedad, polvo, ventilación o exposición ambiental.",3)}
+   item{OptionsCard38("Pintura de las paredes",listOf("Sin pintura","Pintura actual/sin plomo referido","Pintura antigua con plomo conocida","Pintura antigua descascarada o deteriorada","Tipo de pintura desconocido"),"La pintura con plomo y su polvo pueden ser fuente de exposición, sobre todo cuando se deterioran, lijan o remueven. Registrar lo referido; no diagnosticar intoxicación.",3)}
+   item{OptionsCard38("Piso",listOf("Tierra","Cemento/concreto","Loseta/cerámica","Madera","Vinilo/laminado","Otro/no sabe"),"Describe la superficie predominante del piso y complementa el contexto de saneamiento, humedad y facilidad de limpieza.",3)}
+   item{OptionsCard38("Ventilación",listOf("Adecuada referida","Limitada","Sin ventilación aparente","No sabe"),"La ventilación modifica la exposición a humedad, humo y contaminantes interiores; es un dato de contexto, no un diagnóstico.",3)}
    item{SectionCard("Servicios domiciliarios"){
     Text("Marca los servicios disponibles. Las opciones se organizan en 2–3 celdas según el ancho de pantalla.",style=MaterialTheme.typography.bodySmall)
     ChipChoices(services.keys.map{x->x to (multi["serv|$x"]==true)},{i->
@@ -299,17 +299,17 @@ private data class E(val n:String,val d:String)
     Text("Prioridad odontológica: frecuencia de cepillado, tipo de pasta y limpieza interdental; después correlaciona con biofilm, caries y periodonto.",style=MaterialTheme.typography.bodySmall)
    }}
    item{NoticeCard("La higiene se registra como hábito referido. Ninguna respuesta aislada califica a la persona ni establece por sí sola su estado de salud; debe integrarse con el contexto y la exploración clínica.")}
-   item{optionsCard("Higiene general · baño corporal",listOf("Menos de 1 vez/semana","1–2/semana","3–4/semana","5–6/semana","Diario","2 o más/día"),"Frecuencia habitual de baño corporal referida.",3)}
-   item{optionsCard("Lavado de manos · frecuencia diaria",listOf("0–1/día","2–3/día","4–5/día","6–9/día","10 o más/día","No sabe"),"Ayuda a describir hábitos generales de higiene. La calidad del lavado y los momentos en que se realiza también importan.",3)}
+   item{OptionsCard38("Higiene general · baño corporal",listOf("Menos de 1 vez/semana","1–2/semana","3–4/semana","5–6/semana","Diario","2 o más/día"),"Frecuencia habitual de baño corporal referida.",3)}
+   item{OptionsCard38("Lavado de manos · frecuencia diaria",listOf("0–1/día","2–3/día","4–5/día","6–9/día","10 o más/día","No sabe"),"Ayuda a describir hábitos generales de higiene. La calidad del lavado y los momentos en que se realiza también importan.",3)}
    item{SectionCard("Lavado de manos · momentos habituales"){
     val moments=listOf("Antes de preparar alimentos","Antes de comer","Después de ir al baño","Al llegar de la calle","Después de toser/estornudar","Después de contacto con animales")
     ChipChoices(moments.map{x->x to (multi["hand|$x"]==true)},{i->val x=moments[i];multi["hand|$x"]=!(multi["hand|$x"]?:false)},columns=3)
    }}
-   item{optionsCard("Cambio de ropa · veces al día",listOf("Menos de 1/día","1/día","2/día","3 o más/día","Variable","No sabe"),"Registra cuántos cambios completos de ropa refiere en un día habitual.",3)}
-   item{optionsCard("Cambio de ropa · días por semana",listOf("1 día","2–3 días","4–5 días","6 días","7 días","Variable/no sabe"),"Complementa la frecuencia diaria para evitar confundir «veces por día» con «días de la semana».",3)}
-   item{optionsCard("Higiene bucal · cepillado dental",listOf("No se cepilla","Menos de 1 vez/día","1 vez/día","2 veces/día","3 veces/día","4 o más/día"),"Frecuencia de cepillado referida; después debe correlacionarse con técnica, biofilm y hallazgos clínicos.",3)}
-   item{optionsCard("Higiene bucal · tipo de pasta",listOf("Pasta comercial regulada/etiquetada","Pasta comercial · no sabe","Producto naturista","Producto alternativo/casero","No usa pasta","No sabe"),"Registrar lo referido. Naturista o alternativo no equivale automáticamente a seguro, eficaz ni a una pasta fluorada.",3)}
-   item{optionsCard("Higiene bucal · hilo/interdental",listOf("Nunca","Ocasional","1–3 veces/semana","4–6 veces/semana","Diario","2 o más/día"),"Describe la frecuencia de limpieza interdental; no sustituye la evaluación clínica de placa o periodonto.",3)}
+   item{OptionsCard38("Cambio de ropa · veces al día",listOf("Menos de 1/día","1/día","2/día","3 o más/día","Variable","No sabe"),"Registra cuántos cambios completos de ropa refiere en un día habitual.",3)}
+   item{OptionsCard38("Cambio de ropa · días por semana",listOf("1 día","2–3 días","4–5 días","6 días","7 días","Variable/no sabe"),"Complementa la frecuencia diaria para evitar confundir «veces por día» con «días de la semana».",3)}
+   item{OptionsCard38("Higiene bucal · cepillado dental",listOf("No se cepilla","Menos de 1 vez/día","1 vez/día","2 veces/día","3 veces/día","4 o más/día"),"Frecuencia de cepillado referida; después debe correlacionarse con técnica, biofilm y hallazgos clínicos.",3)}
+   item{OptionsCard38("Higiene bucal · tipo de pasta",listOf("Pasta comercial regulada/etiquetada","Pasta comercial · no sabe","Producto naturista","Producto alternativo/casero","No usa pasta","No sabe"),"Registrar lo referido. Naturista o alternativo no equivale automáticamente a seguro, eficaz ni a una pasta fluorada.",3)}
+   item{OptionsCard38("Higiene bucal · hilo/interdental",listOf("Nunca","Ocasional","1–3 veces/semana","4–6 veces/semana","Diario","2 o más/día"),"Describe la frecuencia de limpieza interdental; no sustituye la evaluación clínica de placa o periodonto.",3)}
   }
 
   if(section=="Alimentación"){
@@ -337,15 +337,15 @@ private data class E(val n:String,val d:String)
    )
    item{NoticeCard("Tamizaje dietético odontológico. Registra qué consume y con qué frecuencia. Las alertas describen patrones de posible riesgo; no diagnostican anemia, desnutrición ni deficiencias vitamínicas. Los hallazgos relevantes deben correlacionarse con historia clínica, exploración y, cuando proceda, valoración médica/nutricional o estudios de laboratorio.")}
    protectiveGroups.forEach{(name,benefit,lowRisk)->
-    item{optionsCard(name,freqOptions,"Beneficio: $benefit Si el consumo es bajo: $lowRisk",3)}
+    item{OptionsCard38(name,freqOptions,"Beneficio: $benefit Si el consumo es bajo: $lowRisk",3)}
    }
    cariogenicGroups.forEach{(name,why,risk)->
-    item{optionsCard(name,freqOptions,"Por qué importa: $why $risk",3)}
+    item{OptionsCard38(name,freqOptions,"Por qué importa: $why $risk",3)}
    }
-   item{optionsCard("Alimentos azucarados · entre comidas",freqOptions,"Las exposiciones azucaradas entre comidas aumentan la frecuencia de desafíos ácidos. Menor frecuencia suele ser más favorable para control de caries.",3)}
-   item{optionsCard("Alimentos o bebidas azucaradas · antes de dormir o durante la noche",freqOptions,"Es una exposición especialmente relevante porque durante el sueño disminuye el flujo salival. Registrar también higiene posterior cuando corresponda.",3)}
-   item{optionsCard("Comidas principales al día",listOf("1","2","3","4","5","6 o más"),"Ayuda a interpretar regularidad e ingesta global. Una respuesta aislada no diagnostica malnutrición.",3)}
-   item{optionsCard("Consistencia habitual",listOf("Predominio muy blando","Predominio blando","Mixta","Incluye firmes/fibrosos","Frecuentemente muy duros","Variable/no sabe"),"Describe demanda masticatoria. No existe una consistencia universalmente correcta y los alimentos extremadamente duros pueden producir trauma en personas susceptibles.",3)}
+   item{OptionsCard38("Alimentos azucarados · entre comidas",freqOptions,"Las exposiciones azucaradas entre comidas aumentan la frecuencia de desafíos ácidos. Menor frecuencia suele ser más favorable para control de caries.",3)}
+   item{OptionsCard38("Alimentos o bebidas azucaradas · antes de dormir o durante la noche",freqOptions,"Es una exposición especialmente relevante porque durante el sueño disminuye el flujo salival. Registrar también higiene posterior cuando corresponda.",3)}
+   item{OptionsCard38("Comidas principales al día",listOf("1","2","3","4","5","6 o más"),"Ayuda a interpretar regularidad e ingesta global. Una respuesta aislada no diagnostica malnutrición.",3)}
+   item{OptionsCard38("Consistencia habitual",listOf("Predominio muy blando","Predominio blando","Mixta","Incluye firmes/fibrosos","Frecuentemente muy duros","Variable/no sabe"),"Describe demanda masticatoria. No existe una consistencia universalmente correcta y los alimentos extremadamente duros pueden producir trauma en personas susceptibles.",3)}
    item{SectionCard("Interpretación orientativa del patrón registrado"){
     val highSugar=listOf("Dulces, caramelos y chocolate azucarado","Galletas, pan dulce y postres","Refrescos y bebidas azucaradas","Jugos y bebidas de fruta","Bebidas deportivas o energéticas","Alimentos azucarados · entre comidas","Alimentos o bebidas azucaradas · antes de dormir o durante la noche").count{
      chosen[it] in listOf("1/día","2–3/día","4 o más/día")
@@ -389,40 +389,40 @@ private data class E(val n:String,val d:String)
   }
   if(section=="Hábitos y exposiciones" && sub=="Tabaquismo"){
    item{NoticeCard("Registrar tipo, cantidad y frecuencia permite estimar la exposición referida. En odontología el tabaco se relaciona con cambios periodontales, cicatrización y riesgo de lesiones; esta ficha no diagnostica esos problemas.")}
-   item{optionsCard("Tabaquismo · estado",listOf("Nunca","Exfumador","Actual","Exposición pasiva","No sabe"),"",3)}
-   item{optionsCard("Tabaco · días de consumo por semana",listOf("Menos de 1 día","1 día","2–3 días","4–6 días","7 días","No sabe"),"Distingue consumo ocasional de consumo diario.",3)}
-   item{optionsCard("Tabaco · cigarrillos por día de consumo",listOf("1","2–5","6–10","11–20","21–40","Más de 40","No sabe/no aplica"),"Cantidad aproximada en un día en que sí fuma.",3)}
-   item{optionsCard("Tabaco · cigarrillos por semana",listOf("1–5","6–20","21–50","51–100","101–140","Más de 140","No sabe/no aplica"),"Útil cuando el consumo no es diario; registrar la mejor aproximación referida.",3)}
-   item{optionsCard("Tabaco · tiempo de exposición",listOf("<1 año","1–5 años","6–10 años","11–20 años",">20 años","No sabe"),"",3)}
-   item{optionsCard("Producto",listOf("Cigarrillo","Puro","Pipa","Tabaco sin humo","Vapeador/cigarrillo electrónico","Más de uno","Otro/no sabe"),"Productos diferentes implican exposiciones distintas; evita convertirlos automáticamente a una equivalencia sin datos suficientes.",3)}
+   item{OptionsCard38("Tabaquismo · estado",listOf("Nunca","Exfumador","Actual","Exposición pasiva","No sabe"),"",3)}
+   item{OptionsCard38("Tabaco · días de consumo por semana",listOf("Menos de 1 día","1 día","2–3 días","4–6 días","7 días","No sabe"),"Distingue consumo ocasional de consumo diario.",3)}
+   item{OptionsCard38("Tabaco · cigarrillos por día de consumo",listOf("1","2–5","6–10","11–20","21–40","Más de 40","No sabe/no aplica"),"Cantidad aproximada en un día en que sí fuma.",3)}
+   item{OptionsCard38("Tabaco · cigarrillos por semana",listOf("1–5","6–20","21–50","51–100","101–140","Más de 140","No sabe/no aplica"),"Útil cuando el consumo no es diario; registrar la mejor aproximación referida.",3)}
+   item{OptionsCard38("Tabaco · tiempo de exposición",listOf("<1 año","1–5 años","6–10 años","11–20 años",">20 años","No sabe"),"",3)}
+   item{OptionsCard38("Producto",listOf("Cigarrillo","Puro","Pipa","Tabaco sin humo","Vapeador/cigarrillo electrónico","Más de uno","Otro/no sabe"),"Productos diferentes implican exposiciones distintas; evita convertirlos automáticamente a una equivalencia sin datos suficientes.",3)}
   }
   if(section=="Hábitos y exposiciones" && sub=="Alcohol"){
    item{NoticeCard("Registrar frecuencia y cantidad por ocasión ayuda a describir la exposición. La interpretación clínica debe considerar tipo de bebida, patrón de consumo, medicamentos y antecedentes.")}
-   item{optionsCard("Alcohol · estado",listOf("Nunca","Anteriormente","Actual","No sabe"),"",3)}
-   item{optionsCard("Alcohol · frecuencia",listOf("Menos de 1/mes","1–3/mes","1/semana","2–3/semana","4–6/semana","Diario","No sabe"),"",3)}
-   item{optionsCard("Alcohol · cantidad por ocasión",listOf("1 bebida","2 bebidas","3–4 bebidas","5–6 bebidas","7 o más","No sabe"),"Cantidad aproximada en una ocasión típica; el tamaño y graduación de la bebida pueden variar.",3)}
-   item{optionsCard("Tipo habitual",listOf("Cerveza","Vino","Destilados","Bebidas preparadas","Varios","Otro/no sabe"),"",3)}
+   item{OptionsCard38("Alcohol · estado",listOf("Nunca","Anteriormente","Actual","No sabe"),"",3)}
+   item{OptionsCard38("Alcohol · frecuencia",listOf("Menos de 1/mes","1–3/mes","1/semana","2–3/semana","4–6/semana","Diario","No sabe"),"",3)}
+   item{OptionsCard38("Alcohol · cantidad por ocasión",listOf("1 bebida","2 bebidas","3–4 bebidas","5–6 bebidas","7 o más","No sabe"),"Cantidad aproximada en una ocasión típica; el tamaño y graduación de la bebida pueden variar.",3)}
+   item{OptionsCard38("Tipo habitual",listOf("Cerveza","Vino","Destilados","Bebidas preparadas","Varios","Otro/no sabe"),"",3)}
   }
   if(section=="Hábitos y exposiciones" && sub=="Drogas"){
    item{NoticeCard("El registro es clínico y no punitivo. Pregunta sustancia, frecuencia, vía y último consumo porque pueden modificar signos vitales, interacción con medicamentos, xerostomía, bruxismo, cicatrización o conducta durante la atención.")}
-   item{optionsCard("Sustancia referida",listOf("Ninguna","Cannabis","Cocaína/crack","Metanfetaminas/estimulantes","Opioides","Alucinógenos","Inhalables","Sedantes sin indicación referida","Varias","Otra/no sabe"),"",3)}
-   item{optionsCard("Frecuencia",listOf("Nunca","Una vez/experimental","Menos de 1/mes","1–3/mes","1–6/semana","Diario","No sabe"),"",3)}
-   item{optionsCard("Vía",listOf("Fumada/vaporizada","Oral","Intranasal","Inyectada","Inhalada","Otra/no sabe"),"",3)}
-   item{optionsCard("Último consumo",listOf("<24 h","1–7 días","1–4 semanas","1–12 meses",">1 año","No recuerda/no sabe"),"",3)}
+   item{OptionsCard38("Sustancia referida",listOf("Ninguna","Cannabis","Cocaína/crack","Metanfetaminas/estimulantes","Opioides","Alucinógenos","Inhalables","Sedantes sin indicación referida","Varias","Otra/no sabe"),"",3)}
+   item{OptionsCard38("Frecuencia",listOf("Nunca","Una vez/experimental","Menos de 1/mes","1–3/mes","1–6/semana","Diario","No sabe"),"",3)}
+   item{OptionsCard38("Vía",listOf("Fumada/vaporizada","Oral","Intranasal","Inyectada","Inhalada","Otra/no sabe"),"",3)}
+   item{OptionsCard38("Último consumo",listOf("<24 h","1–7 días","1–4 semanas","1–12 meses",">1 año","No recuerda/no sabe"),"",3)}
   }
   if(section=="Hábitos y exposiciones" && sub=="Perforaciones"){
    item{NoticeCard("Selecciona la localización referida. En perforaciones orales o periorales conviene registrar trauma dental/gingival, inflamación, sangrado, secreción e irritación.")}
-   item{optionsCard("Localización de perforación",listOf("Ninguna","Lóbulo de oreja","Cartílago de oreja","Nariz · aleta","Nariz · septum","Ceja","Labio superior","Labio inferior","Frenillo labial","Lengua","Frenillo lingual","Mejilla","Ombligo","Pezón","Genital","Otra","Múltiples"),"La localización oral o perioral puede relacionarse con contacto repetido contra dientes y encía; se describe el sitio y los hallazgos, sin asumir complicación.",3)}
-   item{optionsCard("Antigüedad",listOf("<1 mes","1–6 meses","7–12 meses","1–5 años",">5 años","No sabe"),"",3)}
-   item{optionsCard("Complicaciones referidas",listOf("Ninguna","Dolor","Inflamación","Sangrado","Infección/secreción","Trauma dental/gingival","Alergia/irritación","Otra/no sabe"),"",3)}
+   item{OptionsCard38("Localización de perforación",listOf("Ninguna","Lóbulo de oreja","Cartílago de oreja","Nariz · aleta","Nariz · septum","Ceja","Labio superior","Labio inferior","Frenillo labial","Lengua","Frenillo lingual","Mejilla","Ombligo","Pezón","Genital","Otra","Múltiples"),"La localización oral o perioral puede relacionarse con contacto repetido contra dientes y encía; se describe el sitio y los hallazgos, sin asumir complicación.",3)}
+   item{OptionsCard38("Antigüedad",listOf("<1 mes","1–6 meses","7–12 meses","1–5 años",">5 años","No sabe"),"",3)}
+   item{OptionsCard38("Complicaciones referidas",listOf("Ninguna","Dolor","Inflamación","Sangrado","Infección/secreción","Trauma dental/gingival","Alergia/irritación","Otra/no sabe"),"",3)}
   }
   if(section=="Hábitos y exposiciones" && sub=="Tatuajes"){
    item{NoticeCard("Registrar tatuajes permite documentar exposiciones cutáneas y antecedentes de cicatrización o reacciones. No se infieren conductas ni riesgos sin datos concretos.")}
-   item{optionsCard("Número de tatuajes",listOf("Ninguno","1","2–3","4–5","6 o más"),"",3)}
-   item{optionsCard("Localización principal",listOf("Cabeza/cuello","Tórax","Espalda","Abdomen","Brazo/antebrazo","Mano/dedos","Muslo/pierna","Pie/tobillo","Múltiples regiones","Otra/no sabe"),"Ubicación anatómica principal del tatuaje o de los tatuajes referidos.",3)}
-   item{optionsCard("Antigüedad del más reciente",listOf("<1 mes","1–6 meses","7–12 meses","1–5 años",">5 años","No sabe"),"",3)}
-   item{optionsCard("Lugar de realización",listOf("Estudio establecido","Servicio sanitario/profesional referido","Domicilio/no profesional","Centro penitenciario","Otro","No sabe"),"",3)}
-   item{optionsCard("Complicaciones referidas",listOf("Ninguna","Infección","Reacción alérgica/dermatitis","Sangrado prolongado","Cicatrización anormal","Otra/no sabe"),"",3)}
+   item{OptionsCard38("Número de tatuajes",listOf("Ninguno","1","2–3","4–5","6 o más"),"",3)}
+   item{OptionsCard38("Localización principal",listOf("Cabeza/cuello","Tórax","Espalda","Abdomen","Brazo/antebrazo","Mano/dedos","Muslo/pierna","Pie/tobillo","Múltiples regiones","Otra/no sabe"),"Ubicación anatómica principal del tatuaje o de los tatuajes referidos.",3)}
+   item{OptionsCard38("Antigüedad del más reciente",listOf("<1 mes","1–6 meses","7–12 meses","1–5 años",">5 años","No sabe"),"",3)}
+   item{OptionsCard38("Lugar de realización",listOf("Estudio establecido","Servicio sanitario/profesional referido","Domicilio/no profesional","Centro penitenciario","Otro","No sabe"),"",3)}
+   item{OptionsCard38("Complicaciones referidas",listOf("Ninguna","Infección","Reacción alérgica/dermatitis","Sangrado prolongado","Cicatrización anormal","Otra/no sabe"),"",3)}
   }
  }
 }
