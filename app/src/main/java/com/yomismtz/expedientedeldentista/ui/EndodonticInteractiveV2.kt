@@ -1,5 +1,7 @@
 package com.yomismtz.expedientedeldentista.ui
 
+import com.yomismtz.expedientedeldentista.R
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -196,6 +198,20 @@ fun EndodonticInteractiveV2Screen(
                         OutlinedButton(onClick = onOpenApical, modifier = Modifier.fillMaxWidth()) {
                             Text("🩻 ${tr(lang, "Revisar pruebas e imagen", "Review tests and imaging")}")
                         }
+                        val endoImage=when {
+                            session.pulpal.sensitivityNegative -> R.drawable.uploaded80_002
+                            session.pulpal.coldLingering -> R.drawable.uploaded80_021
+                            session.pulpal.coldPositive -> R.drawable.uploaded80_020
+                            session.pulpal.heatPositive -> R.drawable.uploaded80_012
+                            session.pulpal.percussionPain -> R.drawable.uploaded80_042
+                            session.pulpal.palpationPain -> R.drawable.uploaded80_003
+                            session.pulpal.fistula -> R.drawable.uploaded80_005
+                            session.pulpal.swelling -> R.drawable.uploaded80_006
+                            session.pulpal.apicalRadiolucency -> R.drawable.uploaded80_017
+                            session.pulpal.widenedPdl -> R.drawable.uploaded80_004
+                            else -> R.drawable.uploaded80_016
+                        }
+                        LocalClinicalInlineZoomImageV48(lang,tr(lang,"Referencia clínica del diagnóstico actual","Clinical reference for current diagnosis"),tr(lang,"Referencia clínica del diagnóstico actual","Clinical reference for current diagnosis"),endoImage,tr(lang,"Imagen vinculada al hallazgo registrado en la ficha pulpar/periapical. Úsala junto con las pruebas y la radiografía.","Image linked to the finding recorded in the pulpal/apical sheet. Use it together with testing and imaging."),tr(lang,"Imagen vinculada al hallazgo registrado en la ficha pulpar/periapical. Úsala junto con las pruebas y la radiografía.","Image linked to the finding recorded in the pulpal/apical sheet. Use it together with testing and imaging."))
                     }
                 }
                 item {
