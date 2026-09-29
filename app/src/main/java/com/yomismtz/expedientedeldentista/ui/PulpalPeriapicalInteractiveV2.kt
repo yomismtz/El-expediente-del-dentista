@@ -106,7 +106,7 @@ fun PulpalPeriapicalInteractiveV2Screen(
             )
         }
 
-        item { SectionCard(tr(lang,"Imágenes de pruebas y hallazgos","Test and finding images")) { UploadedPulpalRefsV51(lang) } }
+        item { SectionCard(tr(lang,"Referencia visual de pruebas y hallazgos","Visual reference for tests and findings")) { UploadedPulpalRefsV51(lang) } }
 
         item {
             SectionCard(tr(lang, "1 · Órgano dentario", "1 · Tooth")) {
@@ -178,7 +178,7 @@ fun PulpalPeriapicalInteractiveV2Screen(
         }
 
         item {
-            SectionCard(tr(lang, "¿Por qué sugiere esto?", "Why does it suggest this?")) {
+            SectionCard(tr(lang, "5 · Integración pulpar y periapical", "5 · Pulpal and apical integration")) {
                 Text(explanation)
                 Text(
                     tr(
@@ -192,7 +192,7 @@ fun PulpalPeriapicalInteractiveV2Screen(
         }
 
         item {
-            SectionCard(tr(lang, "¿Qué pruebas faltan?", "Which tests are missing?")) {
+            SectionCard(tr(lang, "6 · Pruebas faltantes", "6 · Missing tests")) {
                 if (missing.isEmpty()) {
                     Text(tr(lang, "No se detectan grupos básicos sin explorar en este ejercicio; confirma que las pruebas se realizaron de forma correcta y comparativa.", "No basic test group appears unassessed in this exercise; confirm that tests were performed correctly and comparatively."))
                 } else {
