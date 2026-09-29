@@ -77,15 +77,15 @@ fun PeriodontogramScreen(
                     "Six sites per tooth: three buccal and three lingual/palatal. Learn which finding belongs in each periodontal-chart row.")
             )
         }
-        item { SectionCard(tr(lang,"Imágenes periodontales","Periodontal images")) { UploadedPeriodontalRefsV51(lang) } }
+        item { SectionCard(tr(lang,"Referencia visual periodontal","Periodontal visual reference")) { UploadedPeriodontalRefsV51(lang) } }
         item {
             ClinicalRegisterHelpV49(lang,"Ayuda · Periodoncia","Help · Periodontics","Selecciona el diente y registra cada sitio medido. Anota profundidad de sondaje, recesión y sangrado, placa o supuración sólo cuando fueron evaluados. Mantén el sitio correcto y los milímetros; el resumen organiza datos y no sustituye la interpretación periodontal.","Select the tooth and record each measured site. Enter probing depth, recession, bleeding, plaque or suppuration only when assessed. Keep the correct site and millimeters; the summary organizes data and does not replace periodontal interpretation.")
-            SectionCard(tr(lang, "Selecciona diente", "Select tooth")) {
+            SectionCard(tr(lang, "1 · Selecciona diente", "1 · Select tooth")) {
                 DentalArchSelector(ClinicalContent.permanentTeeth, selectedTooth, { selectedTooth = it }) { it in session.periodontogram }
             }
         }
         item {
-            SectionCard("OD $selectedTooth · ${tr(lang, "Profundidad de sondaje", "Probing depth")}") {
+            SectionCard("2 · OD $selectedTooth · ${tr(lang, "Registro por sitios", "Site recording")}") {
                 Text(tr(lang,
                     "Selecciona los milímetros medidos en cada sitio; no es necesario escribirlos.",
                     "Select the measured millimeters at each site; no typing is required."))
@@ -144,7 +144,7 @@ fun PeriodontogramScreen(
             }
         }
         item {
-            SectionCard(tr(lang,"Resumen periodontal automático","Automatic periodontal summary")) {
+            SectionCard(tr(lang,"3 · Resumen periodontal automático","3 · Automatic periodontal summary")) {
                 val maxPd = record.probingDepths.maxOrNull() ?: 0
                 val bleedingText = if(record.bleeding) tr(lang,"con sangrado al sondaje","with bleeding on probing") else tr(lang,"sin sangrado al sondaje","without bleeding on probing")
                 val plaqueText = if(record.plaque) tr(lang,"placa presente","plaque present") else tr(lang,"sin placa marcada","no plaque marked")
@@ -154,7 +154,7 @@ fun PeriodontogramScreen(
             }
         }
         item {
-            SectionCard(tr(lang,"Periodontograma total · resumen global","Full-mouth periodontal chart · global summary")) {
+            SectionCard(tr(lang,"4 · Periodontograma total · resumen global","4 · Full-mouth periodontal chart · global summary")) {
                 val records=session.periodontogram.values
                 val measuredSites=records.flatMap { it.probingDepths }.filter { it > 0 }
                 val totalSites=measuredSites.size
