@@ -294,7 +294,11 @@ private data class E(val n:String,val d:String)
   }
 
   if(section=="Higiene"){
-   item{NoticeCard("La higiene general se registra como hábito referido. No se utiliza una sola respuesta para calificar a la persona; se integra con contexto social, clínico y capacidad funcional.")}
+   item{SectionCard("Higiene · registro de hábitos"){
+    Text("Primero registra higiene general y después higiene bucal. Las respuestas permanecen guardadas al cambiar de categoría.",fontWeight=FontWeight.SemiBold)
+    Text("Prioridad odontológica: frecuencia de cepillado, tipo de pasta y limpieza interdental; después correlaciona con biofilm, caries y periodonto.",style=MaterialTheme.typography.bodySmall)
+   }}
+   item{NoticeCard("La higiene se registra como hábito referido. Ninguna respuesta aislada califica a la persona ni establece por sí sola su estado de salud; debe integrarse con el contexto y la exploración clínica.")}
    item{optionsCard("Higiene general · baño corporal",listOf("Menos de 1 vez/semana","1–2/semana","3–4/semana","5–6/semana","Diario","2 o más/día"),"Frecuencia habitual de baño corporal referida.",3)}
    item{optionsCard("Lavado de manos · frecuencia diaria",listOf("0–1/día","2–3/día","4–5/día","6–9/día","10 o más/día","No sabe"),"Ayuda a describir hábitos generales de higiene. La calidad del lavado y los momentos en que se realiza también importan.",3)}
    item{SectionCard("Lavado de manos · momentos habituales"){
