@@ -669,36 +669,66 @@ private data class E(val n:String,val d:String)
 }
 
 @Composable fun HistoryDentalAlterationsV38(lang:String,onBack:()->Unit){
- var section by rememberRecordState("history.dentalAlterations.section",0)
+ var group by rememberRecordState("history.dentalAlterations.group",0)
+ var subgroup by rememberRecordState("history.dentalAlterations.subgroup",0)
  val selected=rememberRecordStateMap<String,String>("history.dentalAlterations.selected")
- val sections=listOf(
-  "Número · disminución" to listOf("Sin alteración","Hipodoncia/agenesia","Oligodoncia","Anodoncia"),
-  "Número · aumento" to listOf("Sin alteración","Supernumerario","Mesiodens","Paramolar","Distomolar"),
-  "Tamaño" to listOf("Sin alteración","Microdoncia localizada","Microdoncia generalizada","Macrodoncia localizada","Macrodoncia generalizada"),
-  "Forma / morfología" to listOf("Sin alteración","Fusión","Geminación","Concrescencia","Dens invaginatus","Dens evaginatus","Taurodontismo","Perla de esmalte","Dilaceración"),
-  "Estructura" to listOf("Sin alteración","Hipoplasia del esmalte","Hipomineralización","Amelogénesis imperfecta","Dentinogénesis imperfecta","Displasia dentinaria","Fluorosis sospechada"),
-  "Color" to listOf("Sin alteración","Extrínseco localizado","Extrínseco generalizado","Intrínseco localizado","Intrínseco generalizado","Opacidad blanca","Tonalidad amarilla/marrón","Tonalidad gris/azulada"),
-  "Erupción" to listOf("Normal aparente","Erupción precoz","Erupción tardía","Ectópica","Retenido/no erupcionado","Impactado","Incluido intraóseo","Natal","Neonatal","Anquilosis/diente sumergido","Falla primaria sospechada"),
-  "Posición" to listOf("Sin alteración","Rotación","Versión/inclinación","Transposición","Desplazamiento vestibular","Desplazamiento lingual/palatino","Infraoclusión","Supraoclusión")
+ data class Subgroup38(val name:String,val findings:List<String>)
+ data class Group38(val name:String,val subs:List<Subgroup38>)
+ val groups=listOf(
+  Group38("1 · Anomalías de número",listOf(
+   Subgroup38("Disminución del número",listOf("Sin alteración","Anodoncia","Hipodoncia","Oligodoncia")),
+   Subgroup38("Aumento del número / hiperdoncia",listOf("Sin alteración","Diente supernumerario","Mesiodens","Paramolar","Distomolar / cuarto molar","Premolar supernumerario","Suplementario","Conoidal","Tuberculado"))
+  )),
+  Group38("2 · Anomalías de tamaño",listOf(
+   Subgroup38("Disminución",listOf("Sin alteración","Microdoncia localizada","Microdoncia generalizada verdadera","Microdoncia generalizada relativa","Incisivo lateral conoide")),
+   Subgroup38("Aumento",listOf("Sin alteración","Macrodoncia localizada","Macrodoncia generalizada verdadera","Macrodoncia generalizada relativa"))
+  )),
+  Group38("3 · Anomalías de forma o morfología",listOf(
+   Subgroup38("Corona",listOf("Sin alteración","Incisivo conoide","Dens invaginatus","Dens evaginatus","Cúspide en talón","Cúspides accesorias","Tubérculo de Carabelli","Protostílido","Incisivos en pala","Surco palatorradicular")),
+   Subgroup38("Raíz",listOf("Sin alteración","Dilaceración","Raíces supernumerarias / accesorias","Raíz corta","Raíces fusionadas","Curvaturas radiculares pronunciadas")),
+   Subgroup38("Corona y raíz",listOf("Sin alteración","Hipotaurodontismo","Mesotaurodontismo","Hipertaurodontismo")),
+   Subgroup38("Esmalte ectópico sobre la raíz",listOf("Sin alteración","Perla de esmalte","Proyección cervical de esmalte"))
+  )),
+  Group38("4 · Anomalías de unión/división",listOf(
+   Subgroup38("Unión de gérmenes",listOf("Sin alteración","Fusión")),
+   Subgroup38("Intento de división de un germen",listOf("Sin alteración","Geminación")),
+   Subgroup38("Unión por cemento",listOf("Sin alteración","Concrescencia")),
+   Subgroup38("Formas combinadas",listOf("Sin alteración","Fusión de diente normal con supernumerario","Diente doble"))
+  )),
+  Group38("5 · Anomalías de estructura",listOf(
+   Subgroup38("Esmalte · cantidad",listOf("Sin alteración","Hipoplasia del esmalte","Diente de Turner")),
+   Subgroup38("Esmalte · calidad/mineralización",listOf("Sin alteración","Hipomineralización","MIH / HMI","HSPM","Fluorosis","Defectos postraumáticos")),
+   Subgroup38("Alteraciones hereditarias del esmalte",listOf("Sin alteración","Amelogénesis imperfecta hipoplásica","Amelogénesis imperfecta hipomadurativa","Amelogénesis imperfecta hipocalcificada / hipomineralizada","Amelogénesis imperfecta mixta")),
+   Subgroup38("Dentina",listOf("Sin alteración","Dentinogénesis imperfecta","Displasia dentinaria tipo I","Displasia dentinaria tipo II")),
+   Subgroup38("Esmalte + dentina",listOf("Sin alteración","Odontodisplasia regional / ghost teeth"))
+  )),
+  Group38("6 · Alteraciones de color",listOf(
+   Subgroup38("Intrínsecas",listOf("Sin alteración","Fluorosis","MIH","Amelogénesis imperfecta","Dentinogénesis imperfecta","Tetraciclinas","Necrosis pulpar","Hemorragia pulpar","Reabsorción interna / pink spot","Hiperbilirrubinemia","Porfiria","Pigmentación por materiales / endodoncia")),
+   Subgroup38("Extrínsecas",listOf("Sin alteración","Café","Té","Vino","Tabaco","Alimentos cromógenos","Placa cromógena negra","Mancha verde / naranja","Hierro","Clorhexidina","Metales","Pigmentaciones ocupacionales"))
+  )),
+  Group38("7 · Anomalías de erupción",listOf(
+   Subgroup38("A · Cronología o tiempo",listOf("Sin alteración","Erupción precoz / adelantada","Erupción prematura","Dientes natales","Dientes neonatales","Erupción retardada localizada","Erupción retardada generalizada")),
+   Subgroup38("B · Posición, trayectoria o dirección",listOf("Sin alteración","Erupción ectópica","Transposición dentaria","Transmigración","Erupción vestibular","Erupción lingual / palatina","Erupción mesial anómala","Erupción distal anómala","Rotación")),
+   Subgroup38("C · Detención o fracaso eruptivo",listOf("Sin alteración","Impactación","Inclusión","Retención primaria","Retención secundaria","Fallo primario de erupción (PFE)","Fallo mecánico de erupción","Anquilosis","Infraoclusión")),
+   Subgroup38("D · Asociadas a la erupción",listOf("Sin alteración","Quiste de erupción","Hematoma de erupción","Secuestro eruptivo","Pericoronitis","Retención prolongada del temporal","Sobreerupción"))
+  ))
  )
- val photos=listOf(
-  R.drawable.clinical_hypodontia,R.drawable.clinical_mesiodens,R.drawable.clinical_microdontia,R.drawable.clinical_gemination,
-  R.drawable.clinical_amelogenesis,R.drawable.clinical_fluorosis,R.drawable.clinical_impacted,R.drawable.clinical_transposition
- )
- val safeSection=section.coerceIn(0,sections.lastIndex)
- val current=sections[safeSection]
+ val safeGroup=group.coerceIn(0,groups.lastIndex)
+ val g=groups[safeGroup]
+ val safeSub=subgroup.coerceIn(0,g.subs.lastIndex)
+ val s=g.subs[safeSub]
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Alteraciones y anomalías dentales",onBack,"Primero selecciona el grupo; debajo aparecen la referencia visual y los hallazgos. La rejilla usa 2–3 celdas en pantallas pequeñas y hasta 4 cuando hay espacio.")}
-  item{SectionCard("1 · Tipo de alteración"){ChipChoices(sections.mapIndexed{i,x->x.first to (safeSection==i)},{i->section=i},columns=4)}}
-  item{ClinicalPhotoV38(current.first+" · referencia visual",photos[safeSection],"Imagen clínica/radiográfica real de referencia · Wikimedia Commons. Verificar autor y licencia del archivo; no usar una imagen aislada para establecer diagnóstico.")}
-  item{SectionCard("2 · Hallazgo"){
-   ChipChoices(current.second.map{o->o to (selected[current.first]==o)},{i->selected[current.first]=current.second[i]},columns=4)
+  item{ScreenHeader("Anomalías dentales",onBack,"Clasificación por número, tamaño, forma, unión/división, estructura, color y erupción. Selecciona primero el grupo y después la subclasificación.")}
+  item{SectionCard("1 · Grupo principal"){ChipChoices(groups.mapIndexed{i,x->x.name to (safeGroup==i)},{i->group=i;subgroup=0},columns=2)}}
+  item{SectionCard("2 · Subclasificación"){ChipChoices(g.subs.mapIndexed{i,x->x.name to (safeSub==i)},{i->subgroup=i},columns=2)}}
+  item{SectionCard("3 · Anomalía / hallazgo"){
+   ChipChoices(s.findings.map{x->x to (selected[g.name+"|"+s.name]==x)},{i->selected[g.name+"|"+s.name]=s.findings[i]},columns=3)
   }}
   val extension=listOf("Un diente","Varios dientes","Localizado por cuadrante","Generalizado","No valorable")
-  item{SectionCard("3 · Extensión"){ChipChoices(extension.map{o->o to (selected["Extensión"]==o)},{i->selected["Extensión"]=extension[i]},columns=4)}}
+  item{SectionCard("4 · Extensión"){ChipChoices(extension.map{x->x to (selected["Extensión"]==x)},{i->selected["Extensión"]=extension[i]},columns=3)}}
   val confirmation=listOf("Sólo clínica","Clínica + radiografía","Antecedente documentado","Requiere estudio complementario","No aplica")
-  item{SectionCard("4 · Confirmación disponible"){ChipChoices(confirmation.map{o->o to (selected["Confirmación"]==o)},{i->selected["Confirmación"]=confirmation[i]},columns=4)}}
-  item{NoticeCard("Registrar el órgano dentario específico se completa en el odontograma/análisis dental. Retención, inclusión e impactación pueden solaparse según la fuente; correlacionar clínica y radiografía antes de etiquetar.")}
+  item{SectionCard("5 · Confirmación disponible"){ChipChoices(confirmation.map{x->x to (selected["Confirmación"]==x)},{i->selected["Confirmación"]=confirmation[i]},columns=3)}}
+  item{NoticeCard("Las categorías organizan el registro educativo y no generan diagnóstico automático. Correlaciona los hallazgos con historia clínica, exploración y estudios apropiados. Las imágenes específicas de anomalías se incorporarán como referencias locales cuando estén disponibles.")}
  }
 }
 
