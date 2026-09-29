@@ -486,8 +486,8 @@ private data class E(val n:String,val d:String)
   }
  }
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Antecedentes quirúrgicos, hospitalarios y traumáticos",onBack,"Selecciona opciones predeterminadas. El objetivo es registrar antecedentes, antigüedad, complicaciones y secuelas sin inventar información.")}
-  item{sections.forEach{x->FilterChip(section==x,{section=x},{Text(x)},modifier=Modifier.fillMaxWidth())}}
+  item{ScreenHeader("Antecedentes quirúrgicos, hospitalarios y traumáticos",onBack,"Selecciona un apartado y registra antecedente → antigüedad → complicaciones o secuelas. Las respuestas se conservan al cambiar de apartado.")}
+  item{SectionCard("Apartado"){ChipChoices(sections.map{it to (section==it)},{section=sections[it]},columns=2);Text("Apartado actual: $section",style=MaterialTheme.typography.bodySmall,fontWeight=FontWeight.SemiBold)}}
   if(section=="Cirugías"){
    item{OptionsCard("Antecedente de cirugía",listOf("Ninguna","Sí, una","Sí, dos","Sí, tres o más","No recuerda"))}
    item{OptionsCard("Tipo de cirugía",listOf("No aplica","Cesárea","Apendicectomía","Colecistectomía","Hernioplastia","Amigdalectomía/adenoidectomía","Ortopédica","Maxilofacial/dental","Ginecológica","Cardiovascular","Abdominal/digestiva","Otra/no recuerda"))}
@@ -526,8 +526,7 @@ private data class E(val n:String,val d:String)
    item{OptionsCard("Tratamiento recibido",listOf("No aplica","Observación/reposo","Inmovilización","Reducción","Cirugía","Tratamiento dental","Rehabilitación/fisioterapia","Combinado","No recuerda"))}
    item{OptionsCard("Secuelas",listOf("Ninguna referida","Dolor","Limitación de movimiento","Alteración de mordida/oclusión","Alteración de ATM","Pérdida/daño dental","Alteración sensitiva","Otra","No sabe"),"Trauma de cara, maxilares, dientes o ATM puede requerir correlación con exploración clínica y estudios auxiliares.")}
   }
-  item{Button(onClick={},modifier=Modifier.fillMaxWidth()){Text("💾 Guardar antecedentes seleccionados")}}
-  item{NoticeCard("Una cesárea también debe ser congruente con antecedentes gineco-obstétricos. Trasplantes e inmunosupresión deben correlacionarse con APP y medicamentos.")}
+  item{NoticeCard("Los cambios quedan registrados al seleccionarlos. Una cesárea debe ser congruente con antecedentes gineco-obstétricos; trasplantes e inmunosupresión deben correlacionarse con APP y medicamentos. Trauma de cara, maxilares, dientes o ATM debe correlacionarse con la exploración correspondiente.")}
  }
 }
 
