@@ -184,12 +184,12 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
     fun setAll(code:Int) { saveCodes(allSurfaces.associateWith{code}) }
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-        item { ScreenHeader("ICDAS",onBack,tr(lang,"Puedes asignar códigos diferentes a varias caras. El código global del diente se actualiza automáticamente con el mayor código registrado.","You can assign different codes to multiple surfaces. The overall tooth code automatically becomes the highest recorded code.")) }
+        item { ScreenHeader("ICDAS",onBack,tr(lang,"Dentición → diente → superficie → código 0–6. Cada superficie conserva su código y el resumen del diente muestra el mayor registrado.","Dentition → tooth → surface → code 0–6. Each surface keeps its code and the tooth summary shows the highest recorded code.")) }
         item { OutlinedButton(onClick={showIcdasHelp=true},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"ⓘ Ayuda ICDAS · cómo reconocer los códigos","ⓘ ICDAS help · how to recognize the codes"))} }
-        item { Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-            FilterChip(!primary,{primary=false},{Text(tr(lang,"Permanentes","Permanent"))}); FilterChip(primary,{primary=true},{Text(tr(lang,"Temporales","Primary"))})
-        } }
-        item { SectionCard(tr(lang,"Diente y superficies","Tooth and surfaces")) {
+        item { SectionCard(tr(lang,"1 · Dentición","1 · Dentition")) { Row(horizontalArrangement=Arrangement.spacedBy(8.dp),modifier=Modifier.fillMaxWidth()) {
+            FilterChip(!primary,{primary=false},{Text(tr(lang,"Permanente","Permanent"))},modifier=Modifier.weight(1f)); FilterChip(primary,{primary=true},{Text(tr(lang,"Temporal","Primary"))},modifier=Modifier.weight(1f))
+        } } }
+        item { SectionCard(tr(lang,"2 · Diente y superficie","2 · Tooth and surface")) {
             DentalArchSelector(shown,selectedTooth,{selectedTooth=it}){session.icdasSurfaces[it]?.values?.any{c->c>0}==true}
             DentalSurfaceDiagram(centerEnabled=true,surfaceColor={surface->
                 val c=surfaceCodes[surface]?:0
@@ -198,6 +198,7 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
             Text("${surfaceName(selectedSurface,lang)} · ICDAS $currentCode")
             Text(tr(lang,"Código del diente = $toothCode (mayor código entre sus caras)","Tooth code = $toothCode (highest code among surfaces)"),fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary)
         } }
+        item { Text(tr(lang,"3 · Selecciona el código ICDAS para la superficie activa","3 · Select the ICDAS code for the active surface"),fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium) }
         items(ClinicalContent.icdas.size) { index ->
             val guide=ClinicalContent.icdas[index]
             Card(onClick={setCode(guide.code)},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=if(currentCode==guide.code)MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.surface)) {
@@ -211,10 +212,11 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
                 LocalClinicalInlineZoomImageV48(lang,tr(lang,"ICDAS ${guide.code} · imagen clínica","ICDAS ${guide.code} · clinical image"),tr(lang,"ICDAS ${guide.code} · imagen clínica","ICDAS ${guide.code} · clinical image"),icdasImage,tr(lang,"Ejemplo clínico correspondiente al código seleccionado. Correlaciona la imagen con los criterios escritos antes de registrar la superficie.","Clinical example corresponding to the selected code. Correlate the image with the written criteria before recording the surface."),tr(lang,"Ejemplo clínico correspondiente al código seleccionado. Correlaciona la imagen con los criterios escritos antes de registrar la superficie.","Clinical example corresponding to the selected code. Correlate the image with the written criteria before recording the surface."))
             }
         }
-        item { Row(horizontalArrangement=Arrangement.spacedBy(8.dp),modifier=Modifier.fillMaxWidth()) {
-            OutlinedButton(onClick={setAll(currentCode)},modifier=Modifier.weight(1f)){Text(tr(lang,"Mismo código en todo el diente","Same code on whole tooth"))}
-            OutlinedButton(onClick={setAll(0)},modifier=Modifier.weight(1f)){Text(tr(lang,"Limpiar diente","Clear tooth"))}
-        } }
+        item { SectionCard(tr(lang,"4 · Acciones del diente","4 · Tooth actions")) { Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick={setAll(currentCode)},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Aplicar ICDAS $currentCode a todas las superficies","Apply ICDAS $currentCode to all surfaces"))}
+            OutlinedButton(onClick={setAll(0)},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Limpiar códigos ICDAS del diente","Clear ICDAS codes from tooth"))}
+            Text(tr(lang,"Usa «aplicar a todas» sólo si todas las superficies examinadas cumplen el mismo criterio.","Use “apply to all” only when every examined surface meets the same criterion."),style=MaterialTheme.typography.bodySmall)
+        } } }
         item { NoticeCard(tr(lang,"Para práctica: selecciona una cara, asigna su código y continúa con las demás. Un diente puede tener varias superficies con códigos distintos; el resumen toma el mayor.","For practice: select a surface, assign its code and continue with the others. One tooth may have several different surface codes; the summary uses the highest.")) }
     }
     if(showIcdasHelp){
