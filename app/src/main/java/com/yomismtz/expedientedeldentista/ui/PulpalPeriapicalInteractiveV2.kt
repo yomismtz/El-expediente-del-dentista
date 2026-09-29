@@ -106,6 +106,8 @@ fun PulpalPeriapicalInteractiveV2Screen(
             )
         }
 
+        item { SectionCard(tr(lang,"Referencias clínicas de pruebas y hallazgos","Clinical test and finding references")) { UploadedPulpalRefsV51(lang) } }
+
         item {
             SectionCard(tr(lang, "1 · Órgano dentario", "1 · Tooth")) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
