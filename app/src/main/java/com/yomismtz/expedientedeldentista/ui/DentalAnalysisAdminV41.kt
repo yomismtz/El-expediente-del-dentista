@@ -90,7 +90,7 @@ private data class ExplainField(val n:String,val why:String,val examples:String)
   item{SectionCard("3 · Motivo"){reasons.forEach{FilterChip(reason==it,{reason=it},{Text(it)},Modifier.fillMaxWidth())}}}
   item{SectionCard("4 · Prioridad"){Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(5.dp)){priorities.forEach{FilterChip(priority==it,{priority=it},{Text(it)},Modifier.weight(1f))}}}}
   item{SectionCard("5 · Servicio receptor"){destinations.forEach{FilterChip(destination==it,{destination=it},{Text(it)},Modifier.fillMaxWidth())}}}
-  item{SectionCard("Solicitud generada"){Text("Se solicita $service para $site por $reason. Prioridad: $priority. Servicio receptor: $destination. La autorización y supervisión deberán documentarse conforme al formato institucional.",fontWeight=FontWeight.Bold)}}
+  item{SectionCard("6 · Solicitud generada"){Text("Se solicita $service para $site por $reason. Prioridad: $priority. Servicio receptor: $destination. La autorización y supervisión deberán documentarse conforme al formato institucional.",fontWeight=FontWeight.Bold)}}
   item{NoticeCard("La solicitud no sustituye diagnóstico, consentimiento, indicación clínica ni autorización del docente/profesional responsable.")}
  }
 }
@@ -128,8 +128,8 @@ private data class ExplainField(val n:String,val why:String,val examples:String)
   item{SectionCard("3 · Costo institucional"){costs.forEach{FilterChip(costBand==it,{costBand=it},{Text(it)},Modifier.fillMaxWidth())};Text("La app no inventa precios: el importe monetario debe provenir del tarifario autorizado de la institución.")}}
   item{SectionCard("4 · Laboratorio"){labs.forEach{FilterChip(lab==it,{lab=it},{Text(it)},Modifier.fillMaxWidth())}}}
   item{SectionCard("5 · Estado"){states.forEach{FilterChip(status==it,{status=it},{Text(it)},Modifier.fillMaxWidth())}}}
-  item{SectionCard("Resumen"){Text("$qty × $procedure · Costo: $costBand · Laboratorio: $lab · Estado: $status",fontWeight=FontWeight.Bold)}}
-  item{SectionCard("6 · Comprobación antes de entregar"){
+  item{SectionCard("6 · Resumen"){Text("$qty × $procedure · Costo: $costBand · Laboratorio: $lab · Estado: $status",fontWeight=FontWeight.Bold)}}
+  item{SectionCard("7 · Comprobación antes de entregar"){
     listOf(
       "El procedimiento coincide con el plan de tratamiento autorizado.",
       "La cantidad corresponde a las unidades realmente presupuestadas.",
@@ -139,7 +139,7 @@ private data class ExplainField(val n:String,val why:String,val examples:String)
       "Cualquier cambio posterior requiere actualizar el presupuesto."
     ).forEach{Text("✓ $it")}
   }}
-  item{SectionCard("7 · Estado administrativo"){
+  item{SectionCard("8 · Estado administrativo"){
     Text("Registro generado: $procedure · cantidad $qty · $costBand · laboratorio: $lab · $status.",fontWeight=FontWeight.Bold)
     Text("La aceptación económica no equivale al consentimiento informado del procedimiento clínico.")
   }}
