@@ -69,7 +69,7 @@ fun ColloquialDentalTranslatorV42(onBack:()->Unit){
  var open by remember{mutableStateOf<Int?>(null)}
  val filtered=colloquialDentalPhrasesV42.filter{query.isBlank()||it.phrase.contains(query,true)||it.clinical.any{x->x.contains(query,true)}}
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
-  item{ScreenHeader("Traductor de palabras coloquiales en odontología",onBack,"50 expresiones frecuentes con tres formas posibles de trasladarlas a lenguaje clínico. Son opciones de redacción y orientación, no diagnósticos automáticos.")}
+  item{ScreenHeader("Traductor de palabras coloquiales en odontología",onBack,"Selecciona una expresión coloquial y revisa tres formas posibles de trasladarla a lenguaje clínico. Las opciones orientan la redacción y no generan diagnósticos automáticos.")}
   item{OutlinedTextField(query,{query=it.take(80)},modifier=Modifier.fillMaxWidth(),label={Text("Buscar expresión o término clínico")},singleLine=true)}
   item{NoticeCard("Conserva siempre el motivo de consulta literal entre comillas. Estas traducciones sirven para construir el padecimiento actual después del interrogatorio y la exploración.")}
   items(filtered.size){i->val x=filtered[i];Card(onClick={open=if(open==x.id)null else x.id},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){Text("“"+x.phrase+"”",fontWeight=FontWeight.Bold);if(open==x.id)x.clinical.forEachIndexed{n,t->Text("${n+1}. $t")}else Text("Toca para ver 3 traducciones clínicas",style=MaterialTheme.typography.bodySmall)}}}
