@@ -7,3 +7,7 @@ build/
 .externalNativeBuild/
 .cxx/
 .DS_Store
+
+# Release signing material must never be committed
+*.keystore
+*.jks
