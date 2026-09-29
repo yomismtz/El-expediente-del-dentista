@@ -1007,7 +1007,6 @@ private data class E(val n:String,val d:String)
        else->null
       }
       habitVisual?.let{v->
-       Text("Imagen",fontWeight=FontWeight.SemiBold)
        LocalClinicalInlineZoomImageV48(lang,v.second,v.second,v.first,v.third,v.third)
       }
       if(h.id=="pacifier") LocalClinicalHelpImageV47(lang,"Mamila prolongada","Prolonged bottle use",R.drawable.edu_habito_mamila,"Imagen complementaria asociada al uso prolongado de mamila.","Additional image associated with prolonged bottle use.")
