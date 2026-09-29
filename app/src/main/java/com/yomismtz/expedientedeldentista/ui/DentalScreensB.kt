@@ -281,6 +281,9 @@ fun IhosScreen(lang: String, session: EducationalSession, onSessionChanged: (Edu
                         )
                     }
                 }
+                val debrisCode=session.ihosDebris[selected] ?: 0
+                val debrisImage=when(debrisCode){0->R.drawable.uploaded80_075;1->R.drawable.uploaded80_076;2->R.drawable.uploaded80_077;else->R.drawable.uploaded80_078}
+                LocalClinicalInlineZoomImageV48(lang,tr(lang,"IHOS detritos · código $debrisCode","OHI-S debris · code $debrisCode"),tr(lang,"IHOS detritos · código $debrisCode","OHI-S debris · code $debrisCode"),debrisImage,tr(lang,"Referencia clínica del código de detritos seleccionado.","Clinical reference for the selected debris code."),tr(lang,"Referencia clínica del código de detritos seleccionado.","Clinical reference for the selected debris code."))
                 Text(tr(lang,"Cálculo dental","Dental calculus"),fontWeight=FontWeight.Bold)
                 Row(horizontalArrangement=Arrangement.spacedBy(5.dp),modifier=Modifier.fillMaxWidth()) {
                     (0..3).forEach { c ->
@@ -298,6 +301,9 @@ fun IhosScreen(lang: String, session: EducationalSession, onSessionChanged: (Edu
             SectionCard(tr(lang,"Guía rápida de códigos","Quick code guide")) {
                 Text(tr(lang,"Detritos: 0 ninguno · 1 <1/3 · 2 de 1/3 a 2/3 · 3 >2/3 de la superficie.","Debris: 0 none · 1 <1/3 · 2 from 1/3 to 2/3 · 3 >2/3 of surface."))
                 Text(tr(lang,"Cálculo: 0 ninguno · 1 supragingival <1/3 · 2 de 1/3 a 2/3 y/o presencia ligera subgingival · 3 >2/3 y/o banda subgingival importante.","Calculus: 0 none · 1 supragingival <1/3 · 2 from 1/3 to 2/3 and/or light subgingival presence · 3 >2/3 and/or important subgingival band."))
+                val calculusCode=session.ihosCalculus[selected] ?: 0
+                val calculusImage=when(calculusCode){0->R.drawable.uploaded80_071;1->R.drawable.uploaded80_072;2->R.drawable.uploaded80_073;else->R.drawable.uploaded80_074}
+                LocalClinicalInlineZoomImageV48(lang,tr(lang,"IHOS cálculo · código $calculusCode","OHI-S calculus · code $calculusCode"),tr(lang,"IHOS cálculo · código $calculusCode","OHI-S calculus · code $calculusCode"),calculusImage,tr(lang,"Referencia clínica del código de cálculo seleccionado.","Clinical reference for the selected calculus code."),tr(lang,"Referencia clínica del código de cálculo seleccionado.","Clinical reference for the selected calculus code."))
             }
         }
         item {
