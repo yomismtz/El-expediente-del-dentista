@@ -947,9 +947,7 @@ private data class E(val n:String,val d:String)
   item{SectionCard("2 · Subclasificación"){ChipChoices(g.subs.mapIndexed{i,x->x.name to (safeSub==i)},{i->subgroup=i},columns=2)}}
   item{SectionCard("3 · Anomalía / hallazgo"){
    ChipChoices(s.findings.map{x->x to (selected[g.name+"|"+s.name]==x)},{i->selected[g.name+"|"+s.name]=s.findings[i]},columns=3)
-  }}
-  if(anomalyImages.isNotEmpty()){
-   item{SectionCard("Imagen del hallazgo"){
+   if(anomalyImages.isNotEmpty()){
     if(anomalyImages.size>1){
      Text("Selecciona una imagen",fontWeight=FontWeight.SemiBold)
      ChipChoices(anomalyImages.indices.map{i->"Imagen "+(i+1) to (safeAnomalyImageIndex==i)},{i->anomalyImageIndex=i},columns=2)
@@ -958,8 +956,8 @@ private data class E(val n:String,val d:String)
     LocalClinicalInlineZoomImageV48(lang,(finding?:"Anomalía")+" · imagen "+(safeAnomalyImageIndex+1),(finding?:"Dental anomaly")+" · image "+(safeAnomalyImageIndex+1),res,
      "Imagen local correspondiente al hallazgo seleccionado. Úsala junto con los criterios clínicos y radiográficos; no genera diagnóstico automático.",
      "Local image corresponding to the selected finding. Use it with clinical and radiographic criteria; it does not generate an automatic diagnosis.")
-   }}
-  }
+   }
+  }}
   val extension=listOf("Un diente","Varios dientes","Localizado por cuadrante","Generalizado","No valorable")
   item{SectionCard("4 · Extensión"){ChipChoices(extension.map{x->x to (selected["Extensión"]==x)},{i->selected["Extensión"]=extension[i]},columns=3)}}
   val confirmation=listOf("Sólo clínica","Clínica + radiografía","Antecedente documentado","Requiere estudio complementario","No aplica")
