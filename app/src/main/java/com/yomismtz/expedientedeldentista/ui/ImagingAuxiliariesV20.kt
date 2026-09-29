@@ -49,23 +49,23 @@ private fun ImagingFindingImageV20(lang:String,group:String,finding:String){
  var study by rememberRecordState("imaging.study",imagingTypes15.first().name);var group by rememberRecordState("imaging.group",findingGroups15.first().first)
  val selected=rememberRecordStateMap<String,String>("imaging.selected")
  ResponsiveScreenV17("Imagenología dental · registro educativo","Selecciona el estudio y registra hallazgos mediante opciones. No se genera un diagnóstico automático.",onBack){profile->
-  ResponsiveSectionV17("Tipo de estudio","Elige la modalidad que corresponde al estudio disponible."){
+  ResponsiveSectionV17("1 · Tipo de estudio","Elige la modalidad que corresponde al estudio disponible."){
    AdaptiveGridV17(imagingTypes15.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 3){i->val x=imagingTypes15[i];FilterChip(study==x.name,{study=x.name},{Text(x.name)},Modifier.fillMaxWidth())}
    Text(imagingTypes15.first{it.name==study}.use,style=MaterialTheme.typography.bodySmall)
   }
-  studyMethodsV23[study]?.let{methods->ResponsiveSectionV17("Cómo analizar este estudio","Método educativo, puntos y significado clínico."){methods.forEach{Text("• "+it)}}}
-  ResponsiveSectionV17("Revisión sistemática","Selecciona lo observado. Los términos «aparente» y «sospechada» evitan convertir una imagen aislada en diagnóstico definitivo."){
+  studyMethodsV23[study]?.let{methods->ResponsiveSectionV17("2 · Cómo analizar este estudio","Método educativo, puntos y significado clínico."){methods.forEach{Text("• "+it)}}}
+  ResponsiveSectionV17("3 · Revisión sistemática","Selecciona lo observado. Los términos «aparente» y «sospechada» evitan convertir una imagen aislada en diagnóstico definitivo."){
    AdaptiveGridV17(findingGroups15.size,if(profile.width==ScreenWidthV17.COMPACT)2 else 3){i->val name=findingGroups15[i].first;FilterChip(group==name,{group=name},{Text(name)},Modifier.fillMaxWidth())}
    val opts=findingGroups15.first{it.first==group}.second
    AdaptiveGridV17(opts.size,if(profile.width==ScreenWidthV17.COMPACT)1 else 2){i->val x=opts[i];FilterChip(selected[group]==x,{selected[group]=x},{Text(x)},Modifier.fillMaxWidth())}
    selected[group]?.let{ ImagingFindingImageV20(lang,group,it) }
   }
-  ResponsiveSectionV17("Resumen automático"){
+  ResponsiveSectionV17("4 · Resumen automático"){
    Text("Estudio: "+study,fontWeight=FontWeight.Black)
    findingGroups15.forEach{item->selected[item.first]?.let{v->Text("• "+item.first+": "+v)}}
    if(selected.isEmpty())Text("Aún no se han seleccionado hallazgos.")
   }
-  ResponsiveSectionV17("Seguridad radiológica"){Text("La indicación debe individualizarse después de revisar historia, imágenes previas y exploración clínica. CBCT no debe solicitarse por rutina; se reserva para preguntas clínicas donde la información tridimensional aporte un beneficio que justifique la exposición.")}
+  ResponsiveSectionV17("5 · Seguridad radiológica"){Text("La indicación debe individualizarse después de revisar historia, imágenes previas y exploración clínica. CBCT no debe solicitarse por rutina; se reserva para preguntas clínicas donde la información tridimensional aporte un beneficio que justifique la exposición.")}
   NoticeCard("Módulo educativo. La interpretación definitiva depende de la calidad del estudio, la correlación clínica y, cuando corresponda, del informe de radiología oral y maxilofacial.")
  }
 }
