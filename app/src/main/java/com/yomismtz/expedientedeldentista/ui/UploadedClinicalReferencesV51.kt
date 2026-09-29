@@ -124,10 +124,10 @@ private fun UploadedClinicalRefsV51(lang:String, refs:List<UploadedClinicalRefV5
 @Composable internal fun UploadedCariesRefsV51(lang:String)=UploadedClinicalRefsV51(lang,listOf(
  UploadedClinicalRefV51(R.drawable.uploaded80_055,"Lesión de mancha blanca activa","Active white-spot lesion"),
  UploadedClinicalRefV51(R.drawable.uploaded80_056,"Lesión de mancha blanca inactiva","Inactive white-spot lesion"),
- UploadedClinicalRefV51(R.drawable.uploaded80_037,"Caries no cavitada","Non-cavitated caries"),
+ UploadedClinicalRefV51(R.drawable.edu_caries_inactiva,"Caries no cavitada","Non-cavitated caries"),
  UploadedClinicalRefV51(R.drawable.uploaded80_033,"Caries cavitada","Cavitated caries"),
  UploadedClinicalRefV51(R.drawable.uploaded80_035,"Caries activa","Active caries"),
- UploadedClinicalRefV51(R.drawable.uploaded80_034,"Caries inactiva","Inactive caries"),
+ UploadedClinicalRefV51(R.drawable.edu_caries_inactiva,"Caries inactiva","Inactive caries"),
  UploadedClinicalRefV51(R.drawable.uploaded80_036,"Caries coronaria","Coronal caries"),
  UploadedClinicalRefV51(R.drawable.uploaded80_038,"Caries radicular","Root caries"),
  UploadedClinicalRefV51(R.drawable.uploaded80_057,"Mancha blanca temporal por deshidratación","Temporary dehydration white spot"),
