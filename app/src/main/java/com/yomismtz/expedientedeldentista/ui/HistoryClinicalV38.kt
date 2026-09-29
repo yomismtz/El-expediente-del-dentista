@@ -794,17 +794,20 @@ private data class E(val n:String,val d:String)
   "Resultado referido" to listOf("Estable","Recidiva leve","Recidiva moderada","Recidiva importante","Insatisfecho","No sabe/no recuerda")
  )
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Antecedentes ortodónticos y ortopédicos",onBack,"Registro guiado del tratamiento previo, aparatología, duración, retención y resultado referido. Las opciones se reorganizan de 2 a 4 celdas según el ancho disponible.")}
+  item{ScreenHeader("Antecedentes ortodónticos y ortopédicos",onBack,"Registra en orden: tratamiento/aparatología previa → edad y duración → finalización → retención → resultado referido. La imagen aparece dentro del apartado seleccionado cuando existe una referencia específica.")}
   item{SectionCard("¿Recibió tratamiento previo?"){ChipChoices(listOf("No recibió" to (prior==false),"Sí recibió" to (prior==true)),{prior=it==1},columns=2)}}
   if(prior==true) sections.forEach{(name,opts)->
    item{SectionCard(name){
-    ChipChoices(opts.map{o->o to (selected[name]==o)},{i->selected[name]=opts[i]},columns=4)
+    val longest=opts.maxOfOrNull{it.length}?:0
+    val columns=if(longest>16 || opts.size>6) 2 else 3
+    ChipChoices(opts.map{o->o to (selected[name]==o)},{i->selected[name]=opts[i]},columns=columns)
     if(name=="Tratamiento previo") when(selected[name]){
      "Brackets metálicos"->ClinicalPhotoV38("Brackets metálicos",R.drawable.new77_edu_brackets_metalicos,"Imagen de la opción seleccionada.")
      "Brackets estéticos"->ClinicalPhotoV38("Brackets estéticos",R.drawable.new77_edu_brackets_esteticos,"Imagen de la opción seleccionada.")
      "Alineadores transparentes"->ClinicalPhotoV38("Alineadores transparentes",R.drawable.new77_edu_alineadores_tranparentes,"Imagen de la opción seleccionada.")
      "Aparato removible"->ClinicalPhotoV38("Aparatología removible",R.drawable.new77_edu_aparatologia_removible,"Imagen de la opción seleccionada.")
      "Expansor palatino"->ClinicalPhotoV38("Expansor de paladar",R.drawable.new77_edu_expansor_de_paladar,"Imagen de la opción seleccionada.")
+     "Mantenedor de espacio"->ClinicalPhotoV38("Mantenedor de espacio · ejemplo: arco lingual",R.drawable.uploaded80_024,"Referencia visual de un tipo de mantenedor de espacio. El diseño exacto debe registrarse según el aparato observado o referido.")
      "Cirugía ortognática asociada"->ClinicalPhotoV38("Cirugía ortognática",R.drawable.new77_edu_cirugia_ortognatica,"Imagen de la opción seleccionada.")
     }
     if(name=="Retención") when(selected[name]){
@@ -816,7 +819,7 @@ private data class E(val n:String,val d:String)
     }
    }}
   }
-  item{NoticeCard("El antecedente ortodóntico se registra según lo referido y lo observable. No asumir diagnóstico previo, indicación original ni estabilidad futura sin expediente, exploración y estudios.")}
+  item{NoticeCard("Los cambios quedan registrados al seleccionarlos. El antecedente ortodóntico se documenta según lo referido y lo observable. No asumir diagnóstico previo, indicación original ni estabilidad futura sin expediente, exploración y estudios.")}
  }
 }
 
