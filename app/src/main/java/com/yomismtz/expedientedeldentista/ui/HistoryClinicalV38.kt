@@ -991,18 +991,15 @@ private data class E(val n:String,val d:String)
  val freqOpts=listOf("Ocasional","1–2 días/semana","3–4 días/semana","5–6 días/semana","Diario","Varias veces al día","No sabe")
  val durationOpts=listOf("<1 mes","1–6 meses","7–12 meses","1–2 años","3–5 años",">5 años","Desde infancia","No sabe")
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Hábitos y parafunciones",onBack,"Selecciona los hábitos presentes. Las opciones se organizan en 2–3 celdas y cada una incluye explicación, qué observar y una fotografía local opcional asociada al expediente.")}
-  item{SectionCard("Panorama de hábitos orales"){
-   Text("Toca el recuadro para abrir la imagen general; después selecciona el hábito referido para ver su explicación e imagen específica.",style=MaterialTheme.typography.bodySmall)
-   LocalClinicalHelpImageV47(lang,"Panorama de hábitos orales","Oral habits overview",R.drawable.edu_habitos_orales,"Imagen general de los principales hábitos y parafunciones.","General image of common oral habits and parafunctions.")
-  }}
+  item{ScreenHeader("Hábitos y parafunciones",onBack,"Selecciona primero el hábito referido. Después registra frecuencia y duración dentro de su propia tarjeta. La explicación, la imagen clínica y la fotografía del expediente permanecen asociadas al hábito seleccionado.")}
+  item{NoticeCard("Flujo sugerido: hábito → detalles clínicos → frecuencia → duración → fotografía opcional. No necesitas abrir imágenes que no correspondan al hallazgo seleccionado.")}
   item{SectionCard("Hábitos referidos"){
    ChipChoices(habits.map{h->h.name to (present[h.id]==true)},{i->
     val h=habits[i]
     val newValue=!(present[h.id]?:false)
     present[h.id]=newValue
     openId=if(newValue)h.id else if(openId==h.id)"" else openId
-   },columns=3)
+   },columns=2)
   }}
   habits.forEach{h->
    if(present[h.id]==true){
@@ -1029,15 +1026,15 @@ private data class E(val n:String,val d:String)
       if(h.id=="pacifier") LocalClinicalHelpImageV47(lang,"Mamila prolongada","Prolonged bottle use",R.drawable.edu_habito_mamila,"Imagen complementaria asociada al uso prolongado de mamila.","Additional image associated with prolonged bottle use.")
       if(h.id=="nail") LocalClinicalHelpImageV47(lang,"Mordisqueo labial","Lip biting",R.drawable.edu_habito_mordisqueo_labial,"Imagen de mordisqueo labial.","Image of lip biting.")
       Text("Frecuencia",fontWeight=FontWeight.SemiBold)
-      ChipChoices(freqOpts.map{x->x to (frequency[h.id]==x)},{i->frequency[h.id]=freqOpts[i]},columns=3)
+      ChipChoices(freqOpts.map{x->x to (frequency[h.id]==x)},{i->frequency[h.id]=freqOpts[i]},columns=2)
       Text("Tiempo de evolución / duración",fontWeight=FontWeight.SemiBold)
-      ChipChoices(durationOpts.map{x->x to (duration[h.id]==x)},{i->duration[h.id]=durationOpts[i]},columns=3)
+      ChipChoices(durationOpts.map{x->x to (duration[h.id]==x)},{i->duration[h.id]=durationOpts[i]},columns=2)
       HabitPhotoPickerV38(h.id,h.name)
      }
     }}}
    }
   }
-  item{NoticeCard("Las fotografías seleccionadas son archivos locales elegidos por el usuario y se asocian al expediente mediante su URI persistente. La fotografía documenta el aspecto observado; no sustituye exploración ni establece por sí sola un diagnóstico.")}
+  item{NoticeCard("Las selecciones y fotografías quedan asociadas al expediente. La fotografía documenta el aspecto observado; no sustituye exploración ni establece por sí sola un diagnóstico.")}
  }
 }
 
