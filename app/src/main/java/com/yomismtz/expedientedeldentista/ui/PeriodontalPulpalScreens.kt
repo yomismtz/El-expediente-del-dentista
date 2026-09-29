@@ -252,6 +252,20 @@ fun PulpalScreen(
 }
 
 @Composable
+private fun ApicalClinicalImage19(lang:String,kind:String) {
+    val r = when(kind) {
+        "percussion" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_042,"Dolor a la percusión","Percussion pain")
+        "palpation" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_003,"Dolor a la palpación","Palpation pain")
+        "swelling" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_006,"Inflamación/absceso localizado","Localized swelling/abscess")
+        "fistula" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_005,"Fístula","Sinus tract")
+        "radiolucency" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_017,"Radiolucidez periapical","Periapical radiolucency")
+        "pdl" -> Triple(com.yomismtz.expedientedeldentista.R.drawable.uploaded80_004,"Ensanchamiento del ligamento periodontal","Widened periodontal ligament")
+        else -> return
+    }
+    LocalClinicalInlineZoomImageV48(lang,if(lang=="en") r.third else r.second,if(lang=="en") r.third else r.second,r.first,"Imagen clínica local relacionada con el hallazgo seleccionado; correlaciona con exploración y estudios.","Local clinical image related to the selected finding; correlate with examination and studies.")
+}
+
+@Composable
 fun ApicalScreen(
     lang: String,
     session: EducationalSession,
@@ -283,15 +297,21 @@ fun ApicalScreen(
         item {
             SectionCard(tr(lang, "Signos clínicos periapicales", "Periapical clinical signs")) {
                 BooleanRow(tr(lang, "Dolor a la percusión o masticación", "Pain to percussion or biting"), a.percussionPain) { update(a.copy(percussionPain = it)) }
+                if(a.percussionPain) ApicalClinicalImage19(lang,"percussion")
                 BooleanRow(tr(lang, "Dolor a la palpación apical", "Apical palpation pain"), a.palpationPain) { update(a.copy(palpationPain = it)) }
+                if(a.palpationPain) ApicalClinicalImage19(lang,"palpation")
                 BooleanRow(tr(lang, "Aumento de volumen", "Swelling"), a.swelling) { update(a.copy(swelling = it)) }
+                if(a.swelling) ApicalClinicalImage19(lang,"swelling")
                 BooleanRow(tr(lang, "Fístula / tracto sinuoso", "Sinus tract"), a.fistula) { update(a.copy(fistula = it)) }
+                if(a.fistula) ApicalClinicalImage19(lang,"fistula")
             }
         }
         item {
             SectionCard(tr(lang, "Hallazgos radiográficos", "Radiographic findings")) {
                 BooleanRow(tr(lang, "Radiolucidez apical", "Apical radiolucency"), a.apicalRadiolucency) { update(a.copy(apicalRadiolucency = it)) }
+                if(a.apicalRadiolucency) ApicalClinicalImage19(lang,"radiolucency")
                 BooleanRow(tr(lang, "Ensanchamiento del ligamento periodontal", "Widened periodontal ligament"), a.widenedPdl) { update(a.copy(widenedPdl = it)) }
+                if(a.widenedPdl) ApicalClinicalImage19(lang,"pdl")
                 BooleanRow(tr(lang, "Radiopacidad apical difusa", "Diffuse apical radiopacity"), a.apicalRadiopacity) { update(a.copy(apicalRadiopacity = it)) }
             }
         }
