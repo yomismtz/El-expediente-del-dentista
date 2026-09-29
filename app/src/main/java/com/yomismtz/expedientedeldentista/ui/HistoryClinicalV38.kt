@@ -608,13 +608,25 @@ private data class E(val n:String,val d:String)
     "Discromía difusa"->ClinicalPhotoV38("Discromía difusa",R.drawable.skin20_12,"Imagen de la opción seleccionada.")
    }}
    item{Pick("Distribución de la alteración de color",listOf("No aplica","Generalizada","Facial difusa","Perioral","Periorbitaria","Localizada","Simétrica","Asimétrica","No valorable"),"La distribución ayuda a describir el hallazgo. Correlacionar con mucosas, iluminación, antecedentes y contexto clínico.")}
-   item{Pick("Simetría facial",listOf("Simétrica aparente","Asimetría derecha","Asimetría izquierda","Asimetría compleja","No valorable"))}
+   item{Pick("Simetría facial",listOf("Simétrica aparente","Asimetría derecha","Asimetría izquierda","Asimetría compleja","No valorable"),"Qué es: comparación de ambos hemirrostros en reposo. Por qué importa: permite registrar diferencias de volumen, altura o posición y decidir qué estructuras requieren exploración dirigida; una asimetría aislada no establece diagnóstico.")}
    item{when(selected["Simetría facial"]){
-    "Simétrica aparente"->ClinicalPhotoV38("Simetría facial aparente",R.drawable.face13_simetria_aparente,"Imagen local de la opción seleccionada.")
-    "Asimetría derecha"->ClinicalPhotoV38("Asimetría facial derecha",R.drawable.face13_asimetria_derecha,"Imagen local de la opción seleccionada.")
-    "Asimetría izquierda"->ClinicalPhotoV38("Asimetría facial izquierda",R.drawable.face13_asimetria_izquierda,"Imagen local de la opción seleccionada.")
-    "Asimetría compleja"->ClinicalPhotoV38("Asimetría facial compleja",R.drawable.face13_asimetria_compleja,"Imagen local de la opción seleccionada.")
-    "No valorable"->ClinicalPhotoV38("Simetría no valorable",R.drawable.face13_simetria_no_valorable,"Imagen local de la opción seleccionada.")
+    "Simétrica aparente"->ClinicalPhotoV38("Simetría facial aparente",R.drawable.face13_simetria_aparente,"Referencia local de la opción seleccionada; correlacionar con la exploración clínica.")
+    "Asimetría derecha"->ClinicalPhotoV38("Asimetría facial derecha",R.drawable.face13_asimetria_derecha,"Referencia local de la opción seleccionada; describir región y magnitud clínica.")
+    "Asimetría izquierda"->ClinicalPhotoV38("Asimetría facial izquierda",R.drawable.face13_asimetria_izquierda,"Referencia local de la opción seleccionada; describir región y magnitud clínica.")
+    "Asimetría compleja"->ClinicalPhotoV38("Asimetría facial compleja",R.drawable.face13_asimetria_compleja,"Referencia local de la opción seleccionada; correlacionar con antecedentes y exploración.")
+    "No valorable"->ClinicalPhotoV38("Simetría no valorable",R.drawable.face13_simetria_no_valorable,"Referencia local de la opción seleccionada.")
+   }}
+   item{Pick("Proporciones faciales · referencia",listOf("Tercios faciales","Quintos faciales","No valorable"),"Qué es: división clínica del rostro en segmentos verticales u horizontales para observar proporciones. Por qué importa: ayuda a describir discrepancias faciales y orientar el análisis ortodóntico/ortopédico sin convertir la proporción aislada en diagnóstico.")}
+   item{when(selected["Proporciones faciales · referencia"]){
+    "Tercios faciales"->ClinicalPhotoV38("Tercios faciales",R.drawable.edu_extraoral_tercios_faciales,"Divide el rostro en tercios de referencia para comparar proporciones verticales; interpretar con edad, anatomía y contexto clínico.")
+    "Quintos faciales"->ClinicalPhotoV38("Quintos faciales",R.drawable.edu_extraoral_quintos_faciales,"Divide el ancho facial en quintos de referencia para comparar proporciones transversales; interpretar como guía descriptiva.")
+   }}
+   item{Pick("Perfil facial",listOf("Recto","Convexo","Cóncavo","No valorable"),"Qué es: relación anteroposterior aparente del perfil facial observada de lado. Por qué importa: orienta la descripción de la relación maxilomandibular y el análisis ortodóntico; no sustituye mediciones ni estudios diagnósticos.")}
+   item{when(selected["Perfil facial"]){
+    "Recto"->ClinicalPhotoV38("Perfil recto",R.drawable.allimg_075_perfil_recto,"Referencia local del perfil seleccionado. Correlacionar con examen facial, oclusión y estudios cuando estén indicados.")
+    "Convexo"->ClinicalPhotoV38("Perfil convexo",R.drawable.allimg_074_perfil_convexo,"Referencia local del perfil seleccionado. La convexidad describe el contorno y no determina por sí sola su causa.")
+    "Cóncavo"->ClinicalPhotoV38("Perfil cóncavo",R.drawable.allimg_073_perfil_concavo,"Referencia local del perfil seleccionado. La concavidad describe el contorno y no determina por sí sola su causa.")
+    "No valorable"->ClinicalPhotoV38("Perfil no valorable",R.drawable.face13_perfil_no_valorable,"Registrar como no valorable cuando la observación no permita una clasificación fiable.")
    }}
    item{Pick("Exostosis craneal · identificación",listOf("No se observa","Frontal","Parietal","Occipital","Temporal / mastoidea","Múltiple","No valorable"),"Exostosis = prominencia ósea localizada. Selecciona la región observada o palpada; este hallazgo por sí solo no establece la causa.")}
    item{Pick("Exostosis craneal · aspecto frecuente",listOf("Prominencia frontal localizada","Prominencia parietal localizada","Prominencia occipital localizada","Prominencia mastoidea / temporal","Prominencias múltiples","No valorable"),"Al seleccionar una opción se muestran ejemplos anatómicos frecuentes por localización; distinguir una variante/prominencia ósea de una masa de tejidos blandos requiere exploración clínica.")}
