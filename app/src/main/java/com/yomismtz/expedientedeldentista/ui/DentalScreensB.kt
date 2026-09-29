@@ -170,6 +170,24 @@ fun IpcScreen(lang: String, session: EducationalSession, onSessionChanged: (Educ
                     }
                 }
                 Text(ClinicalEngines.ipcInterpretation(session.ipcCodes.getOrElse(selected){"0"},lang),fontWeight=FontWeight.SemiBold)
+                val currentIpcCode=session.ipcCodes.getOrElse(selected){"0"}
+                val ipcImage=when(currentIpcCode){
+                    "0"->R.drawable.uploaded80_048
+                    "1"->R.drawable.uploaded80_079
+                    "2"->R.drawable.uploaded80_049
+                    "3"->R.drawable.uploaded80_050
+                    "4"->R.drawable.uploaded80_051
+                    else->R.drawable.uploaded80_052
+                }
+                val ipcTitle=when(currentIpcCode){
+                    "0"->tr(lang,"IPC 0 · sin hallazgo indexado","CPI 0 · no indexed finding")
+                    "1"->tr(lang,"IPC 1 · sangrado después del sondaje","CPI 1 · bleeding after probing")
+                    "2"->tr(lang,"IPC 2 · cálculo/factor retentivo","CPI 2 · calculus/retentive factor")
+                    "3"->tr(lang,"IPC 3 · bolsa 4–5 mm","CPI 3 · 4–5 mm pocket")
+                    "4"->tr(lang,"IPC 4 · bolsa ≥6 mm","CPI 4 · ≥6 mm pocket")
+                    else->tr(lang,"IPC X · no evaluable","CPI X · not evaluable")
+                }
+                LocalClinicalInlineZoomImageV48(lang,ipcTitle,ipcTitle,ipcImage,tr(lang,"Imagen clínica correspondiente al código seleccionado en este sextante. Úsala junto con los criterios del IPC y el sondaje periodontal.","Clinical image corresponding to the selected code in this sextant. Use it together with CPI criteria and periodontal probing."),tr(lang,"Imagen clínica correspondiente al código seleccionado en este sextante. Úsala junto con los criterios del IPC y el sondaje periodontal.","Clinical image corresponding to the selected code in this sextant. Use it together with CPI criteria and periodontal probing."))
             }
         }
         item {
