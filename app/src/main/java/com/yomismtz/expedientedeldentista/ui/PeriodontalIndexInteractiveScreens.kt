@@ -189,7 +189,7 @@ fun IpcInteractiveV2Screen(
             }
         }
         item {
-            SectionCard("${tr(lang, "3 · Sitios del OD", "3 · Tooth sites")} $selectedTooth") {
+            SectionCard("${tr(lang, "3 · Sitios y código del OD", "3 · Tooth sites and code")} $selectedTooth") {
                 Text(tr(lang,
                     "MV = mesio-vestibular, V = vestibular, DV = disto-vestibular, ML/P = mesio-lingual/palatino, L/P = lingual/palatino, DL/P = disto-lingual/palatino.",
                     "MV = mesiobuccal, B = buccal, DB = distobuccal, ML/P = mesiolingual/palatal, L/P = lingual/palatal, DL/P = distolingual/palatal."
@@ -229,7 +229,7 @@ fun IpcInteractiveV2Screen(
             }
         }
         item {
-            SectionCard(tr(lang, "Guía rápida de códigos", "Quick code guide")) {
+            SectionCard(tr(lang, "4 · Guía rápida de códigos", "4 · Quick code guide")) {
                 Text("0 · ${tr(lang, "Sin hallazgos codificados", "No indexed finding")}")
                 Text("1 · ${tr(lang, "Sangrado después del sondaje", "Bleeding after probing")}")
                 Text("2 · ${tr(lang, "Cálculo y/o factor retentivo de placa", "Calculus and/or plaque-retentive factor")}")
@@ -247,7 +247,7 @@ fun IpcInteractiveV2Screen(
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                    Text(tr(lang, "Resultado automático", "Automatic result"), fontWeight = FontWeight.Black, color = IndexDeep)
+                    Text(tr(lang, "5 · Resultado por sextantes", "5 · Sextant result"), fontWeight = FontWeight.Black, color = IndexDeep)
                     Text(summary, fontWeight = FontWeight.Bold)
                     Text(tr(lang,
                         "Ejemplo de redacción: “IPC: $summary”. Describe después los hallazgos relevantes y complétalos con la valoración periodontal.",
@@ -391,7 +391,7 @@ fun IhosInteractiveV2Screen(
         }
         item {
             if (slot.indexTooth !in excludedSlots) {
-                SectionCard("OD $selectedTooth · ${if (lang == "en") slot.surfaceEn else slot.surfaceEs}") {
+                SectionCard("${tr(lang,"3 · Registro","3 · Recording")} · OD $selectedTooth · ${if (lang == "en") slot.surfaceEn else slot.surfaceEs}") {
                     Text(tr(lang, "Detritos", "Debris"), fontWeight = FontWeight.Black, color = IndexDeep)
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                         (0..3).forEach { score ->
@@ -421,7 +421,7 @@ fun IhosInteractiveV2Screen(
             }
         }
         item {
-            SectionCard(tr(lang, "Guía de puntuación", "Scoring guide")) {
+            SectionCard(tr(lang, "4 · Guía de puntuación", "4 · Scoring guide")) {
                 Text("${tr(lang, "Detritos", "Debris")}: 0 = ${tr(lang, "sin detritos/mancha", "no debris/stain")}; 1 = ${tr(lang, "hasta 1/3 de la superficie", "up to 1/3")}; 2 = ${tr(lang, "más de 1/3 y hasta 2/3", ">1/3 to 2/3")}; 3 = ${tr(lang, "más de 2/3", ">2/3")}.")
                 Spacer(Modifier.height(4.dp))
                 Text("${tr(lang, "Cálculo", "Calculus")}: 0 = ${tr(lang, "sin cálculo", "none")}; 1 = ${tr(lang, "supragingival hasta 1/3", "supragingival up to 1/3")}; 2 = ${tr(lang, "supragingival >1/3 y hasta 2/3 o depósitos subgingivales aislados", "supragingival >1/3 to 2/3 or isolated subgingival deposits")}; 3 = ${tr(lang, "supragingival >2/3 y/o banda subgingival abundante/continua", "supragingival >2/3 and/or heavy continuous subgingival band")}.")
@@ -435,7 +435,7 @@ fun IhosInteractiveV2Screen(
                 border = BorderStroke(1.dp, IndexTurquoise)
             ) {
                 Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text(tr(lang, "Resumen del IHOS", "OHI-S summary"), fontWeight = FontWeight.Black, color = IndexDeep)
+                    Text(tr(lang, "5 · Resumen del IHOS", "5 · OHI-S summary"), fontWeight = FontWeight.Black, color = IndexDeep)
                     Text("${tr(lang, "Promedio detritos", "Debris average")}: $dAvg")
                     Text("${tr(lang, "Promedio cálculo", "Calculus average")}: $cAvg")
                     Text("IHOS: $total", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black, color = IndexPurple)
