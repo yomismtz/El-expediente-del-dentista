@@ -90,21 +90,21 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
     val example=if(finding=="Normal") "$name: ${if(lang=="en")selected.normalEn else selected.normalEs}"
     else tr(lang,"$name: $finding; ${if(count=="Única")"lesión única" else "lesiones múltiples"}; tamaño ${sizeMm}; color $color; forma $shape; superficie $surface; borde $border; base $base; consistencia $consistency; movilidad $mobility; $symptoms; duración $duration; evolución $evolution${if(notes.isBlank())"" else "; $notes"}. Descripción clínica; correlacionar antes de diagnosticar.","$name: $finding; size ${if(sizeMm.isBlank())"not entered" else "$sizeMm mm"}; color $color; shape $shape; surface $surface; border $border; base $base; consistency $consistency; mobility $mobility; symptoms $symptoms; duration $duration; evolution $evolution. Clinical description; correlate before diagnosis.")
 
-    ResponsiveScreenV17(tr(lang,"Mucosas orales interactivas","Interactive oral mucosa"),tr(lang,"Selecciona un tejido y practica una descripción clínica sistemática.","Select a tissue and practice systematic clinical description."),onBack) { profile ->
+    ResponsiveScreenV17(tr(lang,"Análisis de mucosas","Oral mucosa analysis"),tr(lang,"Explora por zona: tejido → sano o alteración → lesión elemental → características clínicas → condición orientativa. Las imágenes aparecen sólo cuando corresponden a la selección.","Examine by region: tissue → healthy or altered → elementary lesion → clinical features → orienting condition. Images appear only when they correspond to the selection."),onBack) { profile ->
         val zoneColumns=when {
             profile.largeSystemText -> 2
-            profile.width==ScreenWidthV17.COMPACT -> 3
-            profile.width==ScreenWidthV17.MEDIUM -> 4
-            else -> 6
+            profile.width==ScreenWidthV17.COMPACT -> 2
+            profile.width==ScreenWidthV17.MEDIUM -> 3
+            else -> 4
         }
-        ResponsiveSectionV17(tr(lang,"Selecciona un tejido","Select a tissue")) {
+        ResponsiveSectionV17(tr(lang,"1 · Selecciona un tejido","1 · Select a tissue"),tr(lang,"Revisa una zona a la vez. El registro de cada tejido se conserva de forma independiente.","Review one region at a time. Each tissue record is preserved independently.")) {
             Text("${tr(lang,"Zona seleccionada","Selected region")}: $name",fontWeight=FontWeight.Black,color=MaterialTheme.colorScheme.primary)
             AdaptiveGridV17(zones19.size,zoneColumns){i->
                 val z=zones19[i]
                 FilterChip(selectedId==z.id,{selectedId=z.id},{Text(if(lang=="en")z.en else z.es)},modifier=Modifier.fillMaxWidth())
             }
         }
-        ResponsiveSectionV17(name,tr(lang,"Indica primero si el tejido está sano o presenta una alteración. Las opciones posteriores se muestran sólo cuando corresponde.","First indicate whether the tissue is healthy or altered. Further options appear only when appropriate.")) {
+        ResponsiveSectionV17(tr(lang,"2 · Estado del tejido · $name","2 · Tissue status · $name"),tr(lang,"Indica primero si el tejido está sano o presenta una alteración. Las opciones posteriores se muestran sólo cuando corresponde.","First indicate whether the tissue is healthy or altered. Further options appear only when appropriate.")) {
             val status=tissueStatus[selected.id]?:""
             AdaptiveGridV17(2,2){i->
                 val value=if(i==0)"Sano" else "Alteración"
@@ -134,7 +134,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                     "orofaringe" to listOf("Faringoamigdalitis a valorar","Hipertrofia amigdalina","Exudado amigdalino","Úlcera/lesión mucosa","Asimetría amigdalina a valorar")
                 )
                 Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){
-                    Text(tr(lang,"Lesión elemental observada","Observed elementary lesion"),fontWeight=FontWeight.Black)
+                    Text(tr(lang,"3 · Lesión elemental observada","3 · Observed elementary lesion"),fontWeight=FontWeight.Black)
                     TextButton(onClick={showElementaryHelp=!showElementaryHelp}){Text("?")}
                 }
                 if(showElementaryHelp){
@@ -256,7 +256,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
         }
         // Las imágenes regionales ya no se muestran como galerías; cada imagen aparece sólo al seleccionar su opción.
         if(tissueStatus[selected.id]=="Alteración" && !tissueLesion[selected.id].isNullOrBlank()){
-            ResponsiveSectionV17(tr(lang,"Características de la alteración seleccionada","Characteristics of the selected alteration")) {
+            ResponsiveSectionV17(tr(lang,"4 · Características de la alteración seleccionada","4 · Characteristics of the selected alteration"),tr(lang,"Describe sistemáticamente el hallazgo seleccionado antes de interpretarlo.","Describe the selected finding systematically before interpreting it.")) {
                 MucosaPick19("Tamaño mayor aproximado",listOf("<2 mm","2–4 mm","5–9 mm","10–19 mm","20–29 mm","≥30 mm","No medido"),sizeMm){sizeMm=it}
                 MucosaPick19("Número",listOf("Única","Múltiples"),count){count=it}
                 MucosaPick19("Color",listOf("Rosado","Rojo","Blanco","Rojo-blanco","Amarillo","Azulado/violáceo","Marrón/negro","Translúcido","Mixto"),color){color=it}
