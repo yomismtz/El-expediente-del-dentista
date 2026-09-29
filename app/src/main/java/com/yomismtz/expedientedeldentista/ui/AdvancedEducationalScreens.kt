@@ -344,6 +344,20 @@ fun SurgicalSheetScreen(lang: String, onBack: () -> Unit) {
         item { Pick(tr(lang,"1 · Procedimiento","1 · Procedure"),procedures,procedure){procedure=it} }
         item { Pick(tr(lang,"2 · Zona quirúrgica","2 · Surgical site"),sites,site){site=it} }
         item { Pick(tr(lang,"3 · Seguridad preoperatoria","3 · Preoperative safety"),preops,preop){preop=it} }
+        item {
+            val ready = preop == "Valoración preoperatoria completa"
+            val blocked = preop == "Requiere interconsulta antes de proceder" || preop == "Procedimiento diferido por seguridad"
+            SectionCard(tr(lang,"Semáforo preoperatorio","Preoperative safety check")) {
+                Text(
+                    when {
+                        blocked -> tr(lang,"🔴 No continuar con el procedimiento en este ejercicio. Registra el motivo y solicita valoración/supervisión antes de reprogramar.","🔴 Do not continue with the procedure in this exercise. Record the reason and obtain assessment/supervision before rescheduling.")
+                        ready -> tr(lang,"🟢 Valoración preoperatoria registrada como completa. Continúa sólo con la autorización y supervisión correspondientes.","🟢 Preoperative assessment is recorded as complete. Continue only with the corresponding authorization and supervision.")
+                        else -> tr(lang,"🟡 Faltan estudios o datos por revisar. Completa la valoración antes de considerar el procedimiento listo.","🟡 Studies or information still need review. Complete the assessment before considering the procedure ready.")
+                    },
+                    fontWeight=FontWeight.Bold
+                )
+            }
+        }
         item { Pick(tr(lang,"4 · Anestesia","4 · Anesthesia"),anesthesias,anesthesia){anesthesia=it} }
         item { Pick(tr(lang,"5 · Técnica realizada","5 · Technique performed"),techniques,technique){technique=it} }
         item { Pick(tr(lang,"6 · Hallazgo transoperatorio","6 · Intraoperative finding"),findings,finding){finding=it} }
