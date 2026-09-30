@@ -653,21 +653,80 @@ private data class E(val n:String,val d:String)
 
   if(section=="Higiene"){
    item{SectionCard("Higiene · registro de hábitos"){
-    Text("Primero registra higiene general y después higiene bucal. Las respuestas permanecen guardadas al cambiar de categoría.",fontWeight=FontWeight.SemiBold)
-    Text("Prioridad odontológica: frecuencia de cepillado, tipo de pasta y limpieza interdental; después correlaciona con biofilm, caries y periodonto.",style=MaterialTheme.typography.bodySmall)
+    Text("Registra por separado higiene general, cambio de ropa, lavado de manos e higiene bucal. Las respuestas permanecen guardadas al cambiar de categoría.",fontWeight=FontWeight.SemiBold)
+    Text("En odontología se priorizan cepillado, pasta, hilo/interdental y enjuague; los demás datos describen hábitos generales del paciente.",style=MaterialTheme.typography.bodySmall)
    }}
-   item{NoticeCard("La higiene se registra como hábito referido. Ninguna respuesta aislada califica a la persona ni establece por sí sola su estado de salud; debe integrarse con el contexto y la exploración clínica.")}
-   item{OptionsCard38("Higiene general · baño corporal",listOf("Menos de 1 vez/semana","1–2/semana","3–4/semana","5–6/semana","Diario","2 o más/día"),"Frecuencia habitual de baño corporal referida.",3)}
-   item{OptionsCard38("Lavado de manos · frecuencia diaria",listOf("0–1/día","2–3/día","4–5/día","6–9/día","10 o más/día","No sabe"),"Ayuda a describir hábitos generales de higiene. La calidad del lavado y los momentos en que se realiza también importan.",3)}
-   item{SectionCard("Lavado de manos · momentos habituales"){
+   item{NoticeCard("La higiene se registra como hábito referido. Ninguna respuesta aislada establece por sí sola el estado de salud; debe integrarse con el contexto y la exploración clínica.")}
+
+   item{SectionCard("1 · Higiene general"){
+    Text("Baño corporal",fontWeight=FontWeight.Bold)
+    val bath=listOf("Menos de 1 vez/semana","1–2 veces/semana","3–4 veces/semana","5–6 veces/semana","1 vez/día","2 o más veces/día")
+    ChipChoices(bath.map{x->x to (chosen["Higiene general · baño corporal"]==x)},{i->chosen["Higiene general · baño corporal"]=bath[i]},columns=2)
+   }}
+
+   item{SectionCard("2 · Cambio de ropa"){
+    Text("Número de cambios completos de ropa al día",fontWeight=FontWeight.Bold)
+    val changes=listOf("Menos de 1 cambio/día","1 cambio/día","2 cambios/día","3 cambios/día","4 o más cambios/día","Variable/no sabe")
+    ChipChoices(changes.map{x->x to (chosen["Cambio de ropa · veces al día"]==x)},{i->chosen["Cambio de ropa · veces al día"]=changes[i]},columns=2)
+    Spacer(Modifier.height(8.dp))
+    Text("Días por semana en que cambia ropa",fontWeight=FontWeight.SemiBold)
+    val changeDays=listOf("1 día","2–3 días","4–5 días","6 días","7 días","Variable/no sabe")
+    ChipChoices(changeDays.map{x->x to (chosen["Cambio de ropa · días por semana"]==x)},{i->chosen["Cambio de ropa · días por semana"]=changeDays[i]},columns=2)
+   }}
+
+   item{SectionCard("3 · Lavado de manos"){
+    Text("Frecuencia diaria",fontWeight=FontWeight.Bold)
+    val handFreq=listOf("0–1 vez/día","2–3 veces/día","4–5 veces/día","6–9 veces/día","10 o más veces/día","No sabe")
+    ChipChoices(handFreq.map{x->x to (chosen["Lavado de manos · frecuencia diaria"]==x)},{i->chosen["Lavado de manos · frecuencia diaria"]=handFreq[i]},columns=2)
+    Spacer(Modifier.height(8.dp))
+    Text("Momentos habituales",fontWeight=FontWeight.SemiBold)
     val moments=listOf("Antes de preparar alimentos","Antes de comer","Después de ir al baño","Al llegar de la calle","Después de toser/estornudar","Después de contacto con animales")
-    ChipChoices(moments.map{x->x to (multi["hand|$x"]==true)},{i->val x=moments[i];multi["hand|$x"]=!(multi["hand|$x"]?:false)},columns=3)
+    ChipChoices(moments.map{x->x to (multi["hand|$x"]==true)},{i->
+     val x=moments[i]
+     multi["hand|$x"]=!(multi["hand|$x"]?:false)
+    },columns=2)
    }}
-   item{OptionsCard38("Cambio de ropa · veces al día",listOf("Menos de 1/día","1/día","2/día","3 o más/día","Variable","No sabe"),"Registra cuántos cambios completos de ropa refiere en un día habitual.",3)}
-   item{OptionsCard38("Cambio de ropa · días por semana",listOf("1 día","2–3 días","4–5 días","6 días","7 días","Variable/no sabe"),"Complementa la frecuencia diaria para evitar confundir «veces por día» con «días de la semana».",3)}
-   item{OptionsCard38("Higiene bucal · cepillado dental",listOf("No se cepilla","Menos de 1 vez/día","1 vez/día","2 veces/día","3 veces/día","4 o más/día"),"Frecuencia de cepillado referida; después debe correlacionarse con técnica, biofilm y hallazgos clínicos.",3)}
-   item{OptionsCard38("Higiene bucal · tipo de pasta",listOf("Pasta comercial regulada/etiquetada","Pasta comercial · no sabe","Producto naturista","Producto alternativo/casero","No usa pasta","No sabe"),"Registrar lo referido. Naturista o alternativo no equivale automáticamente a seguro, eficaz ni a una pasta fluorada.",3)}
-   item{OptionsCard38("Higiene bucal · hilo/interdental",listOf("Nunca","Ocasional","1–3 veces/semana","4–6 veces/semana","Diario","2 o más/día"),"Describe la frecuencia de limpieza interdental; no sustituye la evaluación clínica de placa o periodonto.",3)}
+
+   item{SectionCard("4 · Higiene bucal"){
+    Text("Cepillado dental · veces al día",fontWeight=FontWeight.Bold)
+    val brushing=listOf("No se cepilla","Menos de 1 vez/día","1 vez/día","2 veces/día","3 veces/día","4 o más veces/día")
+    ChipChoices(brushing.map{x->x to (chosen["Higiene bucal · cepillado dental"]==x)},{i->chosen["Higiene bucal · cepillado dental"]=brushing[i]},columns=2)
+
+    Spacer(Modifier.height(8.dp))
+    Text("Pasta dental",fontWeight=FontWeight.SemiBold)
+    val paste=listOf("Pasta fluorada/comercial","Pasta comercial · no sabe si tiene fluoruro","Producto naturista","Producto alternativo/casero","No usa pasta","No sabe")
+    ChipChoices(paste.map{x->x to (chosen["Higiene bucal · tipo de pasta"]==x)},{i->chosen["Higiene bucal · tipo de pasta"]=paste[i]},columns=2)
+
+    Spacer(Modifier.height(8.dp))
+    Text("Hilo dental / limpieza interdental",fontWeight=FontWeight.SemiBold)
+    val floss=listOf("Nunca","Ocasional","1–3 veces/semana","4–6 veces/semana","1 vez/día","2 o más veces/día")
+    ChipChoices(floss.map{x->x to (chosen["Higiene bucal · hilo/interdental"]==x)},{i->chosen["Higiene bucal · hilo/interdental"]=floss[i]},columns=2)
+
+    Spacer(Modifier.height(8.dp))
+    Text("Enjuague bucal",fontWeight=FontWeight.SemiBold)
+    val rinse=listOf("No usa","Ocasional","1–3 veces/semana","4–6 veces/semana","1 vez/día","2 o más veces/día","No sabe")
+    ChipChoices(rinse.map{x->x to (chosen["Higiene bucal · enjuague"]==x)},{i->chosen["Higiene bucal · enjuague"]=rinse[i]},columns=2)
+
+    if(chosen["Higiene bucal · enjuague"] !in listOf(null,"","No usa")){
+     Spacer(Modifier.height(8.dp))
+     Text("Tipo de enjuague referido",fontWeight=FontWeight.SemiBold)
+     val rinseType=listOf("Con fluoruro","Antiséptico/medicado","Cosmético/refrescante","Sin alcohol","Con alcohol","No sabe")
+     ChipChoices(rinseType.map{x->x to (chosen["Higiene bucal · tipo de enjuague"]==x)},{i->chosen["Higiene bucal · tipo de enjuague"]=rinseType[i]},columns=2)
+    }
+   }}
+
+   item{SectionCard("Resumen de higiene"){
+    val bath=chosen["Higiene general · baño corporal"] ?: "sin registrar"
+    val clothes=chosen["Cambio de ropa · veces al día"] ?: "sin registrar"
+    val brush=chosen["Higiene bucal · cepillado dental"] ?: "sin registrar"
+    val floss=chosen["Higiene bucal · hilo/interdental"] ?: "sin registrar"
+    val rinse=chosen["Higiene bucal · enjuague"] ?: "sin registrar"
+    Text("Baño corporal: $bath.")
+    Text("Cambio de ropa: $clothes.")
+    Text("Cepillado dental: $brush.")
+    Text("Hilo/interdental: $floss.")
+    Text("Enjuague bucal: $rinse.")
+   }}
   }
 
   if(section=="Alimentación"){
