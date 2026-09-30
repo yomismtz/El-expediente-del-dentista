@@ -21,7 +21,7 @@ internal enum class V7Overlay {
     NONE, INTAKE, HUB,
     IDENTIFICATION, HISTORY, VITALS, ATM, OCCLUSION, MUCOSA, AUXILIARIES,
     ODONTOGRAM, ICDAS, CPOD, OLEARY, IPC, IHOS, PERIODONTAL, POSTURE,
-    PULPAL_APICAL, ENDO, PROSTHETIC, SURGICAL, CONSENT, EVOLUTION
+    PULPAL_APICAL, ENDO, PROSTHETIC, SURGICAL, CONSENT, EVOLUTION, SUMMARY, PHOTOGRAPHY
 }
 
 private data class HubExam(val icon: String, val es: String, val en: String, val target: V7Overlay)
@@ -66,6 +66,11 @@ internal fun ExamHubV1Screen(lang: String, onOpen: (V7Overlay) -> Unit, onBack: 
         HubGroupV17(tr(lang, "Generales", "General"), general, lang, onOpen, profile)
         HubGroupV17(tr(lang, "Análisis", "Analyses"), analyses, lang, onOpen, profile)
         HubGroupV17(tr(lang, "Tratamiento y documentación", "Treatment and documentation"), treatment, lang, onOpen, profile)
+        val documentation = listOf(
+            HubExam("🧾", "Resumen y revisión final", "Summary and final review", V7Overlay.SUMMARY),
+            HubExam("📷", "Fotografía clínica", "Clinical photography", V7Overlay.PHOTOGRAPHY)
+        )
+        HubGroupV17(tr(lang, "Documentación", "Documentation"), documentation, lang, onOpen, profile)
         ResponsiveSectionV17(tr(lang, "Regla de cierre", "Closing rule")) {
             Text(tr(lang,
                 "Cada examen termina con: resultado → interpretación → hallazgos que lo apoyan → qué falta → ejemplo de redacción para el expediente físico.",
