@@ -62,9 +62,12 @@ internal fun ResponsiveScreenV17(
         }
         val largeText = systemFontScale >= 1.20f
         val columns = when {
-            largeText || widthClass == ScreenWidthV17.COMPACT -> 1
-            widthClass == ScreenWidthV17.MEDIUM -> 2
-            else -> 3
+            maxWidth < 360.dp -> if (largeText) 2 else 2
+            maxWidth < 480.dp -> if (largeText) 2 else 3
+            maxWidth < 600.dp -> if (largeText) 2 else 3
+            maxWidth < 840.dp -> if (largeText) 3 else 4
+            maxWidth < 1200.dp -> if (largeText) 4 else 5
+            else -> if (largeText) 5 else 6
         }
         val padding = when (widthClass) {
             ScreenWidthV17.COMPACT -> 10.dp
@@ -111,12 +114,14 @@ internal fun AdaptiveGridV17(
 ) {
     val availableWidth = with(LocalDensity.current) { androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp.dp }
     val largeText = LocalDensity.current.fontScale >= 1.20f
-    val requested = columns.coerceIn(1, 5)
+    val requested = columns.coerceIn(1, 6)
     val safeColumns = when {
-        availableWidth < 480.dp -> 1
-        availableWidth < 600.dp -> if (largeText) 1 else requested.coerceAtMost(2)
-        availableWidth < 900.dp -> if (largeText) requested.coerceAtMost(2) else requested.coerceAtMost(3)
-        else -> if (largeText) requested.coerceAtMost(3) else requested
+        availableWidth < 360.dp -> requested.coerceAtMost(2)
+        availableWidth < 480.dp -> requested.coerceAtMost(if (largeText) 2 else 3)
+        availableWidth < 600.dp -> requested.coerceAtMost(if (largeText) 2 else 3)
+        availableWidth < 840.dp -> requested.coerceAtMost(if (largeText) 3 else 4)
+        availableWidth < 1200.dp -> requested.coerceAtMost(if (largeText) 4 else 5)
+        else -> requested.coerceAtMost(if (largeText) 5 else 6)
     }.coerceAtLeast(1)
     Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         (0 until itemCount).toList().chunked(safeColumns).forEach { rowItems ->
@@ -157,9 +162,9 @@ internal fun ResponsiveSectionV17(
 }
 
 internal fun responsiveColumnsV17(profile: ScreenProfileV17, preferredExpanded: Int = 3): Int = when {
-    profile.width == ScreenWidthV17.COMPACT -> 1
-    profile.width == ScreenWidthV17.MEDIUM -> if(profile.largeSystemText) 1 else preferredExpanded.coerceIn(1,2)
-    else -> if(profile.largeSystemText) preferredExpanded.coerceIn(1,2) else preferredExpanded.coerceIn(2,4)
+    profile.width == ScreenWidthV17.COMPACT -> if (profile.largeSystemText) 2 else preferredExpanded.coerceIn(2,3)
+    profile.width == ScreenWidthV17.MEDIUM -> if (profile.largeSystemText) preferredExpanded.coerceIn(2,3) else preferredExpanded.coerceIn(3,4)
+    else -> if (profile.largeSystemText) preferredExpanded.coerceIn(3,5) else preferredExpanded.coerceIn(3,6)
 }
 
 
