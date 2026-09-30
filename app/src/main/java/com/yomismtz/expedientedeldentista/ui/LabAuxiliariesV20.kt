@@ -136,7 +136,7 @@ fun LaboratoryAuxiliariesV20Screen(lang:String,onBack:()->Unit){
  val units=rememberRecordStateMap<String,String>("lab.units")
  val refMin=rememberRecordStateMap<String,String>("lab.refMin")
  val refMax=rememberRecordStateMap<String,String>("lab.refMax")
- val tabs=listOf(tr(lang,"Biometría","CBC"),tr(lang,"Química 18","Chemistry 18"),"HbA1c",tr(lang,"Tiroides","Thyroid"),tr(lang,"Coagulación","Coagulation"),tr(lang,"Histología","Histology"),tr(lang,"Microbiología","Microbiology"),"CAMBRA")
+ val tabs=listOf(tr(lang,"Biometría","CBC"),tr(lang,"Química 18","Chemistry 18"),"HbA1c",tr(lang,"Tiroides","Thyroid"),tr(lang,"Coagulación","Coagulation"),tr(lang,"Histología","Histology"),tr(lang,"Microbiología","Microbiology"))
  ResponsiveScreenV17(tr(lang,"Laboratorio e histopatología","Laboratory & histopathology"),tr(lang,"Captura el valor, la unidad y, cuando esté disponible, el intervalo de referencia impreso por el laboratorio. Ese intervalo tiene prioridad sobre el ejemplo educativo. No se suben archivos en este módulo.","Enter the value, unit and, when available, the reference interval printed by the laboratory. That interval takes priority over the teaching example. Files are not uploaded in this module."),onBack){profile->
   val tabCols=when{profile.largeSystemText->3;profile.width==ScreenWidthV17.COMPACT->3;profile.width==ScreenWidthV17.MEDIUM->4;else->5}
   AdaptiveGridV17(tabs.size,tabCols){i->FilterChip(tab==i,{tab=i},{Text(tabs[i])},Modifier.fillMaxWidth())}
@@ -187,7 +187,7 @@ fun LaboratoryAuxiliariesV20Screen(lang:String,onBack:()->Unit){
     }
    }
    if(tab==4) NoticeCard(tr(lang,"Los objetivos de INR cambian en pacientes con anticoagulación. Estas opciones enseñan interpretación; no autorizan procedimientos ni cambios de medicamentos.","INR targets differ in anticoagulated patients. These options teach interpretation; they do not clear procedures or medication changes."))
-  }else when(tab){5->HistopathologyV20(lang);6->MicrobiologyV23(lang);else->CambraV23(lang)}
+  }else if(tab==5) HistopathologyV20(lang) else MicrobiologyV23(lang)
   NoticeCard(tr(lang,"Los resultados capturados quedan asociados al expediente activo. La comparación con un intervalo sirve como apoyo educativo y no diagnostica por sí sola; integra síntomas, antecedentes, medicamentos y el reporte del laboratorio.","Entered results remain associated with the active record. Comparison with an interval is educational support and does not diagnose by itself; integrate symptoms, history, medications and the laboratory report."))
  }
 }
@@ -233,7 +233,7 @@ private fun histologyEnglishV20(es:String)=when(es){
     NoticeCard(tr(lang,"Un resultado «positivo» puede representar infección, colonización o contaminación según microorganismo, sitio y técnica. Correlaciona con clínica y antibiograma cuando corresponda.","A positive result may represent infection, colonization or contamination depending on organism, site and technique. Correlate with clinical findings and susceptibility testing when appropriate."))
 }
 
-@Composable private fun CambraV23(lang:String){
+@Composable internal fun CambraV23(lang:String){
     var child by rememberRecordState("lab.child",false)
     val selected=rememberRecordStateMap<String,Boolean>("lab.selected")
     val items=if(child)cambraChildV23 else cambraAdultV23
