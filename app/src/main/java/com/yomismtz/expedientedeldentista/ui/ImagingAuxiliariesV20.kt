@@ -65,6 +65,7 @@ private fun ImagingFindingImageV20(lang:String,group:String,finding:String){
    findingGroups15.forEach{item->selected[item.first]?.let{v->Text("• "+item.first+": "+v)}}
    if(selected.isEmpty())Text("Aún no se han seleccionado hallazgos.")
   }
+  LocalClinicalImageSectionV46(lang,profile,"Imagenología dental","Dental imaging")
   ResponsiveSectionV17("5 · Seguridad radiológica"){Text("La indicación debe individualizarse después de revisar historia, imágenes previas y exploración clínica. CBCT no debe solicitarse por rutina; se reserva para preguntas clínicas donde la información tridimensional aporte un beneficio que justifique la exposición.")}
   NoticeCard("Módulo educativo. La interpretación definitiva depende de la calidad del estudio, la correlación clínica y, cuando corresponda, del informe de radiología oral y maxilofacial.")
  }
