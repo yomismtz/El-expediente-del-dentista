@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.ClinicalContent
+import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 
 private val IntakeLavender = Color(0xFFE9DDF5)
 private val IntakeLilac = Color(0xFFD3BCE9)
@@ -115,6 +116,7 @@ private val medicationGuides = listOf(
 @Composable
 fun IntakeInteractiveV3Screen(
     lang: String,
+    session: EducationalSession,
     onIdentification: () -> Unit,
     onHistory: () -> Unit,
     onVitals: () -> Unit,
@@ -151,6 +153,13 @@ fun IntakeInteractiveV3Screen(
             NoticeCard(tr(lang,
                 "Uso educativo: no introduzcas nombre, teléfono, domicilio ni otros datos identificables de pacientes reales. La app te enseña qué preguntar, explorar y escribir en el expediente físico.",
                 "Educational use: do not enter names, telephone numbers, addresses or other identifying data of real patients. The app teaches what to ask, examine and write in the physical record."))
+        }
+
+        item {
+            ClinicalIntakeNarrativeV54(
+                lang = lang,
+                session = session
+            )
         }
 
         item {
