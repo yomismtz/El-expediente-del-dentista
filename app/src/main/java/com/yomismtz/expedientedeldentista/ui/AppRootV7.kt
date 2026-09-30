@@ -73,7 +73,7 @@ fun AppRootV7(
     }
 
     Column(Modifier.fillMaxSize().navigationBarsPadding()) {
-        GlobalBar19(lang,goToIntake,onOpenSettings)
+        GlobalBar19(lang,goToIntake,{openOverlay(V7Overlay.SUMMARY)},{openOverlay(V7Overlay.PHOTOGRAPHY)},onOpenSettings)
         Box(Modifier.weight(1f).fillMaxWidth()) {
             AdaptiveBaseRootV19(preferences,onPreferencesChanged,onLanguageChanged,session,onSessionChanged)
 
@@ -95,6 +95,8 @@ fun AppRootV7(
                             onBack=backPrevious
                         )
                         V7Overlay.HUB -> ExamHubV1Screen(lang,{openOverlay(it)},backPrevious)
+                        V7Overlay.SUMMARY -> ClinicalSummaryV53Screen(lang,session,backPrevious)
+                        V7Overlay.PHOTOGRAPHY -> ClinicalPhotographySheetV43(lang,backPrevious)
                         V7Overlay.IDENTIFICATION -> IdentificationScreen(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.HISTORY -> ClinicalHistoryFlowV39(lang,session,onSessionChanged,backPrevious)
                         V7Overlay.VITALS -> VitalsInteractiveV19Screen(lang,backPrevious)
@@ -160,19 +162,29 @@ fun AppRootV7(
 }
 
 @Composable
-private fun GlobalBar19(lang:String,onIntake:()->Unit,onSettings:(()->Unit)?) {
+private fun GlobalBar19(lang:String,onIntake:()->Unit,onSummary:()->Unit,onPhotography:()->Unit,onSettings:(()->Unit)?) {
     Surface(color=MaterialTheme.colorScheme.surface,tonalElevation=4.dp,shadowElevation=2.dp) {
         BoxWithConstraints(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal=10.dp,vertical=7.dp)) {
             val compact=maxWidth<380.dp || LocalDensity.current.fontScale>=1.20f
-            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                Button(onClick=onIntake,modifier=Modifier.weight(1f)) {
-                    Text(if(compact)"📋 ${tr(lang,"Ingreso","Intake")}" else "📋 ${tr(lang,"Nota de ingreso","Intake note")}")
-                }
-                if(onSettings!=null) {
-                    OutlinedButton(onClick=onSettings,modifier=Modifier.weight(1f)) {
-                        Text(if(compact)"⚙ ${tr(lang,"Ajustes","Settings")}" else "⚙ ${tr(lang,"Configuración","Settings")}")
+            if(compact) {
+                Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(6.dp)) {
+                    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+                        Button(onClick=onIntake,modifier=Modifier.weight(1f)){Text("📋 "+tr(lang,"Ingreso","Intake"),maxLines=1)}
+                        OutlinedButton(onClick=onSummary,modifier=Modifier.weight(1f)){Text("🧾 "+tr(lang,"Resumen","Summary"),maxLines=1)}
+                    }
+                    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+                        OutlinedButton(onClick=onPhotography,modifier=Modifier.weight(1f)){Text("📷 "+tr(lang,"Fotos","Photos"),maxLines=1)}
+                        if(onSettings!=null) OutlinedButton(onClick=onSettings,modifier=Modifier.weight(1f)){Text("⚙ "+tr(lang,"Ajustes","Settings"),maxLines=1)}
                     }
                 }
+            } else {
+                Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                    Button(onClick=onIntake,modifier=Modifier.weight(1f)){Text("📋 "+tr(lang,"Ingreso","Intake"),maxLines=1)}
+                    OutlinedButton(onClick=onSummary,modifier=Modifier.weight(1f)){Text("🧾 "+tr(lang,"Resumen","Summary"),maxLines=1)}
+                    OutlinedButton(onClick=onPhotography,modifier=Modifier.weight(1f)){Text("📷 "+tr(lang,"Fotos","Photos"),maxLines=1)}
+                    if(onSettings!=null) OutlinedButton(onClick=onSettings,modifier=Modifier.weight(1f)){Text("⚙ "+tr(lang,"Ajustes","Settings"),maxLines=1)}
+                }
+            }                }
             }
         }
     }
