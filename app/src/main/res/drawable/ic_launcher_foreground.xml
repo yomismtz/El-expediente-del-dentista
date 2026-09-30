@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/new77_dentista_con_su_mascota_colocar_en_creditos"
+    android:drawable="@drawable/icono_de_la_app"
     android:inset="8%" />
