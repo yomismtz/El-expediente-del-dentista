@@ -577,7 +577,7 @@ private data class E(val n:String,val d:String)
  val chosen=rememberRecordStateMap<String,String>("history.nonpath.chosen")
  val multi=rememberRecordStateMap<String,Boolean>("history.nonpath.multi")
  val sections=listOf("Alimentación","Vivienda","Higiene","Inmunizaciones","Hábitos y exposiciones")
- fun OptionsCard38(title:String,options:List<String>,note:String="",columns:Int=3)=@Composable{
+ @Composable fun OptionsCard38(title:String,options:List<String>,note:String="",columns:Int=3){
   SectionCard(title){
    if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)
    ChipChoices(options.map{x->x to (chosen[title]==x)},{i->chosen[title]=options[i]},columns=columns)
@@ -669,62 +669,145 @@ private data class E(val n:String,val d:String)
   }
 
   if(section=="Alimentación"){
+   val freqOptions=listOf("Nunca","Menos de 1/semana","1–3/semana","4–6/semana","1/día","2–3/día","4 o más/día")
+   val foodGroups=linkedMapOf(
+    "Verduras y hortalizas" to listOf(
+     "Verduras de hoja verde","Jitomate/tomate","Zanahoria","Calabaza","Brócoli/coliflor","Nopal","Pepino","Otras verduras"
+    ),
+    "Frutas" to listOf(
+     "Manzana/pera","Plátano","Naranja/mandarina","Papaya","Mango","Guayaba","Fresas/frutos rojos","Otras frutas"
+    ),
+    "Cereales y tubérculos" to listOf(
+     "Tortilla de maíz","Pan","Arroz","Avena","Pasta","Papa","Camote","Cereales de desayuno"
+    ),
+    "Leguminosas" to listOf(
+     "Frijoles","Lentejas","Garbanzos","Habas","Soya/tofu","Otras leguminosas"
+    ),
+    "Origen animal" to listOf(
+     "Pollo","Res","Cerdo","Pescado","Mariscos","Huevo","Queso","Otros alimentos de origen animal"
+    ),
+    "Lácteos" to listOf(
+     "Leche","Yogur natural","Yogur azucarado","Queso","Bebida láctea saborizada","Otros lácteos"
+    ),
+    "Grasas, semillas y oleaginosas" to listOf(
+     "Aguacate","Nueces/almendras","Cacahuate","Semillas","Aceite vegetal","Mantequilla/manteca","Crema/mayonesa"
+    ),
+    "Embutidos y procesados" to listOf(
+     "Jamón","Salchicha","Chorizo","Tocino","Mortadela","Pepperoni","Nuggets/carnes procesadas","Otros embutidos"
+    ),
+    "Dulces y cariogénicos" to listOf(
+     "Refresco con azúcar","Dulces pegajosos/chiclosos","Gomitas","Caramelos duros","Chicle con azúcar","Chocolate azucarado","Galletas/pan dulce/postres","Jugos/aguas frescas azucaradas","Bebidas energéticas/deportivas"
+    )
+   )
+   var openFoodGroup by rememberRecordState("history.nonpath.food.openGroup","")
+   var activeFood by rememberRecordState("history.nonpath.food.activeFood","")
+
    item{SectionCard("Alimentación · evaluación dietética"){
-    Text("Registra la frecuencia real de consumo. Empieza por grupos protectores y después revisa las exposiciones cariogénicas; las respuestas quedan conservadas en el expediente.",fontWeight=FontWeight.SemiBold)
+    Text("Selecciona primero un grupo de alimentos. Al abrirlo aparecen alimentos concretos; elige uno para registrar su frecuencia. Solo se mantiene un grupo abierto para reducir el desplazamiento vertical.",fontWeight=FontWeight.SemiBold)
     Text("Prioridad odontológica: frecuencia de azúcares, consumo entre comidas y nocturno, bebidas azucaradas/ácidas, agua simple y patrón general de alimentación.",style=MaterialTheme.typography.bodySmall)
    }}
-   val freqOptions=listOf("Nunca","Menos de 1/semana","1–3/semana","4–6/semana","1/día","2–3/día","4 o más/día")
-   val protectiveGroups=listOf(
-    Triple("Verduras","Fuentes de fibra, folato, vitaminas y minerales.","Una frecuencia muy baja puede contribuir a un patrón con baja densidad de micronutrientes; valorar el conjunto de la dieta."),
-    Triple("Fruta entera","Aporta fibra, vitamina C y otros micronutrientes.","Preferir fruta entera. Jugos y presentaciones azucaradas se valoran aparte por su exposición cariogénica."),
-    Triple("Leguminosas","Frijol, lenteja, garbanzo y similares aportan proteína vegetal, hierro, folato y fibra.","Una frecuencia baja, especialmente si también hay poco alimento de origen animal, puede sugerir ingesta insuficiente de hierro/proteína."),
-    Triple("Carne, pollo, pescado y huevo","Aportan proteína; varios de estos alimentos son fuentes relevantes de hierro, zinc y vitamina B12.","Consumo muy bajo junto con pocas leguminosas puede justificar tamizaje de posible ingesta insuficiente de proteína, hierro o B12."),
-    Triple("Lácteos sin azúcar añadido","Leche, yogur natural y queso aportan proteína y calcio; algunos también vitamina D según fortificación.","Una ingesta baja puede contribuir a aporte insuficiente de calcio; no diagnostica deficiencia."),
-    Triple("Cereales y tubérculos","Aportan energía; conviene diferenciar integrales de refinados y productos con azúcar añadido.","Un patrón muy restringido puede asociarse con ingesta energética insuficiente; refinados azucarados frecuentes aumentan exposiciones cariogénicas."),
-    Triple("Agua simple","Principal bebida de hidratación y no añade azúcares fermentables.","Elegir agua simple en lugar de bebidas azucaradas reduce exposiciones a azúcar y ácidos.")
-   )
-   val cariogenicGroups=listOf(
-    Triple("Dulces, caramelos y chocolate azucarado","Los azúcares libres son sustrato para bacterias del biofilm.","La frecuencia importa: exposiciones repetidas favorecen descensos repetidos del pH y aumentan el riesgo de desmineralización."),
-    Triple("Galletas, pan dulce y postres","Combinan carbohidratos fermentables; algunos son retentivos.","Consumirlos repetidamente entre comidas prolonga o repite el desafío cariogénico."),
-    Triple("Refrescos y bebidas azucaradas","Aportan azúcares libres; muchas además son ácidas.","La exposición frecuente aumenta riesgo cariogénico y puede contribuir a erosión dental según bebida y patrón."),
-    Triple("Jugos y bebidas de fruta","Incluso el jugo 100% fruta contiene azúcares libres y suele ser ácido.","Tomarlo repetidamente o a sorbos prolonga la exposición de los dientes a azúcar/ácidos."),
-    Triple("Bebidas deportivas o energéticas","Con frecuencia contienen azúcar y ácidos.","El consumo repetido, especialmente entre comidas, puede elevar el riesgo de caries y erosión."),
-    Triple("Botanas/almidones refinados retentivos","Papas, crackers y productos similares aportan almidones procesados que pueden permanecer en boca.","La frecuencia y retención importan; se interpreta junto con higiene, saliva y exposición a fluoruro.")
-   )
-   item{NoticeCard("Tamizaje dietético odontológico. Registra qué consume y con qué frecuencia. Las alertas describen patrones de posible riesgo; no diagnostican anemia, desnutrición ni deficiencias vitamínicas. Los hallazgos relevantes deben correlacionarse con historia clínica, exploración y, cuando proceda, valoración médica/nutricional o estudios de laboratorio.")}
-   items(protectiveGroups.size){i->
-    val (name,benefit,lowRisk)=protectiveGroups[i]
-    OptionsCard38(name,freqOptions,"Beneficio: $benefit Si el consumo es bajo: $lowRisk",3)
-   }
-   items(cariogenicGroups.size){i->
-    val (name,why,risk)=cariogenicGroups[i]
-    OptionsCard38(name,freqOptions,"Por qué importa: $why $risk",3)
-   }
-   item{OptionsCard38("Alimentos azucarados · entre comidas",freqOptions,"Las exposiciones azucaradas entre comidas aumentan la frecuencia de desafíos ácidos. Menor frecuencia suele ser más favorable para control de caries.",3)}
-   item{OptionsCard38("Alimentos o bebidas azucaradas · antes de dormir o durante la noche",freqOptions,"Es una exposición especialmente relevante porque durante el sueño disminuye el flujo salival. Registrar también higiene posterior cuando corresponda.",3)}
-   item{OptionsCard38("Comidas principales al día",listOf("1","2","3","4","5","6 o más"),"Ayuda a interpretar regularidad e ingesta global. Una respuesta aislada no diagnostica malnutrición.",3)}
-   item{OptionsCard38("Consistencia habitual",listOf("Predominio muy blando","Predominio blando","Mixta","Incluye firmes/fibrosos","Frecuentemente muy duros","Variable/no sabe"),"Describe demanda masticatoria. No existe una consistencia universalmente correcta y los alimentos extremadamente duros pueden producir trauma en personas susceptibles.",3)}
-   item{SectionCard("Interpretación orientativa del patrón registrado"){
-    val highSugar=listOf("Dulces, caramelos y chocolate azucarado","Galletas, pan dulce y postres","Refrescos y bebidas azucaradas","Jugos y bebidas de fruta","Bebidas deportivas o energéticas","Alimentos azucarados · entre comidas","Alimentos o bebidas azucaradas · antes de dormir o durante la noche").count{
-     chosen[it] in listOf("1/día","2–3/día","4 o más/día")
-    }
-    val ironLow=chosen["Leguminosas"] in listOf("Nunca","Menos de 1/semana") && chosen["Carne, pollo, pescado y huevo"] in listOf("Nunca","Menos de 1/semana")
-    val proteinLow=ironLow && chosen["Lácteos sin azúcar añadido"] in listOf("Nunca","Menos de 1/semana")
-    val calciumLow=chosen["Lácteos sin azúcar añadido"] in listOf("Nunca","Menos de 1/semana")
-    val produceLow=chosen["Verduras"] in listOf("Nunca","Menos de 1/semana") && chosen["Fruta entera"] in listOf("Nunca","Menos de 1/semana")
-    val broadLow=listOf("Verduras","Fruta entera","Leguminosas","Carne, pollo, pescado y huevo","Lácteos sin azúcar añadido","Cereales y tubérculos").count{chosen[it] in listOf("Nunca","Menos de 1/semana")}
-    if(chosen.none{it.key in protectiveGroups.map{x->x.first}+cariogenicGroups.map{x->x.first}+listOf("Alimentos azucarados · entre comidas","Alimentos o bebidas azucaradas · antes de dormir o durante la noche")}) Text("Selecciona frecuencias para generar el resumen orientativo.",style=MaterialTheme.typography.bodySmall)
-    else {
-     if(highSugar>=2) Text("• Riesgo cariogénico dietético aumentado: se registran varias exposiciones azucaradas diarias. Integrar con higiene, fluoruro, saliva y hallazgos clínicos.")
-     else Text("• Riesgo cariogénico: interpretar con la frecuencia de azúcares registrada y los demás factores clínicos; la dieta sola no determina el riesgo total.")
-     if(ironLow) Text("• Posible riesgo de ingesta insuficiente de hierro: baja frecuencia referida de leguminosas y alimentos de origen animal. No equivale a diagnóstico de anemia; correlacionar clínicamente y valorar estudios/derivación si están indicados.")
-     if(proteinLow) Text("• Posible ingesta insuficiente de proteína: varios grupos fuente se reportan con frecuencia muy baja.")
-     if(calciumLow) Text("• Posible ingesta insuficiente de calcio: frecuencia muy baja de lácteos referida. Considerar otras fuentes de calcio antes de concluir deficiencia.")
-     if(produceLow) Text("• Posible baja ingesta de micronutrientes/fibra: verduras y fruta entera se reportan con frecuencia muy baja; revisar variedad dietética, vitamina C, folato y otros micronutrientes.")
-     if(broadLow>=4) Text("• Riesgo de patrón alimentario poco variado / posible malnutrición: múltiples grupos básicos presentan frecuencia muy baja. Requiere valoración integral; esta pantalla no diagnostica desnutrición.")
-     if(highSugar==0 && !ironLow && !proteinLow && !calciumLow && !produceLow && broadLow<4) Text("• No se activaron alertas dietéticas principales con las respuestas actuales. Esto no sustituye una valoración nutricional ni odontológica completa.")
+
+   item{SectionCard("Tipo de alimentación"){
+    val dietTypes=listOf(
+     "Omnívora","Vegetariana","Vegana","Pescetariana","Predominio de origen animal","Mixta/sin patrón especial","Restrictiva/selectiva","Otra/no sabe"
+    )
+    Text("Describe el patrón general referido. La consistencia se registra por separado.",style=MaterialTheme.typography.bodySmall)
+    ChipChoices(dietTypes.map{x->x to (chosen["Tipo de alimentación"]==x)},{i->chosen["Tipo de alimentación"]=dietTypes[i]},columns=2)
+   }}
+
+   item{SectionCard("Consistencia habitual"){
+    val textures=listOf("Líquida","Semilíquida","Blanda","Mixta","Firme","Fibrosa","Muy dura","Variable/no sabe")
+    Text("Registra la consistencia predominante de la dieta; no implica por sí sola que sea adecuada o inadecuada.",style=MaterialTheme.typography.bodySmall)
+    ChipChoices(textures.map{x->x to (chosen["Consistencia habitual"]==x)},{i->chosen["Consistencia habitual"]=textures[i]},columns=2)
+   }}
+
+   item{SectionCard("Grupos de alimentos"){
+    Text("Grupos organizados para una exploración rápida de la dieta. Toca un grupo para desplegar sus alimentos.",style=MaterialTheme.typography.bodySmall)
+    ChipChoices(foodGroups.keys.map{x->x to (openFoodGroup==x)},{i->
+     val g=foodGroups.keys.elementAt(i)
+     openFoodGroup=if(openFoodGroup==g) "" else g
+     activeFood=""
+    },columns=2)
+
+    if(openFoodGroup.isNotBlank()){
+     val foods=foodGroups[openFoodGroup].orEmpty()
+     Spacer(Modifier.height(8.dp))
+     Text(openFoodGroup,fontWeight=FontWeight.Bold)
+     ChipChoices(foods.map{x->x to (multi["food|"+x]==true)},{i->
+      val food=foods[i]
+      val now=!(multi["food|"+food]?:false)
+      multi["food|"+food]=now
+      activeFood=if(now) food else if(activeFood==food) "" else activeFood
+     },columns=2)
+
+     val selectedFoods=foods.filter{multi["food|"+it]==true}
+     if(selectedFoods.isNotEmpty()){
+      Spacer(Modifier.height(8.dp))
+      Text("Alimentos seleccionados · toca uno para registrar frecuencia",fontWeight=FontWeight.SemiBold)
+      ChipChoices(selectedFoods.map{x->x to (activeFood==x)},{i->activeFood=selectedFoods[i]},columns=2)
+     }
+     if(activeFood.isNotBlank() && activeFood in foods){
+      Spacer(Modifier.height(8.dp))
+      Text("Frecuencia · "+activeFood,fontWeight=FontWeight.SemiBold)
+      ChipChoices(freqOptions.map{x->x to (chosen["foodfreq|"+activeFood]==x)},{i->chosen["foodfreq|"+activeFood]=freqOptions[i]},columns=3)
+     }
     }
    }}
+
+   item{SectionCard("Azúcares y exposición cariogénica"){
+    Text("Este bloque pregunta por la forma de exposición, no solo por la cantidad. Los dulces pegajosos y el consumo repetido entre comidas o por la noche pueden prolongar o repetir el contacto de azúcares fermentables con los dientes.",style=MaterialTheme.typography.bodySmall)
+    val sugarBehaviors=listOf(
+     "Refresco con azúcar","Dulces pegajosos/chiclosos","Gomitas/caramelos","Chicle con azúcar","Pan dulce/galletas/postres","Jugos/aguas frescas azucaradas","Bebidas energéticas/deportivas"
+    )
+    ChipChoices(sugarBehaviors.map{x->x to (multi["sugar|"+x]==true)},{i->
+     val x=sugarBehaviors[i]
+     multi["sugar|"+x]=!(multi["sugar|"+x]?:false)
+    },columns=2)
+   }}
+
+   item{OptionsCard38("Azúcares · entre comidas",freqOptions,"Registra cuántas veces se consumen alimentos o bebidas con azúcar fuera de las comidas principales.",3)}
+   item{OptionsCard38("Azúcares · antes de dormir o durante la noche",freqOptions,"La frecuencia nocturna es especialmente relevante porque durante el sueño disminuye el flujo salival.",3)}
+   item{OptionsCard38("Refresco · frecuencia",freqOptions,"Incluye refresco con azúcar. Si es sin azúcar, puede registrarse en observaciones dietéticas, pero no se cuenta como exposición a azúcar.",3)}
+
+   item{SectionCard("Refresco · forma de consumo"){
+    val sodaPattern=listOf("Con comidas","Entre comidas","A sorbos durante varias horas","Antes de dormir","Durante la noche","Variable/no sabe")
+    ChipChoices(sodaPattern.map{x->x to (chosen["Refresco · patrón"]==x)},{i->chosen["Refresco · patrón"]=sodaPattern[i]},columns=2)
+   }}
+
+   item{OptionsCard38("Dulces pegajosos/chiclosos · frecuencia",freqOptions,"Ejemplos: caramelos blandos, chiclosos y gomitas. Se registra aparte porque su retención puede prolongar el contacto con la superficie dental.",3)}
+   item{OptionsCard38("Embutidos/carnes procesadas · frecuencia",freqOptions,"Jamón, salchicha, chorizo, tocino y similares se registran por su peso dentro del patrón dietético general. No se clasifican por sí solos como alimentos cariogénicos.",3)}
+   item{OptionsCard38("Agua simple · frecuencia",freqOptions,"Permite diferenciar el consumo habitual de agua de bebidas azucaradas o ácidas.",3)}
+   item{OptionsCard38("Comidas principales al día",listOf("1","2","3","4","5","6 o más"),"Ayuda a describir regularidad y patrón general de alimentación.",3)}
+
+   item{SectionCard("Resumen automático de alimentación"){
+    val selectedType=chosen["Tipo de alimentación"]
+    val texture=chosen["Consistencia habitual"]
+    val highFreq=listOf("1/día","2–3/día","4 o más/día")
+    val selectedFoods=foodGroups.values.flatten().filter{multi["food|"+it]==true}
+    val frequentSugar=foodGroups["Dulces y cariogénicos"].orEmpty().count{
+     chosen["foodfreq|"+it] in highFreq
+    }
+    val sugarBetween=chosen["Azúcares · entre comidas"] in highFreq
+    val sugarNight=chosen["Azúcares · antes de dormir o durante la noche"] in highFreq
+    val sodaFreq=chosen["Refresco · frecuencia"] in highFreq
+    val processedFreq=chosen["Embutidos/carnes procesadas · frecuencia"] in highFreq
+
+    if(selectedType.isNullOrBlank() && texture.isNullOrBlank() && selectedFoods.isEmpty() && !sugarBetween && !sugarNight && !sodaFreq && !processedFreq){
+     Text("Selecciona opciones para generar el resumen del patrón alimentario.",style=MaterialTheme.typography.bodySmall)
+    }else{
+     if(!selectedType.isNullOrBlank()) Text("• Patrón referido: "+selectedType+".")
+     if(!texture.isNullOrBlank()) Text("• Consistencia predominante: "+texture+".")
+     if(selectedFoods.isNotEmpty()) Text("• Alimentos/grupos registrados: "+selectedFoods.take(10).joinToString(", ")+(if(selectedFoods.size>10) " y otros." else "."))
+     if(frequentSugar>0 || sugarBetween || sugarNight || sodaFreq){
+      Text("• Se identifican exposiciones frecuentes a azúcares/cariogénicos; integrar con higiene, fluoruro, saliva y hallazgos clínicos.")
+     }else{
+      Text("• No se han registrado exposiciones azucaradas frecuentes en las respuestas actuales; completar el interrogatorio antes de concluir riesgo dietético.")
+     }
+     if(processedFreq) Text("• Se reporta consumo frecuente de embutidos/carnes procesadas; queda documentado como parte del patrón dietético general.")
+    }
+   }}
+
+   item{NoticeCard("Este apartado es un tamizaje dietético odontológico. Describe hábitos y posibles exposiciones relevantes para caries/erosión, pero no diagnostica deficiencias nutricionales ni sustituye valoración médica o nutricional.")}
   }
 
   if(section=="Inmunizaciones"){
