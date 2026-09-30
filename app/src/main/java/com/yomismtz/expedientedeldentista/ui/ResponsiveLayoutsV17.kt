@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -112,14 +113,14 @@ internal fun AdaptiveGridV17(
     val largeText = LocalDensity.current.fontScale >= 1.20f
     val requested = columns.coerceIn(1, 5)
     val safeColumns = when {
-        availableWidth < 360.dp -> if (largeText) 1 else requested.coerceAtMost(2)
-        availableWidth < 600.dp -> if (largeText) requested.coerceAtMost(2) else requested.coerceAtMost(3)
-        availableWidth < 900.dp -> if (largeText) requested.coerceAtMost(3) else requested.coerceAtMost(4)
-        else -> if (largeText) requested.coerceAtMost(4) else requested
+        availableWidth < 480.dp -> 1
+        availableWidth < 600.dp -> if (largeText) 1 else requested.coerceAtMost(2)
+        availableWidth < 900.dp -> if (largeText) requested.coerceAtMost(2) else requested.coerceAtMost(3)
+        else -> if (largeText) requested.coerceAtMost(3) else requested
     }.coerceAtLeast(1)
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         (0 until itemCount).toList().chunked(safeColumns).forEach { rowItems ->
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 rowItems.forEach { index ->
                     Column(Modifier.weight(1f)) { content(index) }
                 }
@@ -142,8 +143,8 @@ internal fun ResponsiveSectionV17(
         shape = MaterialTheme.shapes.large
     ) {
         Column(
-            Modifier.fillMaxWidth().padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            Modifier.fillMaxWidth().padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                 Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, modifier=Modifier.weight(1f))
@@ -156,9 +157,9 @@ internal fun ResponsiveSectionV17(
 }
 
 internal fun responsiveColumnsV17(profile: ScreenProfileV17, preferredExpanded: Int = 3): Int = when {
-    profile.width == ScreenWidthV17.COMPACT -> if(profile.largeSystemText) 1 else 2
-    profile.width == ScreenWidthV17.MEDIUM -> if(profile.largeSystemText) 2 else preferredExpanded.coerceIn(2,3)
-    else -> if(profile.largeSystemText) preferredExpanded.coerceIn(2,4) else preferredExpanded.coerceIn(3,5)
+    profile.width == ScreenWidthV17.COMPACT -> 1
+    profile.width == ScreenWidthV17.MEDIUM -> if(profile.largeSystemText) 1 else preferredExpanded.coerceIn(1,2)
+    else -> if(profile.largeSystemText) preferredExpanded.coerceIn(1,2) else preferredExpanded.coerceIn(2,4)
 }
 
 
