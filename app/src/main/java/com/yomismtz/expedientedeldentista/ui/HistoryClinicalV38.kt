@@ -112,8 +112,63 @@ private data class E(val n:String,val d:String)
   ReasonDx("Quiero revisión general",listOf("Paciente aparentemente sano a confirmar","Caries dental","Gingivitis","Periodontitis","Alteraciones oclusales o mucosas a detectar")),
   ReasonDx("Golpe en un diente",listOf("Conmoción o subluxación","Luxación dental","Fractura coronaria","Fractura radicular","Avulsión o lesión alveolar")),
   ReasonDx("Diente se salió por un golpe",listOf("Avulsión de diente permanente","Avulsión de diente temporal","Lesión alveolar asociada","Lesión de tejidos blandos","Trauma de dientes vecinos")),
-  ReasonDx("Necesito prótesis porque me faltan dientes",listOf("Edentulismo parcial","Edentulismo total","Necesidad de prótesis removible","Necesidad de prótesis fija según caso","Rehabilitación implantosoportada a valorar"))
+  ReasonDx("Necesito prótesis porque me faltan dientes",listOf("Edentulismo parcial","Edentulismo total","Necesidad de prótesis removible","Necesidad de prótesis fija según caso","Rehabilitación implantosoportada a valorar")),
+  ReasonDx("Caries visible",listOf("Lesión de caries activa cavitada","Lesión de caries detenida","Tinción de fosas y fisuras","Defecto estructural del esmalte","Restauración pigmentada o defectuosa")),
+  ReasonDx("Cavidad en un diente",listOf("Caries cavitada","Fractura coronaria","Pérdida de restauración","Erosión o desgaste localizado","Defecto del desarrollo dental")),
+  ReasonDx("Inflamación localizada dentro de la boca",listOf("Absceso odontogénico","Absceso periodontal","Pericoronitis","Lesión reactiva inflamatoria","Obstrucción o lesión salival")),
+  ReasonDx("Siento algo atorado o extraño en la boca",listOf("Cuerpo extraño retenido","Fragmento dental o radicular","Material restaurador o protésico desplazado","Cálculo o depósito duro","Retención alimentaria localizada")),
+  ReasonDx("Sangrado de una lesión en boca",listOf("Trauma local","Úlcera traumática","Granuloma piógeno","Lesión vascular","Lesión inflamatoria o neoplásica a valorar")),
+  ReasonDx("Restauración fracturada o desajustada",listOf("Fractura del material restaurador","Caries recurrente","Fractura dental asociada","Pérdida de sellado marginal","Interferencia oclusal")),
+  ReasonDx("Prótesis que lastima o no ajusta",listOf("Punto de sobrepresión protésica","Pérdida de adaptación","Reabsorción del reborde","Inestabilidad oclusal","Lesión traumática de mucosa"))
  )
+
+ val groups=listOf(
+  "Dolor / sensibilidad",
+  "Inflamación",
+  "Bolita / algo extraño",
+  "Pus / sangrado",
+  "Movilidad / trauma",
+  "Trabajo previo / prótesis",
+  "Caries / cavidades",
+  "Color / estética",
+  "Mordida / ortodoncia",
+  "Lesiones en boca",
+  "Prevención / otros"
+ )
+
+ fun groupFor(reason:String):String=when(reason){
+  "Inflamación de cara","Inflamación de encía","Inflamación localizada dentro de la boca","Dolor o aumento de volumen de glándula salival" -> "Inflamación"
+  "Bolita en la encía","Bulto en la boca","Siento algo atorado o extraño en la boca","Comida se atora entre dientes" -> "Bolita / algo extraño"
+  "Salida de pus","Sangrado de encías","Sangrado de una lesión en boca","Mal aliento" -> "Pus / sangrado"
+  "Diente flojo","Diente roto","Golpe en un diente","Diente se salió por un golpe" -> "Movilidad / trauma"
+  "Se cayó una restauración","Se rompió una prótesis","Corona floja o desprendida","Implante con molestia","Necesito prótesis porque me faltan dientes","Restauración fracturada o desajustada","Prótesis que lastima o no ajusta" -> "Trabajo previo / prótesis"
+  "Caries visible","Cavidad en un diente" -> "Caries / cavidades"
+  "Diente oscuro","Manchas blancas en dientes","Manchas oscuras en dientes","Dientes amarillos","Quiero blanqueamiento" -> "Color / estética"
+  "Dientes chuecos","Espacios entre dientes","Mordida incorrecta","Dientes de adelante muy salidos","Mordida abierta","Mordida cruzada","No sale un diente","Salió un diente en otro lugar","Diente extra","Falta un diente","Diente de leche no se cae","Diente permanente salió detrás del de leche" -> "Mordida / ortodoncia"
+  "Llaga en la boca","Ampollas en la boca","Mancha en la boca","Lengua dolorosa o ardor","Boca seca","Muchísima saliva","Encía se bajó" -> "Lesiones en boca"
+  "Quiero limpieza dental","Quiero revisión general","Quiero sacar una muela del juicio" -> "Prevención / otros"
+  else -> "Dolor / sensibilidad"
+ }
+
+ val groupExtras=mapOf(
+  "Dolor / sensibilidad" to listOf("Trauma oclusal","Dolor periodontal","Trastorno temporomandibular o muscular","Dolor referido de origen no odontogénico","Sinusitis maxilar a valorar","Neuropatía u otro dolor orofacial","Alteración de restauración o prótesis","Lesión de tejidos blandos dolorosa"),
+  "Inflamación" to listOf("Absceso odontogénico","Celulitis odontogénica","Absceso periodontal","Pericoronitis","Lesión reactiva o inflamatoria","Obstrucción de glándula salival","Trauma o irritación local","Origen no odontogénico a valorar"),
+  "Bolita / algo extraño" to listOf("Trayecto sinusal odontogénico","Fibroma irritativo","Mucocele","Granuloma piógeno","Quiste","Absceso localizado","Lesión de glándula salival","Neoplasia a descartar"),
+  "Pus / sangrado" to listOf("Gingivitis","Periodontitis","Absceso odontogénico","Absceso periodontal","Pericoronitis","Trauma local o por higiene","Lesión ulcerada o vascular","Alteración sistémica o medicamentosa a valorar"),
+  "Movilidad / trauma" to listOf("Periodontitis","Subluxación o luxación","Fractura coronaria","Fractura radicular","Trauma oclusal","Lesión alveolar","Reabsorción fisiológica de temporal","Lesión periapical asociada"),
+  "Trabajo previo / prótesis" to listOf("Falla restauradora o protésica","Caries recurrente","Fractura dental","Pérdida de cementación o retención","Interferencia o sobrecarga oclusal","Inflamación periodontal o periimplantaria","Complicación pulpar o endodóntica","Cambio del soporte oral o desgaste del dispositivo"),
+  "Caries / cavidades" to listOf("Caries activa","Caries detenida","Caries recurrente","Tinción sin cavitación","Defecto del esmalte","Fractura o pérdida estructural","Hipersensibilidad dentinaria","Compromiso pulpar a valorar"),
+  "Color / estética" to listOf("Tinción extrínseca","Tinción intrínseca","Necrosis pulpar","Cambio postraumático","Fluorosis","Hipomineralización","Hipoplasia o defecto del esmalte","Variación fisiológica o cambio por edad"),
+  "Mordida / ortodoncia" to listOf("Apiñamiento o malposición","Maloclusión sagital","Mordida cruzada","Mordida abierta","Sobremordida aumentada","Discrepancia esqueletal","Alteración de erupción","Hábito oral o factor funcional asociado"),
+  "Lesiones en boca" to listOf("Úlcera traumática","Afta","Lesión viral","Candidiasis u otra infección","Lesión reactiva","Lesión pigmentada o vascular","Alteración de glándula salival","Neoplasia a descartar"),
+  "Prevención / otros" to listOf("Paciente aparentemente sano a confirmar","Caries dental","Gingivitis","Periodontitis","Biofilm o cálculo","Alteración de mucosa","Alteración oclusal","Factor de riesgo preventivo por identificar")
+ )
+
+ fun dx8(item:ReasonDx):List<String>{
+  val extras=groupExtras[groupFor(item.reason)]?:groupExtras.getValue("Prevención / otros")
+  return (item.dx+extras).distinct().take(8)
+ }
+
  var selectedReason by rememberRecordState<Int?>("history.reason.selectedReason",null)
  var selectedDx by rememberRecordState<Int?>("history.reason.selectedDx",null)
  var showCatalog by remember { mutableStateOf(selectedReason==null) }
@@ -122,28 +177,52 @@ private data class E(val n:String,val d:String)
  var symptoms by rememberRecordState("history.reason.symptoms","")
  var modifiers by rememberRecordState("history.reason.modifiers","")
  val current=selectedReason?.let{catalog.getOrNull(it)}
+ var expandedGroup by remember { mutableStateOf(current?.let{groupFor(it.reason)}) }
+ val currentDx=current?.let(::dx8)?:emptyList()
+
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
-  item{ScreenHeader("Motivo de consulta y padecimiento actual",onBack,"Selecciona el motivo referido. Al tocarlo, el catálogo se cierra y los diagnósticos diferenciales aparecen inmediatamente en su lugar, sin obligarte a recorrer una lista larga.")}
-  item{NoticeCard("Los diagnósticos mostrados son posibilidades educativas. El diagnóstico clínico requiere integrar interrogatorio, exploración y pruebas indicadas.")}
+  item{ScreenHeader("Motivo de consulta y padecimiento actual",onBack,"Selecciona primero una agrupación y después el motivo específico. Al elegirlo se muestran el padecimiento actual y ocho posibilidades diferenciales.")}
+  item{NoticeCard("Los diferenciales mostrados son posibilidades educativas. El diagnóstico clínico requiere integrar interrogatorio, exploración y pruebas indicadas.")}
   item{LocalClinicalImageSectionV46(lang,null,"Motivo de consulta","Chief complaint")}
   if(showCatalog || current==null){
    item{SectionCard("1 · Motivo de consulta"){
-    Text("Selecciona una opción. Al elegirla, esta lista se sustituye por el motivo seleccionado y los siguientes pasos quedan visibles justo debajo.",style=MaterialTheme.typography.bodySmall)
+    Text("Selecciona una agrupación. Solo se despliegan sus opciones para evitar una lista vertical demasiado larga.",style=MaterialTheme.typography.bodySmall)
     ChipChoices(
-     catalog.mapIndexed{i,x->x.reason to (selectedReason==i)},
-     {i->selectedReason=i;selectedDx=null;showCatalog=false},
-     columns=5
+     groups.map{it to (expandedGroup==it)},
+     {i->val g=groups[i];expandedGroup=if(expandedGroup==g)null else g},
+     columns=2
     )
+    expandedGroup?.let { group ->
+     val options=catalog.mapIndexedNotNull{index,item->if(groupFor(item.reason)==group) index to item else null}
+     if(options.isNotEmpty()){
+      Spacer(Modifier.height(8.dp))
+      Text(group,fontWeight=FontWeight.Bold)
+      Text("Elige el motivo específico:",style=MaterialTheme.typography.bodySmall)
+      ChipChoices(
+       options.map{(index,item)->item.reason to (selectedReason==index)},
+       {i->
+        val index=options[i].first
+        selectedReason=index
+        selectedDx=null
+        expandedGroup=group
+        showCatalog=false
+       },
+       columns=2
+      )
+     }
+    }
    }}
   }else{
    item{SectionCard("1 · Motivo seleccionado"){
     Text(current.reason,fontWeight=FontWeight.Bold)
-    OutlinedButton(onClick={showCatalog=true}){Text("Cambiar motivo")}
+    Text("Categoría: "+groupFor(current.reason),style=MaterialTheme.typography.bodySmall)
+    OutlinedButton(onClick={expandedGroup=groupFor(current.reason);showCatalog=true}){Text("Cambiar motivo")}
    }}
-   item{SectionCard("2 · Cinco diagnósticos diferenciales posibles"){
-    ChipChoices(current.dx.mapIndexed{i,x->x to (selectedDx==i)},{selectedDx=it},columns=5)
+   item{SectionCard("2 · Padecimiento actual · diferenciales"){
+    Text("Selecciona la posibilidad que corresponda estudiar primero. Se muestran 8 opciones educativas; no equivalen a un diagnóstico definitivo.",style=MaterialTheme.typography.bodySmall)
+    ChipChoices(currentDx.mapIndexed{i,x->x to (selectedDx==i)},{selectedDx=it},columns=2)
    }}
-   item{SectionCard("3 · Padecimiento actual"){
+   item{SectionCard("3 · Padecimiento actual · evolución y síntomas"){
     Text("Registra la evolución con las palabras del paciente y completa sólo lo que realmente se obtuvo en el interrogatorio.",style=MaterialTheme.typography.bodySmall)
     OutlinedTextField(onset,{onset=it},label={Text("Inicio · ¿desde cuándo?")},modifier=Modifier.fillMaxWidth())
     OutlinedTextField(evolution,{evolution=it},label={Text("Evolución · ¿cómo ha cambiado?")},modifier=Modifier.fillMaxWidth())
@@ -152,7 +231,7 @@ private data class E(val n:String,val d:String)
    }}
    item{SectionCard("4 · Selección para estudio"){
     Text("Motivo: "+current.reason,fontWeight=FontWeight.Bold)
-    Text("Posibilidad diagnóstica seleccionada: "+(selectedDx?.let{current.dx.getOrNull(it)}?:"sin seleccionar"))
+    Text("Posibilidad diferencial seleccionada: "+(selectedDx?.let{currentDx.getOrNull(it)}?:"sin seleccionar"))
     Text("Confirma o descarta mediante anamnesis dirigida, exploración clínica y auxiliares/pruebas que correspondan; no conviertas esta selección en diagnóstico definitivo.",style=MaterialTheme.typography.bodySmall)
    }}
   }
