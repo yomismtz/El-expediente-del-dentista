@@ -28,7 +28,7 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
     val perio=if(session.periodontogram.isEmpty()) "Pendiente" else "Registrado"
     val pulpal=if(session.pulpal.tooth>0) "Registrado · OD "+session.pulpal.tooth else "Pendiente"
     val history=if(session.history.diseases.values.any { it.present }) "Con antecedentes seleccionados" else "Sin antecedentes activos registrados"
-    val checks=listOf(
+    val checks: List<Pair<String, Boolean>> = listOf(
         "Identificación" to (p.patientInitials.isNotBlank() && p.age.isNotBlank() && p.sex.isNotBlank()),
         "Motivo / anamnesis" to p.reasonForVisit.isNotBlank(),
         "Signos vitales" to (p.bloodPressure.isNotBlank() || p.heartRate.isNotBlank() || p.temperature.isNotBlank()),
