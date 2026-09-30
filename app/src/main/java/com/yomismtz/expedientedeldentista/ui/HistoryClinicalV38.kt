@@ -125,6 +125,7 @@ private data class E(val n:String,val d:String)
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
   item{ScreenHeader("Motivo de consulta y padecimiento actual",onBack,"Selecciona el motivo referido. Al tocarlo, el catálogo se cierra y los diagnósticos diferenciales aparecen inmediatamente en su lugar, sin obligarte a recorrer una lista larga.")}
   item{NoticeCard("Los diagnósticos mostrados son posibilidades educativas. El diagnóstico clínico requiere integrar interrogatorio, exploración y pruebas indicadas.")}
+  item{LocalClinicalImageSectionV46(lang,null,"Motivo de consulta","Chief complaint")}
   if(showCatalog || current==null){
    item{SectionCard("1 · Motivo de consulta"){
     Text("Selecciona una opción. Al elegirla, esta lista se sustituye por el motivo seleccionado y los siguientes pasos quedan visibles justo debajo.",style=MaterialTheme.typography.bodySmall)
