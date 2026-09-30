@@ -1,10 +1,19 @@
 package com.yomismtz.expedientedeldentista.ui
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.R
 
 private data class UploadedClinicalRefV51(val drawable:Int,val titleEs:String,val titleEn:String)
@@ -12,11 +21,38 @@ private data class UploadedClinicalRefV51(val drawable:Int,val titleEs:String,va
 @Composable
 private fun UploadedClinicalRefsV51(lang:String, refs:List<UploadedClinicalRefV51>, columns:Int=3) {
     var selectedIndex by remember(refs) { mutableStateOf<Int?>(null) }
-    ChipChoices(
-        refs.mapIndexed { i,r -> (if(lang=="en") r.titleEn else r.titleEs) to (selectedIndex==i) },
-        { selectedIndex=it },
-        columns=columns
-    )
+
+    if(columns==2){
+        Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(8.dp)){
+            refs.chunked(2).forEachIndexed { rowIndex,row ->
+                Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                    row.forEachIndexed { colIndex,r ->
+                        val index=rowIndex*2+colIndex
+                        FilterChip(
+                            selected=selectedIndex==index,
+                            onClick={selectedIndex=index},
+                            label={
+                                Text(
+                                    if(lang=="en") r.titleEn else r.titleEs,
+                                    maxLines=3,
+                                    softWrap=true
+                                )
+                            },
+                            modifier=Modifier.weight(1f)
+                        )
+                    }
+                    if(row.size==1) Spacer(Modifier.weight(1f))
+                }
+            }
+        }
+    }else{
+        ChipChoices(
+            refs.mapIndexed { i,r -> (if(lang=="en") r.titleEn else r.titleEs) to (selectedIndex==i) },
+            { selectedIndex=it },
+            columns=columns
+        )
+    }
+
     selectedIndex?.let { i ->
         refs.getOrNull(i)?.let { r ->
             LocalClinicalInlineZoomImageV48(
