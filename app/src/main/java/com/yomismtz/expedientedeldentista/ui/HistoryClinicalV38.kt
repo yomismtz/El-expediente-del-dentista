@@ -574,6 +574,8 @@ private data class E(val n:String,val d:String)
 @Composable fun HistoryNonPathV38(lang:String,onBack:()->Unit){
  var section by rememberRecordState("history.nonpath.section","Alimentación")
  var sub by rememberRecordState("history.nonpath.sub","")
+ var openFoodGroup by rememberRecordState("history.nonpath.food.openGroup","")
+ var activeFood by rememberRecordState("history.nonpath.food.activeFood","")
  val chosen=rememberRecordStateMap<String,String>("history.nonpath.chosen")
  val multi=rememberRecordStateMap<String,Boolean>("history.nonpath.multi")
  val sections=listOf("Alimentación","Vivienda","Higiene","Inmunizaciones","Hábitos y exposiciones")
@@ -699,9 +701,6 @@ private data class E(val n:String,val d:String)
      "Refresco con azúcar","Dulces pegajosos/chiclosos","Gomitas","Caramelos duros","Chicle con azúcar","Chocolate azucarado","Galletas/pan dulce/postres","Jugos/aguas frescas azucaradas","Bebidas energéticas/deportivas"
     )
    )
-   var openFoodGroup by rememberRecordState("history.nonpath.food.openGroup","")
-   var activeFood by rememberRecordState("history.nonpath.food.activeFood","")
-
    item{SectionCard("Alimentación · evaluación dietética"){
     Text("Selecciona primero un grupo de alimentos. Al abrirlo aparecen alimentos concretos; elige uno para registrar su frecuencia. Solo se mantiene un grupo abierto para reducir el desplazamiento vertical.",fontWeight=FontWeight.SemiBold)
     Text("Prioridad odontológica: frecuencia de azúcares, consumo entre comidas y nocturno, bebidas azucaradas/ácidas, agua simple y patrón general de alimentación.",style=MaterialTheme.typography.bodySmall)
