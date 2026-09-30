@@ -1323,6 +1323,31 @@ private data class E(val n:String,val d:String)
  }
 }
 
+@Composable private fun CompactTwoColumnChoices38(
+ labels:List<Pair<String,Boolean>>,
+ onClick:(Int)->Unit
+){
+ BoxWithConstraints(Modifier.fillMaxWidth()){
+  val columns=if(maxWidth<700.dp)2 else 3
+  Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(8.dp)){
+   labels.chunked(columns).forEachIndexed{rowIndex,row->
+    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+     row.forEachIndexed{colIndex,item->
+      val index=rowIndex*columns+colIndex
+      FilterChip(
+       selected=item.second,
+       onClick={onClick(index)},
+       label={Text(item.first,maxLines=2,softWrap=true)},
+       modifier=Modifier.weight(1f)
+      )
+     }
+     repeat(columns-row.size){Spacer(Modifier.weight(1f))}
+    }
+   }
+  }
+ }
+}
+
 @Composable fun HistoryDentalAlterationsV38(lang:String,onBack:()->Unit){
  var group by rememberRecordState("history.dentalAlterations.group",0)
  var subgroup by rememberRecordState("history.dentalAlterations.subgroup",0)
@@ -1465,19 +1490,18 @@ private data class E(val n:String,val d:String)
   item{NoticeCard("Puedes usar Opciones rápidas como orientación por apariencia, pero el registro clínico principal se realiza en la clasificación completa. No es necesario abrir imágenes que no correspondan al hallazgo seleccionado.")}
   item{SectionCard("Opciones rápidas"){
    Text("Acceso por apariencia clínica. Selecciona el hallazgo inicial para desplegar posibilidades relacionadas; después confirma el diagnóstico en la clasificación completa.",fontWeight=FontWeight.SemiBold)
-   ChipChoices(quickFindings.map{x->x to (quickFinding==x)},{i->quickFinding=quickFindings[i]},columns=2)
+   CompactTwoColumnChoices38(quickFindings.map{x->x to (quickFinding==x)},{i->quickFinding=quickFindings[i]})
    if(quickRelated.isNotEmpty()){
     Text("Relacionadas con: "+quickFinding,fontWeight=FontWeight.SemiBold)
-    ChipChoices(quickRelated.map{x->x to (quickSelected[quickFinding]==x)},{i->quickSelected[quickFinding]=quickRelated[i]},columns=2)
+    CompactTwoColumnChoices38(quickRelated.map{x->x to (quickSelected[quickFinding]==x)},{i->quickSelected[quickFinding]=quickRelated[i]})
     when(quickSelected[quickFinding]){
     }
    }
   }}
-  item{SectionCard("1 · Grupo principal"){ChipChoices(groups.mapIndexed{i,x->x.name to (safeGroup==i)},{i->group=i;subgroup=0},columns=2)}}
-  item{SectionCard("2 · Subclasificación"){ChipChoices(g.subs.mapIndexed{i,x->x.name to (safeSub==i)},{i->subgroup=i},columns=2)}}
+  item{SectionCard("1 · Grupo principal"){CompactTwoColumnChoices38(groups.mapIndexed{i,x->x.name to (safeGroup==i)},{i->group=i;subgroup=0})}}
+  item{SectionCard("2 · Subclasificación"){CompactTwoColumnChoices38(g.subs.mapIndexed{i,x->x.name to (safeSub==i)},{i->subgroup=i})}}
   item{SectionCard("3 · Anomalía / hallazgo"){
-   val findingColumns=if(s.findings.any{it.length>18} || s.findings.size>6) 2 else 3
-   ChipChoices(s.findings.map{x->x to (selected[g.name+"|"+s.name]==x)},{i->selected[g.name+"|"+s.name]=s.findings[i]},columns=findingColumns)
+   CompactTwoColumnChoices38(s.findings.map{x->x to (selected[g.name+"|"+s.name]==x)},{i->selected[g.name+"|"+s.name]=s.findings[i]})
    if(anomalyImages.isNotEmpty()){
     if(anomalyImages.size>1){
      Text("Selecciona una imagen",fontWeight=FontWeight.SemiBold)
@@ -1490,9 +1514,9 @@ private data class E(val n:String,val d:String)
    }
   }}
   val extension=listOf("Un diente","Varios dientes","Localizado por cuadrante","Generalizado","No valorable")
-  item{SectionCard("4 · Extensión"){ChipChoices(extension.map{x->x to (selected["Extensión"]==x)},{i->selected["Extensión"]=extension[i]},columns=2)}}
+  item{SectionCard("4 · Extensión"){CompactTwoColumnChoices38(extension.map{x->x to (selected["Extensión"]==x)},{i->selected["Extensión"]=extension[i]})}}
   val confirmation=listOf("Sólo clínica","Clínica + radiografía","Antecedente documentado","Requiere estudio complementario","No aplica")
-  item{SectionCard("5 · Confirmación disponible"){ChipChoices(confirmation.map{x->x to (selected["Confirmación"]==x)},{i->selected["Confirmación"]=confirmation[i]},columns=2)}}
+  item{SectionCard("5 · Confirmación disponible"){CompactTwoColumnChoices38(confirmation.map{x->x to (selected["Confirmación"]==x)},{i->selected["Confirmación"]=confirmation[i]})}}
   item{NoticeCard("Las categorías organizan el registro educativo y no generan diagnóstico automático. Correlaciona los hallazgos con historia clínica, exploración y estudios apropiados. Las imágenes locales aparecen únicamente al seleccionar el hallazgo correspondiente.")}
  }
 }
