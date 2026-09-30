@@ -755,6 +755,7 @@ private data class E(val n:String,val d:String)
    item{Pick("Masas / aumento de volumen",listOf("No observado/palpado","Anterior","Lateral derecho","Lateral izquierdo","Posterior","Difuso","No valorable"),"Qué es: aumento de volumen observado o palpado en una región cervical. Por qué importa: debe describirse por sitio, tamaño aproximado, consistencia, movilidad, dolor y evolución; la app no asigna etiología.")}
    item{Pick("Tiroides · hallazgo clínico",listOf("Sin aumento aparente","Aumento aparente","Asimetría aparente","Nódulo/masa referida o palpable","Antecedente tiroideo sin hallazgo visible","No valorable"),"Qué es: registro descriptivo de la región tiroidea y del antecedente referido. Por qué importa: un aumento, asimetría o nódulo aparente puede requerir valoración médica; la inspección o palpación aislada no diagnostica enfermedad tiroidea.")}
   }
+  if(section=="Cráneo y cara") item{LocalClinicalImageSectionV46(lang,null,"Exploración extraoral","Extraoral examination")}
   if(section=="Ganglios"){
    item{NoticeCard("La exploración ganglionar registra la cadena examinada y las características palpables. Localización, tamaño, movilidad, dolor y consistencia deben interpretarse en conjunto con síntomas, infecciones, lesiones orales y contexto clínico.")}
    val ganglionImages=listOf(
