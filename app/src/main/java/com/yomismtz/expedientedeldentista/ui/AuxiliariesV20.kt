@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-private enum class AuxV20Page { HOME, LAB, ORTHO, IMAGING, SALIVA }
+private enum class AuxV20Page { HOME, LAB, ORTHO, IMAGING, SALIVA, CAMBRA }
 
 @Composable
 fun AuxiliariesV20Screen(lang:String,onBack:()->Unit){
@@ -88,9 +88,16 @@ fun AuxiliariesV20Screen(lang:String,onBack:()->Unit){
             }
             NoticeCard("Xerostomía es la sensación subjetiva de boca seca; hiposalivación es una reducción objetiva del flujo. No existe un único punto de corte universal de mL/min que diagnostique por sí solo hipersalivación/sialorrea. Interpretar según técnica, síntomas y contexto clínico.")
         }
+        AuxV20Page.CAMBRA->ResponsiveScreenV17(
+            tr(lang,"CAMBRA · riesgo de caries","CAMBRA · caries risk"),
+            tr(lang,"Valoración educativa independiente de laboratorio e histopatología. Registra indicadores de enfermedad, factores de riesgo y factores protectores.","Educational assessment independent from laboratory and histopathology. Records disease indicators, risk factors and protective factors."),
+            {open(AuxV20Page.HOME)}
+        ){_ ->
+            CambraV23(lang)
+        }
         AuxV20Page.HOME->ResponsiveScreenV17(
             tr(lang,"Auxiliares de diagnóstico","Diagnostic aids"),
-            tr(lang,"Pantalla inicial de auxiliares: Laboratorio, Ortodoncia, Imagenología y Sialometría. Los colores se derivan de la paleta activa y todo funciona localmente. Acceso directo desde el rubro 4.","Diagnostic aids home: Laboratory, Orthodontics, Imaging and Sialometry. Colors are derived from the active palette and everything works locally. Direct access from section 4."),
+            tr(lang,"Pantalla inicial de auxiliares: Laboratorio, Ortodoncia, Imagenología, Sialometría y CAMBRA. Los colores se derivan de la paleta activa y todo funciona localmente. Acceso directo desde el rubro 4.","Diagnostic aids home: Laboratory, Orthodontics, Imaging, Sialometry and CAMBRA. Colors are derived from the active palette and everything works locally. Direct access from section 4."),
             onBack
         ){profile->
             val columns=when {
@@ -103,14 +110,16 @@ fun AuxiliariesV20Screen(lang:String,onBack:()->Unit){
                 MaterialTheme.colorScheme.primaryContainer,
                 MaterialTheme.colorScheme.secondaryContainer,
                 MaterialTheme.colorScheme.tertiaryContainer,
-                MaterialTheme.colorScheme.surfaceVariant
+                MaterialTheme.colorScheme.surfaceVariant,
+                MaterialTheme.colorScheme.primaryContainer
             )
-            AdaptiveGridV17(4,columns){i->
+            AdaptiveGridV17(5,columns){i->
                 val lab=i==0
                 val imaging=i==2
                 val saliva=i==3
+                val cambra=i==4
                 Card(
-                    onClick={open(if(lab)AuxV20Page.LAB else if(imaging)AuxV20Page.IMAGING else if(saliva)AuxV20Page.SALIVA else AuxV20Page.ORTHO)},
+                    onClick={open(if(lab)AuxV20Page.LAB else if(imaging)AuxV20Page.IMAGING else if(saliva)AuxV20Page.SALIVA else if(cambra)AuxV20Page.CAMBRA else AuxV20Page.ORTHO)},
                     modifier=Modifier.fillMaxWidth(),
                     colors=CardDefaults.cardColors(
                         containerColor=cardColors[i],
@@ -123,8 +132,8 @@ fun AuxiliariesV20Screen(lang:String,onBack:()->Unit){
                         Modifier.fillMaxWidth().padding(16.dp),
                         verticalArrangement=androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
                     ){
-                        Text(if(lab)"🧪 ${tr(lang,"Laboratorio e histopatología","Laboratory & histopathology")}" else if(imaging)"🩻 ${tr(lang,"Imagenología dental","Dental imaging")}" else if(saliva)"💧 ${tr(lang,"Flujo salival / sialometría","Salivary flow / sialometry")}" else "📐 ${tr(lang,"Ortodoncia y análisis","Orthodontics & analysis")}",style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black)
-                        Text(if(lab)tr(lang,"Biometría hemática, química sanguínea, coagulación y lectura educativa de biopsia.","CBC, blood chemistry, coagulation and educational biopsy reading.") else if(imaging)tr(lang,"Periapical, bitewing, oclusal, panorámica, cefalométrica, CBCT y registro sistemático de hallazgos.","Periapical, bitewing, occlusal, panoramic, cephalometric, CBCT and systematic findings.") else if(saliva)tr(lang,"Flujo no estimulado y estimulado, métodos de obtención, tira de papel y cálculo en mL/min.","Unstimulated and stimulated flow, collection methods, paper strip and mL/min calculation.") else tr(lang,"Fotos frontal/lateral, Powell, Steiner, Moyers, Tanaka–Johnston, panorámica y Nolla.","Frontal/lateral photos, Powell, Steiner, Moyers, Tanaka–Johnston, panoramic and Nolla."),style=MaterialTheme.typography.bodyMedium)
+                        Text(if(lab)"🧪 ${tr(lang,"Laboratorio e histopatología","Laboratory & histopathology")}" else if(imaging)"🩻 ${tr(lang,"Imagenología dental","Dental imaging")}" else if(saliva)"💧 ${tr(lang,"Flujo salival / sialometría","Salivary flow / sialometry")}" else if(cambra)"🦷 ${tr(lang,"CAMBRA · riesgo de caries","CAMBRA · caries risk")}" else "📐 ${tr(lang,"Ortodoncia y análisis","Orthodontics & analysis")}",style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black)
+                        Text(if(lab)tr(lang,"Biometría hemática, química sanguínea, coagulación y lectura educativa de biopsia.","CBC, blood chemistry, coagulation and educational biopsy reading.") else if(imaging)tr(lang,"Periapical, bitewing, oclusal, panorámica, cefalométrica, CBCT y registro sistemático de hallazgos.","Periapical, bitewing, occlusal, panoramic, cephalometric, CBCT and systematic findings.") else if(saliva)tr(lang,"Flujo no estimulado y estimulado, métodos de obtención, tira de papel y cálculo en mL/min.","Unstimulated and stimulated flow, collection methods, paper strip and mL/min calculation.") else if(cambra)tr(lang,"Indicadores de enfermedad, factores de riesgo y factores protectores para valorar riesgo de caries.","Disease indicators, risk factors and protective factors for caries-risk assessment.") else tr(lang,"Fotos frontal/lateral, Powell, Steiner, Moyers, Tanaka–Johnston, panorámica y Nolla.","Frontal/lateral photos, Powell, Steiner, Moyers, Tanaka–Johnston, panoramic and Nolla."),style=MaterialTheme.typography.bodyMedium)
                     }
                 }
             }
