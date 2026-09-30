@@ -141,7 +141,7 @@ fun IpcInteractiveV2Screen(
         }
         item {
             SectionCard(tr(lang, "1 · Selecciona un sextante", "1 · Select a sextant")) {
-                ipcSextants.chunked(3).forEach { row ->
+                ipcSextants.chunked(2).forEach { row ->
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         row.forEachIndexed { _, s ->
                             val idx = ipcSextants.indexOf(s)
@@ -173,7 +173,7 @@ fun IpcInteractiveV2Screen(
             val sextant = ipcSextants[selectedSextant]
             SectionCard("${tr(lang, "2 · Dientes del sextante", "2 · Teeth in sextant")} ${sextant.number}") {
                 Text(tr(lang, "Toca cada diente para revisar sus seis sitios.", "Tap each tooth to review its six sites."))
-                sextant.teeth.chunked(3).forEach { row ->
+                sextant.teeth.chunked(2).forEach { row ->
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         row.forEach { tooth ->
                             FilterChip(
@@ -183,7 +183,7 @@ fun IpcInteractiveV2Screen(
                                 modifier = Modifier.weight(1f)
                             )
                         }
-                        repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
+                        repeat(2 - row.size) { Spacer(Modifier.weight(1f)) }
                     }
                 }
             }
@@ -194,10 +194,10 @@ fun IpcInteractiveV2Screen(
                     "MV = mesio-vestibular, V = vestibular, DV = disto-vestibular, ML/P = mesio-lingual/palatino, L/P = lingual/palatino, DL/P = disto-lingual/palatino.",
                     "MV = mesiobuccal, B = buccal, DB = distobuccal, ML/P = mesiolingual/palatal, L/P = lingual/palatal, DL/P = distolingual/palatal."
                 ), style = MaterialTheme.typography.bodySmall)
-                ipcSites.chunked(3).forEachIndexed { r, row ->
+                ipcSites.chunked(2).forEachIndexed { r, row ->
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         row.forEachIndexed { c, site ->
-                            val index = r * 3 + c
+                            val index = r * 2 + c
                             val code = toothCodes(selectedTooth)[index]
                             FilterChip(
                                 selected = selectedSite == index,
@@ -210,18 +210,20 @@ fun IpcInteractiveV2Screen(
                 }
                 Spacer(Modifier.height(4.dp))
                 Text("${tr(lang, "Código del sitio seleccionado", "Selected site code")}: ${ipcSites[selectedSite]}", fontWeight = FontWeight.Bold)
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                    listOf("0", "1", "2", "3", "4", "X").forEach { code ->
-                        FilterChip(
-                            selected = toothCodes(selectedTooth)[selectedSite] == code,
-                            onClick = {
-                                val list = toothCodes(selectedTooth).toMutableList()
-                                list[selectedSite] = code
-                                syncSession(siteCodes + (selectedTooth to list))
-                            },
-                            label = { Text(code) },
-                            modifier = Modifier.weight(1f)
-                        )
+                listOf("0", "1", "2", "3", "4", "X").chunked(2).forEach { row ->
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                        row.forEach { code ->
+                            FilterChip(
+                                selected = toothCodes(selectedTooth)[selectedSite] == code,
+                                onClick = {
+                                    val list = toothCodes(selectedTooth).toMutableList()
+                                    list[selectedSite] = code
+                                    syncSession(siteCodes + (selectedTooth to list))
+                                },
+                                label = { Text(code) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                     }
                 }
                 IpcCodeImage19(lang,toothCodes(selectedTooth)[selectedSite])
