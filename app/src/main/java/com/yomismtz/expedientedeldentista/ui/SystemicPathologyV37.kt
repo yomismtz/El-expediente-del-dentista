@@ -37,32 +37,71 @@ private val categories37=listOf(
   d37("genetic_other","Otra enfermedad genética / hereditaria","genetic")
  ))
 )
-private fun asa37(map:Map<String,DiseaseAnswer>):Int{
+private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String=""):Int{
  val active=map.values.filter{it.present}
- if(active.isEmpty())return 1
+ val tobaccoCurrent=tobacco.isNotBlank() && tobacco !in listOf("No fuma","Exfumador","No sabe / no recuerda")
+ val alcoholCurrent=alcohol.isNotBlank() && alcohol !in listOf("No consume","No sabe / no recuerda")
+ val alcoholSevere=alcohol.contains("dependencia",true) || alcohol.contains("abuso",true)
+
+ var level=when{
+  alcoholSevere -> 3
+  tobaccoCurrent || alcoholCurrent -> 2
+  else -> 1
+ }
+
  if(active.any{
    it.currentStatus.contains("inestable",true) ||
    it.currentStatus.contains("descompensación grave",true) ||
    it.currentStatus.contains("amenaza constante",true)
-  })return 4
- val asa3=active.any{
+  }) level=maxOf(level,4)
+ else if(active.any{
   it.currentStatus.contains("descontrolado",true) ||
   it.currentStatus.contains("mal control",true) ||
   it.currentStatus.contains("limitación funcional importante",true) ||
   it.complications.equals("Sí, en seguimiento",true)
- }
- return if(asa3)3 else 2
+ }) level=maxOf(level,3)
+ else if(active.isNotEmpty()) level=maxOf(level,2)
+
+ return level
 }
 
 @Composable fun PathologicalHistory37Screen(lang:String,session:EducationalSession,onSessionChanged:(EducationalSession)->Unit,onProtocols:()->Unit,onBack:()->Unit){
  var category by remember{mutableStateOf<Category37?>(null)}
  var disease by remember{mutableStateOf<Disease37?>(null)}
+ var tobacco by rememberRecordState("history.path.tobacco","")
+ var alcohol by rememberRecordState("history.path.alcohol","")
  val saved=session.history.diseases
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
   item{ScreenHeader("Antecedentes personales patológicos",onBack,"Selecciona categoría → enfermedad → datos del antecedente. Al guardar regresarás a la lista para continuar sin recorrer nuevamente toda la pantalla.")}
   item{NoticeCard("ASA es una orientación educativa: depende de gravedad, control, repercusión sistémica y valoración completa; el diagnóstico por sí solo no determina la clase.")}
-  item{Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(3.dp)){Text("ASA "+asa37(saved)+" · orientación automática",fontWeight=FontWeight.Black);Text("Antecedentes registrados: "+saved.values.count{it.present},fontWeight=FontWeight.SemiBold);Text("Debe confirmarse clínicamente y con supervisión docente.",style=MaterialTheme.typography.bodySmall)}}}
+  item{Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(3.dp)){Text("ASA "+asa37(saved,tobacco,alcohol)+" · orientación automática",fontWeight=FontWeight.Black);Text("Antecedentes registrados: "+saved.values.count{it.present},fontWeight=FontWeight.SemiBold);Text("Integra tabaco, alcohol y enfermedades registradas. Debe confirmarse clínicamente y con supervisión docente.",style=MaterialTheme.typography.bodySmall)}}}
   if(category==null){
+   item{SectionCard("0 · Tabaco y alcohol"){
+    Text("Registra estas exposiciones antes de seleccionar enfermedades. El consumo actual puede elevar la orientación ASA aunque no exista otra enfermedad sistémica registrada.",style=MaterialTheme.typography.bodySmall)
+
+    Text("Tabaco / nicotina",fontWeight=FontWeight.Bold)
+    val tobaccoOptions=listOf("No fuma","Exfumador","Ocasional","Eventual · 1–3 días/semana","Frecuente · 4–6 días/semana","Diario","Vapeo/tabaco actual","No sabe / no recuerda")
+    ChipChoices(tobaccoOptions.map{x->x to (tobacco==x)},{i->
+     tobacco=tobaccoOptions[i]
+     onSessionChanged(session.copy(history=session.history.copy(asaClass=asa37(saved,tobacco,alcohol))))
+    },columns=3)
+
+    Spacer(Modifier.height(8.dp))
+    Text("Alcohol",fontWeight=FontWeight.Bold)
+    val alcoholOptions=listOf("No consume","Ocasional / social","Eventual · 1–3 días/semana","Frecuente · 4–6 días/semana","Diario","Dependencia/abuso referido","No sabe / no recuerda")
+    ChipChoices(alcoholOptions.map{x->x to (alcohol==x)},{i->
+     alcohol=alcoholOptions[i]
+     onSessionChanged(session.copy(history=session.history.copy(asaClass=asa37(saved,tobacco,alcohol))))
+    },columns=3)
+
+    val exposureAsa=asa37(emptyMap(),tobacco,alcohol)
+    if(tobacco.isNotBlank() || alcohol.isNotBlank()){
+     Spacer(Modifier.height(8.dp))
+     Text("Orientación por exposiciones: ASA $exposureAsa",fontWeight=FontWeight.SemiBold)
+     if(exposureAsa==2)Text("Consumo actual de tabaco o alcohol registrado: se utiliza como piso educativo ASA II; el resto de antecedentes puede elevar la clase.",style=MaterialTheme.typography.bodySmall)
+     if(exposureAsa>=3)Text("Se registró dependencia/abuso de alcohol. La repercusión sistémica y funcional debe valorarse antes de confirmar la clase.",style=MaterialTheme.typography.bodySmall)
+    }
+   }}
    item{
     BoxWithConstraints(Modifier.fillMaxWidth()){
      val columns=if(maxWidth<700.dp)2 else 3
@@ -109,7 +148,7 @@ private fun asa37(map:Map<String,DiseaseAnswer>):Int{
    item{DiseaseEditor37(disease!!,saved[disease!!.id]?:DiseaseAnswer(),{a->
     val n=saved.toMutableMap()
     n[disease!!.id]=a
-    onSessionChanged(session.copy(history=session.history.copy(diseases=n,asaClass=asa37(n))))
+    onSessionChanged(session.copy(history=session.history.copy(diseases=n,asaClass=asa37(n,tobacco,alcohol))))
     disease=null
    },onProtocols){disease=null}}
   }
@@ -254,25 +293,34 @@ private fun presetTreatments37(d:Disease37):List<String> = when(d.id){
   Text("1 · ¿Desde cuándo?",fontWeight=FontWeight.Bold)
   ChipChoices(dates.map{x->x to (onset==x)},{i->onset=dates[i]},columns=3)
 
-  Text("2 · Tratamiento médico",fontWeight=FontWeight.Bold)
-  ChipChoices(treatmentModes.map{x->x to (treatmentMode==x)},{i->
-   treatmentMode=treatmentModes[i]
-   treatment=when(treatmentMode){
-    "No toma tratamiento" -> "No toma tratamiento actualmente"
-    "Suspendió tratamiento" -> "Suspendió tratamiento referido"
-    "No sabe / no recuerda" -> "No sabe / no recuerda tratamiento"
-    else -> ""
+  Text("2 · Estado actual / control",fontWeight=FontWeight.Bold)
+  ChipChoices(states.map{x->x to (status==x)},{i->
+   status=states[i]
+   if(status.startsWith("Resuelto")){
+    treatmentMode="No toma tratamiento"
+    treatment="Sin tratamiento activo / antecedente resuelto"
    }
-  },columns=2)
+  },columns=3)
 
-  if(treatmentMode=="Sí, sigue tratamiento médico"){
-   Text("Selecciona el tratamiento referido · 4 opciones",fontWeight=FontWeight.SemiBold)
-   ChipChoices(schemes.map{x->x to (treatment==x)},{i->treatment=schemes[i]},columns=2)
-   Text("Opciones para registrar lo que el paciente ya utiliza o refiere. No constituyen prescripción ni incluyen dosis.",style=MaterialTheme.typography.bodySmall)
+  if(status.isNotBlank() && !status.startsWith("Resuelto")){
+   Text("3 · Tratamiento médico",fontWeight=FontWeight.Bold)
+   if(d.protocol=="genetic" && status.startsWith("Controlado"))Text("La enfermedad genética/hereditaria está registrada como controlada. Indica si sigue tratamiento y, si corresponde, selecciona uno de los 4 esquemas referidos.",style=MaterialTheme.typography.bodySmall)
+   ChipChoices(treatmentModes.map{x->x to (treatmentMode==x)},{i->
+    treatmentMode=treatmentModes[i]
+    treatment=when(treatmentMode){
+     "No toma tratamiento" -> "No toma tratamiento actualmente"
+     "Suspendió tratamiento" -> "Suspendió tratamiento referido"
+     "No sabe / no recuerda" -> "No sabe / no recuerda tratamiento"
+     else -> ""
+    }
+   },columns=2)
+
+   if(treatmentMode=="Sí, sigue tratamiento médico"){
+    Text("Tratamiento referido · 4 opciones",fontWeight=FontWeight.SemiBold)
+    ChipChoices(schemes.map{x->x to (treatment==x)},{i->treatment=schemes[i]},columns=2)
+    Text("Registra lo que el paciente ya utiliza o refiere. No constituye prescripción ni incluye dosis.",style=MaterialTheme.typography.bodySmall)
+   }
   }
-
-  Text("3 · Estado actual",fontWeight=FontWeight.Bold)
-  ChipChoices(states.map{x->x to (status==x)},{i->status=states[i]},columns=3)
 
   Text("4 · Complicaciones referidas",fontWeight=FontWeight.Bold)
   ChipChoices(complicationOptions.map{x->x to (complications==x)},{i->complications=complicationOptions[i]},columns=2)
@@ -300,7 +348,7 @@ private fun presetTreatments37(d:Disease37):List<String> = when(d.id){
   if(d.protocol=="exanthem")NoticeCard("Registrar edad al padecerla, tratamiento recibido y complicaciones; una imagen aislada no confirma el diagnóstico.")
 
   val customOk=d.id!="genetic_other" || customDisease.isNotBlank()
-  val canSave=customOk && onset.isNotBlank() && treatmentMode.isNotBlank() && treatment.isNotBlank() && status.isNotBlank() && complications.isNotBlank()
+  val canSave=customOk && onset.isNotBlank() && status.isNotBlank() && treatment.isNotBlank() && complications.isNotBlank()
   Button(enabled=canSave,onClick={
    onSave(DiseaseAnswer(true,onset,treatment,status,complications))
   },modifier=Modifier.fillMaxWidth()){Text("💾 Guardar antecedente")}
