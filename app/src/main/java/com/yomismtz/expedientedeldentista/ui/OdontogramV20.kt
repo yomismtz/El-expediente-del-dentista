@@ -197,6 +197,8 @@ fun OdontogramV20Screen(
             }
         }
 
+        LocalClinicalImageSectionV46(lang,profile,"Odontograma","Odontogram")
+
         NoticeCard(tr(lang,
             "Ejemplo: un mismo OD puede quedar O y V en caries, M en restauración y D en sellador. Cada cara conserva su propia marca. Al declarar el diente ausente se borran las marcas de superficies para evitar datos contradictorios. Registra al final la simbología exigida por tu expediente físico.",
             "Example: the same tooth may have O and V caries, an M restoration and a D sealant. Each surface keeps its own mark. Marking a tooth missing clears its surface marks to avoid contradictory data. Record the symbols required by your physical chart."
