@@ -29,23 +29,85 @@ private fun pediatricOptionsV50(key:String):List<String> = when {
 @Composable private fun PText45(key:String,label:String){ var v by rememberRecordState(key,""); Column(Modifier.fillMaxWidth()){Text(label,fontWeight=FontWeight.SemiBold);val opts=pediatricOptionsV50(key);AdaptiveGridV17(opts.size,2){i->val o=opts[i];FilterChip(v==o,{v=o},{Text(o)},Modifier.fillMaxWidth())}} }
 @Composable private fun PChoice45(key:String,options:List<String>,columns:Int){ var v by rememberRecordState(key,""); AdaptiveGridV17(options.size,columns){i->FilterChip(v==options[i],{v=options[i]},{Text(options[i])},Modifier.fillMaxWidth())} }
 
+@Composable private fun PFieldCardV52(key:String,label:String){
+ Card(Modifier.fillMaxWidth()){
+  Column(Modifier.fillMaxWidth().padding(12.dp)){
+   PText45(key,label)
+  }
+ }
+}
+
+@Composable private fun PChoiceCardV52(key:String,label:String,options:List<String>){
+ Card(Modifier.fillMaxWidth()){
+  Column(Modifier.fillMaxWidth().padding(12.dp)){
+   Text(label,fontWeight=FontWeight.SemiBold)
+   PChoice45(key,options,2)
+  }
+ }
+}
+
 @Composable fun PediatricDentistryV45(lang:String,onBack:()->Unit){
- ClinicalRegisterHelpV49(lang,"Ayuda · Odontopediatría","Help · Pediatric dentistry","Registra edad y desarrollo observado, conducta durante la atención, hábitos con frecuencia y duración, prevención, erupción, tejidos, trauma y procedimientos realmente realizados. Diferencia lo referido por cuidador/paciente de lo observado clínicamente. No conviertas un hallazgo aislado en diagnóstico.","Record observed age/development, behavior during care, habits with frequency and duration, prevention, eruption, tissues, trauma and procedures actually performed. Distinguish caregiver/patient reports from clinical observations. Do not turn an isolated finding into a diagnosis.")
- ClinicalRegisterHelpV49(lang,"Ayuda · Odontopediatría","Help · Pediatric dentistry","Registra desarrollo observado, conducta, hábitos con frecuencia y duración, prevención, erupción, tejidos, trauma y procedimientos realizados. Diferencia lo referido por cuidador o paciente de lo observado clínicamente. No conviertas un hallazgo aislado en diagnóstico.","Record observed development, behavior, habits with frequency and duration, prevention, eruption, tissues, trauma and performed procedures. Distinguish caregiver or patient reports from clinical observations. Do not turn an isolated finding into a diagnosis.")
- ResponsiveScreenV17("🧒 "+tr(lang,"Ficha de Odontopediatría","Pediatric Dentistry Sheet"),tr(lang,"Documenta desarrollo, conducta, prevención, exploración y tratamiento pediátrico. Complementa odontograma e índices existentes sin modificarlos.","Documents pediatric development, behavior, prevention, examination and treatment. It complements existing odontogram and indices without modifying them."),onBack){p->
-  val cols=if(p.largeSystemText)1 else if(p.width==ScreenWidthV17.COMPACT)2 else 3
-  ResponsiveSectionV17(tr(lang,"Desarrollo y contexto","Development and context"),tr(lang,"La edad cronológica por sí sola no define maduración dental ni conducta; registra lo observado y los antecedentes relevantes.","Chronological age alone does not define dental maturation or behavior; record observed findings and relevant history.")){
-   AdaptiveGridV17(6,cols){i->when(i){0->PText45("pedo.guardian",tr(lang,"Madre/padre/tutor acompañante","Accompanying parent/guardian"));1->PText45("pedo.dentition",tr(lang,"Dentición / etapa eruptiva","Dentition / eruption stage"));2->PText45("pedo.firstVisit",tr(lang,"Primera visita dental / experiencias previas","First dental visit / prior experiences"));3->PText45("pedo.behavior",tr(lang,"Conducta y cooperación observadas","Observed behavior and cooperation"));4->PText45("pedo.feeding",tr(lang,"Alimentación / frecuencia de azúcares","Diet / sugar frequency"));else->PText45("pedo.fluoride",tr(lang,"Exposición a flúor / prevención","Fluoride exposure / prevention"))}}
+ ResponsiveScreenV17(
+  "🧒 "+tr(lang,"Ficha de Odontopediatría","Pediatric Dentistry Sheet"),
+  null,
+  onBack
+ ){_->
+  ClinicalRegisterHelpV49(
+   lang,
+   "Ayuda · Odontopediatría",
+   "Help · Pediatric dentistry",
+   "Registra desarrollo observado, acompañante, conducta, hábitos, prevención, erupción, tejidos, trauma y procedimientos realmente realizados. Diferencia lo referido por cuidador/paciente de lo observado clínicamente. Cada subapartado se registra por separado y un hallazgo aislado no establece diagnóstico.",
+   "Record observed development, accompanying caregiver, behavior, habits, prevention, eruption, tissues, trauma and procedures actually performed. Distinguish caregiver/patient reports from observed findings. Record each subsection separately; an isolated finding does not establish a diagnosis."
+  )
+
+  ResponsiveSectionV17(
+   tr(lang,"Desarrollo y contexto","Development and context"),
+   tr(lang,"La edad cronológica por sí sola no define maduración dental ni conducta; registra lo observado y los antecedentes relevantes.","Chronological age alone does not define dental maturation or behavior; record observed findings and relevant history."),
+   showSubtitleInline=false
+  ){
+   PFieldCardV52("pedo.guardian",tr(lang,"Madre/padre/tutor acompañante","Accompanying parent/guardian"))
+   PFieldCardV52("pedo.dentition",tr(lang,"Dentición / etapa eruptiva","Dentition / eruption stage"))
+   PFieldCardV52("pedo.firstVisit",tr(lang,"Primera visita dental / experiencias previas","First dental visit / prior experiences"))
+   PFieldCardV52("pedo.behavior",tr(lang,"Conducta y cooperación observadas","Observed behavior and cooperation"))
+   PFieldCardV52("pedo.feeding",tr(lang,"Alimentación / frecuencia de azúcares","Diet / sugar frequency"))
+   PFieldCardV52("pedo.fluoride",tr(lang,"Exposición a flúor / prevención","Fluoride exposure / prevention"))
   }
-  ResponsiveSectionV17(tr(lang,"Hábitos y prevención","Habits and prevention"),tr(lang,"Registra duración, frecuencia y contexto; un hábito aislado no determina por sí mismo una alteración dentofacial.","Record duration, frequency and context; an isolated habit does not by itself determine a dentofacial alteration.")){
-   PChoice45("pedo.habits",listOf("Sin hábito referido","Succión digital","Chupón","Mamila prolongada","Onicofagia","Bruxismo / apretamiento","Respiración oral referida","Otro"),cols)
-   PText45("pedo.habitDetail",tr(lang,"Frecuencia, duración y observaciones","Frequency, duration and observations")); PText45("pedo.hygiene",tr(lang,"Cepillado, pasta fluorada y supervisión","Brushing, fluoride toothpaste and supervision"))
+
+  ResponsiveSectionV17(
+   tr(lang,"Hábitos y prevención","Habits and prevention"),
+   tr(lang,"Registra duración, frecuencia y contexto; un hábito aislado no determina por sí mismo una alteración dentofacial.","Record duration, frequency and context; an isolated habit does not by itself determine a dentofacial alteration."),
+   showSubtitleInline=false
+  ){
+   PChoiceCardV52(
+    "pedo.habits",
+    tr(lang,"Hábito referido","Reported habit"),
+    listOf("Sin hábito referido","Succión digital","Chupón","Mamila prolongada","Onicofagia","Bruxismo / apretamiento","Respiración oral referida","Otro")
+   )
+   PFieldCardV52("pedo.habitDetail",tr(lang,"Frecuencia, duración y observaciones","Frequency, duration and observations"))
+   PFieldCardV52("pedo.hygiene",tr(lang,"Cepillado, pasta fluorada y supervisión","Brushing, fluoride toothpaste and supervision"))
   }
-  ResponsiveSectionV17(tr(lang,"Exploración pediátrica","Pediatric examination"),tr(lang,"Describe tejidos, dientes, erupción, trauma y necesidades observadas; usa odontograma/ICDAS/índices en sus módulos específicos.","Describe tissues, teeth, eruption, trauma and observed needs; use odontogram/ICDAS/indices in their specific modules.")){
-   AdaptiveGridV17(6,cols){i->when(i){0->PText45("pedo.eruption",tr(lang,"Erupción / exfoliación","Eruption / exfoliation"));1->PText45("pedo.caries",tr(lang,"Lesiones de caries observadas","Observed caries lesions"));2->PText45("pedo.trauma",tr(lang,"Trauma dentoalveolar","Dentoalveolar trauma"));3->PText45("pedo.soft",tr(lang,"Tejidos blandos / periodonto","Soft tissues / periodontium"));4->PText45("pedo.occlusion",tr(lang,"Oclusión / espacio","Occlusion / space"));else->PText45("pedo.radiographs",tr(lang,"Auxiliares indicados / hallazgos","Indicated aids / findings"))}}
+
+  ResponsiveSectionV17(
+   tr(lang,"Exploración pediátrica","Pediatric examination"),
+   tr(lang,"Describe tejidos, dientes, erupción, trauma y necesidades observadas; usa odontograma/ICDAS/índices en sus módulos específicos.","Describe tissues, teeth, eruption, trauma and observed needs; use odontogram/ICDAS/indices in their specific modules."),
+   showSubtitleInline=false
+  ){
+   PFieldCardV52("pedo.eruption",tr(lang,"Erupción / exfoliación","Eruption / exfoliation"))
+   PFieldCardV52("pedo.caries",tr(lang,"Lesiones de caries observadas","Observed caries lesions"))
+   PFieldCardV52("pedo.trauma",tr(lang,"Trauma dentoalveolar","Dentoalveolar trauma"))
+   PFieldCardV52("pedo.soft",tr(lang,"Tejidos blandos / periodonto","Soft tissues / periodontium"))
+   PFieldCardV52("pedo.occlusion",tr(lang,"Oclusión / espacio","Occlusion / space"))
+   PFieldCardV52("pedo.radiographs",tr(lang,"Auxiliares indicados / hallazgos","Indicated aids / findings"))
   }
-  ResponsiveSectionV17(tr(lang,"Plan y seguimiento","Plan and follow-up"),tr(lang,"Documenta sólo procedimientos indicados y realizados, educación al cuidador, consentimiento y supervisión correspondiente.","Document only indicated/performed procedures, caregiver education, consent and appropriate supervision.")){
-   PText45("pedo.plan",tr(lang,"Plan preventivo / restaurador / pulpar / ortopédico","Preventive / restorative / pulp / orthopedic plan")); PText45("pedo.guidance",tr(lang,"Indicaciones al niño y cuidador","Instructions to child and caregiver")); PText45("pedo.followup",tr(lang,"Control, reevaluación y remisiones","Follow-up, reassessment and referrals"))
+
+  ResponsiveSectionV17(
+   tr(lang,"Plan y seguimiento","Plan and follow-up"),
+   tr(lang,"Documenta sólo procedimientos indicados y realizados, educación al cuidador, consentimiento y supervisión correspondiente.","Document only indicated/performed procedures, caregiver education, consent and appropriate supervision."),
+   showSubtitleInline=false
+  ){
+   PFieldCardV52("pedo.plan",tr(lang,"Plan preventivo / restaurador / pulpar / ortopédico","Preventive / restorative / pulp / orthopedic plan"))
+   PFieldCardV52("pedo.guidance",tr(lang,"Indicaciones al niño y cuidador","Instructions to child and caregiver"))
+   PFieldCardV52("pedo.followup",tr(lang,"Control, reevaluación y remisiones","Follow-up, reassessment and referrals"))
   }
  }
 }
