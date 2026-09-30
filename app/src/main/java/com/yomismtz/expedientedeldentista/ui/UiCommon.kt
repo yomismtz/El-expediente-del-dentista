@@ -91,23 +91,33 @@ fun ChipChoices(
     BoxWithConstraints(Modifier.fillMaxWidth()) {
         val largeText = LocalDensity.current.fontScale >= 1.20f
         val longestLabel = labels.maxOfOrNull { it.first.length } ?: 0
-        val requested = columns.coerceIn(1, 5)
+        val requested = columns.coerceIn(1, 6)
         val responsiveColumns = when {
-            maxWidth < 360.dp -> if (longestLabel > 26 || largeText && longestLabel > 18) 1 else requested.coerceAtMost(2)
-            maxWidth < 600.dp -> when {
-                longestLabel > 32 -> 1
-                longestLabel > 16 || largeText -> requested.coerceAtMost(2)
+            maxWidth < 360.dp -> if (longestLabel > 28 || largeText && longestLabel > 20) 1 else requested.coerceAtMost(2)
+            maxWidth < 480.dp -> when {
+                longestLabel > 34 -> 1
+                longestLabel > 18 || largeText -> requested.coerceAtMost(2)
                 else -> requested.coerceAtMost(3)
             }
-            maxWidth < 900.dp -> when {
-                longestLabel > 38 -> requested.coerceAtMost(2)
-                longestLabel > 22 || largeText -> requested.coerceAtMost(3)
+            maxWidth < 600.dp -> when {
+                longestLabel > 36 -> requested.coerceAtMost(2)
+                longestLabel > 20 || largeText -> requested.coerceAtMost(2)
+                else -> requested.coerceAtMost(3)
+            }
+            maxWidth < 840.dp -> when {
+                longestLabel > 40 -> requested.coerceAtMost(2)
+                longestLabel > 24 || largeText -> requested.coerceAtMost(3)
                 else -> requested.coerceAtMost(4)
             }
-            else -> when {
-                longestLabel > 42 -> requested.coerceAtMost(3)
+            maxWidth < 1200.dp -> when {
+                longestLabel > 44 -> requested.coerceAtMost(3)
                 largeText -> requested.coerceAtMost(4)
-                else -> requested
+                else -> requested.coerceAtMost(5)
+            }
+            else -> when {
+                longestLabel > 48 -> requested.coerceAtMost(4)
+                largeText -> requested.coerceAtMost(5)
+                else -> requested.coerceAtMost(6)
             }
         }.coerceAtLeast(1)
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
