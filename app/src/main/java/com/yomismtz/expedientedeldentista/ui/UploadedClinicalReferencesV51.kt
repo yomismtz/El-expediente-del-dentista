@@ -34,6 +34,7 @@ private fun UploadedClinicalRefsV51(lang:String, refs:List<UploadedClinicalRefV5
                             label={
                                 Text(
                                     if(lang=="en") r.titleEn else r.titleEs,
+                                    minLines=2,
                                     maxLines=3,
                                     softWrap=true
                                 )
