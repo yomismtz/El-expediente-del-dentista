@@ -153,6 +153,8 @@ fun ProstheticInteractiveV2Screen(lang: String, onBack: () -> Unit) {
             }
         }
 
+        item { LocalClinicalImageSectionV46(lang,null,"Prótesis","Prosthodontics") }
+
         when (tab) {
             ProstTab.DIAGNOSIS -> {
                 item {
