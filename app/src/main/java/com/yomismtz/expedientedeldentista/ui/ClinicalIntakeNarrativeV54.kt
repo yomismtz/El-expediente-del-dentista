@@ -26,8 +26,21 @@ fun ClinicalIntakeNarrativeV54(lang:String,session:EducationalSession,modifier:M
     val mucosaStatus=rememberRecordStateMap<String,String>("mucosa.tissueStatus")
     val mucosaLesion=rememberRecordStateMap<String,String>("mucosa.tissueLesion")
     val mucosaPathology=rememberRecordStateMap<String,String>("mucosa.tissuePathology")
-    val sections=remember(session,mucosaStatus.toMap(),mucosaLesion.toMap(),mucosaPathology.toMap(),lang) {
-        buildIntakeSectionsV54(lang,session,mucosaStatus,mucosaLesion,mucosaPathology)
+    val atmChecked=rememberRecordStateMap<String,Boolean>("atm.checked")
+    val atmOpening=rememberRecordState("atm.opening","No medida")
+    val atmTrajectory=rememberRecordState("atm.trajectory","Recta / sin desviación evidente")
+    val atmJoint=rememberRecordState("atm.jointPalpation","Sin dolor reproducible")
+    val atmMuscle=rememberRecordState("atm.musclePalpation","Sin dolor reproducible")
+    val occlusionChoice=rememberRecordState("occlusion.choice","")
+    val upperPresent=rememberRecordState("prosthetic.v2.upperPresent",setOf(17,16,15,14,13,12,11,21,22,23,24,25,26,27))
+    val lowerPresent=rememberRecordState("prosthetic.v2.lowerPresent",setOf(47,46,45,44,43,42,41,31,32,33,34,35,36,37))
+    val rpdMaterial=rememberRecordState("prosthetic.v2.rpdMaterial","metal-acrylic")
+    val fixedMaterial=rememberRecordState("prosthetic.v2.fixedMaterial","zirconia")
+    val surgicalProcedure=rememberRecordState("surgical.procedure","Exodoncia simple")
+    val surgicalSite=rememberRecordState("surgical.site","Órgano dentario seleccionado")
+    val surgicalFinding=rememberRecordState("surgical.finding","Sin hallazgos inesperados")
+    val sections=remember(session,mucosaStatus.toMap(),mucosaLesion.toMap(),mucosaPathology.toMap(),atmChecked.toMap(),atmOpening,atmTrajectory,atmJoint,atmMuscle,occlusionChoice,upperPresent,lowerPresent,rpdMaterial,fixedMaterial,surgicalProcedure,surgicalSite,surgicalFinding,lang) {
+        buildIntakeSectionsV54(lang,session,mucosaStatus,mucosaLesion,mucosaPathology,atmChecked,atmOpening,atmTrajectory,atmJoint,atmMuscle,occlusionChoice,upperPresent,lowerPresent,rpdMaterial,fixedMaterial,surgicalProcedure,surgicalSite,surgicalFinding)
     }
     Card(modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer),border=BorderStroke(1.dp,MaterialTheme.colorScheme.primary.copy(alpha=.35f))) {
         Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
@@ -48,7 +61,7 @@ fun ClinicalIntakeNarrativeV54(lang:String,session:EducationalSession,modifier:M
     }
 }
 
-private fun buildIntakeSectionsV54(lang:String,s:EducationalSession,ms:Map<String,String>,ml:Map<String,String>,mp:Map<String,String>):List<IntakeNoteSectionV54> {
+private fun buildIntakeSectionsV54(lang:String,s:EducationalSession,ms:Map<String,String>,ml:Map<String,String>,mp:Map<String,String>,atm:Map<String,Boolean>,atmOpening:String,atmTrajectory:String,atmJoint:String,atmMuscle:String,occlusion:String,upperPresent:Set<Int>,lowerPresent:Set<Int>,rpdMaterial:String,fixedMaterial:String,surgicalProcedure:String,surgicalSite:String,surgicalFinding:String):List<IntakeNoteSectionV54> {
     val p=s.profile
     val sex=p.sex.trim()
     val patient=when {
@@ -116,6 +129,14 @@ private fun buildIntakeSectionsV54(lang:String,s:EducationalSession,ms:Map<Strin
         "OD "+pu.tooth+": "+if(f.isEmpty()) "valoración registrada sin hallazgos positivos seleccionados." else f.joinToString(", ")+"."
     }
 
+
+    val atmPositive=atm.filterValues{it}.keys.joinToString(", ")
+    val atmText=if(atmPositive.isBlank() && atmOpening=="No medida" && atmJoint=="Sin dolor reproducible" && atmMuscle=="Sin dolor reproducible") "Exploración ATM registrada sin hallazgos positivos seleccionados; apertura: "+atmOpening+"; trayectoria: "+atmTrajectory+"." else "Apertura: "+atmOpening+"; trayectoria: "+atmTrajectory+"; palpación articular: "+atmJoint+"; palpación muscular: "+atmMuscle+"; hallazgos seleccionados: "+atmPositive.ifBlank{"ninguno"}+"."
+    val occlusionText=if(occlusion.isBlank()) "Sin hallazgo oclusal seleccionado." else "Hallazgo oclusal seleccionado: "+occlusion+"."
+    val upperMissing=listOf(17,16,15,14,13,12,11,21,22,23,24,25,26,27).filter{!upperPresent.contains(it)}
+    val lowerMissing=listOf(47,46,45,44,43,42,41,31,32,33,34,35,36,37).filter{!lowerPresent.contains(it)}
+    val prostheticText="Arcada superior: "+(if(upperMissing.isEmpty()) "sin ausencias registradas" else "ausencias en OD "+upperMissing.joinToString(", "))+"; arcada inferior: "+(if(lowerMissing.isEmpty()) "sin ausencias registradas" else "ausencias en OD "+lowerMissing.joinToString(", "))+"; material removible: "+rpdMaterial+"; material fijo: "+fixedMaterial+"."
+    val surgicalText="Procedimiento: "+surgicalProcedure+"; sitio: "+surgicalSite+"; hallazgo: "+surgicalFinding+"."
     return listOf(
         IntakeNoteSectionV54(tr54(lang,"Identificación y motivo","Identification and reason"),patient+(if(p.age.isNotBlank()) ", "+p.age+" años" else "")+". "+tr54(lang,"Motivo de consulta: ","Reason for consultation: ")+p.reasonForVisit.ifBlank{tr54(lang,"no registrado.","not recorded.")}),
         IntakeNoteSectionV54("ASA y antecedentes médicos","ASA "+s.history.asaClass+". "+historyText),
@@ -124,13 +145,13 @@ private fun buildIntakeSectionsV54(lang:String,s:EducationalSession,ms:Map<Strin
         IntakeNoteSectionV54(tr54(lang,"Antecedentes cardiovasculares","Cardiovascular history"),cardio54(history)),
         IntakeNoteSectionV54(tr54(lang,"Signos vitales","Vital signs"),vitals),
         IntakeNoteSectionV54(tr54(lang,"Exploración de mucosas","Mucosal examination"),mucosaText),
-        IntakeNoteSectionV54(tr54(lang,"Exploración de ATM","TMJ examination"),tr54(lang,"Pendiente de integrar desde el módulo ATM.","Pending integration from the TMJ module.")),
-        IntakeNoteSectionV54(tr54(lang,"Oclusión","Occlusion"),tr54(lang,"Pendiente de integrar desde el módulo de oclusión.","Pending integration from the occlusion module.")),
+        IntakeNoteSectionV54(tr54(lang,"Exploración de ATM","TMJ examination"),atmText),
+        IntakeNoteSectionV54(tr54(lang,"Oclusión","Occlusion"),occlusionText),
         IntakeNoteSectionV54(tr54(lang,"Cariología","Cariology"),cariesText),
         IntakeNoteSectionV54(tr54(lang,"Diagnóstico periodontal","Periodontal diagnosis"),perioText),
         IntakeNoteSectionV54(tr54(lang,"Diagnóstico pulpar / periapical","Pulpal / periapical diagnosis"),pulpalText),
-        IntakeNoteSectionV54(tr54(lang,"Diagnóstico protésico","Prosthetic diagnosis"),tr54(lang,"Pendiente de integrar desde el módulo protésico.","Pending integration from the prosthetic module.")),
-        IntakeNoteSectionV54(tr54(lang,"Diagnóstico de cirugía","Surgical diagnosis"),tr54(lang,"Pendiente de integrar desde el módulo de cirugía.","Pending integration from the surgical module."))
+        IntakeNoteSectionV54(tr54(lang,"Diagnóstico protésico","Prosthetic diagnosis"),prostheticText),
+        IntakeNoteSectionV54(tr54(lang,"Diagnóstico de cirugía","Surgical diagnosis"),surgicalText)
     )
 }
 private fun cardio54(h:List<String>):String {
