@@ -82,6 +82,7 @@ fun AppRootV7(
                     when(overlay) {
                         V7Overlay.INTAKE -> IntakeInteractiveV3Screen(
                             lang,
+                            session,
                             onIdentification={openOverlay(V7Overlay.IDENTIFICATION)},
                             onHistory={openOverlay(V7Overlay.HISTORY)},
                             onVitals={openOverlay(V7Overlay.VITALS)},
