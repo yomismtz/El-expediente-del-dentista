@@ -185,7 +185,6 @@ private fun GlobalBar19(lang:String,onIntake:()->Unit,onSummary:()->Unit,onPhoto
                     OutlinedButton(onClick=onPhotography,modifier=Modifier.weight(1f)){Text("📷 "+tr(lang,"Fotos","Photos"),maxLines=1)}
                     if(onSettings!=null) OutlinedButton(onClick=onSettings,modifier=Modifier.weight(1f)){Text("⚙ "+tr(lang,"Ajustes","Settings"),maxLines=1)}
                 }
-            }                }
             }
         }
     }
