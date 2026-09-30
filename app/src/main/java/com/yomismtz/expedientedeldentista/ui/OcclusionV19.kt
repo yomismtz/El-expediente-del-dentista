@@ -108,6 +108,7 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 }}
             }
         }
+        LocalClinicalImageSectionV46(lang,profile,"Oclusión","Occlusion")
         NoticeCard(tr(lang,"Las imágenes aparecen al seleccionar el hallazgo correspondiente. Registrar un hallazgo no equivale a emitir automáticamente un diagnóstico.","Images appear when the corresponding finding is selected. Recording a finding does not automatically establish a diagnosis."))
     }
 }
