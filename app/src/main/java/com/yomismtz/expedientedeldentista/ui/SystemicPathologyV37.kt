@@ -361,11 +361,14 @@ private fun presetTreatments37(d:Disease37):List<String> = when(d.id){
  val p=listOf(
   "Diabetes mellitus" to "Confirmar tipo, tratamiento, control referido, alimentación y antecedentes de hipoglucemia.",
   "Hipertensión / cardiopatía" to "Confirmar diagnóstico, tratamiento, control, signos vitales, capacidad funcional y anticoagulación/antiagregación cuando corresponda.",
+  "Hipotensión arterial" to "Confirmar cifras habituales, síntomas como mareo o síncope, hidratación, medicamentos, causas conocidas y respuesta a cambios posturales. Considerar posición del sillón, levantamiento gradual y vigilancia de signos vitales.",
   "Asma / EPOC" to "Identificar control, desencadenantes, inhaladores, exacerbaciones recientes y capacidad respiratoria.",
   "Enfermedad renal / diálisis" to "Precisar función renal, diálisis o trasplante, medicamentos, sangrado y coordinación médica cuando corresponda.",
   "Enfermedad hepática" to "Precisar diagnóstico, función hepática, medicamentos y antecedentes de sangrado o descompensación.",
   "Trastornos hematológicos" to "Precisar diagnóstico, gravedad, tratamiento, antecedentes de sangrado/trombosis y estudios indicados para el procedimiento.",
-  "VIH / inmunodeficiencia" to "Registrar control médico, tratamiento referido, infecciones o lesiones orales e interacciones; mantener confidencialidad y evitar estigma.",
+  "VIH / SIDA" to "Registrar control médico, tratamiento antirretroviral referido, antecedentes de infecciones oportunistas, lesiones orales, estado inmunológico cuando sea clínicamente pertinente e interacciones; mantener confidencialidad y evitar estigma.",
+  "Paciente fumador / nicotina" to "Registrar producto utilizado, frecuencia, tiempo de consumo, último consumo, intentos de suspensión, síntomas respiratorios y repercusión periodontal/oral. Integrar prevención, cicatrización y riesgo de complicaciones al plan odontológico.",
+  "Consumo problemático de alcohol" to "Registrar frecuencia y cantidad referidas, último consumo, antecedentes de abstinencia o dependencia, función hepática cuando sea pertinente, medicamentos e interacciones. Evitar atención electiva si hay intoxicación aguda y valorar interconsulta cuando exista riesgo médico.",
   "Trastornos tiroideos" to "Precisar hipo/hipertiroidismo, tratamiento, control y datos de descompensación.",
   "Osteoporosis / antirresortivos" to "Documentar fármaco, vía, indicación, duración y antecedentes de procedimientos óseos antes de cirugía dentoalveolar.",
   "Epilepsia" to "Registrar control, última crisis, desencadenantes y tratamiento; preparar medidas de seguridad.",
@@ -403,11 +406,23 @@ private fun presetTreatments37(d:Disease37):List<String> = when(d.id){
      "Parálisis cerebral / trastorno motor" -> "No existe un panel odontológico universal. Revisar estudios o informes relacionados con deglución, vía aérea, epilepsia, nutrición, movilidad y otras comorbilidades cuando cambien el manejo."
      "Parálisis facial" -> "La causa y el tiempo de evolución determinan la valoración médica. En odontología documentar función facial y oral; no existe un estudio de laboratorio universal. Un inicio agudo o signos neurológicos asociados requieren valoración médica urgente."
      "Trastornos de ansiedad / fobia dental" -> "No existe un marcador de laboratorio odontológico rutinario. Valorar desencadenantes, intensidad, medicación, experiencias previas y repercusión en la atención; interconsultar cuando sea necesario."
+     "Hipotensión arterial" -> "No existe un panel universal. Revisar presión arterial seriada cuando sea pertinente, antecedentes de síncope, medicamentos y estudios de la causa subyacente sólo si modifican el manejo odontológico."
+     "VIH / SIDA" -> "Los estudios se revisan según contexto clínico y procedimiento: tratamiento antirretroviral, antecedentes de infecciones, y cuando sea pertinente recuento de CD4, carga viral o biometría hemática. No solicitar estudios de rutina sólo por el diagnóstico."
+     "Paciente fumador / nicotina" -> "No existe un estudio de laboratorio odontológico rutinario específico por tabaquismo. Valorar exposición, síntomas respiratorios, estado periodontal, cicatrización y comorbilidades; solicitar estudios sólo si cambian la seguridad del procedimiento."
+     "Consumo problemático de alcohol" -> "No existe un panel odontológico universal. Según historia y procedimiento pueden ser pertinentes función hepática, biometría hemática o coagulación, especialmente si hay enfermedad hepática, sangrado o consumo crónico importante."
      else -> "Revisar estudios recientes pertinentes al diagnóstico y al procedimiento. No existe un panel universal para todos los pacientes sistémicos; usar protocolo institucional e interconsulta cuando esté indicada."
     };Text(specific)
    }}
    item{ResponsiveSectionV17("3 · Atención odontológica","Decidir tratar, modificar, posponer o interconsultar"){val careOptions=listOf("Atención habitual si está estable","Modificar plan / cita","Posponer atención electiva","Interconsulta médica"); ChipChoices(careOptions.map{it to (carePlan==it)},{carePlan=careOptions[it]},2); carePlan?.let{Text("Plan seleccionado: $it",fontWeight=FontWeight.Bold);Text("Esta selección es educativa y debe sustentarse en el estado clínico, procedimiento previsto y valoración completa.",style=MaterialTheme.typography.bodySmall)}}}
-   item{ResponsiveSectionV17("4 · Anestesia","La elección depende de enfermedad, control, medicamentos y procedimiento"){Text("Comprobar anestésico, vasoconstrictor, dosis máxima aplicable, interacciones y contraindicaciones antes de administrar. Evitar reglas universales por diagnóstico.")}}
+   item{ResponsiveSectionV17("4 · Anestesia","La elección depende de enfermedad, control, medicamentos y procedimiento"){
+    val anesthesiaText=when(x.first){
+     "Hipotensión arterial" -> "Registrar presión y síntomas antes del procedimiento. Evitar cambios posturales bruscos, levantar el sillón gradualmente y revisar medicamentos que puedan favorecer hipotensión. La selección de anestésico/vasoconstrictor depende del cuadro completo."
+     "Paciente fumador / nicotina" -> "Comprobar anestésico, vasoconstrictor, signos vitales y comorbilidades. Registrar consumo reciente de nicotina y síntomas cardiovasculares o respiratorios; no aplicar una regla universal sólo por fumar."
+     "Consumo problemático de alcohol" -> "Revisar intoxicación o abstinencia, función hepática cuando sea pertinente, medicamentos e interacciones. No realizar tratamiento electivo con intoxicación aguda; adaptar anestesia al estado clínico."
+     else -> "Comprobar anestésico, vasoconstrictor, dosis máxima aplicable, interacciones y contraindicaciones antes de administrar. Evitar reglas universales por diagnóstico."
+    }
+    Text(anesthesiaText)
+   }}
    item{ResponsiveSectionV17("5 · Analgesia y antiinflamatorios","Seleccionar según antecedentes y tratamiento actual"){Text("Revisar riesgo renal, hepático, gastrointestinal, cardiovascular, hemorrágico e interacciones. No indicar AINE automáticamente.")}}
    item{ResponsiveSectionV17("6 · Antibióticos","No se indican por el solo hecho de tener una enfermedad sistémica"){Text("Usar antibiótico sólo cuando exista una indicación independiente o profilaxis específicamente indicada por una guía vigente. Verificar alergias, función renal/hepática e interacciones.")}}
    item{ResponsiveSectionV17("7 · Procedimientos y urgencias","Plan de seguridad"){Text("Definir qué procedimientos son apropiados según estabilidad, invasividad y riesgo; reconocer signos de descompensación y contar con plan de urgencias e interconsulta.")}}
