@@ -139,6 +139,7 @@ internal fun AdaptiveGridV17(
 internal fun ResponsiveSectionV17(
     title: String,
     subtitle: String? = null,
+    showSubtitleInline: Boolean = true,
     content: @Composable () -> Unit
 ) {
     Card(
@@ -155,7 +156,7 @@ internal fun ResponsiveSectionV17(
                 Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, modifier=Modifier.weight(1f))
                 SectionHelpV22(subtitle)
             }
-            if (!subtitle.isNullOrBlank()) Text(subtitle, style = MaterialTheme.typography.bodyMedium)
+            if (showSubtitleInline && !subtitle.isNullOrBlank()) Text(subtitle, style = MaterialTheme.typography.bodyMedium)
             content()
         }
     }
