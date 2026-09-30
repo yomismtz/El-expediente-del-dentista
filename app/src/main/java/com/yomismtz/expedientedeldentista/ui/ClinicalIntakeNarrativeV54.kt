@@ -39,8 +39,8 @@ fun ClinicalIntakeNarrativeV54(lang:String,session:EducationalSession,modifier:M
     val surgicalProcedure=rememberRecordState("surgical.procedure","Exodoncia simple")
     val surgicalSite=rememberRecordState("surgical.site","Órgano dentario seleccionado")
     val surgicalFinding=rememberRecordState("surgical.finding","Sin hallazgos inesperados")
-    val sections=remember(session,mucosaStatus.toMap(),mucosaLesion.toMap(),mucosaPathology.toMap(),atmChecked.toMap(),atmOpening,atmTrajectory,atmJoint,atmMuscle,occlusionChoice,upperPresent,lowerPresent,rpdMaterial,fixedMaterial,surgicalProcedure,surgicalSite,surgicalFinding,lang) {
-        buildIntakeSectionsV54(lang,session,mucosaStatus,mucosaLesion,mucosaPathology,atmChecked,atmOpening,atmTrajectory,atmJoint,atmMuscle,occlusionChoice,upperPresent,lowerPresent,rpdMaterial,fixedMaterial,surgicalProcedure,surgicalSite,surgicalFinding)
+    val sections=remember(session,mucosaStatus.toMap(),mucosaLesion.toMap(),mucosaPathology.toMap(),atmChecked.toMap(),atmOpening.value,atmTrajectory.value,atmJoint.value,atmMuscle.value,occlusionChoice.value,upperPresent.value,lowerPresent.value,rpdMaterial.value,fixedMaterial.value,surgicalProcedure.value,surgicalSite.value,surgicalFinding.value,lang) {
+        buildIntakeSectionsV54(lang,session,mucosaStatus,mucosaLesion,mucosaPathology,atmChecked,atmOpening.value,atmTrajectory.value,atmJoint.value,atmMuscle.value,occlusionChoice.value,upperPresent.value,lowerPresent.value,rpdMaterial.value,fixedMaterial.value,surgicalProcedure.value,surgicalSite.value,surgicalFinding.value)
     }
     Card(modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer),border=BorderStroke(1.dp,MaterialTheme.colorScheme.primary.copy(alpha=.35f))) {
         Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
