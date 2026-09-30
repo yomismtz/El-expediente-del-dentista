@@ -1328,7 +1328,7 @@ private data class E(val n:String,val d:String)
  onClick:(Int)->Unit
 ){
  BoxWithConstraints(Modifier.fillMaxWidth()){
-  val columns=if(maxWidth<700.dp)2 else 3
+  val columns=if(maxWidth<840.dp)2 else 3
   Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(8.dp)){
    labels.chunked(columns).forEachIndexed{rowIndex,row->
     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
