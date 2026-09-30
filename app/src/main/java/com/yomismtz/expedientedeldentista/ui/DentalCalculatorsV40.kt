@@ -19,6 +19,128 @@ private val dentalAnestheticsV40=listOf(
 )
 
 private data class DrugOptionV40(val name:String,val presentation:String,val note:String)
+private data class DrugPresentationV40(val form:String,val label:String)
+
+private fun drugPresentationsV40(name:String):List<DrugPresentationV40> = when(name){
+ "Amoxicilina" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 125 mg/5 mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 250 mg/5 mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 500 mg/5 mL"),
+  DrugPresentationV40("Tabletas / cápsulas","Cápsula 250 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Cápsula 500 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 875 mg")
+ )
+ "Amoxicilina / ácido clavulánico" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión 125 mg/31.25 mg por 5 mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión 200 mg/28.5 mg por 5 mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión 400 mg/57 mg por 5 mL"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 500 mg/125 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 875 mg/125 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta de liberación prolongada 1000 mg/62.5 mg"),
+  DrugPresentationV40("Parenteral","Solución inyectable 500 mg/100 mg")
+ )
+ "Azitromicina" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión 100 mg/5 mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión 200 mg/5 mL"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 250 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 500 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 600 mg")
+ )
+ "Clindamicina" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión 75 mg/5 mL"),
+  DrugPresentationV40("Tabletas / cápsulas","Cápsula 150 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Cápsula 300 mg"),
+  DrugPresentationV40("Parenteral","Solución inyectable 300 mg/2 mL"),
+  DrugPresentationV40("Parenteral","Solución inyectable 600 mg/4 mL")
+ )
+ "Claritromicina" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión 125 mg/5 mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión 250 mg/5 mL"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 250 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 500 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta de liberación prolongada 500 mg")
+ )
+ "Cefuroxima" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión 125 mg/5 mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión 250 mg/5 mL"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 250 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 500 mg"),
+  DrugPresentationV40("Parenteral","Solución o suspensión inyectable 750 mg/3 mL"),
+  DrugPresentationV40("Parenteral","Solución inyectable 1.5 g")
+ )
+ "Paracetamol / acetaminofén" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Solución oral 100 mg/mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 120 mg/5 mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 160 mg/5 mL"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 500 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 650 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 750 mg"),
+  DrugPresentationV40("Jarabe","Jarabe 120 mg/5 mL"),
+  DrugPresentationV40("Parenteral","Solución para infusión IV 10 mg/mL")
+ )
+ "Ibuprofeno" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 2 g/100 mL (100 mg/5 mL)"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 200 mg/5 mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Gotas / suspensión 40 mg/mL"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta o cápsula 200 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta o cápsula 400 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 600 mg")
+ )
+ "Naproxeno" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 125 mg/5 mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 250 mg/5 mL"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 250 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 500 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 550 mg")
+ )
+ "Aciclovir" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 200 mg/5 mL"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 200 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 400 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 800 mg"),
+  DrugPresentationV40("Parenteral","Solución inyectable / vial 250 mg")
+ )
+ "Valaciclovir" -> listOf(
+  DrugPresentationV40("Tabletas / cápsulas","Comprimido recubierto 500 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 1 g")
+ )
+ "Metronidazol" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 250 mg/5 mL"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 250 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 500 mg"),
+  DrugPresentationV40("Parenteral","Solución inyectable 500 mg/100 mL")
+ )
+ "Nistatina" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 100,000 UI/mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 2,400,000 UI/24 mL")
+ )
+ "Fluconazol" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 10 mg/mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 40 mg/mL"),
+  DrugPresentationV40("Tabletas / cápsulas","Cápsula 50 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Cápsula 100 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Cápsula 150 mg"),
+  DrugPresentationV40("Parenteral","Solución inyectable 2 mg/mL")
+ )
+ "Ácido fólico" -> listOf(
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 0.4 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 4 mg"),
+  DrugPresentationV40("Tabletas / cápsulas","Tableta 5 mg")
+ )
+ "Vitamina B12" -> listOf(
+  DrugPresentationV40("Tabletas / cápsulas","Tableta / cápsula oral según producto"),
+  DrugPresentationV40("Parenteral","Hidroxocobalamina solución inyectable 100 µg"),
+  DrugPresentationV40("Parenteral","Cianocobalamina solución inyectable según producto")
+ )
+ "Vitamina D" -> listOf(
+  DrugPresentationV40("Suspensiones / líquidos","Gotas / solución oral de colecalciferol según producto"),
+  DrugPresentationV40("Tabletas / cápsulas","Cápsula o tableta de colecalciferol 400 UI"),
+  DrugPresentationV40("Tabletas / cápsulas","Cápsula o tableta de colecalciferol 1,000 UI"),
+  DrugPresentationV40("Tabletas / cápsulas","Cápsula de dosis alta según indicación médica")
+ )
+ else -> emptyList()
+}
+
 private data class WeightDoseV40(val drug:String,val presentation:String,val mgPerMl:Double,val mgKgDay:List<Double>,val intervals:List<Int>,val maxMgDay:Double?,val source:String)
 private val verifiedWeightDosesV40=listOf(
  WeightDoseV40("Amoxicilina","Suspensión oral 500 mg/5 mL",100.0,listOf(90.0,100.0),listOf(8),4500.0,"IMSS GPC 120GER · indicación documentada: neumonía adquirida en la comunidad pediátrica"),
@@ -138,22 +260,40 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
    if(medGroup!=null&&medDrug!=null){
     item{SectionCard("3 · Datos de la opción seleccionada"){
      val d=drugGroupsV40[medGroup!!].drugs[medDrug!!]
+     val options=drugPresentationsV40(d.name)
      Text(d.name,style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black)
-     Text("Presentación: "+d.presentation,fontWeight=FontWeight.Bold)
+     Text(if(options.isEmpty()) "Presentaciones: verificar ficha técnica del producto." else "Presentaciones de referencia cargadas: "+options.size+".",fontWeight=FontWeight.Bold)
      Text(d.note)
-     Text("El alumno selecciona opciones; no tiene que escribir dosis ni concentración en este apartado.")
+     Text("El alumno selecciona una presentación existente; no escribe dosis ni concentración manualmente.")
     }}
     val currentDrug=drugGroupsV40[medGroup!!].drugs[medDrug!!]
     val protocols=verifiedWeightDosesV40.filter{it.drug==currentDrug.name}
+    val presentationOptions=drugPresentationsV40(currentDrug.name)
     item{SectionCard("4 · Peso del paciente"){
      OutlinedTextField(medWeight,{medWeight=it.filter{x->x.isDigit()||x=='.'}.take(6)},label={Text("Peso medido (kg)")},modifier=Modifier.fillMaxWidth())
     }}
     item{SectionCard("5 · Presentación"){
-     if(protocols.isEmpty()) Text("Todavía no hay una pauta por peso verificada para este medicamento. No se habilita el cálculo.")
-     else ChipChoices(protocols.mapIndexed{i,p->p.presentation to (medPresentation==i)},{i->medPresentation=i;medDoseDay=null;medInterval=null},1)
+     if(presentationOptions.isEmpty()){
+      Text("No hay presentaciones precargadas para esta opción. Verifica la ficha técnica del producto concreto.")
+     }else{
+      listOf("Suspensiones / líquidos","Tabletas / cápsulas","Jarabe","Parenteral").forEach { form ->
+       val formItems=presentationOptions.mapIndexedNotNull{index,p->if(p.form==form) index to p else null}
+       if(formItems.isNotEmpty()){
+        Text(form,fontWeight=FontWeight.SemiBold)
+        ChipChoices(
+         formItems.map{pair->pair.second.label to (medPresentation==pair.first)},
+         {i->medPresentation=formItems[i].first;medDoseDay=null;medInterval=null},
+         2
+        )
+       }
+      }
+      Text("Solo se muestran formas con una presentación de referencia cargada; no se inventa suspensión, jarabe o vía parenteral cuando no está documentada.",style=MaterialTheme.typography.bodySmall)
+     }
     }}
-    if(medPresentation!=null&&protocols.isNotEmpty()){
-     val p=protocols[medPresentation!!.coerceIn(0,protocols.lastIndex)]
+    val selectedPresentation=medPresentation?.let{presentationOptions.getOrNull(it)}
+    val selectedProtocol=selectedPresentation?.let{s->protocols.firstOrNull{it.presentation==s.label}}
+    if(medPresentation!=null&&selectedProtocol!=null){
+     val p=selectedProtocol
      item{SectionCard("6 · Pauta documentada por peso"){
       Text(p.source)
       ChipChoices(p.mgKgDay.map{v->"${v.toInt()} mg/kg/día" to (medDoseDay==v)},{i->medDoseDay=p.mgKgDay[i];medInterval=null},2)
@@ -185,6 +325,12 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
        }}
       }
      }
+    }
+    if(medPresentation!=null && selectedPresentation!=null && selectedProtocol==null){
+     item{SectionCard("6 · Cálculo por peso"){
+      Text("La presentación seleccionada se muestra como referencia, pero no tiene una pauta por peso y una conversión precargadas en esta calculadora.",fontWeight=FontWeight.Bold)
+      Text("Consulta la ficha técnica o protocolo docente correspondiente. La app no transforma automáticamente tabletas, cápsulas ni presentaciones parenterales a mL.")
+     }}
     }
     item{SectionCard("10 · Comprobaciones de seguridad"){
      val checks=listOf("Confirmar peso medido","Confirmar indicación","Revisar alergias","Función renal/hepática","Interacciones","Ficha técnica / protocolo"); ChipChoices(checks.mapIndexed{i,x->x to medChecks.contains(i)},{i->medChecks=if(medChecks.contains(i)) medChecks-i else medChecks+i},2); Text("${medChecks.size}/${checks.size} comprobaciones marcadas",fontWeight=FontWeight.Bold)
