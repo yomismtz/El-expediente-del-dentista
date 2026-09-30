@@ -25,9 +25,34 @@ private val categories37=listOf(
  Category37("Gastrointestinales y hepáticas",listOf(d37("gerd","Reflujo gastroesofágico","gi"),d37("gastritis","Gastritis","gi"),d37("peptic_ulcer","Úlcera péptica","gi"),d37("celiac_gi","Enfermedad celíaca","gi"),d37("crohn","Enfermedad de Crohn","gi"),d37("ulcerative_colitis","Colitis ulcerosa","gi"),d37("hepatitis","Hepatitis viral / crónica","liver"),d37("cirrhosis","Cirrosis / enfermedad hepática crónica","liver"))),
  Category37("Neurológicas",listOf(d37("epilepsy","Epilepsia / convulsiones","neuro"),d37("migraine","Migraña","neuro"),d37("parkinson","Enfermedad de Parkinson","neuro"),d37("alzheimer","Enfermedad de Alzheimer / demencia","neuro"),d37("multiple_sclerosis_neuro","Esclerosis múltiple","neuro"),d37("neuropathy","Neuropatía periférica","neuro"),d37("cerebral_palsy","Parálisis cerebral","neuro"),d37("stroke_neuro","Secuelas de evento cerebrovascular","neuro"))),
  Category37("Neoplásicas",listOf(d37("oral_cancer","Cáncer oral / orofaríngeo","oncology"),d37("breast_cancer","Cáncer de mama","oncology"),d37("prostate_cancer","Cáncer de próstata","oncology"),d37("lung_cancer","Cáncer pulmonar","oncology"),d37("colorectal_cancer","Cáncer colorrectal","oncology"),d37("leukemia","Leucemia","oncology"),d37("lymphoma","Linfoma","oncology"),d37("myeloma","Mieloma múltiple","oncology"))),
- Category37("VIH e inmunodeficiencias",listOf(d37("hiv","VIH","immune"),d37("aids","VIH con antecedente de enfermedad avanzada/SIDA referido","immune"),d37("primary_immune","Inmunodeficiencia primaria","immune"),d37("transplant_immune","Inmunosupresión por trasplante","immune"),d37("steroid_immune","Inmunosupresión por corticoides","immune"),d37("biologic_immune","Inmunosupresión por terapia biológica","immune"),d37("chemo_immune","Inmunosupresión por quimioterapia","immune"),d37("other_immune","Otra inmunodeficiencia diagnosticada","immune")))
+ Category37("VIH e inmunodeficiencias",listOf(d37("hiv","VIH","immune"),d37("aids","VIH con antecedente de enfermedad avanzada/SIDA referido","immune"),d37("primary_immune","Inmunodeficiencia primaria","immune"),d37("transplant_immune","Inmunosupresión por trasplante","immune"),d37("steroid_immune","Inmunosupresión por corticoides","immune"),d37("biologic_immune","Inmunosupresión por terapia biológica","immune"),d37("chemo_immune","Inmunosupresión por quimioterapia","immune"),d37("other_immune","Otra inmunodeficiencia diagnosticada","immune"))),
+ Category37("Genéticas / hereditarias",listOf(
+  d37("down","Síndrome de Down","genetic"),
+  d37("hemophilia_genetic","Hemofilia","genetic"),
+  d37("cystic_fibrosis","Fibrosis quística","genetic"),
+  d37("turner","Síndrome de Turner","genetic"),
+  d37("pku","Fenilcetonuria","genetic"),
+  d37("cah","Hiperplasia suprarrenal congénita","genetic"),
+  d37("gaucher","Enfermedad de Gaucher","genetic"),
+  d37("genetic_other","Otra enfermedad genética / hereditaria","genetic")
+ ))
 )
-private fun asa37(map:Map<String,DiseaseAnswer>):Int{val a=map.values.filter{it.present};if(a.isEmpty())return 1;if(a.any{it.currentStatus.contains("inestable",true)||it.currentStatus.contains("amenaza",true)||it.currentStatus.contains("sever",true)})return 4;if(a.any{it.currentStatus.contains("mal control",true)||it.complications.isNotBlank()})return 3;return 2}
+private fun asa37(map:Map<String,DiseaseAnswer>):Int{
+ val active=map.values.filter{it.present}
+ if(active.isEmpty())return 1
+ if(active.any{
+   it.currentStatus.contains("inestable",true) ||
+   it.currentStatus.contains("descompensación grave",true) ||
+   it.currentStatus.contains("amenaza constante",true)
+  })return 4
+ val asa3=active.any{
+  it.currentStatus.contains("descontrolado",true) ||
+  it.currentStatus.contains("mal control",true) ||
+  it.currentStatus.contains("limitación funcional importante",true) ||
+  it.complications.equals("Sí, en seguimiento",true)
+ }
+ return if(asa3)3 else 2
+}
 
 @Composable fun PathologicalHistory37Screen(lang:String,session:EducationalSession,onSessionChanged:(EducationalSession)->Unit,onProtocols:()->Unit,onBack:()->Unit){
  var category by remember{mutableStateOf<Category37?>(null)}
@@ -90,34 +115,195 @@ private fun asa37(map:Map<String,DiseaseAnswer>):Int{val a=map.values.filter{it.
   }
  }
 }
-private fun presetTreatments37(d:Disease37):List<String> = when(d.protocol){
- "diabetes" -> listOf("Metformina referida","SGLT2 referido","GLP-1 / GIP-GLP-1 referido","Insulina basal referida","Insulina basal-bolo referida","Combinación de fármacos referida","Cambios de estilo de vida / educación","Otro esquema indicado por su médico","No toma tratamiento")
- "hypertension","cardio" -> listOf("IECA referido","ARA-II referido","Calcioantagonista referido","Diurético referido","Betabloqueador referido","Antiagregante/anticoagulante referido cuando corresponda","Combinación referida","Otro","No toma tratamiento")
- "respiratory" -> listOf("Inhalador de rescate referido","Corticoide inhalado referido","Broncodilatador de acción prolongada referido","Combinación de inhaladores","Oxígeno referido","Otro","No toma tratamiento")
- "thyroid" -> listOf("Levotiroxina referida","Antitiroideo referido","Yodo/radioyodo antecedente","Otro","No toma tratamiento")
- "immune" -> listOf("Inmunomodulador/inmunosupresor referido","Corticoide referido","Antirretroviral referido cuando corresponda","Biológico referido","Otro","No toma tratamiento")
- "bone" -> listOf("Bisfosfonato referido","Denosumab referido","Calcio/vitamina D referidos","Otro tratamiento óseo","No toma tratamiento")
- "hematologic" -> listOf("Hierro referido","Ácido fólico/B12 referido","Anticoagulante referido","Factor/hemoderivado referido","Otro","No toma tratamiento")
- "renal" -> listOf("Tratamiento renal referido","Diálisis","Trasplante + inmunosupresión referida","Otro","No toma tratamiento")
- "liver","gi" -> listOf("Tratamiento gastrointestinal/hepático referido","Antiviral referido cuando corresponda","Protector/antisecretor referido","Otro","No toma tratamiento")
- "neuro" -> listOf("Anticonvulsivante referido","Otro tratamiento neurológico","No toma tratamiento")
- "oncology" -> listOf("Quimioterapia actual/previa","Radioterapia actual/previa","Terapia dirigida/inmunoterapia referida","Seguimiento sin tratamiento activo","Otro")
- "exanthem" -> listOf("Tratamiento sintomático referido","Antiviral referido cuando correspondió","Sin tratamiento / resuelto","Otro")
- else -> listOf("Tratamiento farmacológico referido","Tratamiento no farmacológico referido","Otro","No toma tratamiento")
+private fun presetTreatments37(d:Disease37):List<String> = when(d.id){
+ "dm1" -> listOf("Insulina basal-bolo referida","Bomba de insulina referida","Insulina basal + bolos ajustados referidos","Otro esquema de insulina indicado por endocrinología")
+ "dm2" -> listOf("Metformina referida","Metformina + segundo antidiabético referido","SGLT2 / GLP-1 referido","Insulina con o sin fármacos orales referida")
+ "prediabetes" -> listOf("Plan de alimentación y actividad física referido","Metformina referida","Programa de control de peso/metabólico referido","Seguimiento médico sin fármaco referido")
+ "hypothyroid","hashimoto" -> listOf("Levotiroxina referida","Ajuste de hormona tiroidea referido","Seguimiento endocrinológico con mismo esquema","Otro tratamiento tiroideo referido")
+ "hyperthyroid" -> listOf("Antitiroideo referido","Betabloqueador para síntomas referido","Radioyodo antecedente/referido","Cirugía tiroidea antecedente/referida")
+ "obesity" -> listOf("Plan nutricional + actividad física referido","Tratamiento farmacológico para peso referido","Programa multidisciplinario de control de peso","Cirugía bariátrica antecedente/referida")
+ "metabolic" -> listOf("Cambios de estilo de vida supervisados","Antihipertensivo + hipolipemiante referidos","Metformina/u otro antidiabético referido","Tratamiento combinado de los componentes metabólicos")
+ "htn" -> listOf("ARA-II referido","IECA referido","Calcioantagonista referido","Combinación antihipertensiva referida")
+ "ischemic","angina" -> listOf("Antiagregante + estatina referidos","Betabloqueador/antianginoso referido","Anticoagulante/antiagregante según indicación referida","Revascularización + tratamiento médico referido")
+ "arrhythmia" -> listOf("Betabloqueador/antiarrítmico referido","Anticoagulante referido","Ablación antecedente/referida","Marcapasos/dispositivo + seguimiento referido")
+ "heart_failure" -> listOf("ARNI/IECA/ARA-II referido","Betabloqueador referido","Diurético referido","Tratamiento combinado para insuficiencia cardiaca referido")
+ "valvular","congenital_heart" -> listOf("Seguimiento cardiológico sin fármaco referido","Anticoagulación/antiagregación referida","Tratamiento para síntomas/hemodinámica referido","Cirugía/intervención cardiaca antecedente/referida")
+ "stroke","stroke_neuro" -> listOf("Antiagregante referido","Anticoagulante referido","Estatina/hipolipemiante referido","Rehabilitación + control de factores de riesgo")
+ "asthma" -> listOf("Corticoide inhalado referido","Corticoide inhalado + broncodilatador prolongado","Broncodilatador de rescate referido","Terapia biológica/especializada referida")
+ "copd","chronic_bronchitis","emphysema" -> listOf("Broncodilatador prolongado referido","Doble broncodilatador inhalado referido","Broncodilatador + corticoide inhalado referido","Oxígeno/rehabilitación pulmonar referidos")
+ "sleep_apnea" -> listOf("CPAP referido","Dispositivo de avance mandibular referido","Medidas de control de peso/posición referidas","Cirugía de vía aérea antecedente/referida")
+ "pulmonary_fibrosis" -> listOf("Antifibrótico referido","Oxígeno suplementario referido","Rehabilitación pulmonar referida","Tratamiento especializado referido")
+ "pneumonia" -> listOf("Antibiótico referido cuando correspondió","Tratamiento sintomático referido","Hospitalización/oxígeno antecedente","Seguimiento neumológico referido")
+ "tuberculosis" -> listOf("Esquema antituberculoso de primera línea referido","Tratamiento directamente observado referido","Esquema especializado por resistencia referido","Seguimiento sin tratamiento activo referido")
+ "drug_allergy","latex_allergy","food_allergy","allergic_rhinitis","urticaria","atopic_dermatitis","contact_dermatitis" -> listOf("Evitación del desencadenante referida","Antihistamínico referido","Corticoide tópico/nasal/sistémico referido","Tratamiento por alergología/inmunoterapia referido")
+ "anaphylaxis" -> listOf("Autoinyector de adrenalina indicado/referido","Antihistamínico referido","Plan de evitación y emergencia referido","Seguimiento por alergología referido")
+ "measles","rubella","varicella","mumps","scarlet","roseola","fifth","hfmd" -> listOf("Tratamiento sintomático referido","Antiviral referido cuando correspondió","Antibiótico referido cuando correspondió","Sin tratamiento activo / antecedente resuelto")
+ "lupus","ra","sjogren","scleroderma","psoriasis","celiac","multiple_sclerosis","vasculitis","multiple_sclerosis_neuro" -> listOf("Inmunomodulador referido","Corticoide referido","Inmunosupresor referido","Terapia biológica/especializada referida")
+ "osteoporosis","osteopenia" -> listOf("Bisfosfonato referido","Denosumab referido","Calcio/vitamina D referidos","Otro tratamiento antirresortivo/anabólico referido")
+ "paget" -> listOf("Bisfosfonato referido","Analgésico referido","Suplementación indicada referida","Seguimiento especializado referido")
+ "osteogenesis" -> listOf("Bisfosfonato referido","Fisioterapia/rehabilitación referida","Cirugía ortopédica antecedente","Seguimiento multidisciplinario referido")
+ "osteoarthritis","fibromyalgia" -> listOf("Analgésico/antiinflamatorio referido","Fisioterapia/ejercicio terapéutico referido","Tratamiento neuromodulador referido","Manejo multimodal referido")
+ "muscular_dystrophy" -> listOf("Corticoide referido","Rehabilitación/fisioterapia referida","Soporte respiratorio/cardiaco referido","Terapia especializada referida")
+ "osteomyelitis" -> listOf("Antibiótico prolongado referido","Drenaje/desbridamiento antecedente","Cirugía ósea antecedente","Seguimiento infectológico/ortopédico referido")
+ "iron_anemia" -> listOf("Hierro oral referido","Hierro intravenoso referido","Tratamiento de causa de pérdida referido","Seguimiento hematológico referido")
+ "b12_anemia" -> listOf("Vitamina B12 referida","Ácido fólico referido","Suplementación combinada referida","Tratamiento de causa de malabsorción referido")
+ "sickle" -> listOf("Hidroxiurea referida","Ácido fólico referido","Transfusiones referidas","Tratamiento especializado/terapia modificadora referida")
+ "hemophilia_a","hemophilia_genetic" -> listOf("Factor VIII referido","Emicizumab referido","Desmopresina referida cuando aplica","Antifibrinolítico/terapia de apoyo referida")
+ "hemophilia_b" -> listOf("Factor IX referido","Profilaxis con factor referida","Tratamiento a demanda con factor referido","Antifibrinolítico/terapia de apoyo referida")
+ "vwd" -> listOf("Desmopresina referida cuando aplica","Concentrado de factor von Willebrand referido","Antifibrinolítico referido","Tratamiento de apoyo hematológico referido")
+ "thrombocytopenia" -> listOf("Corticoide referido","Inmunoglobulina referida","Agonista de trombopoyetina referido","Tratamiento especializado según causa referido")
+ "thrombophilia" -> listOf("Anticoagulante oral referido","Heparina referida","Antiagregante referido cuando aplica","Vigilancia hematológica sin fármaco activo")
+ "ckd","renal_failure" -> listOf("Tratamiento nefroprotector/antihipertensivo referido","Control metabólico y dietético referido","Tratamiento de anemia/mineral óseo referido","Seguimiento nefrológico especializado referido")
+ "dialysis" -> listOf("Hemodiálisis referida","Diálisis peritoneal referida","Tratamiento de anemia/mineral óseo referido","Medicamentos nefrológicos concomitantes referidos")
+ "renal_transplant" -> listOf("Tacrolimus/esquema inmunosupresor referido","Ciclosporina/esquema inmunosupresor referido","Corticoide + inmunosupresores referidos","Otro esquema postrasplante referido")
+ "glomerulonephritis","nephrotic" -> listOf("Corticoide referido","Inmunosupresor referido","IECA/ARA-II referido","Tratamiento nefrológico combinado referido")
+ "polycystic" -> listOf("Control de presión arterial referido","Tratamiento renal protector referido","Tratamiento de complicaciones referido","Seguimiento nefrológico sin fármaco específico")
+ "recurrent_uti" -> listOf("Antibiótico por episodio referido","Profilaxis antibiótica referida cuando aplica","Medidas preventivas/uroterapia referidas","Seguimiento urológico referido")
+ "gerd","gastritis","peptic_ulcer" -> listOf("Inhibidor de bomba de protones referido","Antagonista H2 referido","Erradicación de H. pylori referida cuando aplica","Medidas dietéticas/antiácido referido")
+ "celiac_gi" -> listOf("Dieta sin gluten referida","Suplementación por deficiencias referida","Seguimiento gastroenterológico referido","Tratamiento de complicaciones referido")
+ "crohn","ulcerative_colitis" -> listOf("Aminosalicilato referido","Corticoide referido","Inmunomodulador referido","Terapia biológica referida")
+ "hepatitis" -> listOf("Antiviral referido","Seguimiento hepatológico sin antiviral activo","Tratamiento de soporte referido","Otro tratamiento específico según etiología")
+ "cirrhosis" -> listOf("Diurético referido","Betabloqueador portal referido","Lactulosa/tratamiento de encefalopatía referido","Tratamiento combinado de complicaciones referido")
+ "epilepsy" -> listOf("Antiepiléptico en monoterapia referido","Combinación de antiepilépticos referida","Ajuste por neurología referido","Tratamiento quirúrgico/especializado referido")
+ "migraine" -> listOf("Analgésico/antiinflamatorio referido","Triptán/u otro tratamiento agudo referido","Tratamiento preventivo referido","Medidas no farmacológicas referidas")
+ "parkinson" -> listOf("Levodopa/combinación dopaminérgica referida","Agonista dopaminérgico referido","Otro tratamiento neurológico referido","Rehabilitación/estimulación especializada referida")
+ "alzheimer" -> listOf("Inhibidor de colinesterasa referido","Memantina referida","Manejo conductual/sintomático referido","Seguimiento geriátrico/neurológico referido")
+ "neuropathy" -> listOf("Gabapentinoide referido","Antidepresivo neuromodulador referido","Control de enfermedad causal referido","Rehabilitación/tratamiento especializado referido")
+ "cerebral_palsy" -> listOf("Rehabilitación/fisioterapia referida","Antiespástico referido","Anticonvulsivante referido cuando aplica","Manejo multidisciplinario referido")
+ "oral_cancer","breast_cancer","prostate_cancer","lung_cancer","colorectal_cancer","leukemia","lymphoma","myeloma" -> listOf("Cirugía oncológica referida","Quimioterapia referida","Radioterapia referida","Terapia dirigida/inmunoterapia/hormonal referida")
+ "hiv","aids" -> listOf("Terapia antirretroviral combinada referida","Esquema de tableta única referido","Cambio/ajuste de esquema por infectología referido","Otro esquema antirretroviral referido")
+ "primary_immune" -> listOf("Inmunoglobulina de reemplazo referida","Profilaxis antimicrobiana referida","Inmunomodulación referida","Trasplante/terapia especializada referida")
+ "transplant_immune" -> listOf("Tacrolimus/esquema inmunosupresor referido","Ciclosporina/esquema inmunosupresor referido","Micofenolato/combinación referida","Corticoide + inmunosupresores referidos")
+ "steroid_immune" -> listOf("Corticoide sistémico referido","Reducción gradual indicada/referida","Profilaxis asociada referida","Tratamiento de enfermedad de base referido")
+ "biologic_immune" -> listOf("Anti-TNF referido","Antiinterleucina referido","Otro biológico referido","Biológico + inmunomodulador referido")
+ "chemo_immune" -> listOf("Quimioterapia activa referida","Profilaxis antimicrobiana referida","Factor estimulante de colonias referido","Seguimiento hematológico/oncológico referido")
+ "other_immune" -> listOf("Inmunoglobulina referida","Inmunosupresor referido","Profilaxis antimicrobiana referida","Tratamiento especializado referido")
+ "down" -> listOf("Seguimiento multidisciplinario sin fármaco específico","Tratamiento tiroideo referido cuando aplica","Tratamiento cardiológico referido cuando aplica","Apoyos de desarrollo/rehabilitación referidos")
+ "cystic_fibrosis" -> listOf("Terapia de limpieza de vía aérea referida","Enzimas pancreáticas/nutrición referidas","Antibiótico inhalado/sistémico referido","Modulador CFTR referido cuando aplica")
+ "turner" -> listOf("Hormona de crecimiento antecedente/referida","Estrógeno/progestágeno de reemplazo referido","Tratamiento tiroideo referido cuando aplica","Seguimiento cardiometabólico referido")
+ "pku" -> listOf("Dieta restringida en fenilalanina referida","Fórmula médica/aminoácidos referidos","Sapropterina referida cuando aplica","Tratamiento metabólico especializado referido")
+ "cah" -> listOf("Hidrocortisona/glucocorticoide referido","Mineralocorticoide referido","Ajuste de dosis por estrés indicado por endocrinología","Seguimiento endocrinológico especializado referido")
+ "gaucher" -> listOf("Terapia de reemplazo enzimático referida","Terapia de reducción de sustrato referida","Tratamiento de soporte referido","Seguimiento especializado sin tratamiento activo")
+ "genetic_other" -> listOf("Tratamiento farmacológico específico referido","Tratamiento no farmacológico/rehabilitación referido","Terapia especializada/genética referida","Seguimiento sin tratamiento activo referido")
+ else -> when(d.protocol){
+  "cardio","hypertension" -> listOf("Antihipertensivo referido","Antiagregante/anticoagulante referido","Hipolipemiante referido","Tratamiento cardiovascular combinado referido")
+  "respiratory" -> listOf("Broncodilatador inhalado referido","Corticoide inhalado referido","Combinación de inhaladores referida","Oxígeno/rehabilitación referidos")
+  "thyroid" -> listOf("Levotiroxina referida","Antitiroideo referido","Tratamiento definitivo antecedente","Seguimiento endocrinológico referido")
+  "immune" -> listOf("Inmunomodulador referido","Corticoide referido","Inmunosupresor referido","Biológico/especializado referido")
+  "bone" -> listOf("Antirresortivo referido","Calcio/vitamina D referidos","Analgésico/rehabilitación referidos","Tratamiento óseo especializado referido")
+  "hematologic" -> listOf("Suplemento/medicamento hematológico referido","Factor/hemoderivado referido","Anticoagulante/antiagregante referido","Seguimiento hematológico referido")
+  "renal" -> listOf("Tratamiento nefroprotector referido","Tratamiento metabólico renal referido","Diálisis/trasplante según corresponda","Seguimiento nefrológico referido")
+  "liver","gi" -> listOf("Antisecretor/digestivo referido","Antiviral referido cuando aplica","Tratamiento antiinflamatorio/inmunológico referido","Seguimiento especializado referido")
+  "neuro" -> listOf("Medicamento neurológico referido","Combinación farmacológica referida","Rehabilitación referida","Tratamiento especializado referido")
+  "oncology" -> listOf("Cirugía oncológica referida","Quimioterapia referida","Radioterapia referida","Terapia dirigida/inmunoterapia referida")
+  "genetic" -> listOf("Tratamiento específico referido","Rehabilitación/soporte referido","Terapia especializada referida","Seguimiento sin tratamiento activo")
+  else -> listOf("Tratamiento farmacológico referido","Tratamiento no farmacológico referido","Tratamiento combinado referido","Otro tratamiento médico referido")
+ }
 }
+
 @Composable private fun DiseaseEditor37(d:Disease37,initial:DiseaseAnswer,onSave:(DiseaseAnswer)->Unit,onProtocol:()->Unit,onBack:()->Unit){
- var onset by remember(d.id){mutableStateOf(initial.onset)};var treatment by remember(d.id){mutableStateOf(initial.treatment)};var status by remember(d.id){mutableStateOf(initial.currentStatus)};var complications by remember(d.id){mutableStateOf(initial.complications)}
+ var onset by remember(d.id){mutableStateOf(initial.onset)}
+ var treatment by remember(d.id){mutableStateOf(initial.treatment)}
+ var status by remember(d.id){mutableStateOf(initial.currentStatus)}
+ var complications by remember(d.id){mutableStateOf(initial.complications)}
+ var customDisease by rememberRecordState("history.path."+d.id+".customName","")
+ var treatmentMode by remember(d.id){
+  mutableStateOf(
+   when{
+    initial.treatment.isBlank() -> ""
+    initial.treatment.contains("No toma",true) -> "No toma tratamiento"
+    initial.treatment.contains("Suspend",true) -> "Suspendió tratamiento"
+    initial.treatment.contains("No sabe",true) -> "No sabe / no recuerda"
+    else -> "Sí, sigue tratamiento médico"
+   }
+  )
+ }
  val dates=listOf("Diagnóstico este año","1–2 años","3–5 años","6–10 años","Más de 10 años","Desde la infancia","No recuerda")
- val states=listOf("Controlado según seguimiento médico referido","Descontrolado referido","En tratamiento, control no conocido","Sin tratamiento actualmente","Suspendió tratamiento","En estudio / diagnóstico reciente","Resuelto / antecedente, cuando aplique","No sabe")
- Column(verticalArrangement=Arrangement.spacedBy(9.dp)){
-  Button(onClick=onBack){Text("← Enfermedades")};Text(d.name,style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black)
-  Text("1 · ¿Desde cuándo?",fontWeight=FontWeight.Bold);dates.forEach{x->FilterChip(onset==x,{onset=x},{Text(x)},modifier=Modifier.fillMaxWidth())}
-  Text("2 · Tratamiento referido",fontWeight=FontWeight.Bold);presetTreatments37(d).forEach{x->FilterChip(treatment==x,{treatment=x},{Text(x)},modifier=Modifier.fillMaxWidth())}
-  Text("3 · Estado actual",fontWeight=FontWeight.Bold);states.forEach{x->FilterChip(status==x,{status=x},{Text(x)},modifier=Modifier.fillMaxWidth())}
-  Text("4 · Complicaciones referidas",fontWeight=FontWeight.Bold);listOf("Ninguna referida","Sí, en seguimiento","Sí, antecedente resuelto","No sabe / no recuerda").forEach{x->FilterChip(complications==x,{complications=x},{Text(x)},modifier=Modifier.fillMaxWidth())}
-  if(d.protocol=="diabetes")NoticeCard("En diabetes tipo 2 los estándares actuales recomiendan tratamiento individualizado según metas, comorbilidades cardiovasculares/renales, riesgo de hipoglucemia, tolerancia y preferencias. Estas opciones sirven para registrar lo que el paciente ya usa; no son un esquema automático de prescripción.")
+ val states=listOf(
+  "Controlado según seguimiento médico referido",
+  "Descontrolado referido",
+  "En tratamiento, control no conocido",
+  "Sin tratamiento actualmente",
+  "Suspendió tratamiento",
+  "En estudio / diagnóstico reciente",
+  "Resuelto / antecedente, cuando aplique",
+  "Inestable / descompensación grave",
+  "No sabe"
+ )
+ val complicationOptions=listOf("Ninguna referida","Sí, en seguimiento","Sí, antecedente resuelto","No sabe / no recuerda")
+ val treatmentModes=listOf("Sí, sigue tratamiento médico","No toma tratamiento","Suspendió tratamiento","No sabe / no recuerda")
+ val schemes=presetTreatments37(d)
+
+ Column(verticalArrangement=Arrangement.spacedBy(12.dp)){
+  Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){
+   Button(onClick=onBack){Text("← Enfermedades")}
+   Text("Formulario compacto",style=MaterialTheme.typography.bodySmall,fontWeight=FontWeight.SemiBold)
+  }
+  Text(if(d.id=="genetic_other" && customDisease.isNotBlank()) customDisease else d.name,style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black)
+
+  if(d.id=="genetic_other"){
+   OutlinedTextField(
+    value=customDisease,
+    onValueChange={customDisease=it},
+    label={Text("¿Cuál enfermedad genética / hereditaria?")},
+    modifier=Modifier.fillMaxWidth(),
+    singleLine=true
+   )
+  }
+
+  Text("1 · ¿Desde cuándo?",fontWeight=FontWeight.Bold)
+  ChipChoices(dates.map{x->x to (onset==x)},{i->onset=dates[i]},columns=3)
+
+  Text("2 · Tratamiento médico",fontWeight=FontWeight.Bold)
+  ChipChoices(treatmentModes.map{x->x to (treatmentMode==x)},{i->
+   treatmentMode=treatmentModes[i]
+   treatment=when(treatmentMode){
+    "No toma tratamiento" -> "No toma tratamiento actualmente"
+    "Suspendió tratamiento" -> "Suspendió tratamiento referido"
+    "No sabe / no recuerda" -> "No sabe / no recuerda tratamiento"
+    else -> ""
+   }
+  },columns=2)
+
+  if(treatmentMode=="Sí, sigue tratamiento médico"){
+   Text("Selecciona el tratamiento referido · 4 opciones",fontWeight=FontWeight.SemiBold)
+   ChipChoices(schemes.map{x->x to (treatment==x)},{i->treatment=schemes[i]},columns=2)
+   Text("Opciones para registrar lo que el paciente ya utiliza o refiere. No constituyen prescripción ni incluyen dosis.",style=MaterialTheme.typography.bodySmall)
+  }
+
+  Text("3 · Estado actual",fontWeight=FontWeight.Bold)
+  ChipChoices(states.map{x->x to (status==x)},{i->status=states[i]},columns=3)
+
+  Text("4 · Complicaciones referidas",fontWeight=FontWeight.Bold)
+  ChipChoices(complicationOptions.map{x->x to (complications==x)},{i->complications=complicationOptions[i]},columns=2)
+
+  val projected=DiseaseAnswer(
+   true,
+   onset,
+   if(treatment.isNotBlank())treatment else treatmentMode,
+   status,
+   complications
+  )
+  val localAsa=asa37(mapOf(d.id to projected))
+  Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){
+   Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
+    Text("Orientación ASA de este antecedente: ASA $localAsa",fontWeight=FontWeight.Bold)
+    if(localAsa==2)Text("Enfermedad sistémica referida sin datos actuales de mal control, inestabilidad o complicación activa importante.",style=MaterialTheme.typography.bodySmall)
+    if(localAsa==3)Text("Se seleccionó descontrol, limitación importante o complicación activa en seguimiento; integrar el resto de antecedentes y la valoración clínica.",style=MaterialTheme.typography.bodySmall)
+    if(localAsa==4)Text("Se seleccionó inestabilidad/descompensación grave. Esta orientación requiere valoración clínica y médica inmediata según el contexto.",style=MaterialTheme.typography.bodySmall)
+   }
+  }
+
+  if(d.id=="metabolic")NoticeCard("Síndrome metabólico controlado, sin complicación activa importante ni inestabilidad, no debe subir automáticamente a ASA III. La clasificación final depende del conjunto clínico.")
+  if(d.protocol=="diabetes")NoticeCard("En diabetes el tratamiento se registra según lo que el paciente refiere. El control actual, complicaciones y comorbilidades son los elementos que modifican la orientación ASA; el diagnóstico aislado no basta.")
+  if(d.protocol=="genetic")NoticeCard("Las condiciones genéticas/hereditarias tienen manifestaciones muy variables. El diagnóstico por sí solo no define ASA: importa la repercusión sistémica, el control, las comorbilidades y el estado funcional.")
   if(d.protocol=="exanthem")NoticeCard("Registrar edad al padecerla, tratamiento recibido y complicaciones; una imagen aislada no confirma el diagnóstico.")
-  Button(enabled=onset.isNotBlank()&&treatment.isNotBlank()&&status.isNotBlank(),onClick={onSave(DiseaseAnswer(true,onset,treatment,status,complications))},modifier=Modifier.fillMaxWidth()){Text("💾 Guardar antecedente")}
+
+  val customOk=d.id!="genetic_other" || customDisease.isNotBlank()
+  val canSave=customOk && onset.isNotBlank() && treatmentMode.isNotBlank() && treatment.isNotBlank() && status.isNotBlank() && complications.isNotBlank()
+  Button(enabled=canSave,onClick={
+   onSave(DiseaseAnswer(true,onset,treatment,status,complications))
+  },modifier=Modifier.fillMaxWidth()){Text("💾 Guardar antecedente")}
   Button(onClick=onProtocol,modifier=Modifier.fillMaxWidth()){Text("📚 Consultar protocolo odontológico")}
  }
 }
