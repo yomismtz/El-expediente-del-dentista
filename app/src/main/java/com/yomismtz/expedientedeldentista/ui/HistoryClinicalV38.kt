@@ -1517,12 +1517,26 @@ private data class E(val n:String,val d:String)
   item{ScreenHeader("Hábitos y parafunciones",onBack,"Selecciona primero el hábito referido. Después registra frecuencia y duración dentro de su propia tarjeta. La explicación, la imagen clínica y la fotografía del expediente permanecen asociadas al hábito seleccionado.")}
   item{NoticeCard("Flujo sugerido: hábito → detalles clínicos → frecuencia → duración → fotografía opcional. No necesitas abrir imágenes que no correspondan al hallazgo seleccionado.")}
   item{SectionCard("Hábitos referidos"){
-   ChipChoices(habits.map{h->h.name to (present[h.id]==true)},{i->
-    val h=habits[i]
-    val newValue=!(present[h.id]?:false)
-    present[h.id]=newValue
-    openId=if(newValue)h.id else if(openId==h.id)"" else openId
-   },columns=2)
+   Text("Selecciona uno o varios. En teléfono se muestran dos por fila; los nombres largos pueden ocupar dos líneas dentro del recuadro.",style=MaterialTheme.typography.bodySmall)
+   Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(8.dp)){
+    habits.chunked(2).forEach{row->
+     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+      row.forEach{h->
+       FilterChip(
+        selected=present[h.id]==true,
+        onClick={
+         val newValue=!(present[h.id]?:false)
+         present[h.id]=newValue
+         openId=if(newValue)h.id else if(openId==h.id)"" else openId
+        },
+        label={Text(h.name,maxLines=2,softWrap=true)},
+        modifier=Modifier.weight(1f)
+       )
+      }
+      if(row.size==1)Spacer(Modifier.weight(1f))
+     }
+    }
+   }
   }}
   habits.forEach{h->
    if(present[h.id]==true){
