@@ -250,48 +250,324 @@ private data class E(val n:String,val d:String)
   "ETS / infecciosos relevantes" to listOf("VIH referido","Sífilis","Hepatitis B","Herpes genital referido","VPH referido","Otra infección referida"),
   "Otros" to listOf("Psoriasis","Enfermedad renal","Enfermedad ósea/hereditaria","Alteración congénita","Enfermedad autoinmune","Otra")
  )
+
+ fun treatmentOptions(disease:String,category:String):List<String> = when {
+  disease.contains("Hipertensión",true) -> listOf(
+   "ARA-II referido (p. ej., losartán)",
+   "Calcioantagonista referido (p. ej., amlodipino)",
+   "IECA referido (p. ej., enalapril)",
+   "Combinación antihipertensiva referida"
+  )
+  disease.contains("Infarto",true) || disease.contains("Evento vascular",true) || disease.contains("Cardiopatía",true) -> listOf(
+   "Antiagregante/antitrombótico referido",
+   "Estatina u otro hipolipemiante referido",
+   "Betabloqueador/antihipertensivo referido",
+   "Procedimiento o cirugía cardiovascular referida"
+  )
+  disease.contains("Diabetes",true) -> listOf(
+   "Metformina referida",
+   "Metformina + segundo fármaco oral referido",
+   "Insulina referida",
+   "Insulina + medicamento oral referido"
+  )
+  disease.contains("Resistencia a la insulina",true) -> listOf(
+   "Plan de alimentación y actividad física",
+   "Metformina referida",
+   "Seguimiento metabólico sin fármaco referido",
+   "Otro tratamiento endocrinológico referido"
+  )
+  disease.contains("Hipotiroidismo",true) -> listOf(
+   "Levotiroxina referida",
+   "Ajuste de hormona tiroidea referido",
+   "Seguimiento endocrinológico sin cambio referido",
+   "No recuerda el nombre del tratamiento"
+  )
+  disease.contains("Hipertiroidismo",true) -> listOf(
+   "Antitiroideo referido",
+   "Betabloqueador para síntomas referido",
+   "Radioyodo referido",
+   "Cirugía tiroidea referida"
+  )
+  disease.contains("Obesidad",true) -> listOf(
+   "Plan nutricional y actividad física",
+   "Tratamiento farmacológico para peso referido",
+   "Programa multidisciplinario referido",
+   "Cirugía bariátrica referida"
+  )
+  disease.equals("Asma",true) -> listOf(
+   "Corticoide inhalado referido",
+   "Corticoide inhalado + broncodilatador de acción prolongada",
+   "Broncodilatador de rescate referido",
+   "Tratamiento especializado/biológico referido"
+  )
+  disease.equals("EPOC",true) || disease.contains("Bronquitis crónica",true) -> listOf(
+   "Broncodilatador inhalado referido",
+   "Doble broncodilatador inhalado referido",
+   "Broncodilatador + corticoide inhalado referido",
+   "Oxígeno/rehabilitación pulmonar referidos"
+  )
+  disease.contains("Tuberculosis",true) -> listOf(
+   "Esquema antituberculoso de primera línea referido",
+   "Tratamiento supervisado referido",
+   "Esquema especializado por resistencia referido",
+   "No recuerda el esquema"
+  )
+  disease.contains("Fibrosis pulmonar",true) -> listOf(
+   "Antifibrótico referido",
+   "Oxígeno suplementario referido",
+   "Rehabilitación pulmonar referida",
+   "Tratamiento especializado referido"
+  )
+  disease.contains("Rinitis",true) -> listOf(
+   "Antihistamínico referido",
+   "Corticoide nasal referido",
+   "Lavados/medidas ambientales referidas",
+   "Inmunoterapia alergénica referida"
+  )
+  disease.contains("Dermatitis",true) || disease.contains("Urticaria",true) || disease.contains("Alergia",true) -> listOf(
+   "Antihistamínico referido",
+   "Corticoide tópico/sistémico referido",
+   "Evitación del desencadenante referida",
+   "Tratamiento por alergología referido"
+  )
+  disease.contains("Epilepsia",true) -> listOf(
+   "Antiepiléptico en monoterapia referido",
+   "Combinación de antiepilépticos referida",
+   "Ajuste por neurología referido",
+   "Tratamiento quirúrgico/especializado referido"
+  )
+  disease.contains("Alzheimer",true) -> listOf(
+   "Tratamiento cognitivo referido",
+   "Manejo conductual/sintomático referido",
+   "Rehabilitación y apoyo del cuidador",
+   "Seguimiento por neurología/geriatría referido"
+  )
+  disease.contains("Parkinson",true) -> listOf(
+   "Levodopa/combinación dopaminérgica referida",
+   "Agonista dopaminérgico referido",
+   "Otro tratamiento neurológico referido",
+   "Rehabilitación/estimulación especializada referida"
+  )
+  disease.contains("Migraña",true) -> listOf(
+   "Analgésico/antiinflamatorio referido",
+   "Triptán u otro tratamiento agudo referido",
+   "Tratamiento preventivo referido",
+   "Medidas no farmacológicas referidas"
+  )
+  disease.contains("Esclerosis múltiple",true) -> listOf(
+   "Tratamiento modificador de enfermedad referido",
+   "Corticoide para brote referido",
+   "Tratamiento sintomático referido",
+   "Rehabilitación neurológica referida"
+  )
+  category=="Neoplásicos" -> listOf(
+   "Cirugía oncológica referida",
+   "Quimioterapia referida",
+   "Radioterapia referida",
+   "Terapia hormonal/dirigida/inmunoterapia referida"
+  )
+  disease.contains("VIH",true) -> listOf(
+   "Terapia antirretroviral combinada referida",
+   "Esquema de tableta única referido",
+   "Cambio/ajuste de esquema por infectología referido",
+   "No recuerda el esquema"
+  )
+  disease.contains("Sífilis",true) -> listOf(
+   "Penicilina referida",
+   "Otro antibiótico por indicación médica referido",
+   "Seguimiento serológico referido",
+   "No recuerda el tratamiento"
+  )
+  disease.contains("Hepatitis B",true) -> listOf(
+   "Vigilancia sin fármaco referida",
+   "Antiviral oral referido",
+   "Tratamiento por hepatología referido",
+   "No recuerda el tratamiento"
+  )
+  disease.contains("Herpes",true) -> listOf(
+   "Antiviral episódico referido",
+   "Antiviral supresivo referido",
+   "Tratamiento sintomático referido",
+   "No recuerda el tratamiento"
+  )
+  disease.contains("VPH",true) -> listOf(
+   "Vigilancia/seguimiento referido",
+   "Tratamiento local referido",
+   "Procedimiento de eliminación de lesión referido",
+   "Tratamiento especializado referido"
+  )
+  disease.contains("Psoriasis",true) -> listOf(
+   "Tratamiento tópico referido",
+   "Fototerapia referida",
+   "Tratamiento sistémico referido",
+   "Tratamiento biológico referido"
+  )
+  disease.contains("Enfermedad renal",true) -> listOf(
+   "Tratamiento nefroprotector/antihipertensivo referido",
+   "Manejo dietético y metabólico referido",
+   "Diálisis referida",
+   "Trasplante renal referido"
+  )
+  disease.contains("autoinmune",true) -> listOf(
+   "Antiinflamatorio/inmunomodulador referido",
+   "Corticoide referido",
+   "Inmunosupresor referido",
+   "Tratamiento biológico referido"
+  )
+  else -> when(category){
+   "Cardiovasculares" -> listOf("Antihipertensivo referido","Antiagregante/antitrombótico referido","Hipolipemiante referido","Procedimiento cardiovascular referido")
+   "Endocrinos" -> listOf("Medicamento oral referido","Tratamiento hormonal referido","Tratamiento inyectable referido","Plan metabólico/nutricional referido")
+   "Pulmonares" -> listOf("Inhalador broncodilatador referido","Corticoide inhalado referido","Tratamiento oral referido","Oxígeno/rehabilitación referidos")
+   "Alérgicos" -> listOf("Antihistamínico referido","Corticoide referido","Evitación del desencadenante","Tratamiento por alergología referido")
+   "Neurológicos" -> listOf("Medicamento neurológico referido","Combinación farmacológica referida","Rehabilitación referida","Tratamiento especializado referido")
+   "ETS / infecciosos relevantes" -> listOf("Antimicrobiano/antiviral referido","Tratamiento combinado referido","Seguimiento especializado referido","No recuerda el tratamiento")
+   else -> listOf("Medicamento habitual referido","Tratamiento combinado referido","Procedimiento/terapia especializada referida","No recuerda el tratamiento")
+  }
+ }
+
  var relative by rememberRecordState("history.hereditary.relative",0)
  var category by remember{mutableStateOf<String?>(null)}
+ var noFamilyHistory by rememberRecordState("history.hereditary.none",false)
  val selected=rememberRecordStateMap<String,Boolean>("history.hereditary.selected")
  val status=rememberRecordStateMap<String,String>("history.hereditary.status")
+ val control=rememberRecordStateMap<String,String>("history.hereditary.control")
+ val treatment=rememberRecordStateMap<String,String>("history.hereditary.treatment")
  var openHelp by remember{mutableStateOf(false)}
  var showRelatives by remember{mutableStateOf(false)}
  val current=relatives[relative]
  val diseases=category?.let{categories[it]}?:emptyList()
- LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Antecedentes heredo-familiares",onBack,"Primero selecciona el familiar y después la categoría de enfermedad. Ante un positivo, amplía inicio, evolución, estado actual, medicamentos y complicaciones.")}
-  item{NoticeCard("Este apartado busca antecedentes familiares que puedan aportar predisposición o contexto clínico. No significa que el paciente padezca la misma enfermedad.")}
-  item{SectionCard("1 · Familiar"){
-   Text("Seleccionado: $current",fontWeight=FontWeight.Bold)
-   OutlinedButton(onClick={showRelatives=!showRelatives}){Text(if(showRelatives)"Ocultar familiares" else "Cambiar familiar")}
-   if(showRelatives){
-    Spacer(Modifier.height(8.dp))
-    ChipChoices(relatives.mapIndexed{i,x->x to (relative==i)},{i->relative=i;category=null;showRelatives=false},columns=3)
+
+ fun clearPositive(key:String){
+  selected.remove(key)
+  status.remove(key)
+  control.remove(key)
+  treatment.remove(key)
+ }
+
+ fun generatedPositive(key:String):String{
+  val p=key.split("|")
+  val familiar=p.getOrNull(0)?:"Familiar"
+  val disease=p.getOrNull(2)?:"Antecedente referido"
+  val state=status[key]
+  val controlState=control[key]
+  val tx=treatment[key]
+  return when(state){
+   "Vive" -> when(controlState){
+    "Sin tratamiento" -> "$familiar con antecedente de $disease; vive y refiere no recibir tratamiento actualmente."
+    "Con tratamiento · controlado" -> "$familiar con antecedente de $disease; vive, en tratamiento${if(tx.isNullOrBlank()) "" else " referido con $tx"} y se reporta controlado según lo referido."
+    "Con tratamiento · mal controlado" -> "$familiar con antecedente de $disease; vive, en tratamiento${if(tx.isNullOrBlank()) "" else " referido con $tx"} y se reporta mal controlado según lo referido."
+    "No sabe si recibe tratamiento" -> "$familiar con antecedente de $disease; vive, pero se desconoce tratamiento y grado de control."
+    else -> "$familiar con antecedente de $disease; vive. Falta registrar situación de tratamiento/control."
    }
-  }}
-  item{SectionCard("2 · Categoría"){
-   Text("Elige una categoría; sus enfermedades se abren aquí mismo para evitar desplazamiento innecesario.",style=MaterialTheme.typography.bodySmall)
-   ChipChoices(categories.keys.map{x->x to (category==x)},{i->category=categories.keys.elementAt(i)},columns=2)
-   category?.let { cat ->
-    Spacer(Modifier.height(10.dp))
-    Text("3 · $cat · $current",fontWeight=FontWeight.Bold)
-    Spacer(Modifier.height(6.dp))
-    diseases.forEach { d ->
-     val key="$current|$cat|$d"
-     val checked=selected[key]==true
-     Card(Modifier.fillMaxWidth().padding(vertical=4.dp)){Column(Modifier.padding(10.dp)){
-      Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){Checkbox(checked,{selected[key]=it;if(!it)status.remove(key)});Text(d,Modifier.weight(1f))}
-      if(checked){
-       ChipChoices(listOf("Vive","Falleció","No sabe").map{x->x to (status[key]==x)},{i->status[key]=listOf("Vive","Falleció","No sabe")[i]},columns=3)
-       Text("Amplía: inicio/edad aproximada · evolución · estado actual · tratamiento/medicamentos · complicaciones.",style=MaterialTheme.typography.bodySmall)
-      }
-     }}
+   "Falleció" -> "$familiar con antecedente de $disease; falleció. No se infiere causa de muerte."
+   "No sabe" -> "$familiar con antecedente referido de $disease; se desconoce si vive y no hay datos suficientes de tratamiento/control."
+   else -> "$familiar con antecedente de $disease; falta registrar estado vital."
+  }
+ }
+
+ LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
+  item{ScreenHeader("Antecedentes heredo-familiares",onBack,"Selecciona el familiar y el antecedente. Si vive, registra si recibe tratamiento y cómo se encuentra controlado; la app redacta el antecedente positivo automáticamente.")}
+  item{NoticeCard("Las opciones de tratamiento son ejemplos de tratamientos que un familiar podría referir. Sirven para registrar la historia clínica y no constituyen indicaciones de prescripción.")}
+
+  item{SectionCard("1 · Familiar"){
+   ChipChoices(
+    listOf("Ningún familiar / todos sanos" to noFamilyHistory),
+    {
+     noFamilyHistory=!noFamilyHistory
+     if(noFamilyHistory){
+      selected.clear();status.clear();control.clear();treatment.clear();category=null
+     }
+    },
+    columns=1
+   )
+   if(noFamilyHistory){
+    Text("Registro automático:",fontWeight=FontWeight.Bold)
+    Text("Refiere familiares aparentemente sanos y niega antecedentes heredo-familiares de relevancia.")
+   }else{
+    Text("Seleccionado: $current",fontWeight=FontWeight.Bold)
+    OutlinedButton(onClick={showRelatives=!showRelatives}){Text(if(showRelatives)"Ocultar familiares" else "Cambiar familiar")}
+    if(showRelatives){
+     Spacer(Modifier.height(8.dp))
+     ChipChoices(relatives.mapIndexed{i,x->x to (relative==i)},{i->relative=i;category=null;showRelatives=false;noFamilyHistory=false},columns=3)
     }
    }
   }}
-  item{Card(onClick={openHelp=!openHelp},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(13.dp)){Text("4 · ¿Cómo registrar un positivo?",fontWeight=FontWeight.Bold);if(openHelp){Text("Ejemplo de estructura: «Abuela materna · diabetes mellitus · inicio aproximado ___ · evolución/estado actual ___ · tratamiento referido ___ · complicaciones ___ · vive/falleció/no sabe».");Text("Ejemplos del material docente incluyen abuelo paterno con hipertensión, abuela materna con diabetes, madre con resistencia a la insulina, hermano con asma, hermana con alergia a penicilina y abuelo con Alzheimer.")}else Text("Toca para ver la estructura")}}}
-  item{SectionCard("5 · Cuando no hay información"){Text("Usa la opción que corresponda al interrogatorio: «Negado» · «Sin antecedentes» · «No referido». No son equivalentes: «no referido» indica que no se obtuvo o no se proporcionó el dato.")}}
-  item{SectionCard("Resumen familiar"){val positives=selected.filterValues{it}.keys;if(positives.isEmpty())Text("Aún no hay antecedentes positivos seleccionados.") else positives.forEach{key->val p=key.split("|");Text("• "+p.joinToString(" · ")+" · "+(status[key]?:"estado no indicado"))}}}
+
+  if(!noFamilyHistory){
+   item{SectionCard("2 · Categoría"){
+    Text("Elige una categoría; sus enfermedades se abren aquí mismo para evitar desplazamiento innecesario.",style=MaterialTheme.typography.bodySmall)
+    ChipChoices(categories.keys.map{x->x to (category==x)},{i->category=categories.keys.elementAt(i)},columns=2)
+    category?.let { cat ->
+     Spacer(Modifier.height(10.dp))
+     Text("3 · $cat · $current",fontWeight=FontWeight.Bold)
+     Spacer(Modifier.height(6.dp))
+     diseases.forEach { d ->
+      val key="$current|$cat|$d"
+      val checked=selected[key]==true
+      Card(Modifier.fillMaxWidth().padding(vertical=4.dp)){Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
+       Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+        Checkbox(checked,{isChecked->
+         if(isChecked){selected[key]=true;noFamilyHistory=false}
+         else clearPositive(key)
+        })
+        Text(d,Modifier.weight(1f))
+       }
+       if(checked){
+        Text("Estado del familiar",fontWeight=FontWeight.SemiBold)
+        val vitalOptions=listOf("Vive","Falleció","No sabe")
+        ChipChoices(vitalOptions.map{x->x to (status[key]==x)},{i->
+         status[key]=vitalOptions[i]
+         if(vitalOptions[i]!="Vive"){control.remove(key);treatment.remove(key)}
+        },columns=3)
+
+        if(status[key]=="Vive"){
+         Text("Tratamiento y control",fontWeight=FontWeight.SemiBold)
+         val controlOptions=listOf("Sin tratamiento","Con tratamiento · controlado","Con tratamiento · mal controlado","No sabe si recibe tratamiento")
+         ChipChoices(controlOptions.map{x->x to (control[key]==x)},{i->
+          control[key]=controlOptions[i]
+          if(!controlOptions[i].startsWith("Con tratamiento")) treatment.remove(key)
+         },columns=2)
+
+         if(control[key]?.startsWith("Con tratamiento")==true){
+          Text("Tratamiento referido · ejemplos frecuentes",fontWeight=FontWeight.SemiBold)
+          val txOptions=treatmentOptions(d,cat)
+          ChipChoices(txOptions.map{x->x to (treatment[key]==x)},{i->treatment[key]=txOptions[i]},columns=2)
+          Text("Selecciona lo que el paciente/familiar refiera; no se interpreta como prescripción ni se añaden dosis.",style=MaterialTheme.typography.bodySmall)
+         }
+        }
+
+        if(status[key]!=null){
+         Text("Registro positivo generado",fontWeight=FontWeight.SemiBold)
+         Text(generatedPositive(key))
+        }
+       }
+      }}
+     }
+    }
+   }}
+  }
+
+  item{Card(onClick={openHelp=!openHelp},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(13.dp)){
+   Text("4 · ¿Cómo se redacta el positivo?",fontWeight=FontWeight.Bold)
+   if(openHelp){
+    Text("La app construye la frase con el familiar, antecedente, estado vital, situación de tratamiento/control y el tratamiento referido cuando se conoce.")
+    Text("No completa datos que no fueron seleccionados ni supone causa de muerte, dosis, tiempo de evolución o complicaciones.")
+   }else Text("Toca para ver cómo funciona")
+  }}}
+
+  item{SectionCard("5 · Cuando no hay información"){
+   Text("Usa la opción que corresponda al interrogatorio: «Ningún familiar / todos sanos», «No sabe» o deja el antecedente sin seleccionar. «No sabe» no equivale a un antecedente negativo.")
+  }}
+
+  item{SectionCard("Resumen familiar"){
+   if(noFamilyHistory){
+    Text("Refiere familiares aparentemente sanos y niega antecedentes heredo-familiares de relevancia.",fontWeight=FontWeight.Bold)
+   }else{
+    val positives=selected.filterValues{it}.keys
+    if(positives.isEmpty()) Text("Aún no hay antecedentes positivos seleccionados.")
+    else positives.forEach{key->Text("• "+generatedPositive(key))}
+   }
+  }}
  }
 }
 
