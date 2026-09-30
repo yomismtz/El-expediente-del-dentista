@@ -337,11 +337,13 @@ private data class E(val n:String,val d:String)
     Triple("Botanas/almidones refinados retentivos","Papas, crackers y productos similares aportan almidones procesados que pueden permanecer en boca.","La frecuencia y retención importan; se interpreta junto con higiene, saliva y exposición a fluoruro.")
    )
    item{NoticeCard("Tamizaje dietético odontológico. Registra qué consume y con qué frecuencia. Las alertas describen patrones de posible riesgo; no diagnostican anemia, desnutrición ni deficiencias vitamínicas. Los hallazgos relevantes deben correlacionarse con historia clínica, exploración y, cuando proceda, valoración médica/nutricional o estudios de laboratorio.")}
-   protectiveGroups.forEach{(name,benefit,lowRisk)->
-    item{OptionsCard38(name,freqOptions,"Beneficio: $benefit Si el consumo es bajo: $lowRisk",3)}
+   items(protectiveGroups.size){i->
+    val (name,benefit,lowRisk)=protectiveGroups[i]
+    OptionsCard38(name,freqOptions,"Beneficio: $benefit Si el consumo es bajo: $lowRisk",3)
    }
-   cariogenicGroups.forEach{(name,why,risk)->
-    item{OptionsCard38(name,freqOptions,"Por qué importa: $why $risk",3)}
+   items(cariogenicGroups.size){i->
+    val (name,why,risk)=cariogenicGroups[i]
+    OptionsCard38(name,freqOptions,"Por qué importa: $why $risk",3)
    }
    item{OptionsCard38("Alimentos azucarados · entre comidas",freqOptions,"Las exposiciones azucaradas entre comidas aumentan la frecuencia de desafíos ácidos. Menor frecuencia suele ser más favorable para control de caries.",3)}
    item{OptionsCard38("Alimentos o bebidas azucaradas · antes de dormir o durante la noche",freqOptions,"Es una exposición especialmente relevante porque durante el sueño disminuye el flujo salival. Registrar también higiene posterior cuando corresponda.",3)}
