@@ -156,7 +156,7 @@ private fun UploadedClinicalRefsV51(lang:String, refs:List<UploadedClinicalRefV5
  UploadedClinicalRefV51(R.drawable.uploaded80_067,"Pérdida de inserción clínica","Clinical attachment loss"),
  UploadedClinicalRefV51(R.drawable.uploaded80_045,"Furcación","Furcation"),
  UploadedClinicalRefV51(R.drawable.uploaded80_058,"Movilidad dental grados I, II y III","Tooth mobility grades I, II and III")
-))
+),columns=2)
 
 @Composable internal fun UploadedCariesRefsV51(lang:String)=UploadedClinicalRefsV51(lang,listOf(
  UploadedClinicalRefV51(R.drawable.uploaded80_055,"Lesión de mancha blanca activa","Active white-spot lesion"),
