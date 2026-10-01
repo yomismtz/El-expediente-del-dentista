@@ -123,16 +123,16 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
             if(status=="Alteración"){
                 val elementary=listOf("Mácula / mancha","Eritema","Petequia","Púrpura / equimosis","Pápula","Placa blanca","Placa roja","Nódulo","Masa","Vesícula","Ampolla / bula","Pústula","Quiste","Erosión","Úlcera","Fisura / grieta","Costra","Atrofia","Queratosis","Lesión papilar / vegetación","Fístula / trayecto sinusal","Edema","Hematoma","Pigmentación")
                 val pathologyByZone=mapOf(
-                    "labio_sup" to listOf("Queilitis irritativa/traumática","Queilitis actínica","Herpes labial","Mucocele","Fibroma traumático"),
-                    "labio_inf" to listOf("Mucocele","Queilitis irritativa/traumática","Herpes labial","Fibroma traumático","Lesión por mordisqueo"),
-                    "carrillo_der" to listOf("Línea alba","Morsicatio / mordisqueo","Fibroma traumático","Leucoedema","Liquen plano oral","Úlcera traumática"),
-                    "carrillo_izq" to listOf("Línea alba","Morsicatio / mordisqueo","Fibroma traumático","Leucoedema","Liquen plano oral","Úlcera traumática"),
-                    "encia" to listOf("Gingivitis","Recesión gingival","Hiperplasia gingival","Absceso/fístula a valorar","Granuloma piógeno","Lesión periodontal a valorar"),
-                    "paladar_duro" to listOf("Torus palatino","Quemadura térmica","Estomatitis nicotínica","Candidiasis","Úlcera traumática","Lesión pigmentada a valorar"),
-                    "paladar_blando" to listOf("Eritema inflamatorio","Petequias","Candidiasis","Úlcera aftosa","Lesión viral a valorar","Asimetría funcional a valorar"),
-                    "lengua" to listOf("Lengua geográfica","Lengua fisurada","Lengua saburral","Candidiasis","Glositis atrófica","Úlcera traumática","Fibroma traumático"),
-                    "piso" to listOf("Ránula","Sialolitiasis/obstrucción a valorar","Quiste/masa a valorar","Lesión vascular a valorar","Úlcera traumática"),
-                    "orofaringe" to listOf("Faringoamigdalitis a valorar","Hipertrofia amigdalina","Exudado amigdalino","Úlcera/lesión mucosa","Asimetría amigdalina a valorar")
+                    "labio_sup" to listOf("Queilitis irritativa/traumática","Queilitis actínica","Herpes labial","Queilitis de contacto","Fibroma traumático","Mucocele","Papiloma escamoso","Verruga vulgar","Lesión vascular a valorar","Úlcera o lesión persistente a valorar"),
+                    "labio_inf" to listOf("Mucocele","Queilitis irritativa/traumática","Queilitis actínica","Herpes labial","Queilitis de contacto","Fibroma traumático","Lesión por mordisqueo","Papiloma escamoso","Lago venoso a valorar","Úlcera o lesión persistente a valorar"),
+                    "carrillo_der" to listOf("Línea alba","Morsicatio / mordisqueo","Fibroma traumático","Leucoedema","Liquen plano oral","Úlcera traumática","Queratosis friccional","Leucoplasia a valorar","Reacción liquenoide de contacto","Masa o lesión persistente a valorar"),
+                    "carrillo_izq" to listOf("Línea alba","Morsicatio / mordisqueo","Fibroma traumático","Leucoedema","Liquen plano oral","Úlcera traumática","Queratosis friccional","Leucoplasia a valorar","Reacción liquenoide de contacto","Masa o lesión persistente a valorar"),
+                    "encia" to listOf("Gingivitis","Recesión gingival","Hiperplasia gingival","Absceso/fístula a valorar","Granuloma piógeno","Fibroma periférico","Lesión periodontal a valorar","Gingivitis descamativa a valorar","Pigmentación gingival","Masa o lesión persistente a valorar"),
+                    "paladar_duro" to listOf("Torus palatino","Quemadura térmica","Estomatitis nicotínica","Candidiasis","Úlcera traumática","Petequias","Leucoplasia a valorar","Eritroplasia/lesión roja a valorar","Lesión pigmentada a valorar","Masa o aumento de volumen a valorar"),
+                    "paladar_blando" to listOf("Eritema inflamatorio","Petequias","Candidiasis","Úlcera aftosa","Lesión viral a valorar","Asimetría funcional a valorar","Herpangina a valorar","Eritroplasia/lesión roja a valorar","Úlcera traumática","Masa o lesión persistente a valorar"),
+                    "lengua" to listOf("Lengua geográfica","Lengua fisurada","Lengua saburral","Candidiasis","Glositis atrófica","Úlcera traumática","Fibroma traumático","Leucoplasia a valorar","Liquen plano oral","Lesión pigmentada o masa a valorar"),
+                    "piso" to listOf("Ránula","Sialolitiasis/obstrucción a valorar","Quiste/masa a valorar","Lesión vascular a valorar","Úlcera traumática","Variz sublingual","Mucocele de glándula menor","Leucoplasia a valorar","Eritroplasia/lesión roja a valorar","Masa o lesión persistente a valorar"),
+                    "orofaringe" to listOf("Faringoamigdalitis a valorar","Hipertrofia amigdalina","Exudado amigdalino","Úlcera/lesión mucosa","Asimetría amigdalina a valorar","Herpangina a valorar","Mononucleosis a valorar","Candidiasis","Lesión viral a valorar","Masa o lesión persistente a valorar")
                 )
                 Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){
                     Text(tr(lang,"3 · Lesión elemental observada","3 · Observed elementary lesion"),fontWeight=FontWeight.Black)
