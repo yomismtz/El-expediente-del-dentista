@@ -27,56 +27,99 @@ import com.yomismtz.expedientedeldentista.clinical.ToothStatus
 import kotlin.math.pow
 
 private data class VitalBand19(
-    val label:String,val rrMin:Int,val rrMax:Int,val hrMin:Int,val hrMax:Int,
-    val sysMin:Int,val sysMax:Int,val diaMin:Int,val diaMax:Int
+    val label:String,
+    val rrMin:Int,val rrMax:Int,
+    val hrMin:Int,val hrMax:Int
 )
 
-private fun vitalRange19(value:Double?,min:Double,max:Double,lang:String):String = when {
-    value==null -> tr(lang,"Sin dato","No value")
-    value<min -> tr(lang,"↓ por debajo de referencia","↓ below reference")
-    value>max -> tr(lang,"↑ por encima de referencia","↑ above reference")
-    else -> tr(lang,"✓ dentro de referencia","✓ within reference")
+private data class PediatricBpScreen19(val systolic:Int,val diastolic:Int,val label:String)
+
+private fun vitalBandForAge19(age:Int):VitalBand19 = when {
+    age < 1 -> VitalBand19("0–11 meses",25,50,100,160)
+    age <= 5 -> VitalBand19("1–5 años",20,30,80,140)
+    age <= 12 -> VitalBand19("6–12 años",15,25,70,120)
+    else -> VitalBand19("≥13 años",12,20,60,100)
 }
 
-private fun temperature19(value:Double?,lang:String):String = when {
-    value==null -> tr(lang,"Escribe la temperatura para interpretarla.","Enter temperature for interpretation.")
-    value<=35.0 -> tr(lang,"≤35 °C: temperatura muy baja. Confirma la medición y solicita valoración clínica.","≤35 °C: very low temperature. Confirm measurement and obtain clinical assessment.")
-    value<36.0 -> tr(lang,"Temperatura baja; confirma sitio, método y contexto.","Low temperature; confirm site, method and context.")
-    value<=37.5 -> tr(lang,"Intervalo adulto habitual aproximado; la normalidad varía por persona, hora y sitio de medición.","Approximate common adult interval; normal varies by person, time and measurement site.")
-    value<38.0 -> tr(lang,"Temperatura elevada, todavía por debajo del umbral habitual de fiebre de 38 °C.","Elevated temperature, still below the usual 38 °C fever threshold.")
-    value<40.0 -> tr(lang,"≥38 °C: fiebre. Confirma la medición y valora el contexto antes de atención electiva.","≥38 °C: fever. Confirm measurement and assess context before elective care.")
-    else -> tr(lang,"≥40 °C: fiebre muy alta; requiere valoración médica prioritaria según el contexto.","≥40 °C: very high fever; prompt medical assessment is needed depending on context.")
+private fun pediatricBpScreen19(age:Int,sex:String):PediatricBpScreen19? {
+    if(age < 1) return null
+    if(age >= 13) return PediatricBpScreen19(120,80,"≥13 años: cribado 120/80 mmHg")
+    val boys=listOf(98 to 52,100 to 55,101 to 58,102 to 60,103 to 63,105 to 66,106 to 68,107 to 69,107 to 70,108 to 72,110 to 74,113 to 75)
+    val girls=listOf(98 to 54,101 to 58,102 to 60,103 to 62,104 to 64,105 to 67,106 to 68,107 to 69,108 to 71,109 to 72,111 to 74,114 to 75)
+    val pair=when(sex) {
+        "Masculino" -> boys[age-1]
+        "Femenino" -> girls[age-1]
+        else -> return null
+    }
+    return PediatricBpScreen19(pair.first,pair.second,"Umbral AAP de cribado: ${if(sex=="Masculino")"niño" else "niña"} de $age años ${pair.first}/${pair.second} mmHg")
 }
 
-private enum class GlucoseContext19 { FASTING, PREMEAL, POSTMEAL, RANDOM }
-
-private fun glucoseContext19(ctx:GlucoseContext19,lang:String):String = when(ctx) {
-    GlucoseContext19.FASTING -> tr(lang,"Ayuno ≥8 h","Fasting ≥8 h")
-    GlucoseContext19.PREMEAL -> tr(lang,"Diabetes · antes de comer","Diabetes · premeal")
-    GlucoseContext19.POSTMEAL -> tr(lang,"Diabetes · 1–2 h poscomida","Diabetes · 1–2 h postmeal")
-    GlucoseContext19.RANDOM -> tr(lang,"Casual / tiempo no definido","Random / timing unknown")
+private fun bpAction19(age:Int,sex:String,sys:Int?,dia:Int?,lang:String):String {
+    if(sys==null || dia==null) return tr(lang,"Introduce ambas cifras de presión arterial.","Enter both blood-pressure values.")
+    if(age>=18) return when {
+        sys>180 || dia>110 -> tr(lang,"🚨 >180/110 mmHg: no realizar tratamiento dental electivo. Repetir tras reposo; si persiste, solicitar valoración médica urgente. Con dolor torácico, disnea o alteraciones neurológicas/visuales: activar emergencias.","🚨 >180/110 mmHg: no elective dental treatment. Repeat after rest; if persistent, obtain urgent medical assessment. With chest pain, dyspnea or neurologic/visual symptoms: activate emergency response.")
+        sys>=160 || dia>=100 -> tr(lang,"⚠️ ≥160/100 mmHg: repetir correctamente. Si se confirma, diferir tratamiento electivo y solicitar valoración médica. La atención odontológica urgente requiere monitorización y juicio clínico.","⚠️ ≥160/100 mmHg: repeat correctly. If confirmed, defer elective dental treatment and obtain medical assessment. Urgent dental care requires monitoring and clinical judgment.")
+        sys<90 || dia<60 -> tr(lang,"⚠️ TA baja: repetir tras reposo y valorar síntomas. Si hay síncope, confusión, dolor torácico, disnea o mala perfusión, suspender tratamiento y activar valoración urgente.","⚠️ Low BP: repeat after rest and assess symptoms. If syncope, confusion, chest pain, dyspnea or poor perfusion occurs, stop treatment and obtain urgent assessment.")
+        else -> tr(lang,"✓ Compatible con atención dental habitual si el paciente está clínicamente estable.","✓ Compatible with routine dental care if the patient is clinically stable.")
+    }
+    val low=if(age<=10)70+2*age else 90
+    if(sys<low) return tr(lang,"⚠️ Hipotensión pediátrica por umbral de seguridad: repetir y valorar perfusión/síntomas. No iniciar tratamiento electivo si persiste o hay síntomas; buscar valoración urgente.","⚠️ Pediatric hypotension by safety threshold: repeat and assess perfusion/symptoms. Do not start elective treatment if persistent or symptomatic; seek urgent assessment.")
+    val screen=pediatricBpScreen19(age,sex)
+    if(screen==null) return tr(lang,"⚠️ En pediatría, la TA debe interpretarse por edad, sexo y talla. Selecciona sexo para aplicar el cribado AAP; no usar esta pantalla para diagnosticar hipertensión.","⚠️ Pediatric BP must be interpreted by age, sex and height. Select sex to apply AAP screening; do not use this screen to diagnose hypertension.")
+    return when {
+        sys>=140 || dia>=90 -> tr(lang,"⚠️ TA claramente elevada: repetir con técnica adecuada. Si persiste, diferir atención electiva y solicitar valoración médica; si es sintomática, atención urgente.","⚠️ Clearly elevated BP: repeat with proper technique. If persistent, defer elective care and obtain medical assessment; if symptomatic, urgent care.")
+        sys>=screen.systolic || dia>=screen.diastolic -> tr(lang,"⚠️ Supera el umbral simplificado de cribado AAP. Repetir y confirmar con tablas pediátricas por edad, sexo y talla; no diagnostica hipertensión por sí solo.","⚠️ Above the AAP simplified screening threshold. Repeat and confirm with pediatric tables by age, sex and height; this does not diagnose hypertension by itself.")
+        else -> tr(lang,"✓ Por debajo del umbral simplificado de cribado AAP. Para clasificar como normal se requiere percentil por edad, sexo y talla.","✓ Below the AAP simplified screening threshold. Normal classification requires age-, sex- and height-based percentile.")
+    }
 }
 
-private fun glucose19(value:Int?,ctx:GlucoseContext19,lang:String):String {
-    if(value==null) return tr(lang,"Escribe la glucosa capilar y selecciona el contexto.","Enter capillary glucose and select context.")
-    if(value<70) return tr(lang,"<70 mg/dL: valor bajo/hipoglucemia para muchas personas con diabetes. Confirma y sigue el protocolo clínico.","<70 mg/dL: low/hypoglycemic for many people with diabetes. Confirm and follow the clinical protocol.")
-    return when(ctx) {
-        GlucoseContext19.FASTING -> when {
-            value<=99 -> tr(lang,"70–99 mg/dL: referencia habitual de glucosa en ayuno normal.","70–99 mg/dL: common normal fasting reference.")
-            value<=125 -> tr(lang,"100–125 mg/dL: glucosa en ayuno elevada; requiere valoración médica/laboratorial.","100–125 mg/dL: elevated fasting glucose; medical/laboratory assessment is needed.")
-            else -> tr(lang,"≥126 mg/dL: supera el umbral diagnóstico de glucosa plasmática en ayuno usado por ADA/CDC. Una lectura capilar aislada no confirma diabetes.","≥126 mg/dL: above the ADA/CDC fasting plasma diagnostic threshold. A single capillary reading does not diagnose diabetes.")
-        }
-        GlucoseContext19.PREMEAL -> if(value in 80..130)
-            tr(lang,"Dentro del objetivo preprandial frecuente de ADA: 80–130 mg/dL.","Within the common ADA premeal target: 80–130 mg/dL.")
-        else tr(lang,"Fuera del objetivo preprandial frecuente de 80–130 mg/dL; confirma y contextualiza.","Outside the common 80–130 mg/dL premeal target; confirm and contextualize.")
-        GlucoseContext19.POSTMEAL -> if(value<180)
-            tr(lang,"Por debajo del objetivo pico posprandial frecuente de ADA (<180 mg/dL, 1–2 h tras iniciar la comida).","Below the common ADA peak postmeal target (<180 mg/dL, 1–2 h after the meal begins).")
-        else tr(lang,"≥180 mg/dL: por encima del objetivo pico posprandial frecuente; confirma y contextualiza.","≥180 mg/dL: above the common peak postmeal target; confirm and contextualize.")
-        GlucoseContext19.RANDOM -> when {
-            value<140 -> tr(lang,"Lectura casual sin hipoglucemia; depende del tiempo desde la última comida y del contexto.","Random reading without hypoglycemia; interpretation depends on time since last meal and context.")
-            value<200 -> tr(lang,"Lectura casual elevada; registra última comida y antecedentes y considera confirmación médica.","Elevated random reading; record last meal/history and consider medical confirmation.")
-            else -> tr(lang,"≥200 mg/dL es médicamente relevante. ADA usa ese umbral en plasma aleatorio con síntomas clásicos/crisis; una lectura capilar aislada no establece diagnóstico.","≥200 mg/dL is medically significant. ADA uses this random plasma threshold with classic symptoms/crisis; one capillary reading does not establish diagnosis.")
-        }
+private fun rhythmAction19(rr:Int?,hr:Int?,band:VitalBand19,lang:String):String {
+    if(rr==null && hr==null) return tr(lang,"Introduce FR y/o FC.","Enter RR and/or HR.")
+    val rrBad=rr?.let{it<band.rrMin||it>band.rrMax}==true
+    val hrBad=hr?.let{it<band.hrMin||it>band.hrMax}==true
+    return if(rrBad||hrBad) tr(lang,"⚠️ Fuera de la referencia etaria: repetir en reposo y valorar dolor, ansiedad, fiebre, medicamentos y síntomas. Si persiste o hay disnea, dolor torácico, síncope o alteración de conciencia, suspender atención y valorar urgentemente.","⚠️ Outside the age reference: repeat at rest and assess pain, anxiety, fever, medications and symptoms. If persistent or accompanied by dyspnea, chest pain, syncope or altered consciousness, stop care and assess urgently.")
+    else tr(lang,"✓ Dentro de la referencia etaria seleccionada.","✓ Within the selected age reference.")
+}
+
+private fun temperatureAction19(value:Double?,lang:String):String = when {
+    value==null -> tr(lang,"Introduce la temperatura.","Enter temperature.")
+    value>=38.0 -> tr(lang,"⚠️ Fiebre: diferir atención electiva y buscar la causa. Si se acompaña de infección odontógena con fiebre/malestar, priorizar control del foco y valorar antibiótico sólo cuando esté indicado.","⚠️ Fever: defer elective care and identify the cause. If accompanied by odontogenic infection with fever/malaise, prioritize source control and consider antibiotics only when indicated.")
+    value<=35.0 -> tr(lang,"🚨 Temperatura ≤35 °C: confirmar medición y suspender tratamiento hasta valoración clínica; si persiste o hay alteración de conciencia, activar atención urgente.","🚨 Temperature ≤35 °C: confirm measurement and stop treatment pending clinical assessment; if persistent or altered consciousness occurs, activate urgent care.")
+    value>37.2 -> tr(lang,"⚠️ Temperatura elevada: repetir y correlacionar con síntomas; evitar tratamiento electivo si hay sospecha de infección sistémica.","⚠️ Elevated temperature: repeat and correlate with symptoms; avoid elective care if systemic infection is suspected.")
+    else -> tr(lang,"✓ Compatible con temperatura habitual.","✓ Compatible with usual temperature.")
+}
+
+private fun spo2Action19(value:Int?,lang:String):String = when {
+    value==null -> tr(lang,"Introduce SpO₂.","Enter SpO₂.")
+    value>100 || value<0 -> tr(lang,"Valor no válido.","Invalid value.")
+    value>=95 -> tr(lang,"✓ Habitualmente compatible con atención dental si el paciente está clínicamente estable.","✓ Usually compatible with dental care if clinically stable.")
+    value>=92 -> tr(lang,"⚠️ Repetir con técnica correcta y valorar síntomas/antecedentes. Si persiste, considerar valoración médica antes de atención electiva.","⚠️ Repeat correctly and assess symptoms/history. If persistent, consider medical assessment before elective care.")
+    value>=90 -> tr(lang,"🚨 Saturación baja: repetir inmediatamente y valorar clínicamente. No continuar tratamiento electivo si persiste; buscar valoración médica urgente.","🚨 Low saturation: repeat immediately and assess clinically. Do not continue elective treatment if persistent; seek urgent medical assessment.")
+    else -> tr(lang,"🚨 <90 %: posible hipoxemia significativa. Suspender tratamiento y activar valoración urgente/emergente según síntomas. Algunas enfermedades crónicas tienen objetivos individualizados.","🚨 <90%: possible significant hypoxemia. Stop treatment and activate urgent/emergency assessment according to symptoms. Some chronic diseases have individualized targets.")
+}
+
+private fun glucoseAction19(value:Int?,ctx:GlucoseContext19,lang:String):String {
+    if(value==null) return tr(lang,"Introduce la glucosa capilar y el contexto.","Enter capillary glucose and context.")
+    if(value<70) return tr(lang,"🚨 Hipoglucemia: suspender procedimiento. Si está consciente y puede deglutir, administrar 15 g de carbohidrato de acción rápida y volver a medir en 15 min; repetir según protocolo. Si no puede deglutir o está inconsciente, activar emergencias y seguir el protocolo de hipoglucemia del consultorio.","🚨 Hypoglycemia: stop the procedure. If conscious and able to swallow, give 15 g of fast-acting carbohydrate and recheck in 15 min; repeat per protocol. If unable to swallow or unconscious, activate emergency response and follow the office hypoglycemia protocol.")
+    if(value>=300) return tr(lang,"🚨 ≥300 mg/dL: posponer tratamiento electivo, especialmente cirugía, y valorar control metabólico. Si hay vómitos, dolor abdominal, respiración anormal, deshidratación, confusión o cetonas, requiere valoración urgente por posible cetoacidosis.","🚨 ≥300 mg/dL: postpone elective treatment, especially surgery, and assess metabolic control. Vomiting, abdominal pain, abnormal breathing, dehydration, confusion or ketones require urgent assessment for possible ketoacidosis.")
+    if(value>=180) return tr(lang,"⚠️ Glucosa elevada: contextualizar con comida, diabetes y síntomas. Para procedimientos electivos invasivos, considerar diferir si el control es deficiente y coordinar valoración médica.","⚠️ Elevated glucose: interpret with meals, diabetes history and symptoms. For invasive elective procedures, consider deferring if control is poor and coordinate medical assessment.")
+    tr(lang,"✓ Sin criterio de emergencia por glucosa aislada; interpretar con contexto y antecedentes.","✓ No emergency criterion from isolated glucose; interpret with context and history.")
+}
+
+private val dentalSignsSymptoms19=listOf(
+    "Dolor dental/orofacial","Sensibilidad al frío/calor","Dolor espontáneo/nocturno","Inflamación intraoral","Inflamación facial/cervical",
+    "Sangrado gingival","Sangrado oral no controlable","Halitosis","Xerostomía","Sialorrea","Trismus","Disfagia","Odinofagia",
+    "Parestesia/numbness","Úlcera o lesión >2 semanas","Mancha blanca/roja persistente","Movilidad dental","Supuración/fístula",
+    "Fiebre/malestar","Cefalea/dolor facial","Disnea","Dolor torácico","Mareo/síncope","Alteración de conciencia","Convulsiones"
+)
+
+private fun triageAction19(selected:Set<String>,lang:String):String {
+    val emergency=setOf("Sangrado oral no controlable","Inflamación facial/cervical","Disnea","Dolor torácico","Alteración de conciencia","Convulsiones")
+    return when {
+        selected.any{it in emergency} -> tr(lang,"🚨 SIGNO DE ALARMA: detener el procedimiento, valorar ABC y activar el protocolo de emergencia/servicios de emergencia según el cuadro. La inflamación con compromiso de vía aérea y el sangrado no controlable no deben enviarse simplemente a casa.","🚨 RED FLAG: stop the procedure, assess ABC and activate the emergency protocol/emergency services according to the presentation. Airway-threatening swelling and uncontrolled bleeding should not simply be sent home.")
+        "Fiebre/malestar" in selected && ("Inflamación intraoral" in selected || "Supuración/fístula" in selected) -> tr(lang,"⚠️ Posible infección odontógena con compromiso sistémico: atención dental urgente para control del foco y valoración de antibiótico cuando esté indicado; si existe compromiso de vía aérea o deterioro general, derivación urgente.","⚠️ Possible odontogenic infection with systemic involvement: urgent dental care for source control and antibiotic assessment when indicated; if airway compromise or systemic deterioration occurs, urgent referral.")
+        "Úlcera o lesión >2 semanas" in selected || "Mancha blanca/roja persistente" in selected -> tr(lang,"⚠️ Lesión persistente/sospechosa: documentar, examinar y realizar biopsia o referencia según hallazgos. No etiquetar como cáncer sólo por el aspecto.","⚠️ Persistent/suspicious lesion: document, examine and biopsy or refer according to findings. Do not label it cancer based on appearance alone.")
+        else -> tr(lang,"✓ No se seleccionó un signo de alarma mayor. Continuar exploración, diagnóstico diferencial y tratamiento según el hallazgo odontológico.","✓ No major red flag selected. Continue examination, differential diagnosis and treatment according to the dental finding.")
     }
 }
 
@@ -88,37 +131,34 @@ private fun ResultCard19(text:String) {
 }
 
 @Composable
-fun VitalsInteractiveV19Screen(lang:String,onBack:()->Unit) {
-    val bands=listOf(
-        VitalBand19("0–6 m",30,50,82,205,60,90,30,62),
-        VitalBand19("6 m–2 a",20,40,100,190,60,90,30,62),
-        VitalBand19("2–7 a",15,30,60,140,78,112,48,78),
-        VitalBand19("8–11 a",15,25,60,140,85,114,52,85),
-        VitalBand19("≥12 a",13,20,60,100,95,135,58,88),
-        VitalBand19(tr(lang,"Adulto","Adult"),12,20,60,100,100,140,60,90)
-    )
-    var bandIndex by rememberRecordState("vitals.bandIndex",5)
-    var sex by rememberRecordState("vitals.sex","Femenino")
+fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onBack:()->Unit) {
+    val patientAge=session.profile.age.toIntOrNull() ?: 18
+    val patientSex=session.profile.sex
+    var sex by rememberRecordState("vitals.sex",if(patientSex=="Masculino"||patientSex=="Femenino")patientSex else "No especificado")
+    val b=vitalBandForAge19(patientAge)
     var spo2 by rememberRecordState("vitals.spo2","")
     var rr by rememberRecordState("vitals.rr",""); var hr by rememberRecordState("vitals.hr","")
     var sys by rememberRecordState("vitals.sys",""); var dia by rememberRecordState("vitals.dia","")
     var temp by rememberRecordState("vitals.temp",""); var glucose by rememberRecordState("vitals.glucose","")
     var glucoseContext by rememberRecordState("vitals.glucoseContext",GlucoseContext19.RANDOM)
+    var selectedSignsRaw by rememberRecordState("vitals.dentalSigns","")
     var weight by rememberRecordState("vitals.weight",""); var height by rememberRecordState("vitals.height","")
-    val b=bands[bandIndex]
     val bmi=run { val w=weight.toDoubleOrNull(); val h=height.toDoubleOrNull()?.div(100.0); if(w!=null&&h!=null&&h>0)w/h.pow(2) else null }
 
-    ResponsiveScreenV17(tr(lang,"Signos vitales y glucosa","Vital signs and glucose"),tr(lang,"Registra valores y compáralos con referencias educativas; confirma cualquier valor anormal.","Record values and compare with teaching references; confirm any abnormal value."),onBack) { profile ->
-        ResponsiveSectionV17(tr(lang,"1 · Sexo y referencia etaria","1 · Sex and age reference")) {
+    ResponsiveScreenV17(tr(lang,"Signos, síntomas y triage clínico","Clinical signs, symptoms and triage"),tr(lang,"Registra parámetros, signos y síntomas y obtén una orientación educativa sobre continuidad, diferimiento o referencia.","Record parameters, signs and symptoms and get educational guidance on proceeding, deferring or referring."),onBack) { profile ->
+        ResponsiveSectionV17(tr(lang,"1 · Edad y sexo","1 · Age and sex")) {
+            Text(tr(lang,"Edad registrada: $patientAge años.","Recorded age: $patientAge years."))
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                listOf("Femenino","Masculino").forEach { s -> FilterChip(sex==s,{sex=s},{Text(if(lang=="en" && s=="Femenino") "Female" else if(lang=="en") "Male" else s)}) }
+                listOf("Femenino","Masculino","No especificado").forEach { s ->
+                    FilterChip(sex==s,{sex=s},{Text(if(lang=="en" && s=="Femenino")"Female" else if(lang=="en" && s=="Masculino")"Male" else if(lang=="en")"Not specified" else s)},modifier=Modifier.weight(1f))
+                }
             }
-            Text(tr(lang,"La edad exacta ya se captura en la identificación del expediente, por lo que aquí no se repite. Conserva el sexo y selecciona abajo el grupo etario de referencia. En pediatría, TA e IMC requieren edad exacta, sexo y, según el parámetro, talla/percentiles; esta pantalla no automatiza todavía esos percentiles.","Exact age is already recorded in patient identification, so it is not repeated here. Keep sex and select the reference age group below. Pediatric BP and BMI require exact age, sex and, depending on the parameter, height/percentiles; this screen does not yet automate those percentiles."),style=MaterialTheme.typography.bodySmall)
+            Text(tr(lang,"TA pediátrica: edad + sexo + talla. El umbral AAP mostrado es sólo de cribado y no diagnostica hipertensión.","Pediatric BP: age + sex + height. The displayed AAP threshold is screening only and does not diagnose hypertension."),style=MaterialTheme.typography.bodySmall)
         }
-        ResponsiveSectionV17(tr(lang,"2 · Grupo de edad de referencia","2 · Reference age group")) {
-            AdaptiveGridV17(bands.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 3) { i ->
-                FilterChip(bandIndex==i,{bandIndex=i},{Text(bands[i].label)},modifier=Modifier.fillMaxWidth())
-            }
+        ResponsiveSectionV17(tr(lang,"2 · Referencias fisiológicas","2 · Physiologic references")) {
+            Text(tr(lang,"Grupo etario: ${b.label}. FR ${b.rrMin}–${b.rrMax}/min · FC ${b.hrMin}–${b.hrMax}/min.","Age group: ${b.label}. RR ${b.rrMin}–${b.rrMax}/min · HR ${b.hrMin}–${b.hrMax}/min."))
+            pediatricBpScreen19(patientAge,sex)?.let{Text(it.label,style=MaterialTheme.typography.bodySmall)}
+            Text(tr(lang,"SpO₂ habitual en personas sanas: 95–100 %. Temperatura habitual aproximada: 36.1–37.2 °C.","Usual SpO₂ in healthy people: 95–100%. Approximate usual temperature: 36.1–37.2 °C."),style=MaterialTheme.typography.bodySmall)
         }
         ResponsiveSectionV17(tr(lang,"3 · FR, FC y presión arterial","3 · RR, HR and blood pressure")) {
             val cols=if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2
@@ -130,44 +170,47 @@ fun VitalsInteractiveV19Screen(lang:String,onBack:()->Unit) {
             } }
             Text("FR ${b.rrMin}–${b.rrMax}: ${vitalRange19(rr.toDoubleOrNull(),b.rrMin.toDouble(),b.rrMax.toDouble(),lang)}")
             Text("FC ${b.hrMin}–${b.hrMax}: ${vitalRange19(hr.toDoubleOrNull(),b.hrMin.toDouble(),b.hrMax.toDouble(),lang)}")
-            Text("TA sistólica ${b.sysMin}–${b.sysMax}: ${vitalRange19(sys.toDoubleOrNull(),b.sysMin.toDouble(),b.sysMax.toDouble(),lang)}")
-            Text("TA diastólica ${b.diaMin}–${b.diaMax}: ${vitalRange19(dia.toDoubleOrNull(),b.diaMin.toDouble(),b.diaMax.toDouble(),lang)}")
+            ResultCard19(rhythmAction19(rr.toIntOrNull(),hr.toIntOrNull(),b,lang))
+            ResultCard19(bpAction19(patientAge,sex,sys.toIntOrNull(),dia.toIntOrNull(),lang))
         }
-        ResponsiveSectionV17(tr(lang,"4 · Temperatura y saturación de oxígeno","4 · Temperature and oxygen saturation")) {
-            OutlinedTextField(temp,{temp=it.filter{c->c.isDigit()||c=='.'}.take(5)},label={Text("°C")},modifier=Modifier.fillMaxWidth())
+        ResponsiveSectionV17(tr(lang,"4 · Temperatura y oxigenación","4 · Temperature and oxygenation")) {
+            OutlinedTextField(temp,{temp=it.filter{ch->ch.isDigit()||ch=='.'}.take(5)},label={Text("°C")},modifier=Modifier.fillMaxWidth())
             ResultCard19(temperature19(temp.toDoubleOrNull(),lang))
-            Text(tr(lang,"Referencia resumida: alrededor de 37 °C es habitual; ≥38 °C suele considerarse fiebre; ≤35 °C es muy baja. Sitio y método modifican la lectura.","Summary reference: around 37 °C is common; ≥38 °C is usually fever; ≤35 °C is very low. Site and method affect the reading."),style=MaterialTheme.typography.bodySmall)
+            ResultCard19(temperatureAction19(temp.toDoubleOrNull(),lang))
             OutlinedTextField(spo2,{spo2=it.filter(Char::isDigit).take(3)},label={Text("SpO₂ %")},modifier=Modifier.fillMaxWidth())
             val s=spo2.toIntOrNull()
-            ResultCard19(when { s==null -> tr(lang,"Escribe la SpO₂ para interpretarla.","Enter SpO₂ for interpretation."); s>100 -> tr(lang,"Valor no válido: SpO₂ no puede superar 100 %.","Invalid value: SpO₂ cannot exceed 100%."); s>=95 -> tr(lang,"95–100 %: intervalo habitual en la mayoría de personas sanas.","95–100%: usual range for most healthy individuals."); else -> tr(lang,"SpO₂ menor de 95 %: repite y confirma la medición y valora síntomas, antecedentes, altitud y contexto clínico.","SpO₂ below 95%: repeat and confirm the measurement and assess symptoms, history, altitude and clinical context.") })
-            Text(tr(lang,"La pulsioximetría es una estimación. Perfusión deficiente, temperatura de la piel, esmalte de uñas, pigmentación cutánea y otros factores pueden afectar la precisión.","Pulse oximetry is an estimate. Poor circulation, skin temperature, nail polish, skin pigmentation and other factors can affect accuracy."),style=MaterialTheme.typography.bodySmall)
+            ResultCard19(when { s==null -> tr(lang,"Escribe la SpO₂.","Enter SpO₂."); s>=95 -> tr(lang,"95–100 %: habitual en la mayoría de personas sanas.","95–100%: usual in most healthy people."); s>=92 -> tr(lang,"92–94 %: repetir y contextualizar.","92–94%: repeat and contextualize."); s>=90 -> tr(lang,"90–91 %: baja.","90–91%: low."); else -> tr(lang,"<90 %: baja y potencialmente urgente.","<90%: low and potentially urgent.") })
+            ResultCard19(spo2Action19(s,lang))
+            Text(tr(lang,"La SpO₂ es una estimación y puede verse afectada por perfusión, temperatura, esmalte y otras limitaciones del dispositivo.","SpO₂ is an estimate and can be affected by perfusion, temperature, nail polish and other device limitations."),style=MaterialTheme.typography.bodySmall)
         }
         ResponsiveSectionV17(tr(lang,"5 · Glucosa capilar","5 · Capillary glucose")) {
             OutlinedTextField(glucose,{glucose=it.filter(Char::isDigit).take(4)},label={Text("mg/dL")},modifier=Modifier.fillMaxWidth())
             GlucoseContext19.entries.forEach { ctx -> FilterChip(glucoseContext==ctx,{glucoseContext=ctx},{Text(glucoseContext19(ctx,lang))},modifier=Modifier.fillMaxWidth()) }
             ResultCard19(glucose19(glucose.toIntOrNull(),glucoseContext,lang))
-            Text(tr(lang,"Los umbrales diagnósticos corresponden a pruebas estandarizadas de plasma/laboratorio y requieren confirmación. La lectura capilar sirve aquí como alerta educativa.","Diagnostic thresholds refer to standardized plasma/laboratory tests and require confirmation. Capillary readings here are an educational alert."),style=MaterialTheme.typography.bodySmall)
+            ResultCard19(glucoseAction19(glucose.toIntOrNull(),glucoseContext,lang))
+            Text(tr(lang,"<70 mg/dL es hipoglucemia clínicamente importante. Los umbrales diagnósticos de diabetes requieren pruebas estandarizadas y confirmación.","<70 mg/dL is clinically important hypoglycemia. Diabetes diagnostic thresholds require standardized tests and confirmation."),style=MaterialTheme.typography.bodySmall)
         }
-        ResponsiveSectionV17(tr(lang,"6 · Peso, talla e IMC","6 · Weight, height and BMI")) {
+        ResponsiveSectionV17(tr(lang,"6 · Signos y síntomas odontológicos","6 · Dental signs and symptoms")) {
+            val selectedSigns=selectedSignsRaw.split("|").filter{it.isNotBlank()}.toSet()
+            AdaptiveGridV17(dentalSignsSymptoms19.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2) {
+                val item=dentalSignsSymptoms19[it]
+                FilterChip(selectedSigns.contains(item),{
+                    val next=if(selectedSigns.contains(item))selectedSigns-item else selectedSigns+item
+                    selectedSignsRaw=next.joinToString("|")
+                },{Text(item)},modifier=Modifier.fillMaxWidth())
+            }
+            ResultCard19(triageAction19(selectedSigns,lang))
+        }
+        ResponsiveSectionV17(tr(lang,"7 · Peso, talla e IMC","7 · Weight, height and BMI")) {
             val cols=if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2
             AdaptiveGridV17(2,cols) { i -> if(i==0)
-                OutlinedTextField(weight,{weight=it.filter{c->c.isDigit()||c=='.'}.take(6)},label={Text("kg")},modifier=Modifier.fillMaxWidth())
-            else OutlinedTextField(height,{height=it.filter{c->c.isDigit()||c=='.'}.take(6)},label={Text("cm")},modifier=Modifier.fillMaxWidth()) }
+                OutlinedTextField(weight,{weight=it.filter{ch->ch.isDigit()||ch=='.'}.take(6)},label={Text("kg")},modifier=Modifier.fillMaxWidth())
+            else OutlinedTextField(height,{height=it.filter{ch->ch.isDigit()||ch=='.'}.take(6)},label={Text("cm")},modifier=Modifier.fillMaxWidth()) }
             Text(if(bmi==null)tr(lang,"IMC = peso / talla²","BMI = weight / height²") else "IMC = ${"%.1f".format(bmi)} kg/m²",fontWeight=FontWeight.Bold)
-            Text(when { bmi==null -> tr(lang,"Introduce peso y talla para calcular el IMC.","Enter weight and height to calculate BMI."); bandIndex<5 -> tr(lang,"IMC pediátrico/adolescente: debe clasificarse con edad exacta y sexo mediante percentil de IMC para la edad. El grupo etario seleccionado aquí es sólo una referencia y no sustituye el percentil.","Pediatric/adolescent BMI: classify using exact age and sex with BMI-for-age percentile. The age band selected here is only a reference and does not replace the percentile."); else -> when { bmi<18.5 -> tr(lang,"IMC adulto: bajo peso (<18.5).","Adult BMI: underweight (<18.5)."); bmi<25 -> tr(lang,"IMC adulto: peso saludable (18.5–24.9).","Adult BMI: healthy weight (18.5–24.9)."); bmi<30 -> tr(lang,"IMC adulto: sobrepeso (25.0–29.9).","Adult BMI: overweight (25.0–29.9)."); else -> tr(lang,"IMC adulto: rango de obesidad (≥30).","Adult BMI: obesity range (≥30).") } })
+            Text(when { bmi==null -> tr(lang,"Introduce peso y talla para calcular el IMC.","Enter weight and height to calculate BMI."); patientAge<18 -> tr(lang,"IMC pediátrico/adolescente: debe clasificarse con edad exacta y sexo mediante percentil de IMC para la edad.","Pediatric/adolescent BMI: classify with exact age and sex using BMI-for-age percentile."); else -> when { bmi<18.5 -> tr(lang,"IMC adulto: bajo peso (<18.5).","Adult BMI: underweight (<18.5)."); bmi<25 -> tr(lang,"IMC adulto: peso saludable (18.5–24.9).","Adult BMI: healthy weight (18.5–24.9)."); bmi<30 -> tr(lang,"IMC adulto: sobrepeso (25.0–29.9).","Adult BMI: overweight (25.0–29.9)."); else -> tr(lang,"IMC adulto: rango de obesidad (≥30).","Adult BMI: obesity range (≥30).") } })
         }
-        NoticeCard(tr(lang,"Fuentes educativas resumidas: NHS para temperatura; MedlinePlus, CDC y ADA para glucosa. El protocolo institucional y la valoración clínica prevalecen.","Teaching sources summarized: NHS for temperature; MedlinePlus, CDC and ADA for glucose. Institutional protocol and clinical assessment prevail."))
+        NoticeCard(tr(lang,"Fuentes educativas: AAP para cribado de TA pediátrica; AHA/PALS para hipotensión pediátrica; ADA/ADA Standards 2026 para glucosa e hipertensión dental; FDA para SpO₂. La herramienta orienta el triage y no sustituye protocolos institucionales ni valoración médica.","Educational sources: AAP for pediatric BP screening; AHA/PALS for pediatric hypotension; ADA/ADA Standards 2026 for glucose and dental hypertension; FDA for SpO₂. This tool supports triage and does not replace institutional protocols or medical assessment."))
     }
-}
-
-private fun cpodStatus19(status:ToothStatus,lang:String):String = when(status) {
-    ToothStatus.HEALTHY -> tr(lang,"Sano / presente","Sound / present")
-    ToothStatus.CARIES -> tr(lang,"Cariado","Decayed")
-    ToothStatus.RESTORED -> tr(lang,"Obturado","Filled")
-    ToothStatus.MISSING_CARIES -> tr(lang,"Ausente por caries","Missing due to caries")
-    ToothStatus.MISSING_OTHER -> tr(lang,"Ausente por otra causa","Missing other cause")
-    ToothStatus.EXTRACTION_INDICATED -> tr(lang,"Extracción indicada","Extraction indicated")
-    ToothStatus.SEALANT -> tr(lang,"Sellador / no cuenta como O","Sealant / not counted as F")
 }
 
 @Composable
