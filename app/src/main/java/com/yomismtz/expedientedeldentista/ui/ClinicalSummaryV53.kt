@@ -30,12 +30,12 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
     val history=if(session.history.diseases.values.any { it.present }) "Con antecedentes seleccionados" else "Sin antecedentes activos registrados"
     val checks: List<Pair<String, Boolean>> = listOf(
         "Identificación" to (p.patientInitials.isNotBlank() && p.age.isNotBlank() && p.sex.isNotBlank()),
-        "Motivo / anamnesis" to p.reasonForVisit.isNotBlank(),
+        "Motivo / anamnesis" to (p.reasonForVisit.isNotBlank()),
         "Signos vitales" to (p.bloodPressure.isNotBlank() || p.heartRate.isNotBlank() || p.temperature.isNotBlank()),
         "Antecedentes sistémicos" to (session.history.diseases.isNotEmpty() || session.history.tobaccoAlcohol.isNotBlank()),
-        "Odontograma" to teeth.isNotEmpty(),
-        "Periodontograma" to session.periodontogram.isNotEmpty(),
-        "Pulpar / periapical" to session.pulpal.tooth>0
+        "Odontograma" to (teeth.isNotEmpty()),
+        "Periodontograma" to (session.periodontogram.isNotEmpty()),
+        "Pulpar / periapical" to (session.pulpal.tooth > 0)
     )
     val done=checks.count{it.second}
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
