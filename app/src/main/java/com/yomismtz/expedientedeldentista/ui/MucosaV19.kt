@@ -191,6 +191,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                     val selectedPathology=tissuePathology[selected.id].orEmpty()
                     val pathologyVisual=when(selected.id to selectedPathology){
                         "labio_sup" to "Queilitis irritativa/traumática" -> Triple(R.drawable.allimg_089_quelitis_irritativa_labio_superior,"Queilitis irritativa/traumática","Imagen de la opción seleccionada.")
+                        "labio_sup" to "Queilitis actínica" -> Triple(R.drawable.allimg_090_quelitis_traumatica_labio_superior,"Referencia de queilitis labial","Referencia visual disponible; correlacionar clínicamente.")
                         "labio_sup" to "Herpes labial" -> Triple(R.drawable.allimg_049_herpes_labial,"Herpes labial","Imagen de la opción seleccionada.")
                         "labio_sup" to "Fibroma traumático" -> Triple(R.drawable.allimg_043_fibroma_traumatico_labio,"Fibroma traumático","Imagen de la opción seleccionada.")
                         "labio_inf" to "Mucocele" -> Triple(R.drawable.allimg_070_mucocele,"Mucocele","Imagen de la opción seleccionada.")
@@ -213,12 +214,13 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                         "paladar_duro" to "Torus palatino" -> Triple(R.drawable.allimg_100_torus_palatino,"Torus palatino","Imagen de la opción seleccionada.")
                         "paladar_duro" to "Quemadura térmica" -> Triple(R.drawable.allimg_091_quemadura_termica_pladar,"Quemadura térmica","Imagen de la opción seleccionada.")
                         "paladar_duro" to "Estomatitis nicotínica" -> Triple(R.drawable.allimg_037_estomatitis_nicotinica,"Estomatitis nicotínica","Imagen de la opción seleccionada.")
-                        "paladar_duro" to "Candidiasis" -> Triple(R.drawable.allimg_016_candidiasis_paladar,"Candidiasis palatina","Imagen de la opción seleccionada.")
+                        "paladar_duro" to "Candidiasis" -> Triple(R.drawable.allimg_013_candidiasis_eritematosa_paladar,"Candidiasis palatina","Referencia visual de candidiasis eritematosa del paladar.")
                         "paladar_duro" to "Úlcera traumática" -> Triple(R.drawable.allimg_105_ulcera_traumatica_paladar,"Úlcera traumática","Imagen de la opción seleccionada.")
                         "paladar_duro" to "Lesión pigmentada a valorar" -> Triple(R.drawable.allimg_057_lesion_pigmentaria_pladar_a_valorar,"Lesión pigmentada","Imagen de la opción seleccionada.")
                         "paladar_blando" to "Eritema inflamatorio" -> Triple(R.drawable.allimg_032_eritema_inflaatorio_paladar_blando,"Eritema inflamatorio","Imagen de la opción seleccionada.")
                         "paladar_blando" to "Petequias" -> Triple(R.drawable.allimg_076_petquias_paladar_blando,"Petequias","Imagen de la opción seleccionada.")
                         "paladar_blando" to "Candidiasis" -> Triple(R.drawable.allimg_015_candidiasis_paladar_blando,"Candidiasis","Imagen de la opción seleccionada.")
+                        "paladar_blando" to "Úlcera traumática" -> Triple(R.drawable.allimg_107_ulcera_uvula,"Úlcera de úvula","Referencia visual de lesión ulcerada en úvula; correlacionar clínicamente.")
                         "paladar_blando" to "Úlcera aftosa" -> Triple(R.drawable.allimg_101_ulcera_aftosa_pladar_blando,"Úlcera aftosa","Imagen de la opción seleccionada.")
                         "paladar_blando" to "Lesión viral a valorar" -> Triple(R.drawable.allimg_060_lesion_viral_en_pladar_blando,"Lesión viral","Imagen de la opción seleccionada.")
                         "paladar_blando" to "Asimetría funcional a valorar" -> Triple(R.drawable.allimg_010_asimetria_funcional_paladar_a_valorar,"Asimetría funcional","Imagen de la opción seleccionada.")
@@ -236,7 +238,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                         "orofaringe" to "Faringoamigdalitis a valorar" -> Triple(R.drawable.allimg_042_faringo_amigdalitis_streptocica,"Faringoamigdalitis","Imagen de la opción seleccionada.")
                         "orofaringe" to "Hipertrofia amigdalina" -> Triple(R.drawable.allimg_051_hipertrofia_amigdalina,"Hipertrofia amigdalina","Imagen de la opción seleccionada.")
                         "orofaringe" to "Exudado amigdalino" -> Triple(R.drawable.allimg_039_exudado_amigdalino,"Exudado amigdalino","Imagen de la opción seleccionada.")
-                        "orofaringe" to "Úlcera/lesión mucosa" -> Triple(R.drawable.allimg_102_ulcera_orofaringe,"Úlcera / lesión mucosa","Imagen de la opción seleccionada.")
+                        "orofaringe" to "Úlcera/lesión mucosa" -> Triple(R.drawable.allimg_005_afta_de_bednar_orofaringe,"Úlcera / lesión mucosa","Referencia visual de lesión ulcerada en orofaringe.")
                         "orofaringe" to "Asimetría amigdalina a valorar" -> Triple(R.drawable.allimg_009_asimetria_amigdalina,"Asimetría amigdalina","Imagen de la opción seleccionada.")
                         else -> null
                     }
