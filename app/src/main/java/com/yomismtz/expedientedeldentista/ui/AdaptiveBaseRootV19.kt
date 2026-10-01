@@ -99,6 +99,7 @@ private val tabsV19=listOf(
 
     // 8 · Herramientas clínicas
     TabV19(AppScreen.CALCULATORS,"🧮","Calculadoras clínicas","Clinical calculators",7),
+    TabV19(AppScreen.VITALS,"🩺","Signos, síntomas y triage clínico","Signs, symptoms and clinical triage",7),
     TabV19(AppScreen.SYSTEMIC_PROTOCOLS,"📚","Protocolos sistémicos y atención especial","Systemic and special-care protocols",7)
 )
 
