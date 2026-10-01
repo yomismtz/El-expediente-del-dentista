@@ -155,6 +155,60 @@ private fun triageAction19(selected:Set<String>,lang:String):String{
         else->tr(lang,"✓ No se seleccionó un signo de alarma mayor. Continuar exploración, diagnóstico diferencial y tratamiento según el hallazgo odontológico.","✓ No major red flag selected. Continue examination, differential diagnosis and treatment according to the dental finding.")
     }
 }
+
+private enum class DentalProcedure19 {
+    DIAGNOSTIC, RESTORATIVE, ENDODONTIC, PERIODONTAL, EXTRACTION, SURGERY, ORTHODONTIC, PROSTHETIC, LOCAL_ANESTHESIA, SEDATION
+}
+private fun procedureName19(p:DentalProcedure19,lang:String)=when(p){
+    DentalProcedure19.DIAGNOSTIC->tr(lang,"Exploración / diagnóstico","Examination / diagnosis")
+    DentalProcedure19.RESTORATIVE->tr(lang,"Operatoria / restauración","Restorative dentistry")
+    DentalProcedure19.ENDODONTIC->tr(lang,"Endodoncia","Endodontics")
+    DentalProcedure19.PERIODONTAL->tr(lang,"Periodoncia","Periodontal treatment")
+    DentalProcedure19.EXTRACTION->tr(lang,"Extracción dental","Dental extraction")
+    DentalProcedure19.SURGERY->tr(lang,"Cirugía oral","Oral surgery")
+    DentalProcedure19.ORTHODONTIC->tr(lang,"Ortodoncia / ortopedia","Orthodontics / dentofacial orthopedics")
+    DentalProcedure19.PROSTHETIC->tr(lang,"Prótesis","Prosthodontics")
+    DentalProcedure19.LOCAL_ANESTHESIA->tr(lang,"Anestesia local","Local anesthesia")
+    DentalProcedure19.SEDATION->tr(lang,"Sedación / anestesia profunda","Sedation / deep anesthesia")
+}
+private fun bmiAction19(age:Int,sex:String,bmi:Double?,lang:String):String{
+    if(bmi==null)return tr(lang,"Introduce peso y talla para calcular el IMC.","Enter weight and height to calculate BMI.")
+    if(age<2)return tr(lang,"IMC calculado: ${"%.1f".format(bmi)} kg/m². En menores de 2 años no debe interpretarse con categorías de IMC infantil de 2–19 años; usar estándares de crecimiento apropiados.","Calculated BMI: ${"%.1f".format(bmi)} kg/m². In children under 2, do not use the 2–19 child BMI categories; use appropriate growth standards.")
+    if(age<20){
+        val sexOk=sex=="Masculino"||sex=="Femenino"
+        return if(!sexOk) tr(lang,"IMC ${"%.1f".format(bmi)} kg/m². Para menores de 20 años, el IMC debe interpretarse como percentil por edad y sexo; selecciona el sexo y consulta la curva/tabla correspondiente. No usar categorías adultas.","BMI ${"%.1f".format(bmi)} kg/m². Under 20, BMI must be interpreted as an age- and sex-specific percentile; select sex and consult the appropriate growth chart. Do not use adult categories.")
+        else tr(lang,"IMC ${"%.1f".format(bmi)} kg/m². En $age años, interprétalo por percentil de IMC para edad y sexo; el IMC por sí solo no decide si un procedimiento dental puede realizarse.","BMI ${"%.1f".format(bmi)} kg/m². At age $age, interpret it by BMI-for-age percentile and sex; BMI alone does not determine whether a dental procedure can be performed.")
+    }
+    return when{
+        bmi<18.5->tr(lang,"IMC ${"%.1f".format(bmi)}: bajo peso en clasificación adulta. Correlacionar con estado nutricional y enfermedad; no suspender tratamiento dental sólo por el IMC.","BMI ${"%.1f".format(bmi)}: adult underweight category. Correlate with nutritional/medical status; do not stop dental care based on BMI alone.")
+        bmi<25.0->tr(lang,"IMC ${"%.1f".format(bmi)}: rango de peso saludable en clasificación adulta. Continuar según signos, antecedentes y procedimiento.","BMI ${"%.1f".format(bmi)}: healthy-weight adult category. Proceed according to signs, history and procedure.")
+        bmi<30.0->tr(lang,"IMC ${"%.1f".format(bmi)}: sobrepeso en clasificación adulta. El IMC no contraindica por sí mismo la atención dental; considerar comorbilidades y vía aérea si se planifica sedación.","BMI ${"%.1f".format(bmi)}: adult overweight category. BMI alone does not contraindicate dental care; consider comorbidities and airway issues if sedation is planned.")
+        else->tr(lang,"IMC ${"%.1f".format(bmi)}: obesidad en clasificación adulta. El IMC no decide por sí solo la aptitud dental; valorar comorbilidades, vía aérea, movilidad y riesgo anestésico si corresponde.","BMI ${"%.1f".format(bmi)}: adult obesity category. BMI alone does not determine dental fitness; assess comorbidities, airway, mobility and anesthetic risk when relevant.")
+    }
+}
+private fun treatmentAction19(p:DentalProcedure19,age:Int,sex:String,sys:Int?,dia:Int?,glucose:Int?,spo2:Int?,temp:Double?,bmi:Double?,selected:Set<String>,lang:String):String{
+    val emergency=setOf("Sangrado oral no controlable","Inflamación facial/cervical","Disnea","Dolor torácico","Alteración de conciencia","Convulsiones")
+    if(selected.any{it in emergency}) return tr(lang,"🚨 NO TRATAR ELECTIVAMENTE: existe un signo de alarma mayor. Suspender, estabilizar según competencia y activar el protocolo de emergencia.","🚨 DO NOT PROVIDE ELECTIVE CARE: a major red flag is present. Stop, stabilize within scope and activate the emergency protocol.")
+    if(spo2!=null&&spo2<90)return tr(lang,"🚨 NO TRATAR ELECTIVAMENTE: SpO₂ <90 % persistente puede indicar hipoxemia significativa. Repetir/confirmar y solicitar valoración urgente.","🚨 DO NOT PROVIDE ELECTIVE CARE: persistent SpO₂ <90% may indicate significant hypoxemia. Repeat/confirm and obtain urgent assessment.")
+    if(temp!=null&&temp>=38.0&&("Fiebre/malestar" in selected||"Inflamación intraoral" in selected||"Supuración/fístula" in selected))
+        return tr(lang,"⚠️ DIFERIR ELECTIVO: fiebre con signos compatibles con infección. Priorizar diagnóstico y control del foco; antibiótico sólo cuando esté indicado.","⚠️ DEFER ELECTIVE CARE: fever with signs compatible with infection. Prioritize diagnosis and source control; antibiotics only when indicated.")
+    if(age<2&&p!=DentalProcedure19.DIAGNOSTIC&&p!=DentalProcedure19.LOCAL_ANESTHESIA)
+        return tr(lang,"⚠️ PACIENTE <2 AÑOS: no usar esta pantalla como autorización automática. Coordinar manejo con odontopediatría y considerar entorno/recursos apropiados según el procedimiento.","⚠️ PATIENT <2 YEARS: do not use this screen as automatic clearance. Coordinate pediatric dental management and use an appropriate setting/resources for the procedure.")
+    if(sys!=null&&dia!=null&&age>=18&&(sys>180||dia>110))
+        return tr(lang,"🚨 NO TRATAMIENTO ELECTIVO: TA >180 o >110 mmHg. Repetir tras reposo y solicitar valoración médica; si hay síntomas de emergencia, activar emergencias.","🚨 NO ELECTIVE TREATMENT: BP >180 or >110 mmHg. Repeat after rest and obtain medical assessment; if emergency symptoms occur, activate emergency response.")
+    if(sys!=null&&dia!=null&&age>=18&&(sys>=160||dia>=100))
+        return if(p==DentalProcedure19.DIAGNOSTIC) tr(lang,"🟠 DIAGNÓSTICO/URGENCIA: puede realizarse valoración limitada y controlada si el paciente está estable; diferir procedimientos electivos invasivos y consultar cuando la TA esté confirmada elevada.","🟠 DIAGNOSTIC/URGENT: limited controlled assessment may be performed if stable; defer invasive elective procedures and seek medical assessment when BP is confirmed high.")
+        else tr(lang,"🟠 DIFERIR ELECTIVO: TA ≥160/100 mmHg confirmada. Repetir, valorar síntomas y coordinar evaluación médica. No usar esta cifra como autorización para cirugía/anestesia/sedación.","🟠 DEFER ELECTIVE CARE: confirmed BP ≥160/100 mmHg. Repeat, assess symptoms and coordinate medical evaluation. Do not use this value as clearance for surgery/anesthesia/sedation.")
+    if(glucose!=null&&glucose<70)return tr(lang,"🔵 NO INICIAR: glucosa <70 mg/dL. Tratar la hipoglucemia según protocolo y revalorar antes de continuar.","🔵 DO NOT START: glucose <70 mg/dL. Treat hypoglycemia per protocol and reassess before continuing.")
+    if(glucose!=null&&glucose>=300&&p!=DentalProcedure19.DIAGNOSTIC)return tr(lang,"🔴 DIFERIR ELECTIVO: glucosa capilar ≥300 mg/dL. Valorar control metabólico; si hay vómitos, dolor abdominal, respiración anormal, deshidratación, confusión o cetonas, derivación urgente.","🔴 DEFER ELECTIVE CARE: capillary glucose ≥300 mg/dL. Assess metabolic control; with vomiting, abdominal pain, abnormal breathing, dehydration, confusion or ketones, urgent referral.")
+    if(p==DentalProcedure19.LOCAL_ANESTHESIA){
+        return if(age<18) tr(lang,"🦷 ANESTESIA LOCAL: puede considerarse si el paciente está clínicamente estable. En pediatría la dosis debe calcularse por peso, con el anestésico específico y sin exceder la dosis máxima recomendada; documentar fármaco, concentración y dosis. El IMC no sustituye el cálculo por kg.","🦷 LOCAL ANESTHESIA: may be considered if clinically stable. In pediatrics, dose by body weight for the specific anesthetic and never exceed the recommended maximum; document drug, concentration and dose. BMI does not replace kg-based dosing.")
+        else tr(lang,"🦷 ANESTESIA LOCAL: si está clínicamente estable puede realizarse según procedimiento y comorbilidades. Con compromiso cardiovascular, usar vasoconstrictor con precaución y técnica de inyección segura; la ADA señala 0.04 mg de epinefrina como límite habitual de precaución en adultos con necesidad de cautela cardiovascular.","🦷 LOCAL ANESTHESIA: if clinically stable, may be performed according to procedure and comorbidities. With cardiovascular compromise, use vasoconstrictor cautiously and safe injection technique; ADA notes 0.04 mg epinephrine as a common precautionary adult limit when cardiovascular caution is needed.")
+    }
+    if(p==DentalProcedure19.SEDATION)return if(age<18) tr(lang,"🟠 SEDACIÓN: no debe autorizarse sólo con signos vitales/IMC. Requiere evaluación pre-sedación, ayuno cuando corresponda, personal capacitado, monitorización y equipo de rescate; en pediatría seguir AAP/AAPD y el nivel de sedación previsto.","🟠 SEDATION: do not clear based only on vitals/BMI. Requires pre-sedation evaluation, appropriate fasting when applicable, trained personnel, monitoring and rescue equipment; in pediatrics follow AAP/AAPD guidance and intended sedation level.")
+    else tr(lang,"🟢 APTO PARA VALORACIÓN DEL PROCEDIMIENTO: no se detectó una contraindicación general en esta pantalla. La decisión final depende de historia médica, medicamentos, diagnóstico, complejidad, hemostasia, infección y protocolo clínico.","🟢 SUITABLE FOR PROCEDURE ASSESSMENT: no general contraindication was detected by this screen. Final decision depends on medical history, medications, diagnosis, complexity, hemostasis, infection and clinical protocol.")
+}
+
 @Composable
 private fun ResultCard19(text:String) {
     Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)) {
@@ -220,6 +274,17 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onBack:()-
             val cols=if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2
             AdaptiveGridV17(2,cols){i->if(i==0)OutlinedTextField(weight,{weight=it.filter{ch->ch.isDigit()||ch=='.'}.take(6)},label={Text("kg")},modifier=Modifier.fillMaxWidth())else OutlinedTextField(height,{height=it.filter{ch->ch.isDigit()||ch=='.'}.take(6)},label={Text("cm")},modifier=Modifier.fillMaxWidth())}
             Text(if(bmi==null)tr(lang,"IMC = peso / talla²","BMI = weight / height²") else "IMC = ${"%.1f".format(bmi)} kg/m²",fontWeight=FontWeight.Bold)
+            ResultCard19(bmiAction19(patientAge,sex,bmi,lang))
+        }
+
+        ResponsiveSectionV17(tr(lang,"8 · ¿Qué tratamiento dental puede realizarse hoy?","8 · Which dental treatment can be performed today?"),tr(lang,"Selecciona el procedimiento planeado. La herramienta cruza edad, sexo, TA, glucosa, SpO₂, temperatura, signos de alarma, peso, talla e IMC para orientar continuidad, modificación o diferimiento.","Select the planned procedure. The tool cross-checks age, sex, BP, glucose, SpO₂, temperature, red flags, weight, height and BMI to guide continuation, modification or deferral")){
+            var procedureRaw by rememberRecordState("vitals.procedure","DIAGNOSTIC")
+            val procedure=runCatching{DentalProcedure19.valueOf(procedureRaw)}.getOrElse{DentalProcedure19.DIAGNOSTIC}
+            DentalProcedure19.entries.forEach{item->
+                FilterChip(procedure==item,{procedureRaw=item.name},{Text(procedureName19(item,lang))},modifier=Modifier.fillMaxWidth())
+            }
+            Text(tr(lang,"La salida es una guía de triage, no una autorización legal ni anestésica automática.","The output is a triage guide, not automatic legal or anesthesia clearance."),style=MaterialTheme.typography.bodySmall)
+            ResultCard19(treatmentAction19(procedure,patientAge,sex,sys.toIntOrNull(),dia.toIntOrNull(),glucose.toIntOrNull(),spo2.toIntOrNull(),temp.toDoubleOrNull(),bmi,selectedSigns,lang))
         }
         NoticeCard(tr(lang,"Fuentes educativas: AAP para cribado de TA pediátrica; AHA/PALS para hipotensión pediátrica; ADA/ADA Standards 2026 para glucosa e hipertensión dental; FDA para SpO₂. La herramienta orienta el triage y no sustituye protocolos institucionales ni valoración médica.","Educational sources: AAP for pediatric BP screening; AHA/PALS for pediatric hypotension; ADA/ADA Standards 2026 for glucose and dental hypertension; FDA for SpO₂. This tool supports triage and does not replace institutional protocols or medical assessment."))
     }
