@@ -116,6 +116,12 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                     Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){
                         Text(tr(lang,"Aspecto compatible con tejido sano","Appearance compatible with healthy tissue"),fontWeight=FontWeight.Bold)
                         Text(if(lang=="en")selected.normalEn else selected.normalEs)
+                        val normalImage = when(selected.id) {
+                            "labio_sup" -> R.drawable.mucosa_labio_superior_normal
+                            "labio_inf" -> R.drawable.mucosa_labio_inferior_normal
+                            else -> null
+                        }
+                        normalImage?.let { LocalClinicalInlineZoomImageV48(lang, name, name, it, if(lang=="en")"Normal upper/lower lip reference image." else "Imagen de referencia del labio normal.", if(lang=="en")"Normal lip reference." else "Referencia visual de normalidad.") }
                         Text(if(lang=="en")selected.exploreEn else selected.exploreEs,style=MaterialTheme.typography.bodySmall)
                     }
                 }
