@@ -456,18 +456,21 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
             tr(lang,"La aplicación cruza automáticamente edad, sexo, peso, talla, IMC, TA, FR, FC, SpO₂, temperatura, glucosa, dolor y signos/síntomas. No tienes que seleccionar el tratamiento: sólo aparecen hasta 3 opciones compatibles con los datos registrados.","The app automatically cross-checks age, sex, weight, height, BMI, BP, RR, HR, SpO₂, temperature, glucose, pain and signs/symptoms. You do not select the treatment: only up to 3 options compatible with the recorded data are shown.")
         ){
             val selectedSigns=selectedSignsRaw.split("|").filter{it.isNotBlank()}.toSet()
-            val candidates=availableTreatments19(
-                patientAge,sys.toIntOrNull(),dia.toIntOrNull(),glucose.toIntOrNull(),
-                spo2.toIntOrNull(),temp.toDoubleOrNull(),selectedSigns,painScore.toIntOrNull()
+            val decision=evaluateClinicalDecisionV1(
+                age=patientAge, sex=sex, sys=sys.toIntOrNull(), dia=dia.toIntOrNull(),
+                rr=rr.toIntOrNull(), hr=hr.toIntOrNull(), spo2=spo2.toIntOrNull(),
+                glucose=glucose.toIntOrNull(), temp=temp.toDoubleOrNull(), bmi=bmi,
+                signs=selectedSigns, pain=painScore.toIntOrNull(), profile=session.profile
             )
+            val candidates=decision.treatments.take(3)
             if(candidates.isEmpty()){
-                ResultCard19(tr(lang,"🚨 No hay tratamiento dental electivo compatible con los datos actuales. Primero corrige/valora el parámetro alterado o el signo de alarma.","🚨 No elective dental treatment is compatible with the current data. First correct/assess the abnormal parameter or red flag."))
+                ResultCard19(tr(lang,"🚨 No hay tratamiento dental electivo compatible con los datos actuales. Primero corrige o valora el parámetro alterado, el antecedente relevante o el signo de alarma.","🚨 No elective dental treatment is compatible with the current data. First correct or assess the abnormal parameter, relevant history, or red flag."))
             } else {
-                candidates.take(3).forEachIndexed { index,item ->
+                candidates.forEachIndexed { index,item ->
                     Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){
                         Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
-                            Text("${index+1}. ${procedureName19(item,lang)}",fontWeight=FontWeight.Black)
-                            Text(treatmentAction19(item,patientAge,sex,sys.toIntOrNull(),dia.toIntOrNull(),glucose.toIntOrNull(),spo2.toIntOrNull(),temp.toDoubleOrNull(),bmi,selectedSigns,lang))
+                            Text("${index+1}. $item",fontWeight=FontWeight.Black)
+                            Text(if(lang=="en") decision.detailEn else decision.detailEs)
                         }
                     }
                 }
