@@ -30,7 +30,8 @@ data class PatientProfile(
     val bloodPressure: String = "",
     val heartRate: String = "",
     val respiratoryRate: String = "",
-    val temperature: String = ""
+    val temperature: String = "",
+    val spo2: String = ""
 )
 
 data class DiseaseAnswer(
