@@ -95,7 +95,7 @@ class ClinicalRecordStore(context: Context) {
         o.put("ihosDebris", intMap(s.ihosDebris)); o.put("ihosCalculus", intMap(s.ihosCalculus))
         o.put("periodontogram", JSONObject().also { j -> s.periodontogram.forEach { (k,v) -> j.put(k.toString(), perioToJson(v)) } })
         o.put("pulpal", pulpalToJson(s.pulpal))
-        o.put("clinicalEvents", JSONArray(s.clinicalEvents.map { JSONObject().put("timestamp",it.timestamp).put("type",it.type).put("detail",it.detail) }))
+        o.put("clinicalEvents", JSONArray().also { a -> s.clinicalEvents.forEach { e -> a.put(JSONObject().put("timestamp",e.timestamp).put("type",e.type).put("detail",e.detail)) } })
         return o
     }
 
