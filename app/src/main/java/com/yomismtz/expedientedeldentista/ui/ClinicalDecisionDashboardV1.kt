@@ -66,6 +66,15 @@ fun ClinicalDecisionDashboardV1(
     }
 
     ResponsiveSectionV17(tr(lang,"10 · Semáforo clínico","10 · Clinical traffic light"),tr(lang,"Resultado operativo de los datos capturados; no sustituye la valoración clínica.","Operational result of captured data; it does not replace clinical assessment.")) {
+        Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){
+            Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
+                Text(tr(lang,"Datos utilizados en esta decisión","Data used for this decision"),fontWeight=FontWeight.Bold)
+                Text("Edad: $age · Sexo: ${sex.ifBlank{"—"}} · IMC: ${bmi ?: "—"}")
+                Text("TA: ${sys ?: "—"}/${dia ?: "—"} · FC: ${hr ?: "—"} · FR: ${rr ?: "—"}")
+                Text("SpO₂: ${spo2 ?: "—"}% · Glucosa: ${glucose ?: "—"} mg/dL · Temp: ${temp ?: "—"} °C")
+                Text("Dolor: ${pain ?: "—"}/10 · Signos: ${signs.joinToString(", ").ifBlank{"ninguno"}}",style=MaterialTheme.typography.bodySmall)
+            }
+        }
         Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=when(d.status){"RED"->MaterialTheme.colorScheme.errorContainer;"YELLOW"->MaterialTheme.colorScheme.tertiaryContainer;else->MaterialTheme.colorScheme.secondaryContainer})){
             Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
                 Text(if(lang=="en")d.titleEn else d.titleEs,fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
