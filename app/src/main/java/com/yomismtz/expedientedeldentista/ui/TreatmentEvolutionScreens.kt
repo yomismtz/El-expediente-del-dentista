@@ -37,6 +37,8 @@ fun TreatmentScreen(lang: String, session: EducationalSession, onSessionChanged:
     val record = session.teeth[selectedTooth] ?: ToothRecord()
     val selectedPlan = ClinicalContent.treatmentPlans.firstOrNull { it.id == record.diagnosisId }
     val selectedOption = selectedPlan?.options?.firstOrNull { it.id == record.treatmentId }
+    val derivedId = ClinicalEngines.derivedTreatmentPlanId(session,selectedTooth)
+    val derivedPlan = derivedId?.let { id -> ClinicalContent.treatmentPlans.firstOrNull { it.id==id } }
 
     fun updateRecord(updated: ToothRecord) {
         onSessionChanged(session.copy(teeth=session.teeth+(selectedTooth to updated),presentTeeth=session.presentTeeth+selectedTooth))
@@ -62,6 +64,19 @@ fun TreatmentScreen(lang: String, session: EducationalSession, onSessionChanged:
                 qs[3].let{q->Column(Modifier.weight(1f)){q.chunked(4).forEach{rr->Row(Modifier.fillMaxWidth()){rr.forEach{t->FilterChip(selectedTooth==t,{selectedTooth=t},{Text(t.toString())},modifier=Modifier.weight(1f))};repeat(4-rr.size){Spacer(Modifier.weight(1f))}}}}}
             }
         } }
+        if(derivedPlan!=null) item {
+            SectionCard(tr(lang,"Hallazgo vinculado automáticamente","Automatically linked finding")) {
+                Text(tr(lang,"El expediente detectó información en odontograma/ICDAS/pruebas pulpares que puede relacionarse con este diente:","The record detected information in the odontogram/ICDAS/pulpal findings that can be linked to this tooth:"))
+                Text(if(lang=="en") derivedPlan.diagnosisEn else derivedPlan.diagnosisEs,fontWeight=FontWeight.Black)
+                if(record.diagnosisId!=derivedPlan.id) {
+                    OutlinedButton(onClick={updateRecord(record.copy(diagnosisId=derivedPlan.id,treatmentId=null))},modifier=Modifier.fillMaxWidth()){
+                        Text(tr(lang,"Usar este diagnóstico vinculado","Use this linked diagnosis"))
+                    }
+                } else {
+                    Text(tr(lang,"✓ Diagnóstico ya vinculado al diente. Las opciones de tratamiento quedan disponibles abajo.","✓ Diagnosis is already linked to the tooth. Treatment options are available below."),fontWeight=FontWeight.Bold)
+                }
+            }
+        }
         item { SectionCard(tr(lang,"2 · Diagnóstico","2 · Diagnosis")) {
             val plans=ClinicalContent.treatmentPlans
             val left=plans.filterIndexed{i,_->i%2==0}; val right=plans.filterIndexed{i,_->i%2==1}
