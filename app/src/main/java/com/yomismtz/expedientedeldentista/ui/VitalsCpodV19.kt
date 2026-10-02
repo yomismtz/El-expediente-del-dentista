@@ -187,6 +187,42 @@ private fun bmiAction19(age:Int,sex:String,bmi:Double?,lang:String):String{
         else->tr(lang,"IMC ${"%.1f".format(bmi)}: obesidad en clasificación adulta. El IMC no decide por sí solo la aptitud dental; valorar comorbilidades, vía aérea, movilidad y riesgo anestésico si corresponde.","BMI ${"%.1f".format(bmi)}: adult obesity category. BMI alone does not determine dental fitness; assess comorbidities, airway, mobility and anesthetic risk when relevant.")
     }
 }
+private fun anestheticRecommendation19(
+    age:Int, sys:Int?, dia:Int?, hr:Int?, spo2:Int?, temp:Double?,
+    selected:Set<String>, bmi:Double?, lang:String
+):String {
+    val majorCardio = selected.any {
+        it=="Dolor torácico" || it=="Disnea" || it=="Mareo/síncope"
+    }
+    val severe = majorCardio || (sys!=null && dia!=null && (sys>180 || dia>110)) ||
+        (spo2!=null && spo2<90) || (temp!=null && temp>=38.0 &&
+        ("Fiebre/malestar" in selected || "Inflamación facial/cervical" in selected))
+    if(severe) return tr(lang,
+        "🚨 Anestesia local electiva: diferir y valorar primero la condición sistémica. No seleccionar anestésico con vasoconstrictor como si fuera una autorización.",
+        "🚨 Elective local anesthesia: defer and assess the systemic condition first. Do not treat a vasoconstrictor choice as clearance."
+    )
+
+    val cardiovascularCaution = (sys!=null && dia!=null && (sys>=160 || dia>=100)) ||
+        (hr!=null && (hr<50 || hr>120))
+    if(age<4) {
+        return if(cardiovascularCaution) tr(lang,
+            "💉 Sugerencia educativa: lidocaína 2% sin vasoconstrictor puede ser una opción cuando se requiere evitar vasoconstrictor; en niños la dosis debe calcularse estrictamente por peso y por el producto específico. No usar esta pantalla para autorizar dosis.",
+            "💉 Educational suggestion: 2% lidocaine without vasoconstrictor may be an option when avoiding vasoconstrictor; in children dose strictly by weight and product-specific labeling. Do not use this screen to authorize dosing."
+        ) else tr(lang,
+            "💉 Sugerencia educativa: lidocaína 2% con epinefrina 1:100,000 puede considerarse si está indicada y el paciente está estable; en menores la dosis debe calcularse por peso y por el producto específico.",
+            "💉 Educational suggestion: 2% lidocaine with epinephrine 1:100,000 may be considered when indicated and the patient is stable; in children dose by weight and product-specific labeling."
+        )
+    }
+
+    return if(cardiovascularCaution) tr(lang,
+        "💉 VASOCONSTRICTOR: usar con precaución. Una opción educativa es mepivacaína 3% sin vasoconstrictor cuando el objetivo sea evitar epinefrina. Si se necesita vasoconstrictor, la ADA señala como precaución habitual en adultos con riesgo cardiovascular limitar la epinefrina a 0.04 mg, con aspiración y administración lenta.",
+        "💉 VASOCONSTRICTOR: use caution. An educational option is 3% mepivacaine without vasoconstrictor when avoiding epinephrine. If a vasoconstrictor is needed, ADA notes a common adult cardiovascular precaution of limiting epinephrine to 0.04 mg, with aspiration and slow injection."
+    ) else tr(lang,
+        "💉 VASOCONSTRICTOR: puede considerarse. Opciones habituales: lidocaína 2% + epinefrina 1:100,000; articaína 4% + epinefrina 1:100,000 o 1:200,000. La elección depende del procedimiento, técnica, duración requerida, antecedentes y ficha técnica.",
+        "💉 VASOCONSTRICTOR: may be considered. Common options: 2% lidocaine + epinephrine 1:100,000; 4% articaine + epinephrine 1:100,000 or 1:200,000. Choice depends on procedure, technique, duration required, history and product labeling."
+    )
+}
+
 private fun availableTreatments19(
     age:Int,
     sys:Int?, dia:Int?, glucose:Int?, spo2:Int?, temp:Double?,
@@ -440,6 +476,12 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
                 treatmentRestrictionBySign19(
                     selectedSigns,sys.toIntOrNull(),dia.toIntOrNull(),rr.toIntOrNull(),hr.toIntOrNull(),
                     spo2.toIntOrNull(),glucose.toIntOrNull(),temp.toDoubleOrNull(),bmi,lang
+                )
+            )
+            ResultCard19(
+                anestheticRecommendation19(
+                    patientAge,sys.toIntOrNull(),dia.toIntOrNull(),hr.toIntOrNull(),
+                    spo2.toIntOrNull(),temp.toDoubleOrNull(),selectedSigns,bmi,lang
                 )
             )
         }
