@@ -379,7 +379,7 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
     var painScore by rememberRecordState("vitals.painScore","")
     var weight by rememberRecordState("vitals.weight",session.profile.weightKg); var height by rememberRecordState("vitals.height",session.profile.heightCm)
     val bmi=run{val w=weight.toDoubleOrNull();val h=height.toDoubleOrNull()?.div(100.0);if(w!=null&&h!=null&&h>0)w/h.pow(2)else null}
-    LaunchedEffect(sex,spo2,rr,hr,sys,dia,temp,glucose,weight,height,bmi) {
+    LaunchedEffect(sex,spo2,rr,hr,sys,dia,temp,glucose,weight,height,bmi,selectedSignsRaw,painScore,glucoseContext) {
         val bp = if (sys.isNotBlank() || dia.isNotBlank()) "$sys/$dia" else ""
         val updated = session.profile.copy(
             sex = if(sex=="No especificado") session.profile.sex else sex,
