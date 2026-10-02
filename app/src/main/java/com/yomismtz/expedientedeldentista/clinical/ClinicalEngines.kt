@@ -310,5 +310,24 @@ object ClinicalEngines {
         return if (lang == "en") en else es
     }
 
+    fun derivedTreatmentPlanId(session: EducationalSession, tooth: Int): String? {
+        val record=session.teeth[tooth] ?: ToothRecord()
+        val icdas=session.icdasSurfaces[tooth]?.values?.maxOrNull() ?: record.icdas
+        val pulpal=session.pulpal.takeIf { it.tooth==tooth }
+        if(pulpal!=null && (pulpal.spontaneousPain || pulpal.nightPain || pulpal.coldLingering || pulpal.heatPositive || pulpal.sensitivityNegative || pulpal.previousRootCanal || pulpal.previousPartialEndo)) {
+            return when(pulpalDiagnosis(pulpal).pulpalEs) {
+                "Necrosis pulpar" -> "necrosis"
+                "Pulpitis irreversible sintomática" -> "irreversible_pulpitis"
+                "Terapia previamente iniciada","Previamente tratado" -> "necrosis"
+                else -> "reversible_pulpitis"
+            }
+        }
+        if(icdas>=3) return "cavitated_caries"
+        if(icdas in 1..2) return "initial_caries"
+        if(record.status==ToothStatus.CARIES) return "cavitated_caries"
+        if(record.status==ToothStatus.RESTORED) return "healthy"
+        return null
+    }
+
     fun round1(value: Double): Double = (value * 10.0).roundToInt() / 10.0
 }
