@@ -33,7 +33,7 @@ fun ClinicalDecisionDashboardV1(
     onSessionChanged:(EducationalSession)->Unit
 ) {
     val p=session.profile
-    val d=evaluateClinicalDecisionV1(age,sex,sys,dia,rr,hr,spo2,glucose,temp,bmi,signs,p)
+    val d=evaluateClinicalDecisionV1(age,sex,sys,dia,rr,hr,spo2,glucose,temp,bmi,signs,pain,p)
     var cardiovascular by remember(p.cardiovascularHistory){mutableStateOf(p.cardiovascularHistory)}
     var antithrombotic by remember(p.anticoagulantsAntiplatelets){mutableStateOf(p.anticoagulantsAntiplatelets)}
     var rhythmMeds by remember(p.betaBlockersAntiarrhythmics){mutableStateOf(p.betaBlockersAntiarrhythmics)}
