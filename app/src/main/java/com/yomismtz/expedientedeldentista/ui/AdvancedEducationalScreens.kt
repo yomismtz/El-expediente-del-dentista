@@ -54,8 +54,6 @@ private data class TeachingItem(
 )
 
 @Composable
-
-@Composable
 private fun ClinicalImageCard(lang: String, titleEs: String, titleEn: String, resId: Int) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -226,6 +224,8 @@ fun EndodonticSheetScreen(
                 }
             }
 
+            1 -> {
+
                 item {
                     SectionCard(tr(lang, "Procedimientos endodónticos · imágenes", "Endodontic procedures · images")) {
                         ClinicalImageCard(lang, "Acceso cameral", "Access cavity", R.drawable.clinical_endo_acceso_cameral)
@@ -240,7 +240,10 @@ fun EndodonticSheetScreen(
                         ClinicalImageCard(lang, "Restauración coronal", "Coronal restoration", R.drawable.clinical_endo_restauracion_coronal)
                     }
                 }
-            1 -> items(steps) { ExpandableTeachingCard(it, lang) }
+
+                items(steps) { ExpandableTeachingCard(it, lang) }
+            }
+
             else -> {
                 item {
                     NoticeCard(tr(lang,
