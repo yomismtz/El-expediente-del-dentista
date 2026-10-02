@@ -187,6 +187,107 @@ private fun bmiAction19(age:Int,sex:String,bmi:Double?,lang:String):String{
         else->tr(lang,"IMC ${"%.1f".format(bmi)}: obesidad en clasificación adulta. El IMC no decide por sí solo la aptitud dental; valorar comorbilidades, vía aérea, movilidad y riesgo anestésico si corresponde.","BMI ${"%.1f".format(bmi)}: adult obesity category. BMI alone does not determine dental fitness; assess comorbidities, airway, mobility and anesthetic risk when relevant.")
     }
 }
+private fun availableTreatments19(
+    age:Int,
+    sys:Int?, dia:Int?, glucose:Int?, spo2:Int?, temp:Double?,
+    selected:Set<String>, pain:Int?
+):List<DentalProcedure19> {
+    val emergency=setOf("Sangrado oral no controlable","Inflamación facial/cervical","Disnea","Dolor torácico","Alteración de conciencia","Convulsiones")
+    if(selected.any{it in emergency}) return emptyList()
+    if(spo2!=null && spo2<90) return emptyList()
+    if(glucose!=null && glucose<70) return emptyList()
+    if(age>=18 && sys!=null && dia!=null && (sys>180 || dia>110)) return emptyList()
+    if(temp!=null && temp>=38.0 && ("Fiebre/malestar" in selected || "Inflamación intraoral" in selected || "Supuración/fístula" in selected))
+        return listOf(DentalProcedure19.DIAGNOSTIC)
+    if(age>=18 && sys!=null && dia!=null && (sys>=160 || dia>=100))
+        return listOf(DentalProcedure19.DIAGNOSTIC)
+
+    val lesion = "Úlcera o lesión >2 semanas" in selected || "Mancha blanca/roja persistente" in selected
+    if(lesion) return listOf(DentalProcedure19.DIAGNOSTIC)
+
+    val result=mutableListOf<DentalProcedure19>()
+    fun add(p:DentalProcedure19){ if(p !in result && result.size<3) result.add(p) }
+
+    val pulpLike=selected.any{it=="Dolor espontáneo/nocturno" || it=="Sensibilidad al frío/calor" || it=="Supuración/fístula"}
+    val cariesLike=selected.any{it=="Dolor dental/orofacial" || it=="Sensibilidad al frío/calor"}
+    val periodontal=selected.any{it=="Sangrado gingival" || it=="Movilidad dental" || it=="Halitosis"}
+    val infection=selected.any{it=="Inflamación intraoral" || it=="Supuración/fístula" || it=="Fiebre/malestar"}
+
+    when {
+        infection || pulpLike -> {
+            add(DentalProcedure19.ENDODONTIC)
+            add(DentalProcedure19.EXTRACTION)
+            add(DentalProcedure19.LOCAL_ANESTHESIA)
+        }
+        periodontal -> {
+            add(DentalProcedure19.PERIODONTAL)
+            add(DentalProcedure19.LOCAL_ANESTHESIA)
+            add(DentalProcedure19.DIAGNOSTIC)
+        }
+        cariesLike || (pain!=null && pain>=1) -> {
+            add(DentalProcedure19.RESTORATIVE)
+            add(DentalProcedure19.LOCAL_ANESTHESIA)
+            add(DentalProcedure19.DIAGNOSTIC)
+        }
+        else -> {
+            add(DentalProcedure19.DIAGNOSTIC)
+            add(DentalProcedure19.PERIODONTAL)
+            add(DentalProcedure19.RESTORATIVE)
+        }
+    }
+
+    if(age<2) return result.filter{it==DentalProcedure19.DIAGNOSTIC || it==DentalProcedure19.LOCAL_ANESTHESIA}.take(3)
+    if(glucose!=null && glucose>=300) return result.filter{it==DentalProcedure19.DIAGNOSTIC}.take(3)
+    if(temp!=null && temp>=38.0) return result.filter{it==DentalProcedure19.DIAGNOSTIC}.take(3)
+    return result.take(3)
+}
+
+private fun treatmentRestrictionBySign19(
+    selected:Set<String>, sys:Int?, dia:Int?, rr:Int?, hr:Int?,
+    spo2:Int?, glucose:Int?, temp:Double?, bmi:Double?, lang:String
+):String {
+    val lines=mutableListOf<String>()
+    fun add(es:String,en:String){lines.add(tr(lang,es,en))}
+    selected.forEach { sign ->
+        when(sign) {
+            "Dolor dental/orofacial" -> add("• Dolor: permite diagnóstico y, si el estado general es estable, tratamiento dirigido al origen; no basta el dolor para decidir extracción o endodoncia.","• Pain: diagnosis and source-directed treatment may be considered if clinically stable; pain alone does not determine extraction or root canal.")
+            "Sensibilidad al frío/calor" -> add("• Sensibilidad térmica: diagnóstico y operatoria pueden ser posibles; si es persistente/espontánea, primero descartar patología pulpar.","• Thermal sensitivity: diagnosis and restorative care may be possible; if persistent/spontaneous, first assess for pulpal disease.")
+            "Dolor espontáneo/nocturno" -> add("• Dolor espontáneo/nocturno: priorizar diagnóstico pulpar; endodoncia puede ser una opción si el diagnóstico la indica. No asumir extracción.","• Spontaneous/night pain: prioritize pulpal diagnosis; root canal may be an option when indicated. Do not assume extraction.")
+            "Inflamación intraoral","Supuración/fístula" -> add("• Inflamación/supuración: priorizar control del foco. El tratamiento definitivo puede incluir endodoncia, extracción o drenaje según el origen; antibiótico no es automático.","• Swelling/drainage: prioritize source control. Definitive care may include root canal, extraction or drainage depending on source; antibiotics are not automatic.")
+            "Inflamación facial/cervical" -> add("• Inflamación facial/cervical: no tratamiento electivo; valorar urgencia y vía aérea.","• Facial/cervical swelling: no elective treatment; assess urgency and airway.")
+            "Sangrado gingival" -> add("• Sangrado gingival: evaluación periodontal y tratamiento periodontal no quirúrgico pueden considerarse si no hay sangrado no controlable.","• Gingival bleeding: periodontal assessment and nonsurgical periodontal care may be considered if bleeding is controllable.")
+            "Sangrado oral no controlable" -> add("• Sangrado no controlable: ningún tratamiento electivo; activar protocolo de emergencia.","• Uncontrolled oral bleeding: no elective treatment; activate emergency protocol.")
+            "Movilidad dental" -> add("• Movilidad: diagnóstico periodontal primero; el tratamiento puede ser periodontal y la extracción sólo si existe indicación específica.","• Mobility: periodontal diagnosis first; periodontal treatment may be appropriate, with extraction only if specifically indicated.")
+            "Úlcera o lesión >2 semanas","Mancha blanca/roja persistente" -> add("• Lesión persistente: exploración/documentación y biopsia o referencia cuando esté indicada; no asumir diagnóstico por apariencia.","• Persistent lesion: examination/documentation and biopsy or referral when indicated; do not diagnose by appearance alone.")
+            "Trismus","Disfagia","Odinofagia" -> add("• Trismus/disfagia/odinofagia: buscar causa y valorar urgencia; si hay compromiso de vía aérea, no realizar tratamiento electivo.","• Trismus/dysphagia/odynophagia: identify cause and assess urgency; if airway compromise exists, no elective treatment.")
+            "Disnea","Dolor torácico","Alteración de conciencia","Convulsiones" -> add("• Signo sistémico mayor: ningún tratamiento dental electivo; atención de emergencia.","• Major systemic sign: no elective dental treatment; emergency care.")
+            "Fiebre/malestar" -> add("• Fiebre/malestar: diferir tratamiento electivo si sugiere infección sistémica; priorizar evaluación y control del foco.","• Fever/malaise: defer elective treatment when systemic infection is suspected; prioritize assessment and source control.")
+        }
+    }
+    if(sys!=null && dia!=null) when {
+        sys>180 || dia>110 -> add("• TA >180 o >110 mmHg: no tratamiento electivo; repetir y solicitar valoración médica.","• BP >180 or >110 mmHg: no elective treatment; repeat and obtain medical assessment.")
+        sys>=160 || dia>=100 -> add("• TA ≥160/100 mmHg confirmada: diferir procedimientos electivos invasivos; la atención urgente limitada depende del estado clínico.","• Confirmed BP ≥160/100 mmHg: defer invasive elective procedures; limited urgent care depends on clinical status.")
+        sys<90 || dia<60 -> add("• TA baja: repetir y valorar síntomas/perfusión; si persiste o es sintomática, diferir.","• Low BP: repeat and assess symptoms/perfusion; defer if persistent or symptomatic.")
+    }
+    if(rr!=null && hr!=null && (rr<12 || rr>20 || hr<60 || hr>100))
+        add("• FR/FC fuera de referencia: repetir en reposo y buscar la causa antes de procedimientos invasivos.","• RR/HR outside reference: repeat at rest and identify the cause before invasive procedures.")
+    if(spo2!=null && spo2<95) add(
+        if(spo2<90)"• SpO₂ <90 %: no tratamiento electivo y valoración urgente." else "• SpO₂ 90–94 %: repetir y contextualizar; si persiste, valorar antes de tratamiento electivo.",
+        if(spo2<90)"• SpO₂ <90%: no elective treatment and urgent assessment." else "• SpO₂ 90–94%: repeat and contextualize; if persistent, assess before elective care."
+    )
+    if(glucose!=null) when {
+        glucose<70 -> add("• Glucosa <70 mg/dL: no iniciar; corregir hipoglucemia y reevaluar.","• Glucose <70 mg/dL: do not start; correct hypoglycemia and reassess.")
+        glucose>=300 -> add("• Glucosa ≥300 mg/dL: diferir tratamiento electivo, especialmente cirugía, y valorar control metabólico.","• Glucose ≥300 mg/dL: defer elective treatment, especially surgery, and assess metabolic control.")
+    }
+    if(temp!=null) when {
+        temp>=38.0 -> add("• Temperatura ≥38 °C: diferir electivo si existe sospecha de infección sistémica.","• Temperature ≥38 °C: defer elective care when systemic infection is suspected.")
+        temp<=35.0 -> add("• Temperatura ≤35 °C: confirmar y valorar clínicamente antes de tratar.","• Temperature ≤35 °C: confirm and assess clinically before treatment.")
+    }
+    if(bmi!=null && bmi>=40) add("• IMC ≥40: no contraindica por sí solo la atención dental, pero requiere valorar comorbilidades y vía aérea si se considera sedación/anestesia.","• BMI ≥40: not by itself a contraindication to dental care, but assess comorbidities and airway if sedation/anesthesia is considered.")
+    return if(lines.isEmpty()) tr(lang,"Sin restricciones adicionales por los datos seleccionados. La decisión final depende del diagnóstico odontológico y del estado clínico.","No additional restrictions from the selected data. Final decision depends on the dental diagnosis and clinical status.")
+    else lines.take(8).joinToString("\n")
+}
+
 private fun treatmentAction19(p:DentalProcedure19,age:Int,sex:String,sys:Int?,dia:Int?,glucose:Int?,spo2:Int?,temp:Double?,bmi:Double?,selected:Set<String>,lang:String):String{
     val emergency=setOf("Sangrado oral no controlable","Inflamación facial/cervical","Disnea","Dolor torácico","Alteración de conciencia","Convulsiones")
     if(selected.any{it in emergency}) return tr(lang,"🚨 NO TRATAR ELECTIVAMENTE: existe un signo de alarma mayor. Suspender, estabilizar según competencia y activar el protocolo de emergencia.","🚨 DO NOT PROVIDE ELECTIVE CARE: a major red flag is present. Stop, stabilize within scope and activate the emergency protocol.")
@@ -239,16 +340,21 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
     var spo2 by rememberRecordState("vitals.spo2",""); var rr by rememberRecordState("vitals.rr",""); var hr by rememberRecordState("vitals.hr","")
     var sys by rememberRecordState("vitals.sys",""); var dia by rememberRecordState("vitals.dia",""); var temp by rememberRecordState("vitals.temp",""); var glucose by rememberRecordState("vitals.glucose","")
     var glucoseContext by rememberRecordState("vitals.glucoseContext",GlucoseContext19.RANDOM); var selectedSignsRaw by rememberRecordState("vitals.dentalSigns","")
-    var weight by rememberRecordState("vitals.weight",""); var height by rememberRecordState("vitals.height","")
+    var painScore by rememberRecordState("vitals.painScore","")
+    var weight by rememberRecordState("vitals.weight",session.profile.weightKg); var height by rememberRecordState("vitals.height",session.profile.heightCm)
     val bmi=run{val w=weight.toDoubleOrNull();val h=height.toDoubleOrNull()?.div(100.0);if(w!=null&&h!=null&&h>0)w/h.pow(2)else null}
-    LaunchedEffect(spo2,rr,hr,sys,dia,temp) {
+    LaunchedEffect(sex,spo2,rr,hr,sys,dia,temp,glucose,weight,height,bmi) {
         val bp = if (sys.isNotBlank() || dia.isNotBlank()) "$sys/$dia" else ""
         val updated = session.profile.copy(
+            sex = if(sex=="No especificado") session.profile.sex else sex,
             heartRate = hr,
             respiratoryRate = rr,
             bloodPressure = bp,
             temperature = temp,
-            spo2 = spo2
+            spo2 = spo2,
+            weightKg = weight,
+            heightCm = height,
+            bmi = bmi?.let{"%.1f".format(it)} ?: ""
         )
         if (updated != session.profile) onSessionChanged(session.copy(profile = updated))
     }
@@ -294,6 +400,9 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
                 FilterChip(selectedSigns.contains(item),{selectedSignsRaw=(if(selectedSigns.contains(item))selectedSigns-item else selectedSigns+item).joinToString("|")},{Text(item)},modifier=Modifier.fillMaxWidth())
             }
             ResultCard19(triageAction19(selectedSigns,lang))
+            OutlinedTextField(painScore,{painScore=it.filter(Char::isDigit).take(2)},label={Text(tr(lang,"Dolor 0–10","Pain 0–10"))},modifier=Modifier.fillMaxWidth())
+            val pain=painScore.toIntOrNull()
+            ResultCard19(if(pain==null) tr(lang,"Escala de dolor opcional: 0 sin dolor · 10 máximo.","Optional pain scale: 0 no pain · 10 maximum.") else tr(lang,"Dolor registrado: \$pain/10. La intensidad ayuda a priorizar diagnóstico y tratamiento, pero no sustituye el diagnóstico odontológico.","Recorded pain: \$pain/10. Intensity helps prioritize diagnosis and treatment but does not replace the dental diagnosis."))
         }
         ResponsiveSectionV17(tr(lang,"7 · Peso, talla e IMC","7 · Weight, height and BMI")){
             val cols=if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2
@@ -302,14 +411,37 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
             ResultCard19(bmiAction19(patientAge,sex,bmi,lang))
         }
 
-        ResponsiveSectionV17(tr(lang,"8 · ¿Qué tratamiento dental puede realizarse hoy?","8 · Which dental treatment can be performed today?"),tr(lang,"Selecciona el procedimiento planeado. La herramienta cruza edad, sexo, TA, glucosa, SpO₂, temperatura, signos de alarma, peso, talla e IMC para orientar continuidad, modificación o diferimiento.","Select the planned procedure. The tool cross-checks age, sex, BP, glucose, SpO₂, temperature, red flags, weight, height and BMI to guide continuation, modification or deferral")){
-            var procedureRaw by rememberRecordState("vitals.procedure","DIAGNOSTIC")
-            val procedure=runCatching{DentalProcedure19.valueOf(procedureRaw)}.getOrElse{DentalProcedure19.DIAGNOSTIC}
-            DentalProcedure19.entries.forEach{item->
-                FilterChip(procedure==item,{procedureRaw=item.name},{Text(procedureName19(item,lang))},modifier=Modifier.fillMaxWidth())
+        ResponsiveSectionV17(
+            tr(lang,"8 · Tratamientos posibles hoy","8 · Treatments that may be possible today"),
+            tr(lang,"La aplicación cruza automáticamente edad, sexo, peso, talla, IMC, TA, FR, FC, SpO₂, temperatura, glucosa, dolor y signos/síntomas. No tienes que seleccionar el tratamiento: sólo aparecen hasta 3 opciones compatibles con los datos registrados.","The app automatically cross-checks age, sex, weight, height, BMI, BP, RR, HR, SpO₂, temperature, glucose, pain and signs/symptoms. You do not select the treatment: only up to 3 options compatible with the recorded data are shown.")
+        ){
+            val selectedSigns=selectedSignsRaw.split("|").filter{it.isNotBlank()}.toSet()
+            val candidates=availableTreatments19(
+                patientAge,sys.toIntOrNull(),dia.toIntOrNull(),glucose.toIntOrNull(),
+                spo2.toIntOrNull(),temp.toDoubleOrNull(),selectedSigns,painScore.toIntOrNull()
+            )
+            if(candidates.isEmpty()){
+                ResultCard19(tr(lang,"🚨 No hay tratamiento dental electivo compatible con los datos actuales. Primero corrige/valora el parámetro alterado o el signo de alarma.","🚨 No elective dental treatment is compatible with the current data. First correct/assess the abnormal parameter or red flag."))
+            } else {
+                candidates.take(3).forEachIndexed { index,item ->
+                    Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){
+                        Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+                            Text("${index+1}. ${procedureName19(item,lang)}",fontWeight=FontWeight.Black)
+                            Text(treatmentAction19(item,patientAge,sex,sys.toIntOrNull(),dia.toIntOrNull(),glucose.toIntOrNull(),spo2.toIntOrNull(),temp.toDoubleOrNull(),bmi,selectedSigns,lang))
+                        }
+                    }
+                }
             }
-            Text(tr(lang,"La salida es una guía de triage, no una autorización legal ni anestésica automática.","The output is a triage guide, not automatic legal or anesthesia clearance."),style=MaterialTheme.typography.bodySmall)
-            ResultCard19(treatmentAction19(procedure,patientAge,sex,sys.toIntOrNull(),dia.toIntOrNull(),glucose.toIntOrNull(),spo2.toIntOrNull(),temp.toDoubleOrNull(),bmi,selectedSignsRaw.split("|").filter{it.isNotBlank()}.toSet(),lang))
+            Text(
+                tr(lang,"Por cada dato seleccionado, la aplicación indica qué puede continuar y qué debe diferirse. Un dato normal no autoriza por sí solo cirugía, anestesia o sedación.","For each selected finding, the app indicates what may proceed and what should be deferred. A normal value alone does not clear surgery, anesthesia or sedation."),
+                style=MaterialTheme.typography.bodySmall
+            )
+            ResultCard19(
+                treatmentRestrictionBySign19(
+                    selectedSigns,sys.toIntOrNull(),dia.toIntOrNull(),rr.toIntOrNull(),hr.toIntOrNull(),
+                    spo2.toIntOrNull(),glucose.toIntOrNull(),temp.toDoubleOrNull(),bmi,lang
+                )
+            )
         }
         NoticeCard(tr(lang,"Fuentes educativas: AAP para cribado de TA pediátrica; AHA/PALS para hipotensión pediátrica; ADA/ADA Standards 2026 para glucosa e hipertensión dental; FDA para SpO₂. La herramienta orienta el triage y no sustituye protocolos institucionales ni valoración médica.","Educational sources: AAP for pediatric BP screening; AHA/PALS for pediatric hypotension; ADA/ADA Standards 2026 for glucose and dental hypertension; FDA for SpO₂. This tool supports triage and does not replace institutional protocols or medical assessment."))
     }
