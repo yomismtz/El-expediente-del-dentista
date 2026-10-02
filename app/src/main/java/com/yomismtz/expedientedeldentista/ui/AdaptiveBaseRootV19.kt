@@ -51,6 +51,7 @@ private data class TabV19(val screen:AppScreen,val icon:String,val es:String,val
 private val tabsV19=listOf(
     // 1 · Expediente clínico
     // Conserva aquí el interrogatorio y todos los antecedentes de la historia clínica.
+    TabV19(AppScreen.SUMMARY,"📊","Resumen clínico integrado","Integrated clinical summary",0),
     TabV19(AppScreen.HISTORY,"🩺","Historia clínica completa","Complete clinical history",0),
     TabV19(AppScreen.INTAKE,"📋","Nota de ingreso","Intake note",0),
 
@@ -154,6 +155,7 @@ fun AdaptiveBaseRootV19(
     ) {
     when(screen) {
         AppScreen.HOME -> CoverV19(lang){navigate(AppScreen.FOLDER)}
+        AppScreen.SUMMARY -> ClinicalSummaryV53Screen(lang,session,backPrevious)
         AppScreen.FOLDER -> FolderV19(lang,{ group ->
             // Auxiliares es ya un concentrador de cuatro módulos; entrar directo evita
             // repetir una sección intermedia con una sola tarjeta.
