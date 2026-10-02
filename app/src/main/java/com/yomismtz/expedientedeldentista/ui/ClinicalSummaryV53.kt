@@ -18,16 +18,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
+import com.yomismtz.expedientedeldentista.clinical.ClinicalEngines
+import com.yomismtz.expedientedeldentista.clinical.ClinicalSafetyEngine
+import com.yomismtz.expedientedeldentista.clinical.ClinicalAlert
 
 @Composable
 fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->Unit) {
     val p=session.profile
     val teeth=session.teeth
-    val present=teeth.values.count { it.status.name=="PRESENT" }
+    val present=teeth.count { (_,it) -> it.status.name !in setOf("MISSING_CARIES","MISSING_OTHER") }
     val caries=teeth.values.count { it.icdas>0 }
     val perio=if(session.periodontogram.isEmpty()) "Pendiente" else "Registrado"
     val pulpal=if(session.pulpal.tooth>0) "Registrado · OD "+session.pulpal.tooth else "Pendiente"
     val history=if(session.history.diseases.values.any { it.present }) "Con antecedentes seleccionados" else "Sin antecedentes activos registrados"
+    val cpod=ClinicalEngines.cpod(session.teeth,false)
+    val ceod=ClinicalEngines.cpod(session.teeth,true)
+    val alerts=ClinicalSafetyEngine.alerts(session)
+    val linkedTreatment=teeth.filterValues { it.diagnosisId!=null || it.treatmentId!=null }.keys.sorted()
     val checks: List<Pair<String, Boolean>> = listOf(
         "Identificación" to (p.patientInitials.isNotBlank() && p.age.isNotBlank() && p.sex.isNotBlank()),
         "Motivo / anamnesis" to (p.reasonForVisit.isNotBlank()),
@@ -58,8 +65,18 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
         SummaryCardV53(tr(lang,"Antecedentes y estado general","History and general status")){
             SummaryLineV53("ASA",session.history.asaClass.toString()); SummaryLineV53("Antecedentes",history); SummaryLineV53("Tabaco / alcohol",session.history.tobaccoAlcohol.ifBlank{"No registrado"}); SummaryLineV53("Medicamentos",p.medications.ifBlank{"No registrados"}); SummaryLineV53("Alergias",p.allergies.ifBlank{"No registradas"})
         }
+        if(alerts.isNotEmpty()) {
+            SummaryCardV53(tr(lang,"⚠️ Alertas y recordatorios de seguridad","⚠️ Safety alerts and reminders")) {
+                alerts.forEach { alert ->
+                    val icon=when(alert.severity){ClinicalAlert.Severity.URGENT->"🚨";ClinicalAlert.Severity.WARNING->"⚠️";ClinicalAlert.Severity.INFO->"ℹ️"}
+                    Text("$icon ${alert.title(lang)}",fontWeight=FontWeight.Black)
+                    Text(alert.detail(lang),style=MaterialTheme.typography.bodySmall)
+                }
+                Text(tr(lang,"Son recordatorios de verificación; no constituyen diagnósticos ni autorizaciones automáticas.","These are verification reminders; they are not diagnoses or automatic clearances."),style=MaterialTheme.typography.bodySmall)
+            }
+        }
         SummaryCardV53(tr(lang,"Exploración y análisis","Examination and analysis")){
-            SummaryLineV53("Dientes registrados",teeth.size.toString()); SummaryLineV53("Dientes presentes",present.toString()); SummaryLineV53("Dientes con ICDAS > 0",caries.toString()); SummaryLineV53("Periodontograma",perio); SummaryLineV53("Pulpar / periapical",pulpal); SummaryLineV53("IPC",if(session.ipcCodes.any{it!="0"}) "Registrado" else "Pendiente"); SummaryLineV53("O'Leary",if(session.oleary.isNotEmpty()) "Registrado" else "Pendiente")
+            SummaryLineV53("Dientes registrados",teeth.size.toString()); SummaryLineV53("Dientes presentes",present.toString()); SummaryLineV53("Dientes con ICDAS > 0",caries.toString()); SummaryLineV53("CPOD / DMFT","${cpod.total} (C ${cpod.carious} · P ${cpod.missing} · O ${cpod.filled})"); SummaryLineV53("ceod / dmft","${ceod.total} (c ${ceod.carious} · e ${ceod.missing} · o ${ceod.filled})"); SummaryLineV53("Periodontograma",perio); SummaryLineV53("Pulpar / periapical",pulpal); SummaryLineV53("IPC",if(session.ipcCodes.any{it!="0"}) "Registrado" else "Pendiente"); SummaryLineV53("O'Leary",if(session.oleary.isNotEmpty()) "Registrado" else "Pendiente"); SummaryLineV53("Tratamientos vinculados",if(linkedTreatment.isEmpty()) "Pendiente" else linkedTreatment.joinToString(", ") { "OD ${it}" })
         }
         SummaryCardV53(tr(lang,"Lista de revisión","Review checklist")){
             checks.forEach { (label,ok) -> Text((if(ok)"✓" else "○")+" "+label,fontWeight=if(ok) FontWeight.Medium else FontWeight.SemiBold) }
