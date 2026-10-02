@@ -21,6 +21,7 @@ import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEngines
 import com.yomismtz.expedientedeldentista.clinical.ClinicalSafetyEngine
 import com.yomismtz.expedientedeldentista.clinical.ClinicalAlert
+import com.yomismtz.expedientedeldentista.clinical.evaluateClinicalDecisionV1
 
 @Composable
 fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->Unit) {
@@ -73,6 +74,24 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
                     Text(alert.detail(lang),style=MaterialTheme.typography.bodySmall)
                 }
                 Text(tr(lang,"Son recordatorios de verificación; no constituyen diagnósticos ni autorizaciones automáticas.","These are verification reminders; they are not diagnoses or automatic clearances."),style=MaterialTheme.typography.bodySmall)
+            }
+        }
+        val triageSigns=p.clinicalSigns.split("|").filter{it.isNotBlank()}.toSet()
+        val triage=evaluateClinicalDecisionV1(
+            p.age.toIntOrNull() ?: 18,p.sex,p.bloodPressure.substringBefore("/").toIntOrNull(),p.bloodPressure.substringAfter("/", "").toIntOrNull(),
+            p.respiratoryRate.toIntOrNull(),p.heartRate.toIntOrNull(),p.spo2.toIntOrNull(),p.glucose.toIntOrNull(),p.temperature.toDoubleOrNull(),
+            p.bmi.toDoubleOrNull(),triageSigns,p.painScore.toIntOrNull(),p
+        )
+        SummaryCardV53(tr(lang,"Triage, tratamientos y anestesia","Triage, treatments and anesthesia")){
+            Text(if(lang=="en")triage.titleEn else triage.titleEs,fontWeight=FontWeight.Black)
+            Text(if(lang=="en")triage.detailEn else triage.detailEs)
+            Text(tr(lang,"Tratamientos compatibles registrados","Compatible treatments recorded"),fontWeight=FontWeight.Bold)
+            Text(if(triage.treatments.isEmpty())"—" else triage.treatments.joinToString(" · "))
+            Text(tr(lang,"Anestesia","Anesthesia"),fontWeight=FontWeight.Bold)
+            Text(if(lang=="en")triage.anestheticEn else triage.anestheticEs)
+            if(session.clinicalEvents.isNotEmpty()){
+                Text(tr(lang,"Último evento","Latest event"),fontWeight=FontWeight.Bold)
+                Text(session.clinicalEvents.last().detail,style=MaterialTheme.typography.bodySmall)
             }
         }
         SummaryCardV53(tr(lang,"Exploración y análisis","Examination and analysis")){
