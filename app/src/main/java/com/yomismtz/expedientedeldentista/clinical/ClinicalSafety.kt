@@ -16,7 +16,7 @@ object ClinicalSafetyEngine {
     fun alerts(session: EducationalSession): List<ClinicalAlert> {
         val p=session.profile
         val out=mutableListOf<ClinicalAlert>()
-        val bp=Regex("""(\\d{2,3})\\s*/\\s*(\\d{2,3})""").find(p.bloodPressure)
+        val bp=Regex("""(\d{2,3})\s*/\s*(\d{2,3})""").find(p.bloodPressure)
         val sys=bp?.groupValues?.getOrNull(1)?.toIntOrNull()
         val dia=bp?.groupValues?.getOrNull(2)?.toIntOrNull()
         if(sys!=null && dia!=null) when {
