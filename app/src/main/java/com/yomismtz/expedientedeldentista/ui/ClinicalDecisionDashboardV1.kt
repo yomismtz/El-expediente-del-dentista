@@ -94,6 +94,25 @@ fun ClinicalDecisionDashboardV1(
             val detail=if(lang=="en") "${d.titleEn}. Treatments: ${d.treatments.joinToString(" | ")}. Anesthesia: ${d.anestheticEn}" else "${d.titleEs}. Tratamientos: ${d.treatments.joinToString(" | ")}. Anestesia: ${d.anestheticEs}"
             onSessionChanged(session.copy(clinicalEvents=session.clinicalEvents + ClinicalEvent(System.currentTimeMillis(),"clinical_assessment",detail)))
         },modifier=Modifier.fillMaxWidth()){ Text(tr(lang,"Registrar valoración en bitácora","Log assessment")) }
+        Button(onClick={
+            val vitalDetail = listOf(
+                "Edad=" + age, "Sexo=" + sex,
+                "TA=" + (sys ?: "—") + "/" + (dia ?: "—"),
+                "FR=" + (rr ?: "—"), "FC=" + (hr ?: "—"),
+                "SpO₂=" + (spo2 ?: "—") + "%",
+                "Glucosa=" + (glucose ?: "—") + " mg/dL",
+                "Temp=" + (temp ?: "—") + " °C",
+                "IMC=" + (bmi ?: "—"), "Dolor=" + (pain ?: "—") + "/10",
+                "Signos=" + signs.joinToString(", ").ifBlank { "ninguno registrado" }
+            ).joinToString(" · ")
+            onSessionChanged(session.copy(
+                clinicalEvents=session.clinicalEvents + ClinicalEvent(
+                    System.currentTimeMillis(),
+                    "vital_signs_snapshot",
+                    vitalDetail
+                )
+            ))
+        },modifier=Modifier.fillMaxWidth()){ Text(tr(lang,"Registrar signos vitales en bitácora","Log vital signs")) }
     }
 
     ResponsiveSectionV17(tr(lang,"12 · Bitácora clínica","12 · Clinical log"),tr(lang,"Registra decisiones educativas y cambios relevantes para conservar trazabilidad dentro del expediente.","Log educational decisions and relevant changes for traceability within the record.")) {
