@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -230,7 +231,7 @@ private fun ResultCard19(text:String) {
 }
 
 @Composable
-fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onBack:()->Unit) {
+fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionChanged:(EducationalSession)->Unit,onBack:()->Unit) {
     val patientAge=session.profile.age.toIntOrNull() ?: 18
     val patientSex=session.profile.sex
     var sex by rememberRecordState("vitals.sex",if(patientSex=="Masculino"||patientSex=="Femenino")patientSex else "No especificado")
@@ -240,6 +241,17 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onBack:()-
     var glucoseContext by rememberRecordState("vitals.glucoseContext",GlucoseContext19.RANDOM); var selectedSignsRaw by rememberRecordState("vitals.dentalSigns","")
     var weight by rememberRecordState("vitals.weight",""); var height by rememberRecordState("vitals.height","")
     val bmi=run{val w=weight.toDoubleOrNull();val h=height.toDoubleOrNull()?.div(100.0);if(w!=null&&h!=null&&h>0)w/h.pow(2)else null}
+    LaunchedEffect(spo2,rr,hr,sys,dia,temp) {
+        val bp = if (sys.isNotBlank() || dia.isNotBlank()) "$sys/$dia" else ""
+        val updated = session.profile.copy(
+            heartRate = hr,
+            respiratoryRate = rr,
+            bloodPressure = bp,
+            temperature = temp,
+            spo2 = spo2
+        )
+        if (updated != session.profile) onSessionChanged(session.copy(profile = updated))
+    }
     ResponsiveScreenV17(tr(lang,"Signos, síntomas y triage clínico","Clinical signs, symptoms and triage"),tr(lang,"Registra parámetros, signos y síntomas y obtén una orientación educativa sobre continuidad, diferimiento o referencia.","Record parameters, signs and symptoms and get educational guidance on proceeding, deferring or referring."),onBack){profile->
         ResponsiveSectionV17(tr(lang,"1 · Edad y sexo","1 · Age and sex")){
             Text(tr(lang,"Edad registrada: $patientAge años.","Recorded age: $patientAge years."))
@@ -303,7 +315,9 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onBack:()-
     }
 }
 @Composable
-fun VitalsInteractiveV19Screen(lang:String,onBack:()->Unit){VitalsInteractiveV19Screen(lang,EducationalSession(),onBack)}
+fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onBack:()->Unit){VitalsInteractiveV19Screen(lang,session,{},onBack)}
+@Composable
+fun VitalsInteractiveV19Screen(lang:String,onBack:()->Unit){VitalsInteractiveV19Screen(lang,EducationalSession(),{},onBack)}
 
 private fun cpodStatus19(status:ToothStatus,lang:String):String = when(status) {
     ToothStatus.HEALTHY -> tr(lang,"Sano / presente","Sound / present")
