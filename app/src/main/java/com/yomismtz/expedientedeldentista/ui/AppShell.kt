@@ -84,6 +84,7 @@ fun AppRoot(
     Crossfade(targetState = screen, label = "folder_navigation") { target ->
         when (target) {
             AppScreen.SECTION -> FolderSpreadScreen(preferences.languageTag, { screen = it }, { screen = AppScreen.FOLDER }, { screen = AppScreen.SETTINGS })
+            AppScreen.SUMMARY -> ClinicalSummaryV53Screen(preferences.languageTag, session, folderBack)
             AppScreen.HOME -> FolderCoverScreen(
                 lang = preferences.languageTag,
                 title = preferences.clinicianTitle,
@@ -121,6 +122,7 @@ fun AppRoot(
             AppScreen.APICAL -> ApicalScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.TREATMENT -> TreatmentScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.SESSIONS -> TreatmentBySessionsScreen(preferences.languageTag, session, folderBack)
+            AppScreen.OPERATORIA -> OperativeRestorativeScreen(preferences.languageTag, folderBack)
             AppScreen.ENDO -> EndodonticSheetScreen(
                 preferences.languageTag, session,
                 onOpenPulpal = { screen = AppScreen.PULPAL },
