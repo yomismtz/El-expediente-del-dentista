@@ -74,6 +74,7 @@ private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
   item{ScreenHeader("Antecedentes personales patológicos",onBack,"Selecciona categoría → enfermedad → datos del antecedente. Al guardar regresarás a la lista para continuar sin recorrer nuevamente toda la pantalla.")}
   item{NoticeCard("ASA es una orientación educativa: depende de gravedad, control, repercusión sistémica y valoración completa; el diagnóstico por sí solo no determina la clase.")}
+  item{StructuredMedicalContextV1(session,onSessionChanged)}
   item{Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(3.dp)){Text("ASA "+asa37(saved,tobacco,alcohol)+" · orientación automática",fontWeight=FontWeight.Black);Text("Antecedentes registrados: "+saved.values.count{it.present},fontWeight=FontWeight.SemiBold);Text("Integra tabaco, alcohol y enfermedades registradas. Debe confirmarse clínicamente y con supervisión docente.",style=MaterialTheme.typography.bodySmall)}}}
   if(category==null){
    item{SectionCard("0 · Tabaco y alcohol"){
