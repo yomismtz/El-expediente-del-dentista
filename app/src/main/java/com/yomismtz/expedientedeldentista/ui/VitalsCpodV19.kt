@@ -390,7 +390,11 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
             spo2 = spo2,
             weightKg = weight,
             heightCm = height,
-            bmi = bmi?.let{"%.1f".format(it)} ?: ""
+            bmi = bmi?.let{"%.1f".format(it)} ?: "",
+            clinicalSigns = selectedSignsRaw,
+            painScore = painScore,
+            glucose = glucose,
+            glucoseContext = glucoseContext.name
         )
         if (updated != session.profile) onSessionChanged(session.copy(profile = updated))
     }
