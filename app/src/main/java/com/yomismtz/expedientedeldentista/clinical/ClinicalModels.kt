@@ -40,7 +40,11 @@ data class PatientProfile(
     val betaBlockersAntiarrhythmics: String = "",
     val diabetesTreatment: String = "",
     val hepaticRenalDisease: String = "",
-    val pregnancyStatus: String = ""
+    val pregnancyStatus: String = "",
+    val clinicalSigns: String = "",
+    val painScore: String = "",
+    val glucose: String = "",
+    val glucoseContext: String = ""
 )
 
 data class DiseaseAnswer(
