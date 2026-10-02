@@ -47,15 +47,10 @@ jobs:
           gradle-version: '8.9'
 
       - name: Build debug APK
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          gradle :app:assembleDebug --stacktrace 2>&1 | tee build-debug.log
-          exit ${PIPESTATUS[0]}
+        run: gradle :app:assembleDebug --stacktrace
 
       - name: Build release AAB
-        continue-on-error: true
-        run: gradle :app:bundleRelease --stacktrace 2>&1 | tee build-release.log
+        run: gradle :app:bundleRelease --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
