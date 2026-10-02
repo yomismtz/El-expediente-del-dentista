@@ -485,6 +485,13 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
                 )
             )
         }
+        val dashboardSigns=selectedSignsRaw.split("|").filter{it.isNotBlank()}.toSet()
+        ClinicalDecisionDashboardV1(
+            lang=lang, session=session, age=patientAge, sex=sex,
+            sys=sys.toIntOrNull(), dia=dia.toIntOrNull(), rr=rr.toIntOrNull(), hr=hr.toIntOrNull(),
+            spo2=spo2.toIntOrNull(), glucose=glucose.toIntOrNull(), temp=temp.toDoubleOrNull(),
+            bmi=bmi, signs=dashboardSigns, pain=painScore.toIntOrNull(), onSessionChanged=onSessionChanged
+        )
         NoticeCard(tr(lang,"Fuentes educativas: AAP para cribado de TA pediátrica; AHA/PALS para hipotensión pediátrica; ADA/ADA Standards 2026 para glucosa e hipertensión dental; FDA para SpO₂. La herramienta orienta el triage y no sustituye protocolos institucionales ni valoración médica.","Educational sources: AAP for pediatric BP screening; AHA/PALS for pediatric hypotension; ADA/ADA Standards 2026 for glucose and dental hypertension; FDA for SpO₂. This tool supports triage and does not replace institutional protocols or medical assessment."))
     }
 }
