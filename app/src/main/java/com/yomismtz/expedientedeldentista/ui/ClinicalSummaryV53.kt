@@ -82,6 +82,18 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
             p.respiratoryRate.toIntOrNull(),p.heartRate.toIntOrNull(),p.spo2.toIntOrNull(),p.glucose.toIntOrNull(),p.temperature.toDoubleOrNull(),
             p.bmi.toDoubleOrNull(),triageSigns,p.painScore.toIntOrNull(),p
         )
+        SummaryCardV53(tr(lang,"Signos vitales y antropometría","Vital signs and anthropometrics")){
+            SummaryLineV53("TA",p.bloodPressure.ifBlank{"—"})
+            SummaryLineV53("FC",p.heartRate.ifBlank{"—"})
+            SummaryLineV53("FR",p.respiratoryRate.ifBlank{"—"})
+            SummaryLineV53("SpO₂",if(p.spo2.isBlank())"—" else p.spo2+" %")
+            SummaryLineV53("Temperatura",if(p.temperature.isBlank())"—" else p.temperature+" °C")
+            SummaryLineV53("Glucosa",if(p.glucose.isBlank())"—" else p.glucose+" mg/dL")
+            SummaryLineV53("Peso / talla",if(p.weightKg.isBlank()&&p.heightCm.isBlank())"—" else p.weightKg+" kg / "+p.heightCm+" cm")
+            SummaryLineV53("IMC",p.bmi.ifBlank{"—"})
+            SummaryLineV53("Dolor",if(p.painScore.isBlank())"—" else p.painScore+"/10")
+            SummaryLineV53("Signos",triageSigns.joinToString(", ").ifBlank{"Ninguno registrado"})
+        }
         SummaryCardV53(tr(lang,"Triage, tratamientos y anestesia","Triage, treatments and anesthesia")){
             Text(if(lang=="en")triage.titleEn else triage.titleEs,fontWeight=FontWeight.Black)
             Text(if(lang=="en")triage.detailEn else triage.detailEs)
