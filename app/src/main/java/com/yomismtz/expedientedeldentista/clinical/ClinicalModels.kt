@@ -34,7 +34,13 @@ data class PatientProfile(
     val spo2: String = "",
     val weightKg: String = "",
     val heightCm: String = "",
-    val bmi: String = ""
+    val bmi: String = "",
+    val cardiovascularHistory: String = "",
+    val anticoagulantsAntiplatelets: String = "",
+    val betaBlockersAntiarrhythmics: String = "",
+    val diabetesTreatment: String = "",
+    val hepaticRenalDisease: String = "",
+    val pregnancyStatus: String = ""
 )
 
 data class DiseaseAnswer(
@@ -96,6 +102,12 @@ data class PulpalAssessment(
     val previousPartialEndo: Boolean = false
 )
 
+data class ClinicalEvent(
+    val timestamp: Long = System.currentTimeMillis(),
+    val type: String = "",
+    val detail: String = ""
+)
+
 data class EducationalSession(
     val profile: PatientProfile = PatientProfile(),
     val history: HistoryState = HistoryState(),
@@ -108,7 +120,8 @@ data class EducationalSession(
     val ihosDebris: Map<Int, Int> = emptyMap(),
     val ihosCalculus: Map<Int, Int> = emptyMap(),
     val periodontogram: Map<Int, PerioRecord> = emptyMap(),
-    val pulpal: PulpalAssessment = PulpalAssessment()
+    val pulpal: PulpalAssessment = PulpalAssessment(),
+    val clinicalEvents: List<ClinicalEvent> = emptyList()
 )
 
 data class IndexResult(
