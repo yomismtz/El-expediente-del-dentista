@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.ClinicalDecisionV1
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEvent
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
-import evaluateClinicalDecisionV1
+import com.yomismtz.expedientedeldentista.clinical.evaluateClinicalDecisionV1
 
 private fun decisionTextV1(d:ClinicalDecisionV1,lang:String):String =
     if(lang=="en") d.detailEn else d.detailEs
