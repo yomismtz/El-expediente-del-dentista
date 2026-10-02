@@ -79,6 +79,7 @@ private val tabsV19=listOf(
     TabV19(AppScreen.SESSIONS,"🗓","Plan de tratamiento por sesiones","Treatment plan by sessions",4),
 
     // 6 · Tratamiento y fichas clínicas
+    TabV19(AppScreen.OPERATORIA,"🧩","Operatoria y restauración","Operative and restorative dentistry",5),
     TabV19(AppScreen.ENDO,"⚡","Ficha endodóntica","Endodontic sheet",5),
     TabV19(AppScreen.PROSTHETIC,"👑","Ficha protésica","Prosthetic sheet",5),
     TabV19(AppScreen.SURGICAL,"✚","Ficha quirúrgica","Surgical sheet",5),
@@ -198,6 +199,7 @@ fun AdaptiveBaseRootV19(
         AppScreen.PULPAL,AppScreen.APICAL -> PulpalPeriapicalInteractiveV2Screen(lang,session,onSessionChanged,{navigate(AppScreen.ENDO)},backPrevious)
         AppScreen.TREATMENT -> TreatmentScreen(lang,session,onSessionChanged,backPrevious)
         AppScreen.SESSIONS -> TreatmentBySessionsScreen(lang,session,backPrevious)
+        AppScreen.OPERATORIA -> OperativeRestorativeScreen(lang,backPrevious)
         AppScreen.ENDO -> EndodonticInteractiveV2Screen(lang,session,{navigate(AppScreen.PULPAL)},{navigate(AppScreen.APICAL)},backPrevious)
         AppScreen.PROSTHETIC -> ProstheticResponsiveV17Screen(lang,backPrevious)
         AppScreen.SURGICAL -> SurgicalSheetScreen(lang,backPrevious)
