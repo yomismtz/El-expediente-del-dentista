@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -33,11 +34,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEngines
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
+import com.yomismtz.expedientedeldentista.R
 import kotlin.math.pow
 
 private data class TeachingItem(
@@ -48,6 +52,23 @@ private data class TeachingItem(
     val exampleEs: String = "",
     val exampleEn: String = ""
 )
+
+@Composable
+
+@Composable
+private fun ClinicalImageCard(lang: String, titleEs: String, titleEn: String, resId: Int) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(tr(lang, titleEs, titleEn), fontWeight = FontWeight.Bold)
+            Image(
+                painter = painterResource(resId),
+                contentDescription = tr(lang, titleEs, titleEn),
+                modifier = Modifier.fillMaxWidth().height(190.dp),
+                contentScale = ContentScale.Fit
+            )
+        }
+    }
+}
 
 @Composable
 private fun ExpandableTeachingCard(item: TeachingItem, lang: String) {
@@ -204,6 +225,21 @@ fun EndodonticSheetScreen(
                         "2025–2026 update: AAE and ESE are jointly revising diagnostic terminology. The proposal remains under stakeholder review; this build therefore preserves the record's teaching classification and notes that final terminology should be verified before academic publication."))
                 }
             }
+
+                item {
+                    SectionCard(tr(lang, "Procedimientos endodónticos · imágenes", "Endodontic procedures · images")) {
+                        ClinicalImageCard(lang, "Acceso cameral", "Access cavity", R.drawable.clinical_endo_acceso_cameral)
+                        ClinicalImageCard(lang, "Conductos radiculares", "Root canals", R.drawable.clinical_endo_conductos_radiculares)
+                        ClinicalImageCard(lang, "Longitud de trabajo", "Working length", R.drawable.clinical_endo_longitud_trabajo)
+                        ClinicalImageCard(lang, "Instrumentación", "Instrumentation", R.drawable.clinical_endo_instrumentacion)
+                        ClinicalImageCard(lang, "Irrigación", "Irrigation", R.drawable.clinical_endo_irrigacion)
+                        ClinicalImageCard(lang, "Conometría", "Cone fitting", R.drawable.clinical_endo_conometria)
+                        ClinicalImageCard(lang, "Obturación", "Obturation", R.drawable.clinical_endo_obturacion)
+                        ClinicalImageCard(lang, "Obturación · detalle", "Obturation · detail", R.drawable.clinical_endo_obturacion_detalle)
+                        ClinicalImageCard(lang, "Radiografía final", "Final radiograph", R.drawable.clinical_endo_radiografia_final)
+                        ClinicalImageCard(lang, "Restauración coronal", "Coronal restoration", R.drawable.clinical_endo_restauracion_coronal)
+                    }
+                }
             1 -> items(steps) { ExpandableTeachingCard(it, lang) }
             else -> {
                 item {
@@ -360,6 +396,30 @@ fun SurgicalSheetScreen(lang: String, onBack: () -> Unit) {
         }
         item { Pick(tr(lang,"4 · Anestesia","4 · Anesthesia"),anesthesias,anesthesia){anesthesia=it} }
         item { Pick(tr(lang,"5 · Técnica realizada","5 · Technique performed"),techniques,technique){technique=it} }
+        item {
+            val techniqueImage = when (technique) {
+                "Colgajo autorizado" -> R.drawable.clinical_cirugia_despegamiento_colgajo
+                "Osteotomía/odontosección bajo supervisión" -> R.drawable.clinical_cirugia_osteotomia
+                "Toma de muestra / biopsia autorizada" -> R.drawable.clinical_cirugia_legrado
+                else -> when (procedure) {
+                    "Exodoncia simple", "Exodoncia quirúrgica autorizada" -> R.drawable.clinical_cirugia_extraccion
+                    "Sutura" -> R.drawable.clinical_cirugia_sutura
+                    "Retiro de sutura" -> R.drawable.clinical_cirugia_sutura
+                    "Control posoperatorio" -> R.drawable.clinical_cirugia_postoperatorio
+                    else -> R.drawable.clinical_cirugia_anestesia_local
+                }
+            }
+            ClinicalImageCard(lang, "Imagen de la técnica seleccionada", "Selected technique image", techniqueImage)
+        }
+        item {
+            val anesthesiaImage = when (anesthesia) {
+                "Anestesia local según protocolo" -> R.drawable.clinical_cirugia_anestesia_local
+                "Anestesia tópica + local según protocolo" -> R.drawable.clinical_anestesia_infiltrativa
+                else -> R.drawable.clinical_anestesia_infiltrativa
+            }
+            ClinicalImageCard(lang, "Referencia visual de anestesia", "Anesthesia visual reference", anesthesiaImage)
+        }
+
         item { Pick(tr(lang,"6 · Hallazgo transoperatorio","6 · Intraoperative finding"),findings,finding){finding=it} }
         item { Pick(tr(lang,"7 · Hemostasia","7 · Hemostasis"),hemostasisOptions,hemostasis){hemostasis=it} }
         item { Pick(tr(lang,"8 · Sutura","8 · Suture"),sutures,suture){suture=it} }

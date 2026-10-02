@@ -4,6 +4,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 private data class ImagingType15(val name:String,val use:String)
 private val imagingTypes15=listOf(
 ImagingType15("Periapical","Ápices, raíces, periodonto y región periapical; detalle dentoalveolar localizado."),
@@ -54,6 +57,13 @@ private fun ImagingFindingImageV20(lang:String,group:String,finding:String){
    Text(imagingTypes15.first{it.name==study}.use,style=MaterialTheme.typography.bodySmall)
   }
   studyMethodsV23[study]?.let{methods->ResponsiveSectionV17("2 · Cómo analizar este estudio","Método educativo, puntos y significado clínico."){methods.forEach{Text("• "+it)}}}
+  if (study == "Cefalométrica lateral") {
+   ResponsiveSectionV17("Imagen cefalométrica","Cefalometric image") {
+    Image(painterResource(com.yomismtz.expedientedeldentista.R.drawable.clinical_rx_cefalometria_lateral),contentDescription="Cefalometría lateral",modifier=Modifier.fillMaxWidth(),contentScale=ContentScale.Fit)
+    Image(painterResource(com.yomismtz.expedientedeldentista.R.drawable.clinical_rx_cefalometria_trazado),contentDescription="Trazado cefalométrico",modifier=Modifier.fillMaxWidth(),contentScale=ContentScale.Fit)
+   }
+  }
+
   ResponsiveSectionV17("3 · Revisión sistemática","Selecciona lo observado. Los términos «aparente» y «sospechada» evitan convertir una imagen aislada en diagnóstico definitivo."){
    AdaptiveGridV17(findingGroups15.size,if(profile.width==ScreenWidthV17.COMPACT)2 else 3){i->val name=findingGroups15[i].first;FilterChip(group==name,{group=name},{Text(name)},Modifier.fillMaxWidth())}
    val opts=findingGroups15.first{it.first==group}.second
