@@ -75,7 +75,7 @@ fun ClinicalDecisionDashboardV1(
     }
 
     ResponsiveSectionV17(tr(lang,"11 · Resumen operativo","11 · Operational summary"),tr(lang,"Sólo se muestran hasta 3 líneas de manejo compatibles con los datos. No son una autorización automática.","Only up to 3 management lines compatible with the data are shown. They are not automatic clearance.")) {
-        if(d.treatments.isEmpty()) ResultCard19(tr(lang,"🚨 No hay tratamiento dental electivo compatible con los datos actuales.","🚨 No elective dental treatment is compatible with the current data."))
+        if(d.treatments.isEmpty()) Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.errorContainer)){Text(tr(lang,"🚨 No hay tratamiento dental electivo compatible con los datos actuales.","🚨 No elective dental treatment is compatible with the current data."),Modifier.padding(12.dp),fontWeight=FontWeight.Bold)}
         else d.treatments.forEachIndexed { index,t ->
             Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){ Text("${index+1}. $t",Modifier.padding(12.dp),fontWeight=FontWeight.Bold) }
         }
