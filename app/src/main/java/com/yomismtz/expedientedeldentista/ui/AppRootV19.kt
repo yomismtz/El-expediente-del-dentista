@@ -414,7 +414,6 @@ private fun RecordMenuV19(
             }
             NoticeCard("Los ejercicios se guardan únicamente en este dispositivo para poder consultarlos y continuarlos después.")
         }
-        }
     }
 
     deleteTarget?.let { target ->
