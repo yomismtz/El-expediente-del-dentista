@@ -99,6 +99,9 @@ class ClinicalRecordStore(context: Context) {
         o.put("clinicalMeasurements", JSONArray().also { a -> s.clinicalMeasurements.forEach { m ->
             a.put(JSONObject().put("timestamp",m.timestamp).put("systolic",m.systolic).put("diastolic",m.diastolic).put("heartRate",m.heartRate).put("respiratoryRate",m.respiratoryRate).put("spo2",m.spo2).put("temperature",m.temperature).put("glucose",m.glucose).put("weightKg",m.weightKg).put("bmi",m.bmi).put("pain",m.pain))
         } })
+        o.put("informedConsents", JSONArray().also { a -> s.informedConsents.forEach { c ->
+            a.put(JSONObject().put("timestamp",c.timestamp).put("procedure",c.procedure).put("toothOrSite",c.toothOrSite).put("diagnosis",c.diagnosis).put("benefits",c.benefits).put("risks",c.risks).put("alternatives",c.alternatives).put("questionsAnswered",c.questionsAnswered).put("understood",c.understood).put("accepted",c.accepted).put("declined",c.declined).put("notes",c.notes).put("responsible",c.responsible))
+        } })
         return o
     }
 
@@ -118,6 +121,7 @@ class ClinicalRecordStore(context: Context) {
             periodontogram=perio, pulpal=o.optJSONObject("pulpal")?.let(::pulpalFromJson)?:PulpalAssessment(),
             clinicalEvents=o.optJSONArray("clinicalEvents")?.let { a -> (0 until a.length()).map { i -> val e=a.getJSONObject(i); ClinicalEvent(e.optLong("timestamp"),e.optString("type"),e.optString("detail")) } } ?: emptyList(),
             clinicalMeasurements=o.optJSONArray("clinicalMeasurements")?.let { a -> (0 until a.length()).map { i -> val m=a.getJSONObject(i); ClinicalMeasurement(m.optLong("timestamp"),m.optInt("systolic").takeIf{m.has("systolic")&&!m.isNull("systolic")},m.optInt("diastolic").takeIf{m.has("diastolic")&&!m.isNull("diastolic")},m.optInt("heartRate").takeIf{m.has("heartRate")&&!m.isNull("heartRate")},m.optInt("respiratoryRate").takeIf{m.has("respiratoryRate")&&!m.isNull("respiratoryRate")},m.optInt("spo2").takeIf{m.has("spo2")&&!m.isNull("spo2")},m.optDouble("temperature").takeIf{m.has("temperature")&&!m.isNull("temperature")},m.optInt("glucose").takeIf{m.has("glucose")&&!m.isNull("glucose")},m.optDouble("weightKg").takeIf{m.has("weightKg")&&!m.isNull("weightKg")},m.optDouble("bmi").takeIf{m.has("bmi")&&!m.isNull("bmi")},m.optInt("pain").takeIf{m.has("pain")&&!m.isNull("pain")}) } } ?: emptyList()
+            informedConsents=o.optJSONArray("informedConsents")?.let { a -> (0 until a.length()).map { i -> val c=a.getJSONObject(i); InformedConsent(c.optLong("timestamp"),c.optString("procedure"),c.optString("toothOrSite"),c.optString("diagnosis"),c.optString("benefits"),c.optString("risks"),c.optString("alternatives"),c.optBoolean("questionsAnswered"),c.optBoolean("understood"),c.optBoolean("accepted"),c.optBoolean("declined"),c.optString("notes"),c.optString("responsible")) } } ?: emptyList()
         )
     }
 
