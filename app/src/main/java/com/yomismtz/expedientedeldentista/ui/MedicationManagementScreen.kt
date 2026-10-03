@@ -51,6 +51,16 @@ private val medicationCatalog=listOf(
     MedicationOption("Celecoxib",listOf(MedicationPresentation("Cápsula 200 mg","200","mg","Oral")))
 )
 
+private val pediatricDoseGuides=mapOf(
+    "Paracetamol" to "10–15 mg/kg por dosis",
+    "Ibuprofeno" to "5–10 mg/kg por dosis",
+    "Amoxicilina" to "25–50 mg/kg/día",
+    "Amoxicilina + ácido clavulánico" to "25–45 mg/kg/día (componente de amoxicilina)",
+    "Azitromicina" to "10 mg/kg el día 1; después 5 mg/kg/día",
+    "Clindamicina" to "20–40 mg/kg/día",
+    "Metronidazol" to "20–30 mg/kg/día"
+)
+
 private val frequencyOptions=listOf("Dosis única","Cada 6 horas","Cada 8 horas","Cada 12 horas","Cada 24 horas","Cada 48 horas")
 
 private val anestheticOptions=listOf(
@@ -89,6 +99,12 @@ fun MedicationManagementScreen(lang:String,session:EducationalSession,onSessionC
 
     val medications=session.medicationsStructured
     val weight=weightText.replace(",",".").toDoubleOrNull()
+    val pediatricGuide=selectedMedication?.generic?.let{pediatricDoseGuides[it]}
+    val pediatricRange=when(selectedMedication?.generic){
+        "Paracetamol" -> weight?.let{w -> (w*10.0).toString()+"–"+(w*15.0).toString()+" mg por dosis"}
+        "Ibuprofeno" -> weight?.let{w -> (w*5.0).toString()+"–"+(w*10.0).toString()+" mg por dosis"}
+        else -> null
+    }
     val medicationDraft=selectedMedication?.let{med->selectedPresentation?.let{p->MedicationRecord(name=med.generic,activeIngredient=med.generic,dose=p.dose,unit=p.unit,route=p.route,frequency=selectedFrequency)}}
     val duplicate=medicationDraft!=null&&selectedFrequency.isNotBlank()&&medications.any{medicationKey(it)==medicationKey(medicationDraft)}
     val weightLabel=if(weightText.isBlank())"pendiente" else weightText
@@ -112,6 +128,19 @@ fun MedicationManagementScreen(lang:String,session:EducationalSession,onSessionC
                 row.forEach{option->FilterChip(selected=selectedMedication?.generic==option.generic,onClick={selectedMedication=option;selectedPresentation=null;selectedFrequency=""},label={Text(option.generic)})}
             }
         }
+        selectedMedication?.let{medication->
+            pediatricGuide?.let{guide->
+                Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){
+                    Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
+                        Text(tr(lang,"Referencia pediátrica educativa","Educational pediatric reference"),fontWeight=FontWeight.Black)
+                        Text(tr(lang,"Referencia por peso","Weight-based reference")+": "+guide)
+                        pediatricRange?.let{range->Text(tr(lang,"Rango calculado para el peso registrado","Calculated range for recorded weight")+": "+range)}
+                        Text(tr(lang,"Este cálculo es orientativo para aprendizaje; debe verificarse con la información oficial del medicamento, edad, indicación y características del paciente.","This calculation is educational; verify it against official product information, age, indication and patient characteristics."))
+                    }
+                }
+            }
+        }
+
         selectedMedication?.let{medication->
             ChoiceRow(tr(lang,"Presentación","Presentation"),medication.presentations.map{it.label},selectedPresentation?.label.orEmpty()){label->selectedPresentation=medication.presentations.first{it.label==label}}
             ChoiceRow(tr(lang,"Frecuencia / pauta","Frequency / schedule"),frequencyOptions,selectedFrequency){selectedFrequency=it}
