@@ -140,6 +140,8 @@ data class InformedConsent(
     val responsible: String = ""
 )
 
+data class ClinicalPhotoRecord(val slot:String,val uri:String,val purpose:String="",val notes:String="",val capturedAt:Long=System.currentTimeMillis())
+
 data class ClinicalMeasurement(
     val timestamp: Long = System.currentTimeMillis(),
     val systolic: Int? = null,
@@ -176,7 +178,8 @@ data class EducationalSession(
     val clinicalEvents: List<ClinicalEvent> = emptyList(),
     val clinicalMeasurements: List<ClinicalMeasurement> = emptyList(),
     val informedConsents: List<InformedConsent> = emptyList(),
-    val medicationsStructured: List<MedicationRecord> = emptyList()
+    val medicationsStructured: List<MedicationRecord> = emptyList(),
+    val clinicalPhotos: Map<String, ClinicalPhotoRecord> = emptyMap()
 )
 
 data class IndexResult(

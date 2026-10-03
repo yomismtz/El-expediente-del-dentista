@@ -217,6 +217,7 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     val photoZoom=rememberRecordStateMap<String,Float>("photo.zoomByView")
     val photoOffsetX=rememberRecordStateMap<String,Float>("photo.offsetXByView")
     val photoOffsetY=rememberRecordStateMap<String,Float>("photo.offsetYByView")
+    fun persistPhotos(){if(activeRecordId.isBlank())return;ClinicalRecordStore(context).updateSession(activeRecordId){current->val merged=current.clinicalPhotos.toMutableMap();photoUris.forEach{(slot,uri)->if(!uri.isNullOrBlank())merged[slot]=com.yomismtz.expedientedeldentista.clinical.ClinicalPhotoRecord(slot,uri,purpose,notes)};current.copy(clinicalPhotos=merged,clinicalEvents=current.clinicalEvents+com.yomismtz.expedientedeldentista.clinical.ClinicalEvent(System.currentTimeMillis(),"clinical_photo_save","Fotografías clínicas actualizadas: ${merged.size}"))}}}
     val launcher=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()){uri:Uri?->
         if(uri!=null){
             runCatching{context.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)}
@@ -296,14 +297,14 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
         ResponsiveSectionV17(tr(lang,"4 · Expediente físico","4 · Physical record"),tr(lang,"Genera una hoja clínica local con identificación, fecha, etiquetas, finalidad y notas. Elige composición completa o compacta.","Creates a local clinical sheet with identification, date, labels, purpose and notes. Choose full or compact layout.")){
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(!pdfCompact,{pdfCompact=false},{Text(tr(lang,"Completo","Full"))},Modifier.weight(1f));FilterChip(pdfCompact,{pdfCompact=true},{Text(tr(lang,"Compacto","Compact"))},Modifier.weight(1f))}
             Row(Modifier.fillMaxWidth()){Checkbox(pdfIncludeIdentity,{pdfIncludeIdentity=it});Text(tr(lang,"Incluir identificación y número de expediente","Include identification and record number"),Modifier.padding(top=12.dp))}
-            Button(onClick={
-                val uri=createPhotoPdfV43(context,photoUris.toMap(),photoBrightness.toMap(),photoContrast.toMap(),photoSharpness.toMap(),photoRotation.toMap(),photoZoom.toMap(),photoOffsetX.toMap(),photoOffsetY.toMap(),if(pdfIncludeIdentity)patientLabel else "",if(pdfIncludeIdentity)activeRecordId else "",pdfDate,purpose,notes,pdfCompact,!pdfIncludeIdentity)
+            Button(onClick={persistPhotos(); val uri=createPhotoPdfV43(context,photoUris.toMap(),photoBrightness.toMap(),photoContrast.toMap(),photoSharpness.toMap(),photoRotation.toMap(),photoZoom.toMap(),photoOffsetX.toMap(),photoOffsetY.toMap(),if(pdfIncludeIdentity)patientLabel else "",if(pdfIncludeIdentity)activeRecordId else "",pdfDate,purpose,notes,pdfCompact,!pdfIncludeIdentity)
                 if(uri!=null){
                     lastPdfUri=uri
                     val send=Intent(Intent.ACTION_SEND).apply{type="application/pdf";putExtra(Intent.EXTRA_STREAM,uri);addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)}
                     context.startActivity(Intent.createChooser(send,tr(lang,"Guardar, imprimir o compartir PDF","Save, print or share PDF")))
                 }else Toast.makeText(context,tr(lang,"No fue posible generar el PDF.","PDF could not be generated."),Toast.LENGTH_SHORT).show()
             },enabled=photoUris.isNotEmpty(),modifier=Modifier.fillMaxWidth()){Text("📄 "+tr(lang,"Generar / guardar / compartir PDF","Generate / save / share PDF"),fontWeight=FontWeight.Bold)}
+            OutlinedButton(onClick={persistPhotos()},modifier=Modifier.fillMaxWidth()){Text("💾 "+tr(lang,"Guardar fotografías en el expediente","Save photographs to record"),fontWeight=FontWeight.Bold)}
             OutlinedButton(onClick={lastPdfUri?.let{printPhotoPdfV43(context,it)}},enabled=lastPdfUri!=null,modifier=Modifier.fillMaxWidth()){Text("🖨️ "+tr(lang,"Imprimir último PDF generado","Print last generated PDF"))}
         }
         NoticeCard(tr(lang,"La fotografía complementa la exploración. Los ajustes de brillo, contraste y nitidez son de presentación y no deben utilizarse para ocultar, crear o alterar hallazgos clínicos.","Photography complements examination. Brightness, contrast and sharpness adjustments are for presentation and must not be used to hide, create or alter clinical findings."))

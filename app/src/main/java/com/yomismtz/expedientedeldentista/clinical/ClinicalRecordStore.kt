@@ -59,6 +59,8 @@ class ClinicalRecordStore(context: Context) {
         write(records)
     }
 
+    fun updateSession(id:String,transform:(EducationalSession)->EducationalSession):SavedRecord?{val current=loadAll().firstOrNull{it.id==id}?:return null;val updated=current.copy(session=transform(current.session),updatedAt=System.currentTimeMillis());save(updated);return loadAll().firstOrNull{it.id==id}}
+
     fun touch(id: String) {
         val records = loadAll().map { if (it.id == id) it.copy(updatedAt = System.currentTimeMillis()) else it }
         write(records)
@@ -173,6 +175,7 @@ class ClinicalRecordStore(context: Context) {
         o.put("informedConsents", JSONArray().also { a -> s.informedConsents.forEach { c ->
             a.put(JSONObject().put("timestamp",c.timestamp).put("procedure",c.procedure).put("toothOrSite",c.toothOrSite).put("diagnosis",c.diagnosis).put("benefits",c.benefits).put("risks",c.risks).put("alternatives",c.alternatives).put("questionsAnswered",c.questionsAnswered).put("understood",c.understood).put("accepted",c.accepted).put("declined",c.declined).put("notes",c.notes).put("responsible",c.responsible))
         } })
+        o.put("clinicalPhotos", JSONArray().also { a -> s.clinicalPhotos.values.forEach { p -> a.put(JSONObject().put("slot",p.slot).put("uri",p.uri).put("purpose",p.purpose).put("notes",p.notes).put("capturedAt",p.capturedAt)) } })
         o.put("medicationsStructured", JSONArray().also { a -> s.medicationsStructured.forEach { m ->
             a.put(JSONObject().put("id",m.id).put("name",m.name).put("activeIngredient",m.activeIngredient).put("dose",m.dose).put("unit",m.unit).put("route",m.route).put("frequency",m.frequency).put("schedule",m.schedule).put("startDate",m.startDate).put("endDate",m.endDate).put("indication",m.indication).put("prescriber",m.prescriber).put("asNeeded",m.asNeeded).put("active",m.active).put("notes",m.notes))
         } })
@@ -196,6 +199,7 @@ class ClinicalRecordStore(context: Context) {
             clinicalEvents=o.optJSONArray("clinicalEvents")?.let { a -> (0 until a.length()).map { i -> val e=a.getJSONObject(i); ClinicalEvent(e.optLong("timestamp"),e.optString("type"),e.optString("detail")) } } ?: emptyList(),
             clinicalMeasurements=o.optJSONArray("clinicalMeasurements")?.let { a -> (0 until a.length()).map { i -> val m=a.getJSONObject(i); ClinicalMeasurement(m.optLong("timestamp"),m.optInt("systolic").takeIf{m.has("systolic")&&!m.isNull("systolic")},m.optInt("diastolic").takeIf{m.has("diastolic")&&!m.isNull("diastolic")},m.optInt("heartRate").takeIf{m.has("heartRate")&&!m.isNull("heartRate")},m.optInt("respiratoryRate").takeIf{m.has("respiratoryRate")&&!m.isNull("respiratoryRate")},m.optInt("spo2").takeIf{m.has("spo2")&&!m.isNull("spo2")},m.optDouble("temperature").takeIf{m.has("temperature")&&!m.isNull("temperature")},m.optInt("glucose").takeIf{m.has("glucose")&&!m.isNull("glucose")},m.optDouble("weightKg").takeIf{m.has("weightKg")&&!m.isNull("weightKg")},m.optDouble("bmi").takeIf{m.has("bmi")&&!m.isNull("bmi")},m.optInt("pain").takeIf{m.has("pain")&&!m.isNull("pain")}) } } ?: emptyList(),
             informedConsents=o.optJSONArray("informedConsents")?.let { a -> (0 until a.length()).map { i -> val c=a.getJSONObject(i); InformedConsent(c.optLong("timestamp"),c.optString("procedure"),c.optString("toothOrSite"),c.optString("diagnosis"),c.optString("benefits"),c.optString("risks"),c.optString("alternatives"),c.optBoolean("questionsAnswered"),c.optBoolean("understood"),c.optBoolean("accepted"),c.optBoolean("declined"),c.optString("notes"),c.optString("responsible")) } } ?: emptyList(),
+            clinicalPhotos=o.optJSONArray("clinicalPhotos")?.let { a -> (0 until a.length()).associate { i -> val p=a.getJSONObject(i); val r=ClinicalPhotoRecord(p.optString("slot"),p.optString("uri"),p.optString("purpose"),p.optString("notes"),p.optLong("capturedAt")); r.slot to r } } ?: emptyMap(),
             medicationsStructured=o.optJSONArray("medicationsStructured")?.let { a -> (0 until a.length()).map { i -> val m=a.getJSONObject(i); MedicationRecord(m.optString("id").ifBlank{UUID.randomUUID().toString()},m.optString("name"),m.optString("activeIngredient"),m.optString("dose"),m.optString("unit"),m.optString("route"),m.optString("frequency"),m.optString("schedule"),m.optString("startDate"),m.optString("endDate"),m.optString("indication"),m.optString("prescriber"),m.optBoolean("asNeeded"),m.optBoolean("active",true),m.optString("notes")) } } ?: emptyList()
         )
     }
