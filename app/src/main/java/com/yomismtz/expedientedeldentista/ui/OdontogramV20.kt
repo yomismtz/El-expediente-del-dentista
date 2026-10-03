@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
+import com.yomismtz.expedientedeldentista.clinical.ClinicalContent
+import com.yomismtz.expedientedeldentista.clinical.ClinicalEvent
 import com.yomismtz.expedientedeldentista.clinical.Surface
 import com.yomismtz.expedientedeldentista.clinical.SurfaceMark
 import com.yomismtz.expedientedeldentista.clinical.ToothRecord
@@ -183,6 +185,30 @@ fun OdontogramV20Screen(
                         teeth=session.teeth+(selectedTooth to record.copy(status=ToothStatus.HEALTHY))
                     ))
                 },modifier=Modifier.fillMaxWidth()) { Text(tr(lang,"Limpiar todas las caras del OD $selectedTooth","Clear all surfaces on tooth $selectedTooth")) }
+            }
+
+            val linkedPlan=record.diagnosisId?.let { id -> ClinicalContent.treatmentPlans.firstOrNull { it.id==id } }
+            val linkedOption=linkedPlan?.options?.firstOrNull { it.id==record.treatmentId }
+            Text(tr(lang,"Cadena clínica del OD","Tooth clinical chain"),fontWeight=FontWeight.Black)
+            Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer),modifier=Modifier.fillMaxWidth()){
+                Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){
+                    Text("OD $selectedTooth",fontWeight=FontWeight.Black)
+                    Text("1. "+tr(lang,"Hallazgos","Findings")+": "+if(marks.isEmpty())tr(lang,"Sin marcas de superficie","No surface marks") else marks.entries.joinToString(", "){surfaceShortV20(it.key)+": "+markLabelV20(it.value,lang)})
+                    Text("2. "+tr(lang,"Diagnóstico educativo","Teaching diagnosis")+": "+(linkedPlan?.let{if(lang=="en")it.diagnosisEn else it.diagnosisEs}?:tr(lang,"No vinculado","Not linked")))
+                    Text("3. "+tr(lang,"Tratamiento","Treatment")+": "+(linkedOption?.let{if(lang=="en")it.labelEn else it.labelEs}?:tr(lang,"No seleccionado","Not selected")))
+                    Text(tr(lang,"La relación se guarda por diente y no sustituye el diagnóstico clínico.","The relationship is stored per tooth and does not replace clinical diagnosis."),style=MaterialTheme.typography.bodySmall)
+                }
+            }
+            if(linkedPlan!=null){
+                Text(tr(lang,"Cambiar diagnóstico educativo","Change teaching diagnosis"),fontWeight=FontWeight.Black)
+                AdaptiveGridV17(ClinicalContent.treatmentPlans.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
+                    val plan=ClinicalContent.treatmentPlans[i]
+                    FilterChip(record.diagnosisId==plan.id,{onSessionChanged(session.copy(teeth=session.teeth+(selectedTooth to record.copy(diagnosisId=plan.id,treatmentId=null)),clinicalEvents=session.clinicalEvents+ClinicalEvent(System.currentTimeMillis(),"tooth_diagnosis_link","OD $selectedTooth → diagnóstico: "+plan.diagnosisEs)))},{Text(if(lang=="en")plan.diagnosisEn else plan.diagnosisEs)},Modifier.fillMaxWidth())
+                }
+                Text(tr(lang,"Tratamiento educativo","Teaching treatment"),fontWeight=FontWeight.Black)
+                linkedPlan.options.forEach { option->
+                    FilterChip(linkedOption?.id==option.id,{onSessionChanged(session.copy(teeth=session.teeth+(selectedTooth to record.copy(treatmentId=option.id)),clinicalEvents=session.clinicalEvents+ClinicalEvent(System.currentTimeMillis(),"tooth_treatment_link","OD $selectedTooth → tratamiento: "+option.labelEs)))},{Text(if(lang=="en")option.labelEn else option.labelEs)},Modifier.fillMaxWidth())
+                }
             }
 
             Text(tr(lang,"Estado del diente completo","Whole-tooth status"),fontWeight=FontWeight.Black)
