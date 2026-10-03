@@ -279,6 +279,7 @@ private fun RecordMenuV19(
     var age by rememberSaveable { mutableStateOf("") }
     var sex by rememberSaveable { mutableStateOf("") }
     var deleteTarget by remember { mutableStateOf<SavedRecord?>(null) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
 
     Column(
         Modifier.fillMaxSize().safeDrawingPadding().verticalScroll(rememberScrollState()).padding(18.dp),
@@ -363,21 +364,56 @@ private fun RecordMenuV19(
         if(mode=="load") {
             OutlinedButton(onClick={mode="home"}) { Text("‹ Volver") }
             Text("📚 Expedientes guardados", style=MaterialTheme.typography.titleLarge, fontWeight=FontWeight.Black)
+            OutlinedTextField(
+                value=searchQuery,
+                onValueChange={searchQuery=it},
+                label={Text("Buscar expediente")},
+                placeholder={Text("Iniciales, ejercicio, fecha, motivo o identificador local")},
+                singleLine=true,
+                modifier=Modifier.fillMaxWidth()
+            )
+            if(searchQuery.isNotBlank()) {
+                OutlinedButton(onClick={searchQuery=""},modifier=Modifier.fillMaxWidth()){Text("Limpiar búsqueda")}
+            }
+            val normalizedSearch=searchQuery.trim().lowercase(java.util.Locale.getDefault())
+            val filteredRecords=records.filter { record ->
+                if(normalizedSearch.isBlank()) true else {
+                    val p=record.session.profile
+                    val date=java.text.SimpleDateFormat("dd/MM/yyyy HH:mm",java.util.Locale.getDefault()).format(java.util.Date(record.updatedAt))
+                    listOf(record.id,record.title,p.patientInitials,p.exerciseName,p.reasonForVisit,date).any {
+                        it.trim().lowercase(java.util.Locale.getDefault()).contains(normalizedSearch)
+                    }
+                }
+            }
             if(records.isEmpty()) {
                 Card(Modifier.fillMaxWidth()) { Text("Todavía no hay prácticas guardadas.", Modifier.padding(18.dp)) }
-            } else records.forEach { record ->
-                Card(onClick={onLoad(record)}, modifier=Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp), verticalArrangement=Arrangement.spacedBy(6.dp)) {
-                        val p=record.session.profile
-                        Text((if(record.id==activeId)"▶ " else "")+(p.patientInitials.ifBlank{record.title}),fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
-                        Text("Edad: "+p.age.ifBlank{"—"}+" · Sexo: "+p.sex.ifBlank{"—"})
-                        val date=remember(record.updatedAt){java.text.SimpleDateFormat("dd/MM/yyyy · HH:mm",java.util.Locale.getDefault()).format(java.util.Date(record.updatedAt))}
-                        Text("Última consulta: $date", style=MaterialTheme.typography.bodySmall)
-                        OutlinedButton(onClick={deleteTarget=record}) { Text("Eliminar práctica") }
+            } else if(filteredRecords.isEmpty()) {
+                Card(Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(18.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
+                        Text("No se encontraron expedientes",fontWeight=FontWeight.Black)
+                        Text("Prueba con iniciales, nombre de ejercicio, fecha, motivo de consulta o identificador local.")
+                    }
+                }
+            } else {
+                Text(filteredRecords.size.toString()+" expediente(s) encontrado(s)",style=MaterialTheme.typography.bodySmall,fontWeight=FontWeight.Bold)
+                filteredRecords.forEach { record ->
+                    Card(onClick={onLoad(record)}, modifier=Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(14.dp), verticalArrangement=Arrangement.spacedBy(6.dp)) {
+                            val p=record.session.profile
+                            Text((if(record.id==activeId)"▶ " else "")+(p.patientInitials.ifBlank{record.title}),fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
+                            Text("Edad: "+p.age.ifBlank{"—"}+" · Sexo: "+p.sex.ifBlank{"—"})
+                            val date=remember(record.updatedAt){java.text.SimpleDateFormat("dd/MM/yyyy · HH:mm",java.util.Locale.getDefault()).format(java.util.Date(record.updatedAt))}
+                            Text("Última consulta: $date", style=MaterialTheme.typography.bodySmall)
+                            if(p.exerciseName.isNotBlank()) Text("Ejercicio: "+p.exerciseName,style=MaterialTheme.typography.bodySmall)
+                            if(p.reasonForVisit.isNotBlank()) Text("Motivo: "+p.reasonForVisit,style=MaterialTheme.typography.bodySmall)
+                            Text("ID local: "+record.id.take(12)+"…",style=MaterialTheme.typography.bodySmall)
+                            OutlinedButton(onClick={deleteTarget=record}) { Text("Eliminar práctica") }
+                        }
                     }
                 }
             }
             NoticeCard("Los ejercicios se guardan únicamente en este dispositivo para poder consultarlos y continuarlos después.")
+        }
         }
     }
 
