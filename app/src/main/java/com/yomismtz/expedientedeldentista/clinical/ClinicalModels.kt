@@ -106,6 +106,24 @@ data class PulpalAssessment(
     val previousPartialEndo: Boolean = false
 )
 
+data class MedicationRecord(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val name: String = "",
+    val activeIngredient: String = "",
+    val dose: String = "",
+    val unit: String = "",
+    val route: String = "",
+    val frequency: String = "",
+    val schedule: String = "",
+    val startDate: String = "",
+    val endDate: String = "",
+    val indication: String = "",
+    val prescriber: String = "",
+    val asNeeded: Boolean = false,
+    val active: Boolean = true,
+    val notes: String = ""
+)
+
 data class InformedConsent(
     val timestamp: Long = System.currentTimeMillis(),
     val procedure: String = "",
@@ -157,7 +175,8 @@ data class EducationalSession(
     val pulpal: PulpalAssessment = PulpalAssessment(),
     val clinicalEvents: List<ClinicalEvent> = emptyList(),
     val clinicalMeasurements: List<ClinicalMeasurement> = emptyList(),
-    val informedConsents: List<InformedConsent> = emptyList()
+    val informedConsents: List<InformedConsent> = emptyList(),
+    val medicationsStructured: List<MedicationRecord> = emptyList()
 )
 
 data class IndexResult(
