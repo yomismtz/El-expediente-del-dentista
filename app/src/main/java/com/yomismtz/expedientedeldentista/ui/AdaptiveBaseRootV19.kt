@@ -181,6 +181,7 @@ fun AdaptiveBaseRootV19(
         AppScreen.HISTORY_ORAL_EXAM -> MucosaInteractiveV19Screen(lang,backPrevious)
         AppScreen.SYSTEMIC_PROTOCOLS -> SystemicProtocols37Screen(lang,backPrevious)
         AppScreen.INTAKE -> IntakeNoteScreen(lang,session,backPrevious)
+        AppScreen.MEDICATIONS -> MedicationManagementScreen(lang,session,onSessionChanged,backPrevious)
         AppScreen.ACTIVITIES -> ActivitiesScreen(lang,backPrevious)
         AppScreen.VITALS -> VitalsInteractiveV19Screen(lang,session,onSessionChanged,backPrevious)
         AppScreen.ATM -> AtmScreen(lang,backPrevious)
