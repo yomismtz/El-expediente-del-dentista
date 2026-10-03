@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.ClinicalDecisionV1
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEvent
+import com.yomismtz.expedientedeldentista.clinical.ClinicalMeasurement
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.clinical.evaluateClinicalDecisionV1
 
@@ -131,13 +132,45 @@ fun ClinicalDecisionDashboardV1(
                 "Signos=" + signs.joinToString(", ").ifBlank { "ninguno registrado" }
             ).joinToString(" · ")
             onSessionChanged(session.copy(
+                clinicalMeasurements=session.clinicalMeasurements + clinicalMeasurement,
                 clinicalEvents=session.clinicalEvents + ClinicalEvent(
                     System.currentTimeMillis(),
                     "vital_signs_snapshot",
                     vitalDetail
+                ),
+                clinicalMeasurement=ClinicalMeasurement(
+                    timestamp=System.currentTimeMillis(),
+                    systolic=sys, diastolic=dia, heartRate=hr, respiratoryRate=rr,
+                    spo2=spo2, temperature=temp, glucose=glucose,
+                    weightKg=session.profile.weightKg.toDoubleOrNull(),
+                    bmi=bmi, pain=pain
                 )
             ))
         },modifier=Modifier.fillMaxWidth()){ Text(tr(lang,"Registrar signos vitales en bitácora","Log vital signs")) }
+    }
+
+    ResponsiveSectionV17(tr(lang,"13 · Evolución clínica","13 · Clinical evolution"),tr(lang,"Conserva mediciones sucesivas para comparar signos vitales, peso, dolor y glucosa a lo largo del tiempo.","Keeps serial measurements to compare vital signs, weight, pain and glucose over time.")) {
+        val measurements = session.clinicalMeasurements.takeLast(8).asReversed()
+        if (measurements.isEmpty()) {
+            Text(tr(lang,"Sin mediciones longitudinales registradas. Usa “Registrar signos vitales” para crear el primer punto.","No longitudinal measurements yet. Use “Log vital signs” to create the first point."))
+        } else {
+            measurements.forEachIndexed { index, m ->
+                val date=java.text.SimpleDateFormat("dd/MM/yyyy HH:mm",java.util.Locale.getDefault()).format(java.util.Date(m.timestamp))
+                val bp=if(m.systolic!=null&&m.diastolic!=null) "${m.systolic}/${m.diastolic}" else "—"
+                Text("${measurements.size-index}. $date",fontWeight=FontWeight.Bold)
+                Text("TA $bp · FC ${m.heartRate ?: "—"} · FR ${m.respiratoryRate ?: "—"} · SpO₂ ${m.spo2 ?: "—"}%")
+                Text("Glucosa ${m.glucose ?: "—"} mg/dL · Temp ${m.temperature ?: "—"} °C · Peso ${m.weightKg ?: "—"} kg · IMC ${m.bmi ?: "—"} · Dolor ${m.pain ?: "—"}/10",style=MaterialTheme.typography.bodySmall)
+            }
+            if(measurements.size>=2){
+                val newest=measurements[0]; val previous=measurements[1]
+                val painDelta=if(newest.pain!=null&&previous.pain!=null) newest.pain-previous.pain else null
+                val weightDelta=if(newest.weightKg!=null&&previous.weightKg!=null) newest.weightKg-previous.weightKg else null
+                Text(tr(lang,"Cambio desde la medición anterior","Change from previous measurement"),fontWeight=FontWeight.Bold)
+                if(painDelta!=null) Text("Dolor: ${if(painDelta>0)"+" else ""}$painDelta/10")
+                if(weightDelta!=null) Text("Peso: ${if(weightDelta>0)"+" else ""}${"%.1f".format(weightDelta)} kg")
+                if(painDelta==null&&weightDelta==null) Text(tr(lang,"No hay variables comparables suficientes.","Not enough comparable variables."))
+            }
+        }
     }
 
     ResponsiveSectionV17(tr(lang,"12 · Bitácora clínica","12 · Clinical log"),tr(lang,"Registra decisiones educativas y cambios relevantes para conservar trazabilidad dentro del expediente.","Log educational decisions and relevant changes for traceability within the record.")) {
