@@ -106,6 +106,22 @@ data class PulpalAssessment(
     val previousPartialEndo: Boolean = false
 )
 
+data class InformedConsent(
+    val timestamp: Long = System.currentTimeMillis(),
+    val procedure: String = "",
+    val toothOrSite: String = "",
+    val diagnosis: String = "",
+    val benefits: String = "",
+    val risks: String = "",
+    val alternatives: String = "",
+    val questionsAnswered: Boolean = false,
+    val understood: Boolean = false,
+    val accepted: Boolean = false,
+    val declined: Boolean = false,
+    val notes: String = "",
+    val responsible: String = ""
+)
+
 data class ClinicalMeasurement(
     val timestamp: Long = System.currentTimeMillis(),
     val systolic: Int? = null,
@@ -140,7 +156,8 @@ data class EducationalSession(
     val periodontogram: Map<Int, PerioRecord> = emptyMap(),
     val pulpal: PulpalAssessment = PulpalAssessment(),
     val clinicalEvents: List<ClinicalEvent> = emptyList(),
-    val clinicalMeasurements: List<ClinicalMeasurement> = emptyList()
+    val clinicalMeasurements: List<ClinicalMeasurement> = emptyList(),
+    val informedConsents: List<InformedConsent> = emptyList()
 )
 
 data class IndexResult(
