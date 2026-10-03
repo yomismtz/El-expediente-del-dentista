@@ -22,6 +22,7 @@ import com.yomismtz.expedientedeldentista.clinical.ClinicalDecisionV1
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEvent
 import com.yomismtz.expedientedeldentista.clinical.ClinicalMeasurement
 import com.yomismtz.expedientedeldentista.clinical.InformedConsent
+import com.yomismtz.expedientedeldentista.clinical.MedicationRecord
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.clinical.evaluateClinicalDecisionV1
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEngines
@@ -66,6 +67,88 @@ fun ClinicalDecisionDashboardV1(
             val detail=if(lang=="en") "Medical context updated" else "Contexto médico actualizado"
             onSessionChanged(session.copy(profile=np,clinicalEvents=session.clinicalEvents + ClinicalEvent(System.currentTimeMillis(),"medical_context",detail)))
         },modifier=Modifier.fillMaxWidth()){ Text(tr(lang,"Guardar contexto médico","Save medical context")) }
+    }
+
+    ResponsiveSectionV17(
+        tr(lang,"9.1 · Medicación estructurada","9.1 · Structured medication"),
+        tr(lang,"Documenta medicamentos que el paciente reporta o que ya constan en el expediente. Esta sección no prescribe, suspende ni modifica tratamientos.","Documents medications reported by the patient or already present in the record. This section does not prescribe, stop or modify treatment.")
+    ) {
+        var name by remember { mutableStateOf("") }
+        var activeIngredient by remember { mutableStateOf("") }
+        var dose by remember { mutableStateOf("") }
+        var unit by remember { mutableStateOf("") }
+        var route by remember { mutableStateOf("") }
+        var frequency by remember { mutableStateOf("") }
+        var schedule by remember { mutableStateOf("") }
+        var indication by remember { mutableStateOf("") }
+        var prescriber by remember { mutableStateOf("") }
+        var startDate by remember { mutableStateOf("") }
+        var endDate by remember { mutableStateOf("") }
+        var notes by remember { mutableStateOf("") }
+        var asNeeded by remember { mutableStateOf(false) }
+        var active by remember { mutableStateOf(true) }
+
+        OutlinedTextField(name,{name=it},label={Text(tr(lang,"Medicamento","Medication"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(activeIngredient,{activeIngredient=it},label={Text(tr(lang,"Principio activo","Active ingredient"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(dose,{dose=it},label={Text(tr(lang,"Dosis reportada","Reported dose"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(unit,{unit=it},label={Text(tr(lang,"Unidad","Unit"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(route,{route=it},label={Text(tr(lang,"Vía","Route"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(frequency,{frequency=it},label={Text(tr(lang,"Frecuencia","Frequency"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(schedule,{schedule=it},label={Text(tr(lang,"Horario / pauta","Schedule"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(indication,{indication=it},label={Text(tr(lang,"Indicación referida","Reported indication"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(prescriber,{prescriber=it},label={Text(tr(lang,"Prescriptor / fuente","Prescriber / source"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(startDate,{startDate=it},label={Text(tr(lang,"Fecha de inicio","Start date"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(endDate,{endDate=it},label={Text(tr(lang,"Fecha de término","End date"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(notes,{notes=it},label={Text(tr(lang,"Notas / reacciones referidas","Notes / reported reactions"))},modifier=Modifier.fillMaxWidth())
+        androidx.compose.material3.Checkbox(asNeeded,{asNeeded=it})
+        Text(tr(lang,"Uso según necesidad (PRN)","As needed (PRN)"))
+        androidx.compose.material3.Checkbox(active,{active=it})
+        Text(tr(lang,"Actualmente activo según lo reportado","Currently active as reported"))
+
+        Button(onClick={
+            if(name.isNotBlank()) {
+                val med=MedicationRecord(
+                    name=name.trim(),activeIngredient=activeIngredient.trim(),dose=dose.trim(),unit=unit.trim(),
+                    route=route.trim(),frequency=frequency.trim(),schedule=schedule.trim(),
+                    startDate=startDate.trim(),endDate=endDate.trim(),indication=indication.trim(),
+                    prescriber=prescriber.trim(),asNeeded=asNeeded,active=active,notes=notes.trim()
+                )
+                val detail=listOf(
+                    med.name,
+                    if(med.activeIngredient.isNotBlank()) "principio activo="+med.activeIngredient else "",
+                    if(med.dose.isNotBlank()) "dosis="+med.dose+(if(med.unit.isNotBlank()) " "+med.unit else "") else "",
+                    if(med.route.isNotBlank()) "vía="+med.route else "",
+                    if(med.frequency.isNotBlank()) "frecuencia="+med.frequency else "",
+                    if(med.asNeeded) "PRN" else ""
+                ).filter{it.isNotBlank()}.joinToString(" · ")
+                onSessionChanged(session.copy(
+                    medicationsStructured=session.medicationsStructured + med,
+                    clinicalEvents=session.clinicalEvents + ClinicalEvent(System.currentTimeMillis(),"medication_recorded",detail)
+                ))
+                name=""; activeIngredient=""; dose=""; unit=""; route=""; frequency=""; schedule=""
+                indication=""; prescriber=""; startDate=""; endDate=""; notes=""; asNeeded=false; active=true
+            }
+        },modifier=Modifier.fillMaxWidth()){ Text(tr(lang,"Agregar medicamento","Add medication")) }
+
+        if(session.medicationsStructured.isEmpty()) {
+            Text(tr(lang,"Sin medicamentos estructurados registrados.","No structured medications recorded."))
+        } else {
+            Text(tr(lang,"Medicamentos registrados","Recorded medications"),fontWeight=FontWeight.Bold)
+            session.medicationsStructured.takeLast(8).asReversed().forEach { med ->
+                Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){
+                    Column(Modifier.padding(10.dp),verticalArrangement=Arrangement.spacedBy(3.dp)){
+                        Text(med.name + if(med.active) "" else " · " + tr(lang,"inactivo","inactive"),fontWeight=FontWeight.Bold)
+                        val doseText=listOf(med.dose,med.unit).filter{it.isNotBlank()}.joinToString(" ")
+                        val scheduleText=listOf(med.route,med.frequency,med.schedule).filter{it.isNotBlank()}.joinToString(" · ")
+                        if(med.activeIngredient.isNotBlank()) Text(tr(lang,"Principio activo: ","Active ingredient: ")+med.activeIngredient)
+                        if(doseText.isNotBlank()) Text(tr(lang,"Dosis: ","Dose: ")+doseText)
+                        if(scheduleText.isNotBlank()) Text(scheduleText)
+                        if(med.indication.isNotBlank()) Text(tr(lang,"Indicación referida: ","Reported indication: ")+med.indication,style=MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+        }
+        Text(tr(lang,"⚠️ La lista estructurada documenta información; no convierte el expediente en un sistema de prescripción. Las decisiones sobre iniciar, suspender o modificar medicamentos requieren valoración profesional y la fuente correspondiente.","⚠️ The structured list documents information; it is not a prescribing system. Decisions to start, stop or modify medications require professional assessment and the appropriate source."),style=MaterialTheme.typography.bodySmall,fontWeight=FontWeight.Bold)
     }
 
     ResponsiveSectionV17(tr(lang,"10 · Semáforo clínico","10 · Clinical traffic light"),tr(lang,"Resultado operativo de los datos capturados; no sustituye la valoración clínica.","Operational result of captured data; it does not replace clinical assessment.")) {
