@@ -83,6 +83,22 @@ fun ClinicalDecisionDashboardV1(
         }
     }
 
+    ResponsiveSectionV17(tr(lang,"10.1 · Alertas inteligentes","10.1 · Smart alerts"),tr(lang,"Cada alerta muestra el dato que la activa y la acción de verificación correspondiente.","Each alert shows the trigger and the corresponding verification action.")) {
+        if (d.alerts.isEmpty()) {
+            Text(tr(lang,"✓ No hay alertas adicionales con los datos registrados.","✓ No additional alerts with the recorded data."))
+        } else {
+            d.alerts.forEach { a ->
+                val container = if (a.severity == "RED") MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.tertiaryContainer
+                Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=container)){
+                    Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
+                        Text((if(a.severity=="RED")"🚨 " else "⚠️ ")+a.triggerEs,fontWeight=FontWeight.Bold)
+                        Text(a.actionEs)
+                    }
+                }
+            }
+        }
+    }
+
     ResponsiveSectionV17(tr(lang,"11 · Resumen operativo","11 · Operational summary"),tr(lang,"Sólo se muestran hasta 3 líneas de manejo compatibles con los datos. No son una autorización automática.","Only up to 3 management lines compatible with the data are shown. They are not automatic clearance.")) {
         if(d.treatments.isEmpty()) Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.errorContainer)){Text(tr(lang,"🚨 No hay tratamiento dental electivo compatible con los datos actuales.","🚨 No elective dental treatment is compatible with the current data."),Modifier.padding(12.dp),fontWeight=FontWeight.Bold)}
         else d.treatments.forEachIndexed { index,t ->
