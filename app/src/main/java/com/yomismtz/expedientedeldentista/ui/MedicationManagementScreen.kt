@@ -61,7 +61,7 @@ fun MedicationManagementScreen(
         indication = indication.trim(),
         asNeeded = asNeeded
     )
-    val duplicate = if (draft.name.isBlank() && draft.activeIngredient.isBlank()) false
+    val duplicate = if (draft.activeIngredient.isBlank()) false
     else medications.any { medicationKey(it) == medicationKey(draft) }
 
     Column(
@@ -80,8 +80,8 @@ fun MedicationManagementScreen(
             }
         }
 
-        OutlinedTextField(name, { name = it }, label = { Text(tr(lang, "Nombre", "Name")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(ingredient, { ingredient = it }, label = { Text(tr(lang, "Principio activo", "Active ingredient")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(name, { name = it }, label = { Text(tr(lang, "Nombre comercial (opcional)", "Brand name (optional)")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(ingredient, { ingredient = it }, label = { Text(tr(lang, "Principio activo *", "Active ingredient *")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(dose, { dose = it }, label = { Text(tr(lang, "Dosis", "Dose")) }, singleLine = true, modifier = Modifier.weight(1f))
             OutlinedTextField(unit, { unit = it }, label = { Text(tr(lang, "Unidad", "Unit")) }, singleLine = true, modifier = Modifier.weight(1f))
@@ -101,7 +101,7 @@ fun MedicationManagementScreen(
             }
         }
 
-        val canAdd = (name.isNotBlank() || ingredient.isNotBlank()) && dose.isNotBlank() && route.isNotBlank()
+        val canAdd = ingredient.isNotBlank() && dose.isNotBlank() && route.isNotBlank()
         Button(
             onClick = {
                 if (canAdd && !duplicate) {
