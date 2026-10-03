@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.ClinicalDecisionV1
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEvent
 import com.yomismtz.expedientedeldentista.clinical.ClinicalMeasurement
+import com.yomismtz.expedientedeldentista.clinical.InformedConsent
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.clinical.evaluateClinicalDecisionV1
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEngines
@@ -148,6 +149,48 @@ fun ClinicalDecisionDashboardV1(
                 )
             ))
         },modifier=Modifier.fillMaxWidth()){ Text(tr(lang,"Registrar signos vitales en bitácora","Log vital signs")) }
+    }
+
+    ResponsiveSectionV17(tr(lang,"15 · Consentimiento informado","15 · Informed consent"),tr(lang,"Registra qué procedimiento se explicó, sus beneficios, riesgos, alternativas y la decisión documentada.","Records the explained procedure, benefits, risks, alternatives and documented decision.")) {
+        var procedure by remember { mutableStateOf("") }
+        var site by remember { mutableStateOf("") }
+        var diagnosis by remember { mutableStateOf("") }
+        var benefits by remember { mutableStateOf("") }
+        var risks by remember { mutableStateOf("") }
+        var alternatives by remember { mutableStateOf("") }
+        var notes by remember { mutableStateOf("") }
+        var responsible by remember { mutableStateOf("") }
+        var questions by remember { mutableStateOf(false) }
+        var understood by remember { mutableStateOf(false) }
+        var accepted by remember { mutableStateOf(false) }
+        var declined by remember { mutableStateOf(false) }
+        OutlinedTextField(procedure,{procedure=it},label={Text(tr(lang,"Procedimiento explicado","Procedure explained"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(site,{site=it},label={Text(tr(lang,"Diente / sitio","Tooth / site"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(diagnosis,{diagnosis=it},label={Text(tr(lang,"Diagnóstico explicado","Diagnosis explained"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(benefits,{benefits=it},label={Text(tr(lang,"Beneficios esperados","Expected benefits"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(risks,{risks=it},label={Text(tr(lang,"Riesgos y posibles complicaciones","Risks and possible complications"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(alternatives,{alternatives=it},label={Text(tr(lang,"Alternativas y opción de no realizarlo","Alternatives and option not to proceed"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(notes,{notes=it},label={Text(tr(lang,"Preguntas / notas","Questions / notes"))},modifier=Modifier.fillMaxWidth())
+        OutlinedTextField(responsible,{responsible=it},label={Text(tr(lang,"Responsable que documenta","Responsible person"))},modifier=Modifier.fillMaxWidth())
+        androidx.compose.material3.Checkbox(questions,{questions=it}); Text(tr(lang,"Preguntas respondidas","Questions answered"))
+        androidx.compose.material3.Checkbox(understood,{understood=it}); Text(tr(lang,"Comprensión documentada","Understanding documented"))
+        androidx.compose.material3.Checkbox(accepted,{accepted=it; if(it) declined=false}); Text(tr(lang,"Acepta","Accepts"))
+        androidx.compose.material3.Checkbox(declined,{declined=it; if(it) accepted=false}); Text(tr(lang,"Rechaza","Declines"))
+        Button(onClick={
+            if(procedure.isNotBlank() && understood && questions && (accepted || declined)) {
+                val consent=InformedConsent(System.currentTimeMillis(),procedure.trim(),site.trim(),diagnosis.trim(),benefits.trim(),risks.trim(),alternatives.trim(),questions,understood,accepted,declined,notes.trim(),responsible.trim())
+                val decision=if(accepted) "aceptado" else "rechazado"
+                onSessionChanged(session.copy(informedConsents=session.informedConsents + consent,clinicalEvents=session.clinicalEvents + ClinicalEvent(System.currentTimeMillis(),"informed_consent",procedure.trim()+" · "+decision)))
+                procedure=""; site=""; diagnosis=""; benefits=""; risks=""; alternatives=""; notes=""; responsible=""; questions=false; understood=false; accepted=false; declined=false
+            }
+        },modifier=Modifier.fillMaxWidth()){ Text(tr(lang,"Guardar consentimiento","Save consent")) }
+        if(session.informedConsents.isNotEmpty()) {
+            Text(tr(lang,"Últimos consentimientos","Recent consents"),fontWeight=FontWeight.Bold)
+            session.informedConsents.takeLast(5).asReversed().forEach { c ->
+                Text(java.text.SimpleDateFormat("dd/MM/yyyy HH:mm",java.util.Locale.getDefault()).format(java.util.Date(c.timestamp))+" · "+c.procedure+" · "+if(c.accepted)tr(lang,"Aceptado","Accepted") else tr(lang,"Rechazado","Declined"))
+            }
+        }
+        Text(tr(lang,"⚠️ El registro electrónico no sustituye los requisitos legales, institucionales ni la firma/autorización que corresponda. Documenta el proceso de información y la decisión; verifica la normativa aplicable.","⚠️ Electronic recording does not replace applicable legal, institutional or signature/authorization requirements. Verify applicable rules."),style=MaterialTheme.typography.bodySmall,fontWeight=FontWeight.Bold)
     }
 
     ResponsiveSectionV17(tr(lang,"14 · Nota clínica automática","14 · Automatic clinical note"),tr(lang,"Genera un borrador estructurado a partir de los datos realmente capturados en el expediente.","Generates a structured draft from data actually captured in the record.")) {
