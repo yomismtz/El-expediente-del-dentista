@@ -117,34 +117,58 @@ fun evaluateClinicalDecisionV1(
 
     val pregnancyStatus = profile.pregnancyStatus.trim().lowercase()
     val hepaticRenalStatus = profile.hepaticRenalDisease.trim().lowercase()
+    val weightKg = profile.weightKg.toDoubleOrNull()
     val cautionCardio = (age >= 18 && sys != null && dia != null && (sys >= 160 || dia >= 100)) ||
         (hr != null && (hr < 50 || hr > 120)) ||
         cardiovascularHistory.isNotBlank() || rhythmMeds.isNotBlank()
     val allergyLocal = allergy.contains("lidoca") || allergy.contains("mepiv") || allergy.contains("artic") || allergy.contains("bupiv") || allergy.contains("anestes")
-    val pregnancyKnown = pregnancyStatus.isNotBlank()
-    val pregnancyPositive = pregnancyStatus.contains("embaraz") || pregnancyStatus.contains("gest") || pregnancyStatus.contains("pregnan")
-    val hepaticRenalCaution = hepaticRenalStatus.isNotBlank()
-    val weightKnown = profile.weightKg.toDoubleOrNull() != null
+
+    fun doseLine(name:String, concentration:String, vasoconstrictor:String, mgKg:Double):String {
+        if (weightKg == null || weightKg <= 0.0) {
+            return "$name $concentration $vasoconstrictor · límite educativo: "+mgKg+" mg/kg. Peso no registrado: no calcular dosis total."
+        }
+        val mg = weightKg * mgKg
+        return "$name $concentration $vasoconstrictor · "+mgKg+" mg/kg × "+("%.1f".format(weightKg))+" kg = "+("%.0f".format(mg))+" mg como límite educativo calculado. Verificar ficha técnica y límites específicos antes de administrar."
+    }
 
     val anestheticEs = when {
-        red -> "ANESTESIA: 🚫 NO seleccionar ni administrar anestésico como si existiera autorización. Primero resolver/valorar la condición sistémica de alarma."
-        allergyLocal -> "ANESTESIA: ⚠️ SIN recomendación automática. Hay antecedente relacionado con anestésicos locales. Identificar fármaco, reacción y gravedad antes de elegir otro agente; verificar ficha técnica."
-        cautionCardio -> "ANESTESIA: 🟡 opción educativa: mepivacaína 3% SIN vasoconstrictor, cuando sea apropiada para el procedimiento. Si se necesita vasoconstrictor, valorar individualmente; en adultos con necesidad de cautela cardiovascular, la ADA describe como precaución habitual limitar epinefrina a 0.04 mg, con aspiración e inyección lenta."
-        age < 4 -> "ANESTESIA: 🟡 lidocaína 2% CON vasoconstrictor sólo si el paciente está estable, el producto está indicado para la edad y la dosis se calcula por peso. NO usar esta pantalla para autorizar una dosis. Articaína: evitar en menores de 4 años según el etiquetado/tabla de referencia consultada."
-        pregnancyPositive -> "ANESTESIA: 🟢 el embarazo por sí solo NO obliga a retirar el vasoconstrictor. La ADA indica que la anestesia local con o sin epinefrina puede utilizarse durante el embarazo. Una opción educativa habitual es lidocaína 2% CON epinefrina 1:100,000, si está clínicamente indicada y no existen otras contraindicaciones."
-        hepaticRenalCaution -> "ANESTESIA: 🟡 SIN elección automática. Hay enfermedad hepática/renal registrada; revisar agente, dosis, función orgánica, medicamentos y ficha técnica antes de administrar. Si se requiere, individualizar la dosis."
-        !weightKnown && age < 18 -> "ANESTESIA: 🟡 NO calcular dosis pediátrica todavía. Registrar peso real y utilizar la dosis máxima específica del producto antes de administrar."
-        else -> "ANESTESIA: 🟢 opción educativa habitual CON vasoconstrictor: lidocaína 2% + epinefrina 1:100,000; alternativa habitual: articaína 4% + epinefrina 1:100,000–1:200,000. La elección depende de procedimiento, técnica, antecedentes, peso/edad y ficha técnica."
+        red -> "ANESTESIA: NO seleccionar ni administrar anestésico como si existiera autorización. Primero resolver/valorar la condición sistémica de alarma."
+        allergyLocal -> "ANESTESIA: antecedente de alergia relacionado con anestésicos locales registrado. Verificar fármaco, reacción y ficha técnica; no asumir que otro anestésico es seguro sin evaluación."
+        cautionCardio -> "ANESTESIA: opción educativa de referencia: " +
+            doseLine("Mepivacaína","3%","SIN vasoconstrictor",4.4) +
+            " Si el vasoconstrictor es necesario, la ADA describe como precaución habitual en adultos limitar la epinefrina a 0.04 mg, con aspiración y administración lenta. No convertir automáticamente ese límite a cartuchos: depende de la concentración y volumen del producto."
+        age < 4 -> "ANESTESIA: " +
+            doseLine("Lidocaína","2%","CON vasoconstrictor, si el producto está indicado",4.4) +
+            " En menores, la dosis debe calcularse estrictamente por peso y ficha técnica. La articaína no se recomienda en menores de 4 años según la tabla ADA consultada."
+        else -> {
+            val primary = if (treatments.any { it.contains("extracción", ignoreCase=true) })
+                doseLine("Articaína","4%","CON epinefrina 1:100,000–1:200,000",7.0)
+            else
+                doseLine("Lidocaína","2%","CON epinefrina 1:100,000",4.4)
+            "ANESTESIA: opción educativa principal: $primary. Alternativa frecuente: " +
+                doseLine("Articaína","4%","CON epinefrina 1:100,000–1:200,000",7.0) +
+                " En extracciones, la guía ADA también contempla bupivacaína 0.5% CON epinefrina 1:200,000 en adultos/adolescentes. La elección depende de técnica, procedimiento, antecedentes, edad, peso y ficha técnica."
+        }
     }
     val anestheticEn = when {
-        red -> "ANESTHESIA: 🚫 DO NOT select or administer an anesthetic as if clearance existed. First assess/resolve the systemic red flag."
-        allergyLocal -> "ANESTHESIA: ⚠️ NO automatic recommendation. A local-anesthetic-related history is recorded. Identify the drug, reaction and severity before choosing another agent; verify labeling."
-        cautionCardio -> "ANESTHESIA: 🟡 educational option: 3% mepivacaine WITHOUT vasoconstrictor when appropriate for the procedure. If a vasoconstrictor is needed, individualize; for adults needing cardiovascular caution, ADA describes 0.04 mg epinephrine as a common precaution limit, with aspiration and slow injection."
-        age < 4 -> "ANESTHESIA: 🟡 2% lidocaine WITH vasoconstrictor only if stable, age-appropriate labeling applies, and dose is weight-based. Do NOT use this screen to authorize a dose. Articaine: avoid under age 4 according to the referenced labeling/table."
-        pregnancyPositive -> "ANESTHESIA: 🟢 pregnancy alone does NOT require avoiding vasoconstrictor. ADA states local anesthesia with or without epinephrine can be used during pregnancy. A common educational option is 2% lidocaine WITH 1:100,000 epinephrine when clinically indicated and no other contraindication exists."
-        hepaticRenalCaution -> "ANESTHESIA: 🟡 NO automatic selection. Hepatic/renal disease is recorded; review agent, dose, organ function, medications and labeling before administration. Individualize dosing when required."
-        !weightKnown && age < 18 -> "ANESTHESIA: 🟡 DO NOT calculate a pediatric dose yet. Record actual body weight and use the product-specific maximum dose before administration."
-        else -> "ANESTHESIA: 🟢 common educational option WITH vasoconstrictor: 2% lidocaine + 1:100,000 epinephrine; common alternative: 4% articaine + 1:100,000–1:200,000 epinephrine. Selection depends on procedure, technique, history, age/weight and labeling."
+        red -> "ANESTHESIA: DO NOT select or administer an anesthetic as if clearance existed. First assess/resolve the systemic red flag."
+        allergyLocal -> "ANESTHESIA: a local-anesthetic-related allergy is recorded. Verify the drug, reaction and labeling; do not assume another anesthetic is safe without assessment."
+        cautionCardio -> "ANESTHESIA: educational reference option: " +
+            doseLine("Mepivacaine","3%","WITHOUT vasoconstrictor",4.4) +
+            " If a vasoconstrictor is necessary, ADA describes 0.04 mg epinephrine as a common adult precaution limit, with aspiration and slow injection. Do not automatically convert that limit to cartridges: it depends on product concentration and volume."
+        age < 4 -> "ANESTHESIA: " +
+            doseLine("Lidocaine","2%","WITH vasoconstrictor, if the product is age-appropriate",4.4) +
+            " In young children, dose must be calculated strictly by weight and labeling. Articaine is not recommended under age 4 in the cited ADA table."
+        else -> {
+            val primary = if (treatments.any { it.contains("extracción", ignoreCase=true) })
+                doseLine("Articaine","4%","WITH epinephrine 1:100,000–1:200,000",7.0)
+            else
+                doseLine("Lidocaine","2%","WITH epinephrine 1:100,000",4.4)
+            "ANESTHESIA: educational primary option: $primary. Common alternative: " +
+                doseLine("Articaine","4%","WITH epinephrine 1:100,000–1:200,000",7.0) +
+                " For extractions, ADA guidance also includes 0.5% bupivacaine WITH 1:200,000 epinephrine in adolescents/adults. Choice depends on technique, procedure, history, age, weight and labeling."
+        }
     }
+
     return ClinicalDecisionV1(status,titleEs,titleEn,detailEs,detailEn,treatments,restrictionsEs.take(8),restrictionsEn.take(8),anestheticEs,anestheticEn)
 }
