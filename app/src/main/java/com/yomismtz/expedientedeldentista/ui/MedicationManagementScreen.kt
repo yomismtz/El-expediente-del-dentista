@@ -27,121 +27,116 @@ import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.clinical.MedicationRecord
 
-private fun normalizeMedication(text: String): String =
-    text.trim().lowercase().replace(Regex("\\s+"), " ")
+private data class MedicationPresentation(val label:String,val dose:String,val unit:String,val route:String)
+private data class MedicationOption(val generic:String,val presentations:List<MedicationPresentation>)
 
-private fun medicationKey(m: MedicationRecord): String =
-    listOf(m.activeIngredient.ifBlank { m.name }, m.dose, m.unit, m.route)
-        .joinToString("|") { normalizeMedication(it) }
+private val medicationCatalog=listOf(
+    MedicationOption("Amoxicilina",listOf(MedicationPresentation("Cápsula 500 mg","500","mg","Oral"),MedicationPresentation("Suspensión 500 mg/5 mL","500","mg/5 mL","Oral"))),
+    MedicationOption("Amoxicilina + ácido clavulánico",listOf(MedicationPresentation("Tableta 500 mg/125 mg","500/125","mg","Oral"),MedicationPresentation("Suspensión 400 mg/57 mg/5 mL","400/57","mg/5 mL","Oral"))),
+    MedicationOption("Azitromicina",listOf(MedicationPresentation("Tableta 500 mg","500","mg","Oral"),MedicationPresentation("Suspensión 200 mg/5 mL","200","mg/5 mL","Oral"))),
+    MedicationOption("Clindamicina",listOf(MedicationPresentation("Cápsula 300 mg","300","mg","Oral"))),
+    MedicationOption("Metronidazol",listOf(MedicationPresentation("Tableta 500 mg","500","mg","Oral"))),
+    MedicationOption("Paracetamol",listOf(MedicationPresentation("Tableta 500 mg","500","mg","Oral"),MedicationPresentation("Suspensión 100 mg/mL","100","mg/mL","Oral"))),
+    MedicationOption("Ibuprofeno",listOf(MedicationPresentation("Tableta 400 mg","400","mg","Oral"),MedicationPresentation("Tableta 600 mg","600","mg","Oral"),MedicationPresentation("Suspensión 100 mg/5 mL","100","mg/5 mL","Oral"))),
+    MedicationOption("Naproxeno",listOf(MedicationPresentation("Tableta 250 mg","250","mg","Oral"),MedicationPresentation("Tableta 500 mg","500","mg","Oral"))),
+    MedicationOption("Diclofenaco",listOf(MedicationPresentation("Tableta 50 mg","50","mg","Oral"))),
+    MedicationOption("Ketorolaco",listOf(MedicationPresentation("Tableta 10 mg","10","mg","Oral")))
+)
+
+private val frequencyOptions=listOf("Dosis única","Cada 6 horas","Cada 8 horas","Cada 12 horas","Cada 24 horas")
+
+private val anestheticOptions=listOf(
+    MedicationPresentation("Lidocaína 2% + epinefrina 1:100,000 · cartucho 1.8 mL","36","mg/cartucho","Infiltración/bloqueo"),
+    MedicationPresentation("Lidocaína 2% sin vasoconstrictor","20","mg/mL","Infiltración/bloqueo"),
+    MedicationPresentation("Prilocaína 3% + felipresina · cartucho 1.8 mL","54","mg/cartucho","Infiltración"),
+    MedicationPresentation("Articaína 4% + epinefrina · cartucho 1.8 mL","72","mg/cartucho","Infiltración/bloqueo"),
+    MedicationPresentation("Mepivacaína 3% sin vasoconstrictor · cartucho 1.8 mL","54","mg/cartucho","Infiltración/bloqueo"),
+    MedicationPresentation("Bupivacaína 0.5% + vasoconstrictor · cartucho 1.8 mL","9","mg/cartucho","Bloqueo")
+)
+
+private fun normalizeMedication(text:String)=text.trim().lowercase().replace(Regex("\\s+")," ")
+private fun medicationKey(m:MedicationRecord)=listOf(m.activeIngredient,m.dose,m.unit,m.route,m.frequency).joinToString("|"){normalizeMedication(it)}
 
 @Composable
-fun MedicationManagementScreen(
-    lang: String,
-    session: EducationalSession,
-    onSessionChanged: (EducationalSession) -> Unit,
-    onBack: () -> Unit
-) {
-    var name by remember { mutableStateOf("") }
-    var ingredient by remember { mutableStateOf("") }
-    var dose by remember { mutableStateOf("") }
-    var unit by remember { mutableStateOf("") }
-    var route by remember { mutableStateOf("") }
-    var frequency by remember { mutableStateOf("") }
-    var indication by remember { mutableStateOf("") }
-    var asNeeded by remember { mutableStateOf(false) }
-
-    val medications = session.medicationsStructured
-    val draft = MedicationRecord(
-        name = name.trim(),
-        activeIngredient = ingredient.trim(),
-        dose = dose.trim(),
-        unit = unit.trim(),
-        route = route.trim(),
-        frequency = frequency.trim(),
-        indication = indication.trim(),
-        asNeeded = asNeeded
-    )
-    val duplicate = if (draft.activeIngredient.isBlank()) false
-    else medications.any { medicationKey(it) == medicationKey(draft) }
-
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(18.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            OutlinedButton(onClick = onBack) { Text("‹ ${tr(lang, "Volver", "Back")}") }
-            Text(tr(lang, "Medicamentos", "Medications"), fontWeight = FontWeight.Black, style = MaterialTheme.typography.titleLarge)
-        }
-
-        Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
-            Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text(tr(lang, "Registro estructurado", "Structured record"), fontWeight = FontWeight.Black)
-                Text(tr(lang, "Registra nombre, principio activo, dosis, vía, frecuencia e indicación por separado. Es un ejercicio educativo y no sustituye la prescripción.", "Record name, active ingredient, dose, route, frequency and indication separately. This is educational and does not replace prescribing."))
+private fun ChoiceRow(title:String,choices:List<String>,selected:String,onSelect:(String)->Unit){
+    Column(verticalArrangement=Arrangement.spacedBy(6.dp)){
+        Text(title,fontWeight=FontWeight.Bold)
+        choices.chunked(3).forEach{row->
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){
+                row.forEach{choice->FilterChip(selected=choice==selected,onClick={onSelect(choice)},label={Text(choice)})}
             }
         }
+    }
+}
 
-        OutlinedTextField(name, { name = it }, label = { Text(tr(lang, "Nombre comercial (opcional)", "Brand name (optional)")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(ingredient, { ingredient = it }, label = { Text(tr(lang, "Principio activo *", "Active ingredient *")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(dose, { dose = it }, label = { Text(tr(lang, "Dosis", "Dose")) }, singleLine = true, modifier = Modifier.weight(1f))
-            OutlinedTextField(unit, { unit = it }, label = { Text(tr(lang, "Unidad", "Unit")) }, singleLine = true, modifier = Modifier.weight(1f))
+@Composable
+fun MedicationManagementScreen(lang:String,session:EducationalSession,onSessionChanged:(EducationalSession)->Unit,onBack:()->Unit){
+    var weightText by remember{mutableStateOf("")}
+    var selectedMedication by remember{mutableStateOf<MedicationOption?>(null)}
+    var selectedPresentation by remember{mutableStateOf<MedicationPresentation?>(null)}
+    var selectedFrequency by remember{mutableStateOf("")}
+    var selectedAnesthetic by remember{mutableStateOf<MedicationPresentation?>(null)}
+
+    val medications=session.medicationsStructured
+    val weight=weightText.replace(",",".").toDoubleOrNull()
+    val medicationDraft=selectedMedication?.let{med->selectedPresentation?.let{p->MedicationRecord(name=med.generic,activeIngredient=med.generic,dose=p.dose,unit=p.unit,route=p.route,frequency=selectedFrequency)}}
+    val duplicate=medicationDraft!=null&&selectedFrequency.isNotBlank()&&medications.any{medicationKey(it)==medicationKey(medicationDraft)}
+    val weightLabel=if(weightText.isBlank())"pendiente" else weightText
+
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
+        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){
+            OutlinedButton(onClick=onBack){Text("‹ "+tr(lang,"Volver","Back"))}
+            Text(tr(lang,"Medicamentos y anestésicos","Medications and anesthetics"),fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleLarge)
         }
-        OutlinedTextField(route, { route = it }, label = { Text(tr(lang, "Vía", "Route")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(frequency, { frequency = it }, label = { Text(tr(lang, "Frecuencia / pauta", "Frequency / schedule")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(indication, { indication = it }, label = { Text(tr(lang, "Indicación educativa", "Educational indication")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-
-        FilterChip(asNeeded, { asNeeded = !asNeeded }, { Text(tr(lang, "A demanda", "As needed")) })
-
-        if (duplicate) {
-            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
-                Text(
-                    tr(lang, "⚠ Posible duplicado: ya existe un medicamento con el mismo principio activo/nombre, dosis, unidad y vía.", "⚠ Possible duplicate: a medication with the same active ingredient/name, dose, unit and route already exists."),
-                    Modifier.padding(12.dp), fontWeight = FontWeight.Bold
-                )
+        Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){
+            Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+                Text(tr(lang,"Selector clínico educativo","Educational clinical selector"),fontWeight=FontWeight.Black)
+                Text(tr(lang,"El alumno no escribe el medicamento, la presentación, la dosis ni la vía. Selecciona opciones del catálogo y captura únicamente el peso del paciente.","The student does not type the medication, presentation, dose or route. They select catalog options and enter only the patient's weight."))
             }
         }
+        OutlinedTextField(value=weightText,onValueChange={weightText=it.filter{ch->ch.isDigit()||ch=='.'||ch==','}},label={Text(tr(lang,"Peso del paciente (kg) *","Patient weight (kg) *"))},singleLine=true,modifier=Modifier.fillMaxWidth())
 
-        val canAdd = ingredient.isNotBlank() && dose.isNotBlank() && route.isNotBlank()
-        Button(
-            onClick = {
-                if (canAdd && !duplicate) {
-                    onSessionChanged(session.copy(medicationsStructured = medications + draft))
-                    name = ""; ingredient = ""; dose = ""; unit = ""; route = ""; frequency = ""; indication = ""; asNeeded = false
-                }
-            },
-            enabled = canAdd && !duplicate,
-            modifier = Modifier.fillMaxWidth()
-        ) { Text(tr(lang, "Agregar medicamento", "Add medication")) }
+        Text(tr(lang,"Medicamento","Medication"),fontWeight=FontWeight.Black)
+        medicationCatalog.chunked(3).forEach{row->
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){
+                row.forEach{option->FilterChip(selected=selectedMedication?.generic==option.generic,onClick={selectedMedication=option;selectedPresentation=null;selectedFrequency=""},label={Text(option.generic)})}
+            }
+        }
+        selectedMedication?.let{medication->
+            ChoiceRow(tr(lang,"Presentación","Presentation"),medication.presentations.map{it.label},selectedPresentation?.label.orEmpty()){label->selectedPresentation=medication.presentations.first{it.label==label}}
+            ChoiceRow(tr(lang,"Frecuencia / pauta","Frequency / schedule"),frequencyOptions,selectedFrequency){selectedFrequency=it}
+        }
+        if(duplicate)Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.errorContainer)){Text(tr(lang,"⚠ Ya existe el mismo principio activo, presentación y frecuencia.","⚠ The same active ingredient, presentation and frequency already exists."),Modifier.padding(12.dp),fontWeight=FontWeight.Bold)}
+        val canAddMedication=weight!=null&&weight>0&&medicationDraft!=null&&selectedFrequency.isNotBlank()&&!duplicate
+        Button(onClick={if(canAddMedication){onSessionChanged(session.copy(medicationsStructured=medications+medicationDraft!!));selectedMedication=null;selectedPresentation=null;selectedFrequency=""}},enabled=canAddMedication,modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Agregar medicamento seleccionado","Add selected medication"))}
 
-        Text("${medications.size} ${tr(lang, "medicamento(s) estructurado(s)", "structured medication(s)")}", fontWeight = FontWeight.Bold)
-
-        medications.forEach { medication ->
-            Card(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                    Text(medication.name.ifBlank { medication.activeIngredient }, fontWeight = FontWeight.Black, style = MaterialTheme.typography.titleMedium)
-                    if (medication.activeIngredient.isNotBlank() && medication.name.isNotBlank()) Text("Principio activo: ${medication.activeIngredient}")
-                    Text("Dosis: ${medication.dose} ${medication.unit}".trim())
-                    Text("Vía: ${medication.route} · ${medication.frequency.ifBlank { "Pauta no especificada" }}")
-                    if (medication.indication.isNotBlank()) Text("Indicación: ${medication.indication}")
-                    if (medication.asNeeded) Text("A demanda", fontWeight = FontWeight.Bold)
-                    OutlinedButton(
-                        onClick = { onSessionChanged(session.copy(medicationsStructured = medications.filterNot { it.id == medication.id })) },
-                        modifier = Modifier.fillMaxWidth()
-                    ) { Text(tr(lang, "Eliminar", "Remove")) }
+        Text(tr(lang,"Anestésico local","Local anesthetic"),fontWeight=FontWeight.Black)
+        Text(tr(lang,"Selecciona el anestésico y su presentación; se utiliza el mismo peso del paciente.","Select the anesthetic and its presentation; the same patient weight is used."))
+        anestheticOptions.chunked(2).forEach{row->
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){
+                row.forEach{option->FilterChip(selected=selectedAnesthetic?.label==option.label,onClick={selectedAnesthetic=option},label={Text(option.label)})}
+            }
+        }
+        selectedAnesthetic?.let{anesthetic->
+            Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){
+                Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
+                    Text(anesthetic.label,fontWeight=FontWeight.Black)
+                    Text(tr(lang,"Concentración","Strength")+": "+anesthetic.dose+" "+anesthetic.unit)
+                    Text(tr(lang,"Vía/técnica","Route/technique")+": "+anesthetic.route)
+                    Text(tr(lang,"Peso registrado: ","Recorded weight: ")+weightLabel+" kg. "+tr(lang,"La dosis máxima debe verificarse con la información oficial del producto y las características del paciente.","Maximum dose must be verified against official product information and patient characteristics."))
                 }
             }
         }
 
-        if (medications.size >= 2) {
-            val duplicateGroups = medications.groupBy(::medicationKey).values.count { it.size > 1 }
-            Card(colors = CardDefaults.cardColors(containerColor = if (duplicateGroups > 0) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.secondaryContainer)) {
-                Text(
-                    if (duplicateGroups > 0)
-                        tr(lang, "⚠ Hay ${duplicateGroups} grupo(s) con posibles duplicados. Revisa principio activo/nombre, dosis, unidad y vía.", "⚠ There are ${duplicateGroups} possible duplicate group(s). Review active ingredient/name, dose, unit and route.")
-                    else
-                        tr(lang, "✓ No se detectaron duplicados exactos entre los medicamentos estructurados.", "✓ No exact duplicates were detected among structured medications."),
-                    Modifier.padding(12.dp), fontWeight = FontWeight.Bold
-                )
+        Text(medications.size.toString()+" "+tr(lang,"medicamento(s) estructurado(s)","structured medication(s)"),fontWeight=FontWeight.Bold)
+        medications.forEach{medication->
+            Card(Modifier.fillMaxWidth()){
+                Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){
+                    Text(medication.activeIngredient,fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
+                    Text(medication.dose+" "+medication.unit+" · "+medication.route)
+                    Text(medication.frequency.ifBlank{tr(lang,"Pauta no seleccionada","Schedule not selected")})
+                    OutlinedButton(onClick={onSessionChanged(session.copy(medicationsStructured=medications.filterNot{it.id==medication.id}))},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Eliminar","Remove"))}
+                }
             }
         }
     }
