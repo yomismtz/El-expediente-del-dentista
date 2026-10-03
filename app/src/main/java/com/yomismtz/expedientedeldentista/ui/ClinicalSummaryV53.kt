@@ -106,6 +106,25 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
                 Text(session.clinicalEvents.last().detail,style=MaterialTheme.typography.bodySmall)
             }
         }
+        if (triage.alerts.isNotEmpty()) {
+            SummaryCardV53(tr(lang,"🚨 Alertas inteligentes de decisión clínica","🚨 Smart clinical decision alerts")) {
+                triage.alerts.forEach { alert ->
+                    val icon = if (alert.severity == "RED") "🚨" else "⚠️"
+                    val trigger = if (lang == "en") alert.triggerEn else alert.triggerEs
+                    val action = if (lang == "en") alert.actionEn else alert.actionEs
+                    Text("$icon $trigger", fontWeight = FontWeight.Black)
+                    Text(action, style = MaterialTheme.typography.bodySmall)
+                }
+                Text(
+                    tr(
+                        lang,
+                        "Estas alertas se calculan con los datos registrados y requieren verificación clínica; no son diagnósticos ni autorizaciones.",
+                        "These alerts are calculated from recorded data and require clinical verification; they are not diagnoses or clearances."
+                    ),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
         SummaryCardV53(tr(lang,"Exploración y análisis","Examination and analysis")){
             SummaryLineV53("Dientes registrados",teeth.size.toString()); SummaryLineV53("Dientes presentes",present.toString()); SummaryLineV53("Dientes con ICDAS > 0",caries.toString()); SummaryLineV53("CPOD / DMFT","${cpod.total} (C ${cpod.carious} · P ${cpod.missing} · O ${cpod.filled})"); SummaryLineV53("ceod / dmft","${ceod.total} (c ${ceod.carious} · e ${ceod.missing} · o ${ceod.filled})"); SummaryLineV53("Periodontograma",perio); SummaryLineV53("Pulpar / periapical",pulpal); SummaryLineV53("IPC",if(session.ipcCodes.any{it!="0"}) "Registrado" else "Pendiente"); SummaryLineV53("O'Leary",if(session.oleary.isNotEmpty()) "Registrado" else "Pendiente"); SummaryLineV53("Tratamientos vinculados",if(linkedTreatment.isEmpty()) "Pendiente" else linkedTreatment.joinToString(", ") { "OD ${it}" })
         }
