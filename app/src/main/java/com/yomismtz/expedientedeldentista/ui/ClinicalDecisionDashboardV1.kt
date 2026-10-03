@@ -279,6 +279,23 @@ fun ClinicalDecisionDashboardV1(
         Text(tr(lang,"⚠️ El registro electrónico no sustituye los requisitos legales, institucionales ni la firma/autorización que corresponda. Documenta el proceso de información y la decisión; verifica la normativa aplicable.","⚠️ Electronic recording does not replace applicable legal, institutional or signature/authorization requirements. Verify applicable rules."),style=MaterialTheme.typography.bodySmall,fontWeight=FontWeight.Bold)
     }
 
+    ResponsiveSectionV17(
+        tr(lang,"16 · Seguridad y privacidad","16 · Security and privacy"),
+        tr(lang,"Controles aplicados al almacenamiento local y al intercambio de expedientes.","Controls applied to local storage and record sharing.")
+    ) {
+        Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){
+            Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
+                Text(tr(lang,"Protecciones activas","Active protections"),fontWeight=FontWeight.Bold)
+                Text("✓ "+tr(lang,"Expedientes clínicos locales cifrados con Android Keystore.","Local clinical records encrypted with Android Keystore."))
+                Text("✓ "+tr(lang,"Copia de seguridad automática de la aplicación deshabilitada.","Automatic application backup disabled."))
+                Text("✓ "+tr(lang,"Fotografías restauradas en almacenamiento privado de la aplicación.","Restored clinical photos use app-private storage."))
+                Text("✓ "+tr(lang,"No se requieren permisos de Internet para guardar el expediente local.","No Internet permission is required to store the local record."))
+            }
+        }
+        Text(tr(lang,"⚠️ Los archivos exportados para compartir contienen datos clínicos y fotografías en formato de respaldo. El cifrado del almacenamiento local no cifra automáticamente ese archivo exportado. Compártelo sólo por un canal autorizado y elimínalo cuando deje de ser necesario.","⚠️ Exported backup files can contain clinical data and photographs. Local storage encryption does not automatically encrypt the exported file. Share only through an authorized channel and delete it when no longer needed."),style=MaterialTheme.typography.bodySmall,fontWeight=FontWeight.Bold)
+        Text(tr(lang,"⚠️ La protección del dispositivo, bloqueo de pantalla, control de acceso de usuario y las políticas institucionales siguen siendo necesarios. Estas funciones no constituyen por sí solas cumplimiento legal o normativo.","⚠️ Device protection, screen lock, user access control and institutional policies remain necessary. These features alone do not constitute legal or regulatory compliance."),style=MaterialTheme.typography.bodySmall)
+    }
+
     ResponsiveSectionV17(tr(lang,"14 · Nota clínica automática","14 · Automatic clinical note"),tr(lang,"Genera un borrador estructurado a partir de los datos realmente capturados en el expediente.","Generates a structured draft from data actually captured in the record.")) {
         var note by remember(session){mutableStateOf(ClinicalEngines.generateAutomaticClinicalNote(session,lang))}
         Button(onClick={ note = ClinicalEngines.generateAutomaticClinicalNote(session,lang) },modifier=Modifier.fillMaxWidth()){
