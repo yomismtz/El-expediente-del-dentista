@@ -103,6 +103,7 @@ fun AppRoot(
             AppScreen.HISTORY_IDENTIFICATION, AppScreen.HISTORY_REASON, AppScreen.HISTORY_HEREDITARY, AppScreen.HISTORY_NONPATH, AppScreen.HISTORY_GYNECO, AppScreen.HISTORY_PATH, AppScreen.HISTORY_SURGICAL_TRAUMA, AppScreen.HISTORY_PHYSICAL, AppScreen.HISTORY_ORTHO, AppScreen.HISTORY_DENTAL_ALTERATIONS, AppScreen.HISTORY_HABITS, AppScreen.HISTORY_ORAL_EXAM -> HistoryScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.SYSTEMIC_PROTOCOLS -> SystemicProtocols37Screen(preferences.languageTag, folderBack)
             AppScreen.INTAKE -> IntakeNoteScreen(preferences.languageTag, session, folderBack)
+            AppScreen.MEDICATIONS -> MedicationManagementScreen(preferences.languageTag, session, onSessionChanged, folderBack)
             AppScreen.ACTIVITIES -> ActivitiesScreen(preferences.languageTag, folderBack)
             AppScreen.VITALS -> VitalsTeachingScreen(preferences.languageTag, folderBack)
             AppScreen.ATM -> AtmScreen(preferences.languageTag, folderBack)
@@ -233,6 +234,7 @@ private data class FolderTab(val screen: AppScreen, val icon: String, val es: St
 private fun treatmentTabs() = listOf(
     FolderTab(AppScreen.ACTIVITIES, "✓", "Autorización", "Authorization"),
     FolderTab(AppScreen.TREATMENT, "📝", "Dx / Tx", "Dx / Tx"),
+    FolderTab(AppScreen.MEDICATIONS, "💊", "Medicamentos", "Medications"),
     FolderTab(AppScreen.SESSIONS, "🗓", "Por sesiones", "By sessions"),
     FolderTab(AppScreen.ENDO, "⚡", "Endodoncia", "Endodontics"),
     FolderTab(AppScreen.PROSTHETIC, "🦷", "Prótesis", "Prosthetics"),
