@@ -92,7 +92,11 @@ class ClinicalRecordStore(context: Context) {
         if (encrypted != null) {
             prefs.edit().putString("records_secure", encrypted).remove("records").apply()
         } else {
-            prefs.edit().putString("records", payload).apply()
+            // Fail closed: never downgrade clinical records to plaintext when the
+            // Android Keystore is unavailable or encryption fails.
+            // A legacy plaintext copy, if present, is intentionally preserved so
+            // migration can be retried after the Keystore becomes available.
+            throw IllegalStateException("No se pudo cifrar el expediente con Android Keystore")
         }
     }
 
