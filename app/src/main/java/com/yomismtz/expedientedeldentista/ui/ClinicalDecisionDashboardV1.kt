@@ -36,7 +36,10 @@ fun ClinicalDecisionDashboardV1(
     spo2:Int?, glucose:Int?, temp:Double?, bmi:Double?, signs:Set<String>, pain:Int?,
     onSessionChanged:(EducationalSession)->Unit
 ) {
-    val p=session.profile
+    val structuredMedicationSummary = session.medicationsStructured.filter { it.active }.joinToString(" | ") { med ->
+        listOf(med.name, med.activeIngredient, med.dose + if(med.unit.isNotBlank()) " " + med.unit else "", med.route, med.frequency).filter { it.isNotBlank() }.joinToString(" ")
+    }
+    val p=session.profile.copy(medications=listOf(session.profile.medications, structuredMedicationSummary).filter { it.isNotBlank() }.joinToString(" | "))
     val d=evaluateClinicalDecisionV1(age,sex,sys,dia,rr,hr,spo2,glucose,temp,bmi,signs,pain,p)
     var cardiovascular by remember(p.cardiovascularHistory){mutableStateOf(p.cardiovascularHistory)}
     var antithrombotic by remember(p.anticoagulantsAntiplatelets){mutableStateOf(p.anticoagulantsAntiplatelets)}
