@@ -23,6 +23,7 @@ import com.yomismtz.expedientedeldentista.clinical.ClinicalEvent
 import com.yomismtz.expedientedeldentista.clinical.ClinicalMeasurement
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.clinical.evaluateClinicalDecisionV1
+import com.yomismtz.expedientedeldentista.clinical.ClinicalEngines
 
 private fun decisionTextV1(d:ClinicalDecisionV1,lang:String):String =
     if(lang=="en") d.detailEn else d.detailEs
@@ -121,6 +122,13 @@ fun ClinicalDecisionDashboardV1(
             onSessionChanged(session.copy(clinicalEvents=session.clinicalEvents + ClinicalEvent(System.currentTimeMillis(),"clinical_assessment",detail)))
         },modifier=Modifier.fillMaxWidth()){ Text(tr(lang,"Registrar valoración en bitácora","Log assessment")) }
         Button(onClick={
+            val clinicalMeasurement = ClinicalMeasurement(
+                timestamp = System.currentTimeMillis(),
+                systolic = sys, diastolic = dia, heartRate = hr, respiratoryRate = rr,
+                spo2 = spo2, temperature = temp, glucose = glucose,
+                weightKg = session.profile.weightKg.toDoubleOrNull(),
+                bmi = bmi, pain = pain
+            )
             val vitalDetail = listOf(
                 "Edad=" + age, "Sexo=" + sex,
                 "TA=" + (sys ?: "—") + "/" + (dia ?: "—"),
@@ -137,16 +145,20 @@ fun ClinicalDecisionDashboardV1(
                     System.currentTimeMillis(),
                     "vital_signs_snapshot",
                     vitalDetail
-                ),
-                clinicalMeasurement=ClinicalMeasurement(
-                    timestamp=System.currentTimeMillis(),
-                    systolic=sys, diastolic=dia, heartRate=hr, respiratoryRate=rr,
-                    spo2=spo2, temperature=temp, glucose=glucose,
-                    weightKg=session.profile.weightKg.toDoubleOrNull(),
-                    bmi=bmi, pain=pain
                 )
             ))
         },modifier=Modifier.fillMaxWidth()){ Text(tr(lang,"Registrar signos vitales en bitácora","Log vital signs")) }
+    }
+
+    ResponsiveSectionV17(tr(lang,"14 · Nota clínica automática","14 · Automatic clinical note"),tr(lang,"Genera un borrador estructurado a partir de los datos realmente capturados en el expediente.","Generates a structured draft from data actually captured in the record.")) {
+        var note by remember(session){mutableStateOf(ClinicalEngines.generateAutomaticClinicalNote(session,lang))}
+        Button(onClick={ note = ClinicalEngines.generateAutomaticClinicalNote(session,lang) },modifier=Modifier.fillMaxWidth()){
+            Text(tr(lang,"Generar / actualizar nota","Generate / refresh note"))
+        }
+        Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){
+            Text(note,Modifier.padding(12.dp),style=MaterialTheme.typography.bodySmall)
+        }
+        Text(tr(lang,"⚠️ Es un borrador: revisa y corrige cualquier dato antes de usarlo. No documenta automáticamente actos que no hayan sido realizados.","⚠️ Draft only: review and correct every detail before use. It does not document procedures that were not actually performed."),style=MaterialTheme.typography.bodySmall,fontWeight=FontWeight.Bold)
     }
 
     ResponsiveSectionV17(tr(lang,"13 · Evolución clínica","13 · Clinical evolution"),tr(lang,"Conserva mediciones sucesivas para comparar signos vitales, peso, dolor y glucosa a lo largo del tiempo.","Keeps serial measurements to compare vital signs, weight, pain and glucose over time.")) {
