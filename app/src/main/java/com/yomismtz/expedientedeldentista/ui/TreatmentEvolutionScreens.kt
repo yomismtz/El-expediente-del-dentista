@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.ClinicalContent
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEngines
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
+import com.yomismtz.expedientedeldentista.clinical.ClinicalEvent
 import com.yomismtz.expedientedeldentista.clinical.ToothRecord
 
 @Composable
@@ -42,7 +43,25 @@ fun TreatmentScreen(lang: String, session: EducationalSession, onSessionChanged:
     val derivedPlan = derivedId?.let { id -> ClinicalContent.treatmentPlans.firstOrNull { it.id==id } }
 
     fun updateRecord(updated: ToothRecord) {
-        onSessionChanged(session.copy(teeth=session.teeth+(selectedTooth to updated),presentTeeth=session.presentTeeth+selectedTooth))
+        val oldRecord = record
+        val events = buildList {
+            if (oldRecord.diagnosisId != updated.diagnosisId && updated.diagnosisId != null) {
+                val plan = ClinicalContent.treatmentPlans.firstOrNull { it.id == updated.diagnosisId }
+                add(ClinicalEvent(System.currentTimeMillis(), "tooth_diagnosis_link",
+                    "OD " + selectedTooth + " → diagnóstico: " + (plan?.diagnosisEs ?: updated.diagnosisId)))
+            }
+            if (oldRecord.treatmentId != updated.treatmentId && updated.treatmentId != null) {
+                val plan = ClinicalContent.treatmentPlans.firstOrNull { it.id == updated.diagnosisId }
+                val option = plan?.options?.firstOrNull { it.id == updated.treatmentId }
+                add(ClinicalEvent(System.currentTimeMillis(), "tooth_treatment_link",
+                    "OD " + selectedTooth + " → tratamiento: " + (option?.labelEs ?: updated.treatmentId)))
+            }
+        }
+        onSessionChanged(session.copy(
+            teeth = session.teeth + (selectedTooth to updated),
+            presentTeeth = session.presentTeeth + selectedTooth,
+            clinicalEvents = session.clinicalEvents + events
+        ))
     }
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
@@ -97,6 +116,15 @@ fun TreatmentScreen(lang: String, session: EducationalSession, onSessionChanged:
                 }
             }
         } }
+        if(selectedPlan!=null) item {
+            SectionCard(tr(lang,"4 · Cadena clínica","4 · Clinical chain")) {
+                Text("OD " + selectedTooth,fontWeight=FontWeight.Black)
+                Text("→ " + if(lang=="en") selectedPlan.diagnosisEn else selectedPlan.diagnosisEs)
+                Text("→ " + (selectedOption?.let { if(lang=="en") it.labelEn else it.labelEs }
+                    ?: tr(lang,"Tratamiento aún no seleccionado","Treatment not yet selected")))
+                Text(tr(lang,"Cada cambio queda vinculado al diente y registrado en la bitácora clínica.","Each change remains linked to the tooth and is recorded in the clinical log."),style=MaterialTheme.typography.bodySmall)
+            }
+        }
         if(selectedOption!=null) item { NoticeCard(tr(lang,"La elección clínica real requiere diagnóstico completo, restaurabilidad, edad/dentición, pronóstico, condiciones sistémicas, preferencias y supervisión. La app enseña razonamiento, no prescribe.","Real clinical selection requires complete diagnosis, restorability, age/dentition, prognosis, systemic conditions, preferences and supervision. The app teaches reasoning; it does not prescribe.")) }
         item { SectionCard(tr(lang,"Ortodoncia preventiva / mantenimiento de espacio","Preventive orthodontics / space maintenance")) {
             Text("🧭 ${ClinicalEngines.orthodonticSuggestion(session,lang)}")
