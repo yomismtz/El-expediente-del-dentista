@@ -1,5 +1,13 @@
 package com.yomismtz.expedientedeldentista.clinical
 
+data class ClinicalAlertV1(
+    val severity: String,
+    val triggerEs: String,
+    val actionEs: String,
+    val triggerEn: String,
+    val actionEn: String
+)
+
 data class ClinicalDecisionV1(
     val status: String,
     val titleEs: String,
@@ -9,6 +17,7 @@ data class ClinicalDecisionV1(
     val treatments: List<String>,
     val restrictionsEs: List<String>,
     val restrictionsEn: List<String>,
+    val alerts: List<ClinicalAlertV1>,
     val anestheticEs: String,
     val anestheticEn: String
 )
@@ -170,5 +179,36 @@ fun evaluateClinicalDecisionV1(
         }
     }
 
-    return ClinicalDecisionV1(status,titleEs,titleEn,detailEs,detailEn,treatments,restrictionsEs.take(8),restrictionsEn.take(8),anestheticEs,anestheticEn)
+    val alerts = mutableListOf<ClinicalAlertV1>()
+    fun alert(severity:String, esTrigger:String, esAction:String, enTrigger:String, enAction:String) {
+        alerts += ClinicalAlertV1(severity, esTrigger, esAction, enTrigger, enAction)
+    }
+    if (sys != null && dia != null && age >= 18 && (sys > 180 || dia > 110))
+        alert("RED","TA $sys/$dia mmHg","Repetir la medición y solicitar valoración médica; no iniciar atención electiva.","BP $sys/$dia mmHg","Repeat the measurement and obtain medical assessment; do not start elective care.")
+    else if (sys != null && dia != null && age >= 18 && (sys >= 160 || dia >= 100))
+        alert("YELLOW","TA $sys/$dia mmHg","Confirmar la medición y revisar el plan antes de procedimientos invasivos.","BP $sys/$dia mmHg","Confirm the measurement and review the plan before invasive procedures.")
+    if (spo2 != null && spo2 < 90)
+        alert("RED","SpO₂ $spo2 %","Confirmar la lectura y realizar valoración urgente según el contexto.","SpO₂ $spo2%","Confirm the reading and obtain urgent assessment as appropriate.")
+    else if (spo2 != null && spo2 < 95)
+        alert("YELLOW","SpO₂ $spo2 %","Repetir y contextualizar; si persiste, valorar antes de atención electiva.","SpO₂ $spo2%","Repeat and contextualize; if persistent, assess before elective care.")
+    if (glucose != null && glucose < 70)
+        alert("RED","Glucosa $glucose mg/dL","Corregir/seguir el protocolo de hipoglucemia y reevaluar antes de continuar.","Glucose $glucose mg/dL","Treat/follow the hypoglycemia protocol and reassess before continuing.")
+    else if (glucose != null && glucose >= 300)
+        alert("YELLOW","Glucosa $glucose mg/dL","Valorar control metabólico y diferir procedimientos invasivos electivos si corresponde.","Glucose $glucose mg/dL","Assess metabolic control and defer invasive elective procedures when appropriate.")
+    if (temp != null && temp >= 38.0)
+        alert(if (temp >= 40.0) "RED" else "YELLOW","Temperatura $temp °C","Confirmar y buscar la causa; si se sospecha infección sistémica, diferir atención electiva.","Temperature $temp °C","Confirm and identify the cause; if systemic infection is suspected, defer elective care.")
+    if ("Sangrado oral no controlable" in signs)
+        alert("RED","Sangrado oral no controlable","No iniciar procedimiento electivo y activar protocolo de hemostasia/urgencia.","Uncontrolled oral bleeding","Do not start elective care; activate the hemostasis/emergency protocol.")
+    if ("Inflamación facial/cervical" in signs || "Disnea" in signs || "Disfagia" in signs)
+        alert("RED","Posible compromiso de vía aérea","No tratar electivamente y valorar urgencia.","Possible airway compromise","Do not provide elective care and obtain urgent assessment.")
+    if ("Úlcera o lesión >2 semanas" in signs || "Mancha blanca/roja persistente" in signs)
+        alert("YELLOW","Lesión oral persistente","Documentar evolución y valorar referencia/biopsia según hallazgos; no asumir diagnóstico por apariencia.","Persistent oral lesion","Document the evolution and consider referral/biopsy according to findings; do not assume a diagnosis from appearance.")
+    if (antithrombotic.isNotBlank())
+        alert("YELLOW","Anticoagulante/antiagregante registrado","No suspenderlo automáticamente; planificar hemostasia y revisar el procedimiento.","Anticoagulant/antiplatelet recorded","Do not stop it automatically; plan hemostasis and review the procedure.")
+    if (cardiovascularHistory.isNotBlank() || rhythmMeds.isNotBlank())
+        alert("YELLOW","Antecedente/fármaco cardiovascular registrado","Revisar antes de usar vasoconstrictor y considerar la precaución de epinefrina indicada.","Cardiovascular history/medication recorded","Review before vasoconstrictor use and consider the indicated epinephrine precaution.")
+    if (systemicCaution)
+        alert("YELLOW","Comorbilidad sistémica registrada","Revisar enfermedad, medicamentos y plan antes de procedimientos invasivos.","Systemic comorbidity recorded","Review disease, medications and plan before invasive procedures.")
+
+    return ClinicalDecisionV1(status,titleEs,titleEn,detailEs,detailEn,treatments,restrictionsEs.take(8),restrictionsEn.take(8),alerts.take(10),anestheticEs,anestheticEn)
 }
