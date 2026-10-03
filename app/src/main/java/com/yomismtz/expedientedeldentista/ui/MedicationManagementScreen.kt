@@ -40,10 +40,18 @@ private val medicationCatalog=listOf(
     MedicationOption("Ibuprofeno",listOf(MedicationPresentation("Tableta 400 mg","400","mg","Oral"),MedicationPresentation("Tableta 600 mg","600","mg","Oral"),MedicationPresentation("Suspensión 100 mg/5 mL","100","mg/5 mL","Oral"))),
     MedicationOption("Naproxeno",listOf(MedicationPresentation("Tableta 250 mg","250","mg","Oral"),MedicationPresentation("Tableta 500 mg","500","mg","Oral"))),
     MedicationOption("Diclofenaco",listOf(MedicationPresentation("Tableta 50 mg","50","mg","Oral"))),
-    MedicationOption("Ketorolaco",listOf(MedicationPresentation("Tableta 10 mg","10","mg","Oral")))
+    MedicationOption("Ketorolaco",listOf(MedicationPresentation("Tableta 10 mg","10","mg","Oral"))),
+    MedicationOption("Dexametasona",listOf(MedicationPresentation("Tableta 0.5 mg","0.5","mg","Oral"))),
+    MedicationOption("Prednisona",listOf(MedicationPresentation("Tableta 5 mg","5","mg","Oral"),MedicationPresentation("Tableta 20 mg","20","mg","Oral"))),
+    MedicationOption("Clorhexidina",listOf(MedicationPresentation("Enjuague 0.12%","0.12","%","Oral"))),
+    MedicationOption("Nistatina",listOf(MedicationPresentation("Suspensión oral 100,000 UI/mL","100000","UI/mL","Oral"))),
+    MedicationOption("Aciclovir",listOf(MedicationPresentation("Tableta 200 mg","200","mg","Oral"),MedicationPresentation("Tableta 400 mg","400","mg","Oral"))),
+    MedicationOption("Fluconazol",listOf(MedicationPresentation("Cápsula 150 mg","150","mg","Oral"))),
+    MedicationOption("Ketoprofeno",listOf(MedicationPresentation("Cápsula 100 mg","100","mg","Oral"))),
+    MedicationOption("Celecoxib",listOf(MedicationPresentation("Cápsula 200 mg","200","mg","Oral")))
 )
 
-private val frequencyOptions=listOf("Dosis única","Cada 6 horas","Cada 8 horas","Cada 12 horas","Cada 24 horas")
+private val frequencyOptions=listOf("Dosis única","Cada 6 horas","Cada 8 horas","Cada 12 horas","Cada 24 horas","Cada 48 horas")
 
 private val anestheticOptions=listOf(
     MedicationPresentation("Lidocaína 2% + epinefrina 1:100,000 · cartucho 1.8 mL","36","mg/cartucho","Infiltración/bloqueo"),
@@ -51,7 +59,9 @@ private val anestheticOptions=listOf(
     MedicationPresentation("Prilocaína 3% + felipresina · cartucho 1.8 mL","54","mg/cartucho","Infiltración"),
     MedicationPresentation("Articaína 4% + epinefrina · cartucho 1.8 mL","72","mg/cartucho","Infiltración/bloqueo"),
     MedicationPresentation("Mepivacaína 3% sin vasoconstrictor · cartucho 1.8 mL","54","mg/cartucho","Infiltración/bloqueo"),
-    MedicationPresentation("Bupivacaína 0.5% + vasoconstrictor · cartucho 1.8 mL","9","mg/cartucho","Bloqueo")
+    MedicationPresentation("Bupivacaína 0.5% + vasoconstrictor · cartucho 1.8 mL","9","mg/cartucho","Bloqueo"),
+    MedicationPresentation("Articaína 4% sin vasoconstrictor · cartucho 1.8 mL","72","mg/cartucho","Infiltración/bloqueo"),
+    MedicationPresentation("Mepivacaína 2% + levonordefrina · cartucho 1.8 mL","36","mg/cartucho","Infiltración/bloqueo")
 )
 
 private fun normalizeMedication(text:String)=text.trim().lowercase().replace(Regex("\\s+")," ")
