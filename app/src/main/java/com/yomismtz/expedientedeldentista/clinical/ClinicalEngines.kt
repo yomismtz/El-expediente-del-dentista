@@ -264,6 +264,49 @@ object ClinicalEngines {
         }
     }
 
+    fun generateAutomaticClinicalNote(session: EducationalSession, lang: String): String {
+        val p = session.profile
+        val history = session.history
+        val permanent = cpod(session.teeth, false)
+        val primary = cpod(session.teeth, true)
+        val diagnosis = pulpalDiagnosis(session.pulpal)
+        val plans = ClinicalContent.treatmentPlans.associateBy { it.id }
+        val options = ClinicalContent.treatmentPlans.flatMap { it.options }.associateBy { it.id }
+        val linked = session.teeth.toSortedMap().mapNotNull { (tooth, r) ->
+            val d = r.diagnosisId?.let { plans[it] }
+            if (d == null) null else {
+                val t = r.treatmentId?.let { options[it] }
+                "OD $tooth: ${d.diagnosisEs}" + if (t != null) " → ${t.labelEs}" else ""
+            }
+        }
+        val last = session.clinicalMeasurements.lastOrNull()
+        val bp = p.bloodPressure.ifBlank { if (last?.systolic != null && last.diastolic != null) "${last.systolic}/${last.diastolic}" else "" }
+        return if (lang == "en") buildString {
+            append("AUTOMATIC EDUCATIONAL CLINICAL NOTE\n")
+            append("Date: " + java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.US).format(java.util.Date()) + ". ")
+            append("Patient/session: " + p.exerciseName.ifBlank { "Not entered" } + "; age " + p.age.ifBlank { "—" } + "; sex " + p.sex.ifBlank { "—" } + ".\n")
+            append("Reason: " + p.reasonForVisit.ifBlank { "Not entered" } + ". Current condition: " + p.currentCondition.ifBlank { "Not entered" } + ".\n")
+            append("Relevant history: ASA " + history.asaClass + if(history.asaEmergency) "E" else "" + "; medications " + p.medications.ifBlank{"not entered"} + "; allergies " + p.allergies.ifBlank{"not entered"} + ".\n")
+            append("Vitals/context: BP " + bp.ifBlank{"—"} + "; HR " + p.heartRate.ifBlank{"—"} + "; RR " + p.respiratoryRate.ifBlank{"—"} + "; SpO2 " + p.spo2.ifBlank{"—"} + "%; temperature " + p.temperature.ifBlank{"—"} + " °C; glucose " + p.glucose.ifBlank{"—"} + " mg/dL; pain " + p.painScore.ifBlank{"—"} + "/10.\n")
+            append("Dental findings: " + p.clinicalSigns.ifBlank{"none entered"} + ". DMFT=" + permanent.total + "; dmft=" + primary.total + "; highest CPI=" + ipcHighest(session.ipcCodes) + ".\n")
+            append("Pulpal/periapical educational orientation: " + diagnosis.pulpalEn + "; " + diagnosis.apicalEn + ".\n")
+            if (linked.isNotEmpty()) append("Tooth-linked findings: " + linked.joinToString(" | ") + ".\n")
+            append("Recorded clinical events: " + session.clinicalEvents.size + "; longitudinal measurements: " + session.clinicalMeasurements.size + ".\n")
+            append("This generated text is a drafting aid. Verify every statement against the actual examination, findings, procedures performed, consent and clinical record before use.")
+        } else buildString {
+            append("NOTA CLÍNICA EDUCATIVA AUTOMÁTICA\n")
+            append("Fecha: " + java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault()).format(java.util.Date()) + ". ")
+            append("Paciente/sesión: " + p.exerciseName.ifBlank { "No capturado" } + "; edad " + p.age.ifBlank { "—" } + "; sexo " + p.sex.ifBlank { "—" } + ".\n")
+            append("Motivo de consulta: " + p.reasonForVisit.ifBlank { "No capturado" } + ". Padecimiento actual: " + p.currentCondition.ifBlank { "No capturado" } + ".\n")
+            append("Antecedentes relevantes: ASA " + history.asaClass + if(history.asaEmergency) "E" else "" + "; medicamentos " + p.medications.ifBlank{"no capturados"} + "; alergias " + p.allergies.ifBlank{"no capturadas"} + ".\n")
+            append("Signos/contexto: TA " + bp.ifBlank{"—"} + "; FC " + p.heartRate.ifBlank{"—"} + "; FR " + p.respiratoryRate.ifBlank{"—"} + "; SpO₂ " + p.spo2.ifBlank{"—"} + "%; temperatura " + p.temperature.ifBlank{"—"} + " °C; glucosa " + p.glucose.ifBlank{"—"} + " mg/dL; dolor " + p.painScore.ifBlank{"—"} + "/10.\n")
+            append("Hallazgos odontológicos: " + p.clinicalSigns.ifBlank{"ninguno capturado"} + ". CPOD=" + permanent.total + "; ceod=" + primary.total + "; IPC más alto=" + ipcHighest(session.ipcCodes) + ".\n")
+            append("Orientación pulpar/periapical educativa: " + diagnosis.pulpalEs + "; " + diagnosis.apicalEs + ".\n")
+            if (linked.isNotEmpty()) append("Hallazgos vinculados por diente: " + linked.joinToString(" | ") + ".\n")
+            append("Eventos clínicos registrados: " + session.clinicalEvents.size + "; mediciones longitudinales: " + session.clinicalMeasurements.size + ".\n")
+            append("Este texto es una ayuda de redacción. Verifica cada afirmación contra la exploración real, hallazgos, procedimientos efectuados, consentimiento y expediente antes de utilizarlo.")
+        }
+    }
     fun generateEvolutionNotes(session: EducationalSession, lang: String): List<String> {
         val plansById = ClinicalContent.treatmentPlans.associateBy { it.id }
         val optionsById = ClinicalContent.treatmentPlans.flatMap { it.options }.associateBy { it.id }
