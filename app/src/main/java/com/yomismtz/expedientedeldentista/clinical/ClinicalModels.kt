@@ -106,6 +106,20 @@ data class PulpalAssessment(
     val previousPartialEndo: Boolean = false
 )
 
+data class ClinicalMeasurement(
+    val timestamp: Long = System.currentTimeMillis(),
+    val systolic: Int? = null,
+    val diastolic: Int? = null,
+    val heartRate: Int? = null,
+    val respiratoryRate: Int? = null,
+    val spo2: Int? = null,
+    val temperature: Double? = null,
+    val glucose: Int? = null,
+    val weightKg: Double? = null,
+    val bmi: Double? = null,
+    val pain: Int? = null
+)
+
 data class ClinicalEvent(
     val timestamp: Long = System.currentTimeMillis(),
     val type: String = "",
@@ -125,7 +139,8 @@ data class EducationalSession(
     val ihosCalculus: Map<Int, Int> = emptyMap(),
     val periodontogram: Map<Int, PerioRecord> = emptyMap(),
     val pulpal: PulpalAssessment = PulpalAssessment(),
-    val clinicalEvents: List<ClinicalEvent> = emptyList()
+    val clinicalEvents: List<ClinicalEvent> = emptyList(),
+    val clinicalMeasurements: List<ClinicalMeasurement> = emptyList()
 )
 
 data class IndexResult(
