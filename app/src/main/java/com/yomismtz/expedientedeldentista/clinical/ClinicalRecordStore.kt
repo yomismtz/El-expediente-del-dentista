@@ -1,6 +1,15 @@
 package com.yomismtz.expedientedeldentista.clinical
 
 import android.content.Context
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
+import android.util.Base64
+import java.nio.charset.StandardCharsets
+import java.security.KeyStore
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.spec.GCMParameterSpec
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.UUID
@@ -14,9 +23,23 @@ data class SavedRecord(
 
 class ClinicalRecordStore(context: Context) {
     private val prefs = context.getSharedPreferences("clinical_records_v1", Context.MODE_PRIVATE)
+    private val keyAlias = "expediente_dentista_records_v1"
 
     fun loadAll(): List<SavedRecord> {
-        val raw = prefs.getString("records", "[]") ?: "[]"
+        val secure = prefs.getString("records_secure", null)
+        val raw = if (!secure.isNullOrBlank()) {
+            decrypt(secure) ?: "[]"
+        } else {
+            val legacy = prefs.getString("records", "[]") ?: "[]"
+            if (legacy != "[]") {
+                val migrated = runCatching {
+                    val a = JSONArray(legacy)
+                    (0 until a.length()).mapNotNull { i -> runCatching { recordFromJson(a.getJSONObject(i)) }.getOrNull() }
+                }.getOrDefault(emptyList())
+                write(migrated)
+            }
+            legacy
+        }
         return runCatching {
             val a = JSONArray(raw)
             (0 until a.length()).mapNotNull { i -> runCatching { recordFromJson(a.getJSONObject(i)) }.getOrNull() }
@@ -64,8 +87,52 @@ class ClinicalRecordStore(context: Context) {
     private fun write(records: List<SavedRecord>) {
         val a = JSONArray()
         records.forEach { a.put(recordToJson(it)) }
-        prefs.edit().putString("records", a.toString()).apply()
+        val payload = a.toString()
+        val encrypted = encrypt(payload)
+        if (encrypted != null) {
+            prefs.edit().putString("records_secure", encrypted).remove("records").apply()
+        } else {
+            prefs.edit().putString("records", payload).apply()
+        }
     }
+
+    private fun secretKey(): SecretKey? = runCatching {
+        val ks = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+        val existing = ks.getKey(keyAlias, null)
+        if (existing is SecretKey) return@runCatching existing
+        val generator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
+        generator.init(
+            KeyGenParameterSpec.Builder(
+                keyAlias,
+                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+            )
+                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                .setUserAuthenticationRequired(false)
+                .build()
+        )
+        generator.generateKey()
+    }.getOrNull()
+
+    private fun encrypt(value: String): String? = runCatching {
+        val key = secretKey() ?: return@runCatching null
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE, key)
+        val iv = cipher.iv
+        val ciphertext = cipher.doFinal(value.toByteArray(StandardCharsets.UTF_8))
+        Base64.encodeToString(iv + ciphertext, Base64.NO_WRAP)
+    }.getOrNull()
+
+    private fun decrypt(encoded: String): String? = runCatching {
+        val bytes = Base64.decode(encoded, Base64.DEFAULT)
+        require(bytes.size > 12)
+        val iv = bytes.copyOfRange(0, 12)
+        val ciphertext = bytes.copyOfRange(12, bytes.size)
+        val key = secretKey() ?: return@runCatching null
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, iv))
+        String(cipher.doFinal(ciphertext), StandardCharsets.UTF_8)
+    }.getOrNull()
 
     private fun recordTitle(s: EducationalSession, time: Long): String {
         val n = s.profile.patientInitials.trim().uppercase().ifBlank { s.profile.exerciseName.trim() }
