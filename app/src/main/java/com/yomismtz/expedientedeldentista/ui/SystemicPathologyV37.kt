@@ -72,37 +72,36 @@ private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String
  var alcohol by rememberRecordState("history.path.alcohol","")
  val saved=session.history.diseases
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
-  item{ScreenHeader("Antecedentes personales patológicos",onBack,"Selecciona categoría → enfermedad → datos del antecedente. Al guardar regresarás a la lista para continuar sin recorrer nuevamente toda la pantalla.")}
-  item{NoticeCard("ASA es una orientación educativa: depende de gravedad, control, repercusión sistémica y valoración completa; el diagnóstico por sí solo no determina la clase.")}
-  item{StructuredMedicalContextV1(session,onSessionChanged)}
-  item{Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(3.dp)){Text("ASA "+asa37(saved,tobacco,alcohol)+" · orientación automática",fontWeight=FontWeight.Black);Text("Antecedentes registrados: "+saved.values.count{it.present},fontWeight=FontWeight.SemiBold);Text("Integra tabaco, alcohol y enfermedades registradas. Debe confirmarse clínicamente y con supervisión docente.",style=MaterialTheme.typography.bodySmall)}}}
+  item{ScreenHeader("Antecedentes personales patológicos",onBack,"Primero registra tabaco y alcohol. Después selecciona una clasificación de enfermedades → enfermedad → datos del antecedente. Al guardar regresarás a la lista de enfermedades.")}
   if(category==null){
-   item{SectionCard("0 · Tabaco y alcohol"){
-    Text("Registra estas exposiciones antes de seleccionar enfermedades. El consumo actual puede elevar la orientación ASA aunque no exista otra enfermedad sistémica registrada.",style=MaterialTheme.typography.bodySmall)
-
-    Text("Tabaco / nicotina",fontWeight=FontWeight.Bold)
-    val tobaccoOptions=listOf("No fuma","Exfumador","Ocasional","Eventual · 1–3 días/semana","Frecuente · 4–6 días/semana","Diario","Vapeo/tabaco actual","No sabe / no recuerda")
+   item{SectionCard("1 · Tabaco y alcohol"){
+    Text("Registra primero las exposiciones personales. Después podrás entrar directamente a las clasificaciones de enfermedades.",style=MaterialTheme.typography.bodySmall)
+    Text("¿Fuma / usa nicotina?",fontWeight=FontWeight.Bold)
+    val tobaccoOptions=listOf("No fuma","Exfumador","Ocasional","Eventual · 1–3 días/semana","Frecuente · 4–6 días/semana","Diario","Vapeo / nicotina actual","No sabe / no recuerda")
     ChipChoices(tobaccoOptions.map{x->x to (tobacco==x)},{i->
      tobacco=tobaccoOptions[i]
      onSessionChanged(session.copy(history=session.history.copy(asaClass=asa37(saved,tobacco,alcohol))))
-    },columns=3)
-
-    Spacer(Modifier.height(8.dp))
-    Text("Alcohol",fontWeight=FontWeight.Bold)
-    val alcoholOptions=listOf("No consume","Ocasional / social","Eventual · 1–3 días/semana","Frecuente · 4–6 días/semana","Diario","Dependencia/abuso referido","No sabe / no recuerda")
+    },columns=2)
+    Spacer(Modifier.height(10.dp))
+    Text("¿Ingiere alcohol?",fontWeight=FontWeight.Bold)
+    val alcoholOptions=listOf("No consume","Ocasional / social","Eventual · 1–3 días/semana","Frecuente · 4–6 días/semana","Diario","Dependencia / abuso referido","No sabe / no recuerda")
     ChipChoices(alcoholOptions.map{x->x to (alcohol==x)},{i->
      alcohol=alcoholOptions[i]
      onSessionChanged(session.copy(history=session.history.copy(asaClass=asa37(saved,tobacco,alcohol))))
-    },columns=3)
-
-    val exposureAsa=asa37(emptyMap(),tobacco,alcohol)
+    },columns=2)
     if(tobacco.isNotBlank() || alcohol.isNotBlank()){
      Spacer(Modifier.height(8.dp))
-     Text("Orientación por exposiciones: ASA $exposureAsa",fontWeight=FontWeight.SemiBold)
-     if(exposureAsa==2)Text("Consumo actual de tabaco o alcohol registrado: se utiliza como piso educativo ASA II; el resto de antecedentes puede elevar la clase.",style=MaterialTheme.typography.bodySmall)
-     if(exposureAsa>=3)Text("Se registró dependencia/abuso de alcohol. La repercusión sistémica y funcional debe valorarse antes de confirmar la clase.",style=MaterialTheme.typography.bodySmall)
+     Text("Exposiciones registradas",fontWeight=FontWeight.SemiBold)
+     Text(
+      listOfNotNull(
+       tobacco.takeIf{it.isNotBlank()}?.let{"Tabaco/nicotina: $it"},
+       alcohol.takeIf{it.isNotBlank()}?.let{"Alcohol: $it"}
+      ).joinToString(" · "),
+      style=MaterialTheme.typography.bodySmall
+     )
     }
    }}
+   item{Text("2 · Clasificaciones de enfermedades",style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Bold)}
    item{
     BoxWithConstraints(Modifier.fillMaxWidth()){
      val columns=if(maxWidth<700.dp)2 else 3
