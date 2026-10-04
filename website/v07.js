@@ -18,10 +18,11 @@ S.ingreso={k:'HOJA 2',t:'NOTA DE INGRESO',i:'Toca cada apartado para saber qué 
  ['▤','Pronóstico y plan inicial','Problemas prioritarios, estudios pendientes, tratamiento inicial y seguimiento.','pronostico']
 ]};
 
-S.medicamentos={k:'GENERAL',t:'MEDICAMENTOS QUE ESTÁ TOMANDO',i:'Aprende a documentar exactamente lo que el paciente refiere; esta sección no prescribe tratamientos.',c:[
- ['Qué registrar','Nombre genérico, presentación o dosis si la conoce, vía, frecuencia/esquema referido y motivo de uso.'],
- ['Ejemplos frecuentes','Metformina, insulina, losartán, enalapril, AAS, clopidogrel, anticoagulantes, salbutamol o levotiroxina pueden aparecer en la anamnesis.'],
- ['Ejemplo de redacción','“Refiere metformina por vía oral; presentación y frecuencia según receta/envase referido”. Si no se conoce un dato, no se inventa.']
+S.medicamentos={k:'GENERAL',t:'MEDICAMENTOS Y ANESTÉSICOS',i:'Selector educativo para aprender a documentar medicamentos y revisar referencias por peso. No prescribe ni autoriza la administración.',c:[
+ ['Selector de medicamentos','El alumno registra el peso del paciente y selecciona un medicamento genérico y una presentación predefinida. La app evita la captura libre de nombre, dosis y vía para reducir errores de escritura.'],
+ ['Referencia pediátrica','Para algunos medicamentos se muestra una referencia educativa en mg/kg y, cuando corresponde, un rango calculado a partir del peso. Debe verificarse con ficha oficial, edad, indicación y características del paciente.'],
+ ['Anestésicos locales','Se selecciona el anestésico y la presentación. La app puede mostrar una referencia educativa en mg/kg, un límite teórico calculado por peso y su equivalencia matemática en cartuchos. Esto no equivale a una dosis indicada para administrar.'],
+ ['Seguridad','Antes de cualquier uso clínico deben revisarse alergias, antecedentes, medicamentos concomitantes, edad, peso, estado sistémico, concentración, vasoconstrictor, técnica, ficha oficial y límites aplicables.']
 ]};
 S.pronostico={k:'GENERAL',t:'PRONÓSTICO Y PLAN INICIAL',i:'Integra lo prioritario al final de la nota, sin convertir la app en una orden clínica.',c:[
  ['Pronóstico','Expresa el pronóstico sólo con la información disponible; si faltan pruebas, indícalo.'],

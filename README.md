@@ -16,6 +16,8 @@ Aplicación educativa Android, bilingüe y completamente offline para enseñar c
 - Diagnóstico y tratamiento por diente: tres opciones educativas por diagnóstico y retroalimentación de la alternativa preferente.
 - Sugerencias educativas de mantenimiento de espacio/ortodoncia preventiva ante pérdidas o extracciones de dentición temporal.
 - Generador de ejemplos de notas de evolución según los tratamientos seleccionados.
+- Selector educativo de medicamentos y anestésicos: peso del paciente + opciones predefinidas, con referencias pediátricas y anestésicas por peso cuando están disponibles.
+- Los cálculos farmacológicos son orientativos y no constituyen prescripción ni autorización de administración.
 
 ## Privacidad y funcionamiento
 
