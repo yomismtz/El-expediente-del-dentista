@@ -471,7 +471,7 @@ private data class E(val n:String,val d:String)
 
   item{SectionCard("1 · Familiar"){
    ChipChoices(
-    listOf("Ningún familiar / todos sanos" to noFamilyHistory),
+    listOf("Negado · ningún antecedente heredo-familiar" to noFamilyHistory),
     {
      noFamilyHistory=!noFamilyHistory
      if(noFamilyHistory){
@@ -556,7 +556,7 @@ private data class E(val n:String,val d:String)
   }}}
 
   item{SectionCard("5 · Cuando no hay información"){
-   Text("Usa la opción que corresponda al interrogatorio: «Ningún familiar / todos sanos», «No sabe» o deja el antecedente sin seleccionar. «No sabe» no equivale a un antecedente negativo.")
+   Text("Usa la opción que corresponda al interrogatorio: «Negado · ningún antecedente heredo-familiar», «No sabe» o deja el antecedente sin seleccionar. «No sabe» no equivale a un antecedente negativo.")
   }}
 
   item{SectionCard("Resumen familiar"){
@@ -579,6 +579,7 @@ private data class E(val n:String,val d:String)
  val chosen=rememberRecordStateMap<String,String>("history.nonpath.chosen")
  val multi=rememberRecordStateMap<String,Boolean>("history.nonpath.multi")
  val sections=listOf("Alimentación","Vivienda","Higiene","Inmunizaciones","Hábitos y exposiciones")
+ val sectionStatus=rememberRecordStateMap<String,String>("history.nonpath.sectionStatus")
  @Composable fun OptionsCard38(title:String,options:List<String>,note:String="",columns:Int=3){
   SectionCard(title){
    if(note.isNotBlank())Text(note,style=MaterialTheme.typography.bodySmall)
@@ -627,7 +628,16 @@ private data class E(val n:String,val d:String)
  val vaccineEntries=vaccines.entries.toList()
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
   item{ScreenHeader("Antecedentes personales no patológicos",onBack,"Alimentación abre primero por su relevancia odontológica. Selecciona frecuencias y el resumen orientativo se actualiza con las respuestas registradas.")}
-  item{SectionCard("Categorías"){ChipChoices(sections.map{x->x to (section==x)},{i->section=sections[i];sub=""},columns=3)}}
+  item{SectionCard("Categorías"){
+   Text("Cada apartado puede quedar expresamente marcado como «No refiere / sin particularidades» cuando no corresponde interrogatorio detallado.",style=MaterialTheme.typography.bodySmall)
+   ChipChoices(sections.map{x->x to (section==x)},{i->section=sections[i];sub=""},columns=3)
+   Spacer(Modifier.height(8.dp))
+   ChipChoices(
+    listOf("No refiere / sin particularidades","Con información para registrar","No sabe / no recuerda").map{x->x to (sectionStatus[section]==x)},
+    {i->sectionStatus[section]=listOf("No refiere / sin particularidades","Con información para registrar","No sabe / no recuerda")[i]},
+    columns=2
+   )
+  }}
 
   if(section=="Vivienda"){
    item{OptionsCard38("Número de cuartos",listOf("1","2","3","4","5","6 o más"),"Se interpreta junto con el número de habitantes para describir densidad habitacional; no genera por sí solo una clasificación.",3)}
@@ -988,38 +998,38 @@ private data class E(val n:String,val d:String)
   item{ScreenHeader("Antecedentes quirúrgicos, hospitalarios y traumáticos",onBack,"Selecciona un apartado y registra antecedente → antigüedad → complicaciones o secuelas. Las respuestas se conservan al cambiar de apartado.")}
   item{SectionCard("Apartado"){ChipChoices(sections.map{it to (section==it)},{section=sections[it]},columns=2);Text("Apartado actual: $section",style=MaterialTheme.typography.bodySmall,fontWeight=FontWeight.SemiBold)}}
   if(section=="Cirugías"){
-   item{OptionsCard("Antecedente de cirugía",listOf("Ninguna","Sí, una","Sí, dos","Sí, tres o más","No recuerda"))}
+   item{OptionsCard("Antecedente de cirugía",listOf("Negado / ninguna","Sí, una","Sí, dos","Sí, tres o más","No recuerda"))}
    item{OptionsCard("Tipo de cirugía",listOf("No aplica","Cesárea","Apendicectomía","Colecistectomía","Hernioplastia","Amigdalectomía/adenoidectomía","Ortopédica","Maxilofacial/dental","Ginecológica","Cardiovascular","Abdominal/digestiva","Otra/no recuerda"))}
    item{OptionsCard("Antigüedad de cirugía",listOf("<1 mes","1–6 meses","7–12 meses","1–5 años","6–10 años",">10 años","Infancia","No recuerda"))}
    item{OptionsCard("Complicaciones quirúrgicas",listOf("Ninguna referida","Infección","Hemorragia","Reacción anestésica referida","Problema de cicatrización","Reintervención","Otra complicación","No sabe/no recuerda"))}
    item{OptionsCard("Secuelas actuales",listOf("Ninguna referida","Dolor","Limitación funcional","Alteración sensitiva","Cicatriz problemática","Otra secuela","No sabe"))}
   }
   if(section=="Hospitalizaciones"){
-   item{OptionsCard("Hospitalizaciones previas",listOf("Nunca","1","2","3","4 o más","No recuerda"))}
+   item{OptionsCard("Hospitalizaciones previas",listOf("Negado / ninguna","1","2","3","4 o más","No recuerda"))}
    item{OptionsCard("Motivo principal",listOf("No aplica","Cirugía programada","Parto/cesárea","Infección/neumonía","Accidente/trauma","Enfermedad gastrointestinal","Descompensación metabólica","Problema cardiovascular","Problema respiratorio","Otra/no recuerda"))}
    item{OptionsCard("Antigüedad de hospitalización",listOf("<1 mes","1–6 meses","7–12 meses","1–5 años","6–10 años",">10 años","Infancia","No recuerda"))}
    item{OptionsCard("Duración aproximada",listOf("<24 horas","1–3 días","4–7 días","8–14 días",">14 días","No recuerda"))}
    item{OptionsCard("Complicaciones durante hospitalización",listOf("Ninguna referida","Infección","Hemorragia","Ingreso a terapia intensiva","Reintervención","Otra","No sabe/no recuerda"))}
   }
   if(section=="Transfusiones"){
-   item{OptionsCard("Transfusiones sanguíneas",listOf("Nunca","Sí, una vez","Sí, varias","No recuerda"))}
+   item{OptionsCard("Transfusiones sanguíneas",listOf("Negado / ninguna","Sí, una vez","Sí, varias","No recuerda"))}
    item{OptionsCard("Motivo de transfusión",listOf("No aplica","Cirugía","Hemorragia/trauma","Parto/cesárea","Anemia/enfermedad hematológica","Tratamiento oncológico","Otro","No recuerda"))}
    item{OptionsCard("Antigüedad de transfusión",listOf("<1 año","1–5 años","6–10 años",">10 años","Infancia","No recuerda"))}
    item{OptionsCard("Reacción transfusional referida",listOf("No presentó","Fiebre/escalofríos","Reacción alérgica","Dificultad respiratoria","Otra reacción","No sabe/no recuerda"))}
   }
   if(section=="Donación de sangre"){
-   item{OptionsCard("Donación de sangre",listOf("Nunca","Sí, una vez","Sí, varias veces","No recuerda"))}
+   item{OptionsCard("Donación de sangre",listOf("Negado / ninguna","Sí, una vez","Sí, varias veces","No recuerda"))}
    item{OptionsCard("Última donación",listOf("No aplica","<1 mes","1–6 meses","7–12 meses","1–5 años",">5 años","No recuerda"))}
    item{OptionsCard("Reacción posterior a donación",listOf("No presentó","Mareo/lipotimia","Sangrado prolongado","Malestar general","Otra","No recuerda"))}
   }
   if(section=="Trasplantes"){
-   item{OptionsCard("Antecedente de trasplante",listOf("Ninguno","Renal","Hepático","Cardiaco","Pulmonar","Médula/células hematopoyéticas","Otro","No sabe"))}
+   item{OptionsCard("Antecedente de trasplante",listOf("Negado / ninguno","Renal","Hepático","Cardiaco","Pulmonar","Médula/células hematopoyéticas","Otro","No sabe"))}
    item{OptionsCard("Antigüedad del trasplante",listOf("No aplica","<1 año","1–5 años","6–10 años",">10 años","No recuerda"))}
    item{OptionsCard("Inmunosupresión referida",listOf("No aplica","Sí actualmente","Antecedente, ya no","No","No sabe"),"Si existe inmunosupresión, debe vincularse con APP y medicamentos referidos.")}
    item{OptionsCard("Seguimiento médico",listOf("Regular referido","Irregular referido","Sin seguimiento actual","No sabe"))}
   }
   if(section=="Traumatismos"){
-   item{OptionsCard("Antecedente de traumatismo/fractura/luxación",listOf("Ninguno","Traumatismo sin fractura","Fractura","Luxación","Más de un tipo","No recuerda"))}
+   item{OptionsCard("Antecedente de traumatismo/fractura/luxación",listOf("Negado / ninguno","Traumatismo sin fractura","Fractura","Luxación","Más de un tipo","No recuerda"))}
    item{OptionsCard("Región afectada",listOf("No aplica","Cráneo/cara","Mandíbula/maxilar","Dientes","ATM","Columna","Miembro superior","Miembro inferior","Tórax","Otra/múltiples"))}
    item{OptionsCard("Antigüedad del trauma",listOf("<1 mes","1–6 meses","7–12 meses","1–5 años","6–10 años",">10 años","Infancia","No recuerda"))}
    item{OptionsCard("Tratamiento recibido",listOf("No aplica","Observación/reposo","Inmovilización","Reducción","Cirugía","Tratamiento dental","Rehabilitación/fisioterapia","Combinado","No recuerda"))}
@@ -1532,6 +1542,7 @@ private data class E(val n:String,val d:String)
   Habit38("bruxism","Bruxismo y apretamiento","Actividad masticatoria repetitiva referida durante sueño o vigilia, con rechinamiento, apretamiento o empuje mandibular. Ningún signo aislado confirma el diagnóstico.","Pregunta sueño/vigilia, fatiga y dolor; observa músculos, facetas, fracturas, restauraciones y línea alba.")
  )
  val present=rememberRecordStateMap<String,Boolean>("history.habits.present")
+ val noneDenied=rememberRecordState("history.habits.noneDenied",false)
  val frequency=rememberRecordStateMap<String,String>("history.habits.frequency")
  val duration=rememberRecordStateMap<String,String>("history.habits.duration")
  var openId by rememberRecordState("history.habits.open","")
@@ -1551,6 +1562,7 @@ private data class E(val n:String,val d:String)
         onClick={
          val newValue=!(present[h.id]?:false)
          present[h.id]=newValue
+         if(newValue) noneDenied=false
          openId=if(newValue)h.id else if(openId==h.id)"" else openId
         },
         label={Text(h.name,maxLines=2,softWrap=true)},
@@ -1713,10 +1725,14 @@ private fun OralSiteImagesV50HasRefs(site:String)=site in setOf("Labio superior"
  )
  var selected by remember{mutableStateOf<Int?>(null)}
  var helpSite by remember{mutableStateOf<Int?>(null)}
+ val siteStatus=rememberRecordStateMap<String,String>("history.oralExam.siteStatus")
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(9.dp)){
-  item{ScreenHeader("Examen peribucal e intrabucal / mucosas",onBack,"Exploración por sitio anatómico. Toca cada estructura para ver aspecto normal, qué observar y alteraciones seleccionables. Primero se describe el hallazgo; después se orienta el diagnóstico.")}
+  item{ScreenHeader("Examen peribucal e intrabucal / mucosas",onBack,"Exploración por sitio anatómico. Toca cada estructura para ver aspecto normal, qué observar y alteraciones seleccionables. En cada sitio puedes marcar explícitamente «Sano / sin alteración evidente», sin necesidad de registrar una lesión. Primero se describe el hallazgo; después se orienta el diagnóstico.")}
   item{NoticeCard("Secuencia sugerida: piel peribucal → labios y comisuras → mucosa labial/frenillos → carrillos → encía → paladares → orofaringe/úvula/pilares/amígdalas → lengua → frenillo lingual → piso de boca.")}
-  items(sites.size){i->val x=sites[i];Card(onClick={selected=if(selected==i)null else i;if(selected!=i && helpSite==i)helpSite=null},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){Text(x.n,fontWeight=FontWeight.Bold);if(selected==i){Text(x.d);Text("□ Normal / sin alteración evidente   □ Hallazgo presente   □ No valorable",style=MaterialTheme.typography.bodySmall);if(OralSiteImagesV50HasRefs(x.n)){TextButton(onClick={helpSite=if(helpSite==i)null else i}){Text(if(helpSite==i) "Ocultar referencias" else "?  Ver referencias")};if(helpSite==i)OralSiteImagesV50(lang,x.n)}}else Text("Toca para explorar",style=MaterialTheme.typography.bodySmall)}}}
+  items(sites.size){i->val x=sites[i];Card(onClick={selected=if(selected==i)null else i;if(selected!=i && helpSite==i)helpSite=null},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){Text(x.n,fontWeight=FontWeight.Bold);if(selected==i){Text(x.d)
+ Text("Estado del sitio",fontWeight=FontWeight.SemiBold)
+ ChipChoices(listOf("Sano / sin alteración evidente","Hallazgo presente","No valorable").map{it to (siteStatus[x.n]==it)},{j->siteStatus[x.n]=listOf("Sano / sin alteración evidente","Hallazgo presente","No valorable")[j]},columns=1)
+ if(OralSiteImagesV50HasRefs(x.n)){TextButton(onClick={helpSite=if(helpSite==i)null else i}){Text(if(helpSite==i) "Ocultar referencias" else "?  Ver referencias")};if(helpSite==i)OralSiteImagesV50(lang,x.n)}}else Text("Toca para explorar",style=MaterialTheme.typography.bodySmall)}}}
   item{NoticeCard("Las referencias clínicas locales se muestran sólo cuando están disponibles para el sitio explorado y se solicitan con ?. Sirven para comparación educativa; el hallazgo debe describirse y correlacionarse con la exploración.")}
  }
 }
