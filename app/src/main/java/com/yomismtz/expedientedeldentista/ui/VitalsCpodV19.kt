@@ -719,6 +719,11 @@ private fun dentalActivitySemaphore19(
     }
     val requirements=mutableListOf<String>()
     if(age==null)requirements.add("registrar edad")
+    if(rr==null)requirements.add("registrar FR")
+    if(hr==null)requirements.add("registrar FC")
+    if(sys==null||dia==null)requirements.add("registrar TA sistólica/diastólica")
+    if(spo2==null)requirements.add("registrar SpO₂")
+    if(temp==null)requirements.add("registrar temperatura")
     if(age!=null && age<18 && (sex=="No especificado" || sex.isBlank()))requirements.add("registrar sexo para TA pediátrica")
     if(age!=null && age<18 && heightCm==null)requirements.add("registrar talla para TA pediátrica")
     if(sys!=null && dia!=null && (sys>=140 || dia>=90))requirements.add("repetir TA y valorar médico si persiste")
