@@ -71,6 +71,7 @@ private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String
  var tobacco by rememberRecordState("history.path.tobacco","")
  var alcohol by rememberRecordState("history.path.alcohol","")
  var noPathologicalHistory by rememberRecordState("history.path.noneDenied",false)
+ var noAllergies by rememberRecordState("history.path.allergies.noneDenied",false)
  val saved=session.history.diseases
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
   item{ScreenHeader("Antecedentes personales patológicos",onBack,"Primero registra tabaco y alcohol. Después selecciona una clasificación de enfermedades → enfermedad → datos del antecedente. Al guardar regresarás a la lista de enfermedades.")}
