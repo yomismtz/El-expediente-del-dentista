@@ -110,6 +110,18 @@ private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String
     },label={Text("Negado · ningún antecedente personal patológico")},modifier=Modifier.fillMaxWidth())
     if(noPathologicalHistory) Text("Registro: paciente niega antecedentes personales patológicos de las clasificaciones disponibles.",style=MaterialTheme.typography.bodySmall)
    }}
+   item{
+    Text("Alergias",fontWeight=FontWeight.Bold)
+    FilterChip(selected=noAllergies,onClick={
+     noAllergies=!noAllergies
+     if(noAllergies){
+      val allergyIds=setOf("drug_allergy","latex_allergy","food_allergy","allergic_rhinitis","urticaria","atopic_dermatitis","anaphylaxis","contact_dermatitis")
+      val cleared=saved.filterKeys{it !in allergyIds}
+      onSessionChanged(session.copy(history=session.history.copy(diseases=cleared,asaClass=asa37(cleared,tobacco,alcohol))))
+     }
+    },label={Text("Negado · ninguna alergia conocida")},modifier=Modifier.fillMaxWidth())
+    if(noAllergies) Text("Registro explícito: el paciente no refiere alergias conocidas.",style=MaterialTheme.typography.bodySmall)
+   }
    item{Text("3 · Clasificaciones de enfermedades",style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Bold)}
    item{
     BoxWithConstraints(Modifier.fillMaxWidth()){
@@ -118,7 +130,7 @@ private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String
       categories37.chunked(columns).forEach{row->
        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(9.dp)){
         row.forEach{x->
-         Card(onClick={noPathologicalHistory=false;category=x},modifier=Modifier.weight(1f)){
+         Card(onClick={noPathologicalHistory=false;if(x.name=="Alérgicas")noAllergies=false;category=x},modifier=Modifier.weight(1f)){
           Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
            Text(x.name,fontWeight=FontWeight.Bold)
            Text("${x.diseases.count{saved[it.id]?.present==true}}/${x.diseases.size} registrados",style=MaterialTheme.typography.bodySmall)
