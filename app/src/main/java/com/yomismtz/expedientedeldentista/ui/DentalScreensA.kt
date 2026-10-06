@@ -148,7 +148,7 @@ fun OdontogramScreen(lang: String, session: EducationalSession, onSessionChanged
                     listOf("ODONTO","ICDAS","CPOD","IHOS","IPC").forEach { mode -> FilterChip(legendMode==mode,{legendMode=mode},{Text(mode)},modifier=Modifier.weight(1f)) }
                 }
                 val text=when(legendMode) {
-                    "ICDAS" -> tr(lang,"ICDAS se registra por superficie; el código principal del diente es el mayor código observado entre sus caras.","ICDAS is surface-based; the tooth's main code is the highest code observed among its surfaces.")
+                    "ICDAS" -> tr(lang,"ICDAS II se registra por superficie con dos dígitos: restauración/sellante + caries. Los códigos especiales 96–99 se interpretan según la condición registrada.","ICDAS is surface-based; the tooth's main code is the highest code observed among its surfaces.")
                     "CPOD" -> tr(lang,"CPOD/ceod usa el diente como unidad. Si un mismo diente está restaurado y además tiene caries activa, se clasifica como cariado para el índice.","DMFT/dmft uses the tooth as the unit. If a tooth is restored and also has active caries, it is counted as decayed for the index.")
                     "IHOS" -> tr(lang,"IHOS no usa todos los dientes: guía 16V, 11V, 26V, 36L, 31V y 46L, con códigos de detritos y cálculo.","OHI-S uses index surfaces: 16B, 11B, 26B, 36L, 31B and 46L, with debris/calculus codes.")
                     "IPC" -> tr(lang,"IPC se registra por sextantes y conserva únicamente el hallazgo de mayor código del sextante; no es un código por cara dental.","CPI is recorded by sextants and keeps the highest-code finding in the sextant; it is not a tooth-surface code.")
