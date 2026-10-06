@@ -19,6 +19,8 @@ data class AsaGuide(
 )
 
 data class IcdasGuide(val code: Int, val es: String, val en: String)
+data class IcdasRestorationGuide(val code: Int, val es: String, val en: String)
+data class IcdasSpecialGuide(val code: Int, val es: String, val en: String)
 
 object ClinicalContent {
     val permanentTeeth = listOf(
@@ -114,14 +116,37 @@ object ClinicalContent {
             "Paciente con muerte cerebral para donación de órganos.", "Brain-dead patient for organ donation.")
     )
 
+    val icdasRestorations = listOf(
+        IcdasRestorationGuide(0, "Sin restauración ni sellador", "Unrestored / unsealed"),
+        IcdasRestorationGuide(1, "Sellador parcial", "Partial sealant"),
+        IcdasRestorationGuide(2, "Sellador completo", "Full sealant"),
+        IcdasRestorationGuide(3, "Restauración del color del diente", "Tooth-colored restoration"),
+        IcdasRestorationGuide(4, "Restauración de amalgama", "Amalgam restoration"),
+        IcdasRestorationGuide(5, "Corona de acero inoxidable", "Stainless steel crown"),
+        IcdasRestorationGuide(6, "Corona o carilla de porcelana, oro o PFM", "Porcelain, gold, PFM crown or veneer"),
+        IcdasRestorationGuide(7, "Restauración perdida o fracturada", "Lost or broken restoration"),
+        IcdasRestorationGuide(8, "Restauración temporal", "Temporary restoration")
+    )
+
     val icdas = listOf(
         IcdasGuide(0, "Superficie sana, sin evidencia de caries.", "Sound surface, no evidence of caries."),
-        IcdasGuide(1, "Primer cambio visual en esmalte después del secado.", "First visual change in enamel after drying."),
-        IcdasGuide(2, "Cambio visual evidente en esmalte incluso sin secar.", "Distinct visual change in enamel even without drying."),
+        IcdasGuide(1, "Primer cambio visual en esmalte tras secado.", "First visual change in enamel after drying."),
+        IcdasGuide(2, "Cambio visual distinto en esmalte, visible en húmedo y seco.", "Distinct visual change in enamel, visible wet and dry."),
         IcdasGuide(3, "Pérdida localizada de integridad del esmalte, sin dentina visible.", "Localized enamel breakdown without visible dentin."),
-        IcdasGuide(4, "Sombra oscura subyacente de dentina, con o sin ruptura del esmalte.", "Underlying dark shadow from dentin, with or without enamel breakdown."),
+        IcdasGuide(4, "Sombra oscura subyacente de dentina.", "Underlying dark shadow from dentin."),
         IcdasGuide(5, "Cavidad distinta con dentina visible.", "Distinct cavity with visible dentin."),
-        IcdasGuide(6, "Cavidad extensa y profunda con dentina visible.", "Extensive distinct cavity with visible dentin.")
+        IcdasGuide(6, "Cavidad extensa con dentina visible.", "Extensive distinct cavity with visible dentin.")
+    )
+
+    val icdasSpecial = listOf(
+        IcdasSpecialGuide(90, "Implante por pérdida dental por otras causas", "Implant for tooth loss from other causes"),
+        IcdasSpecialGuide(91, "Implante por pérdida dental por caries", "Implant for tooth loss due to caries"),
+        IcdasSpecialGuide(92, "Póntico por pérdida dental por otras causas", "Pontic for tooth loss from other causes"),
+        IcdasSpecialGuide(93, "Póntico por pérdida dental por caries", "Pontic for tooth loss due to caries"),
+        IcdasSpecialGuide(96, "Superficie no examinable / excluida", "Surface cannot be examined / excluded"),
+        IcdasSpecialGuide(97, "Diente ausente por caries", "Tooth missing due to caries"),
+        IcdasSpecialGuide(98, "Diente ausente por otras razones", "Tooth missing for reasons other than caries"),
+        IcdasSpecialGuide(99, "Diente no erupcionado", "Unerupted tooth")
     )
 
     val treatmentPlans = listOf(
