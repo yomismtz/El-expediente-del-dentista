@@ -66,7 +66,10 @@ data class HistoryState(
 
 data class ToothRecord(
     val status: ToothStatus = ToothStatus.HEALTHY,
+    /** Legacy summary code retained only for backward compatibility. Use icdasSurfaceRecords for new data. */
+    @Deprecated("Use EducationalSession.icdasSurfaceRecords")
     val icdas: Int = 0,
+    val icdasLegacyPending: Boolean = false,
     val diagnosisId: String? = null,
     val treatmentId: String? = null
 )
@@ -167,6 +170,10 @@ data class EducationalSession(
     val history: HistoryState = HistoryState(),
     val teeth: Map<Int, ToothRecord> = emptyMap(),
     val odontogramSurfaces: Map<Int, Map<Surface, SurfaceMark>> = emptyMap(),
+    /** Canonical ICDAS II model: restoration/sealant, caries, or special code per surface. */
+    val icdasSurfaceRecords: Map<Int, Map<Surface, IcdasSurfaceRecord>> = emptyMap(),
+    /** @deprecated JSON compatibility field for records created before the explicit ICDAS model. */
+    @Deprecated("Use icdasSurfaceRecords")
     val icdasSurfaces: Map<Int, Map<Surface, Int>> = emptyMap(),
     val oleary: Map<Int, Set<Surface>> = emptyMap(),
     val presentTeeth: Set<Int> = emptySet(),
