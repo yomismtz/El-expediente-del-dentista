@@ -355,7 +355,7 @@ object ClinicalEngines {
 
     fun derivedTreatmentPlanId(session: EducationalSession, tooth: Int): String? {
         val record=session.teeth[tooth] ?: ToothRecord()
-        val icdas=session.icdasSurfaceRecords[tooth]?.values?.mapNotNull { it.cariesCode }.maxOrNull() ?: if (record.icdasLegacyPending) record.icdas else record.icdas % 10
+        val icdas=session.icdasSurfaceRecords[tooth]?.values?.mapNotNull { it.cariesCode }?.maxOrNull() ?: if (record.icdasLegacyPending) record.icdas else record.icdas % 10
         val pulpal=session.pulpal.takeIf { it.tooth==tooth }
         if(pulpal!=null && (pulpal.spontaneousPain || pulpal.nightPain || pulpal.coldLingering || pulpal.heatPositive || pulpal.sensitivityNegative || pulpal.previousRootCanal || pulpal.previousPartialEndo)) {
             return when(pulpalDiagnosis(pulpal).pulpalEs) {
