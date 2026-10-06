@@ -32,33 +32,80 @@ private data class QuickClinicalTool(
     val screen: AppScreen
 )
 
-private val quickClinicalTools = listOf(
-    QuickClinicalTool("🧮", "Calculadoras clínicas", "Clinical calculators", AppScreen.CALCULATORS),
-    QuickClinicalTool("💊", "Medicamentos y referencias por peso", "Medications and weight references", AppScreen.MEDICATIONS),
-    QuickClinicalTool("💉", "Anestésicos y cálculo por peso", "Local anesthetics and weight calculation", AppScreen.MEDICATIONS),
-    QuickClinicalTool("🦷", "Odontograma", "Odontogram", AppScreen.ODONTOGRAM),
-    QuickClinicalTool("🔎", "ICDAS", "ICDAS", AppScreen.ICDAS),
-    QuickClinicalTool("📊", "CPOD / DMFT", "DMFT", AppScreen.CPOD),
-    QuickClinicalTool("🪥", "Índice de O'Leary", "O'Leary plaque index", AppScreen.OLEARY),
-    QuickClinicalTool("🦠", "Índice de placa comunitario (IPC)", "Community plaque index", AppScreen.IPC),
-    QuickClinicalTool("🧼", "IHOS", "Simplified oral hygiene index", AppScreen.IHOS),
-    QuickClinicalTool("📈", "Periodontograma", "Periodontogram", AppScreen.PERIODONTOGRAM),
-    QuickClinicalTool("❤️", "Signos vitales", "Vital signs", AppScreen.VITALS),
-    QuickClinicalTool("⚡", "Evaluación pulpar y periapical", "Pulpal and periapical assessment", AppScreen.PULPAL),
-    QuickClinicalTool("🦷", "ATM", "TMJ", AppScreen.ATM),
-    QuickClinicalTool("↔️", "Oclusión", "Occlusion", AppScreen.OCCLUSION),
-    QuickClinicalTool("👄", "Mucosas y tejidos blandos", "Mucosa and soft tissues", AppScreen.MUCOSA),
-    QuickClinicalTool("🧍", "Postura craneocervical", "Craniocervical posture", AppScreen.POSTURE),
-    QuickClinicalTool("📚", "Protocolos sistémicos", "Systemic protocols", AppScreen.SYSTEMIC_PROTOCOLS),
-    QuickClinicalTool("⚕️", "Diagnóstico y tratamiento por diente", "Diagnosis and treatment by tooth", AppScreen.TREATMENT),
-    QuickClinicalTool("🗓️", "Plan de tratamiento por sesiones", "Treatment plan by sessions", AppScreen.SESSIONS),
-    QuickClinicalTool("⚡", "Ficha endodóntica", "Endodontic sheet", AppScreen.ENDO),
-    QuickClinicalTool("🧩", "Operatoria y restauración", "Operative and restorative dentistry", AppScreen.OPERATORIA),
-    QuickClinicalTool("🚨", "Urgencias odontológicas", "Dental emergencies", AppScreen.EMERGENCY),
-    QuickClinicalTool("📷", "Fotografía clínica", "Clinical photography", AppScreen.CLINICAL_PHOTO),
-    QuickClinicalTool("🔩", "Implantología", "Implantology", AppScreen.IMPLANTOLOGY),
-    QuickClinicalTool("🧒", "Odontopediatría", "Pediatric dentistry", AppScreen.PEDIATRIC_DENTISTRY),
-    QuickClinicalTool("🛡️", "Caries y riesgo de caries", "Caries and caries risk", AppScreen.CARIES_RISK)
+private data class QuickClinicalCategory(
+    val icon: String,
+    val es: String,
+    val en: String,
+    val tools: List<QuickClinicalTool>
+)
+
+private val quickClinicalCategories = listOf(
+    QuickClinicalCategory(
+        "🧮", "Evaluación y medición", "Assessment and measurement",
+        listOf(
+            QuickClinicalTool("🧮", "Calculadoras clínicas", "Clinical calculators", AppScreen.CALCULATORS),
+            QuickClinicalTool("❤️", "Signos vitales y triage", "Vital signs and triage", AppScreen.VITALS),
+            QuickClinicalTool("🔎", "ICDAS", "ICDAS", AppScreen.ICDAS),
+            QuickClinicalTool("📊", "CPOD / DMFT", "DMFT", AppScreen.CPOD),
+            QuickClinicalTool("🪥", "Índice de O'Leary", "O'Leary plaque index", AppScreen.OLEARY),
+            QuickClinicalTool("🦠", "Índice de placa comunitario (IPC)", "Community plaque index", AppScreen.IPC),
+            QuickClinicalTool("🧼", "IHOS", "Simplified oral hygiene index", AppScreen.IHOS),
+            QuickClinicalTool("📈", "Periodontograma", "Periodontogram", AppScreen.PERIODONTOGRAM)
+        )
+    ),
+    QuickClinicalCategory(
+        "🦷", "Diagnóstico clínico", "Clinical diagnosis",
+        listOf(
+            QuickClinicalTool("🦷", "Odontograma", "Odontogram", AppScreen.ODONTOGRAM),
+            QuickClinicalTool("⚡", "Evaluación pulpar y periapical", "Pulpal and periapical assessment", AppScreen.PULPAL),
+            QuickClinicalTool("🦷", "ATM", "TMJ", AppScreen.ATM),
+            QuickClinicalTool("↔️", "Oclusión", "Occlusion", AppScreen.OCCLUSION),
+            QuickClinicalTool("👄", "Mucosas y tejidos blandos", "Mucosa and soft tissues", AppScreen.MUCOSA),
+            QuickClinicalTool("🧍", "Postura craneocervical", "Craniocervical posture", AppScreen.POSTURE),
+            QuickClinicalTool("🛡️", "Caries y riesgo de caries", "Caries and caries risk", AppScreen.CARIES_RISK)
+        )
+    ),
+    QuickClinicalCategory(
+        "💊", "Medicamentos y anestesia", "Medications and anesthesia",
+        listOf(
+            QuickClinicalTool("💊", "Medicamentos y referencias por peso", "Medications and weight references", AppScreen.MEDICATIONS),
+            QuickClinicalTool("💉", "Anestésicos y cálculo por peso", "Local anesthetics and weight calculation", AppScreen.MEDICATIONS)
+        )
+    ),
+    QuickClinicalCategory(
+        "⚕️", "Tratamiento", "Treatment",
+        listOf(
+            QuickClinicalTool("⚕️", "Diagnóstico y tratamiento por diente", "Diagnosis and treatment by tooth", AppScreen.TREATMENT),
+            QuickClinicalTool("🗓️", "Plan de tratamiento por sesiones", "Treatment plan by sessions", AppScreen.SESSIONS),
+            QuickClinicalTool("🧩", "Operatoria y restauración", "Operative and restorative dentistry", AppScreen.OPERATORIA),
+            QuickClinicalTool("⚡", "Ficha endodóntica", "Endodontic sheet", AppScreen.ENDO)
+        )
+    ),
+    QuickClinicalCategory(
+        "🚨", "Urgencias y protocolos", "Emergencies and protocols",
+        listOf(
+            QuickClinicalTool("🚨", "Urgencias odontológicas", "Dental emergencies", AppScreen.EMERGENCY),
+            QuickClinicalTool("📚", "Protocolos sistémicos", "Systemic protocols", AppScreen.SYSTEMIC_PROTOCOLS)
+        )
+    ),
+    QuickClinicalCategory(
+        "🧒", "Odontopediatría", "Pediatric dentistry",
+        listOf(
+            QuickClinicalTool("🧒", "Odontopediatría", "Pediatric dentistry", AppScreen.PEDIATRIC_DENTISTRY)
+        )
+    ),
+    QuickClinicalCategory(
+        "🔩", "Implantología", "Implantology",
+        listOf(
+            QuickClinicalTool("🔩", "Implantología", "Implantology", AppScreen.IMPLANTOLOGY)
+        )
+    ),
+    QuickClinicalCategory(
+        "📷", "Documentación clínica", "Clinical documentation",
+        listOf(
+            QuickClinicalTool("📷", "Fotografía clínica", "Clinical photography", AppScreen.CLINICAL_PHOTO)
+        )
+    )
 )
 
 @Composable
@@ -66,98 +113,171 @@ fun QuickClinicalToolsScreen(
     lang: String,
     onExit: () -> Unit
 ) {
-    var selected by remember { mutableStateOf<AppScreen?>(null) }
+    var selectedCategory by remember { mutableStateOf<QuickClinicalCategory?>(null) }
+    var selectedTool by remember { mutableStateOf<QuickClinicalTool?>(null) }
     var quickSession by remember { mutableStateOf(EducationalSession()) }
 
-    val backToTools = { selected = null }
+    val backToCategories = { selectedCategory = null }
+    val backToCategory = { selectedTool = null }
 
-    BackHandler(enabled = selected != null) { backToTools() }
-    BackHandler(enabled = selected == null) { onExit() }
+    BackHandler(enabled = selectedTool != null) { backToCategory() }
+    BackHandler(enabled = selectedTool == null && selectedCategory != null) { backToCategories() }
+    BackHandler(enabled = selectedTool == null && selectedCategory == null) { onExit() }
 
-    if (selected == null) {
-        Column(
-            Modifier
-                .fillMaxSize()
-                .safeDrawingPadding()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Text(
-                "🧰 " + tr(lang, "Herramientas clínicas", "Clinical tools"),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Black
-            )
-            Text(
-                tr(
-                    lang,
-                    "Modo clínico rápido. Puedes usar las herramientas sin crear ni abrir un expediente.",
-                    "Quick clinical mode. Use the tools without creating or opening a patient record."
-                ),
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
-                modifier = Modifier.fillMaxWidth()
+    when {
+        selectedTool != null -> QuickClinicalToolContent(
+            lang = lang,
+            tool = selectedTool!!,
+            session = quickSession,
+            onSessionChanged = { quickSession = it },
+            onBack = backToCategory
+        )
+
+        selectedCategory != null -> {
+            val category = selectedCategory!!
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .safeDrawingPadding()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
+                OutlinedButton(onClick = backToCategories) {
+                    Text("‹ " + tr(lang, "Categorías", "Categories"))
+                }
                 Text(
-                    "🔒 " + tr(
-                        lang,
-                        "Lo que hagas aquí es temporal: no se guarda en ningún expediente.",
-                        "Anything you do here is temporary: it is not saved to a patient record."
-                    ),
-                    Modifier.padding(14.dp),
-                    fontWeight = FontWeight.Bold
+                    category.icon + " " + tr(lang, category.es, category.en),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Black
                 )
-            }
-            quickClinicalTools.forEach { tool ->
-                Card(
-                    onClick = { selected = tool.screen },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-                ) {
-                    Column(
-                        Modifier.padding(15.dp),
-                        verticalArrangement = Arrangement.spacedBy(3.dp)
+                Text(
+                    tr(
+                        lang,
+                        "Selecciona una herramienta. Cada una se abre en su propia pantalla.",
+                        "Select a tool. Each tool opens on its own screen."
+                    ),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                category.tools.forEach { tool ->
+                    Card(
+                        onClick = { selectedTool = tool },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
-                        Text(
-                            tool.icon + " " + if (lang == "en") tool.en else tool.es,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Black
-                        )
-                        Text(
-                            tr(lang, "Abrir herramienta", "Open tool"),
-                            style = MaterialTheme.typography.bodySmall
-                        )
+                        Column(
+                            Modifier.padding(15.dp),
+                            verticalArrangement = Arrangement.spacedBy(3.dp)
+                        ) {
+                            Text(
+                                tool.icon + " " + tr(lang, tool.es, tool.en),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Black
+                            )
+                            Text(
+                                tr(lang, "Abrir herramienta", "Open tool"),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
                     }
                 }
             }
-            OutlinedButton(onClick = onExit, modifier = Modifier.fillMaxWidth()) {
-                Text("‹ " + tr(lang, "Volver", "Back"))
+        }
+
+        else -> {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .safeDrawingPadding()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Text(
+                    "🧰 " + tr(lang, "Herramientas clínicas", "Clinical tools"),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Black
+                )
+                Text(
+                    tr(
+                        lang,
+                        "Modo clínico rápido. Primero elige una categoría y después la herramienta.",
+                        "Quick clinical mode. Choose a category first, then the tool."
+                    ),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "🔒 " + tr(
+                            lang,
+                            "Lo que hagas aquí es temporal: no se guarda en ningún expediente.",
+                            "Anything you do here is temporary: it is not saved to a patient record."
+                        ),
+                        Modifier.padding(14.dp),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                quickClinicalCategories.forEach { category ->
+                    Card(
+                        onClick = { selectedCategory = category },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    ) {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(category.icon, style = MaterialTheme.typography.headlineSmall)
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    tr(lang, category.es, category.en),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Black
+                                )
+                                Text(
+                                    category.tools.size.toString() + " " +
+                                        tr(lang, "herramientas", "tools"),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                            Text("›", style = MaterialTheme.typography.headlineSmall)
+                        }
+                    }
+                }
+                OutlinedButton(onClick = onExit, modifier = Modifier.fillMaxWidth()) {
+                    Text("‹ " + tr(lang, "Volver", "Back"))
+                }
             }
         }
-    } else {
-        QuickClinicalToolContent(
-            lang = lang,
-            screen = selected!!,
-            session = quickSession,
-            onSessionChanged = { quickSession = it },
-            onBack = backToTools
-        )
     }
 }
 
 @Composable
 private fun QuickClinicalToolContent(
     lang: String,
-    screen: AppScreen,
+    tool: QuickClinicalTool,
     session: EducationalSession,
     onSessionChanged: (EducationalSession) -> Unit,
     onBack: () -> Unit
 ) {
-    when (screen) {
+    when (tool.screen) {
         AppScreen.CALCULATORS -> DentalCalculatorsV40Screen(lang, onBack)
-        AppScreen.MEDICATIONS -> MedicationManagementScreen(lang, session, onSessionChanged, onBack)
+        AppScreen.MEDICATIONS -> MedicationManagementScreen(
+            lang,
+            session,
+            onSessionChanged,
+            onBack,
+            section = if (tool.es.startsWith("Anestésicos")) {
+                MedicationToolSection.ANESTHETICS
+            } else {
+                MedicationToolSection.MEDICATIONS
+            }
+        )
         AppScreen.ODONTOGRAM -> DentalAnalysisHubV41(lang, session, onSessionChanged, onBack)
         AppScreen.ICDAS -> IcdasScreen(lang, session, onSessionChanged, onBack)
         AppScreen.CPOD -> CpodInteractiveV19Screen(lang, session, onSessionChanged, onBack)
