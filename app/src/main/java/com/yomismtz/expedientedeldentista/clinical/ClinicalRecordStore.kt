@@ -42,8 +42,15 @@ class ClinicalRecordStore(context: Context) {
         }
         return runCatching {
             val a = JSONArray(raw)
-            (0 until a.length()).mapNotNull { i -> runCatching { recordFromJson(a.getJSONObject(i)) }.getOrNull() }
+            val needsIcdasMigration = (0 until a.length()).any { i ->
+                val session = a.getJSONObject(i).optJSONObject("session")
+                session != null && session.optJSONObject("icdasSurfaceRecords") == null &&
+                    (session.optJSONObject("icdasSurfaces") != null || session.optJSONObject("teeth") != null)
+            }
+            val records = (0 until a.length()).mapNotNull { i -> runCatching { recordFromJson(a.getJSONObject(i)) }.getOrNull() }
                 .sortedByDescending { it.updatedAt }
+            if (needsIcdasMigration && records.isNotEmpty()) write(records)
+            records
         }.getOrDefault(emptyList())
     }
 
