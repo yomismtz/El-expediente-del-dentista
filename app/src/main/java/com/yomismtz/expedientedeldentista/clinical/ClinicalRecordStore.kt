@@ -182,7 +182,9 @@ class ClinicalRecordStore(context: Context) {
             }
         })
         // Retain the old integer map in exports for backward compatibility only.
-        o.put("icdasSurfaces", surfaceMap(s.icdasSurfaceRecords) { (it as IcdasSurfaceRecord).combinedCode })
+        val exportIcdas = if (s.icdasSurfaceRecords.isNotEmpty()) s.icdasSurfaceRecords
+            else s.icdasSurfaces.mapValues { (_, surfaces) -> IcdasCoding.migrateLegacySurfaceMap(surfaces) }
+        o.put("icdasSurfaces", surfaceMap(exportIcdas) { (it as IcdasSurfaceRecord).combinedCode })
         o.put("oleary", JSONObject().also { j -> s.oleary.forEach { (k,v) -> j.put(k.toString(), JSONArray(v.map { it.name })) } })
         o.put("presentTeeth", JSONArray(s.presentTeeth.toList()))
         o.put("ipcCodes", JSONArray(s.ipcCodes))
