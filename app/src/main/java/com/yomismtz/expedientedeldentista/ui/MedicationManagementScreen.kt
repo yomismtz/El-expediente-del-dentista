@@ -16,6 +16,8 @@ import kotlin.math.min
 private data class MedicationPresentation(val label:String,val dose:String,val unit:String,val route:String)
 private data class MedicationOption(val generic:String,val presentations:List<MedicationPresentation>)
 
+enum class MedicationToolSection { ALL, MEDICATIONS, ANESTHETICS }
+
 private data class AnestheticReference(
     val presentation: MedicationPresentation,
     val mgPerKg: Double?,
@@ -108,7 +110,13 @@ private fun medicationKey(m:MedicationRecord)=listOf(m.activeIngredient,m.dose,m
     }
 }
 
-@Composable fun MedicationManagementScreen(lang:String,session:EducationalSession,onSessionChanged:(EducationalSession)->Unit,onBack:()->Unit){
+@Composable fun MedicationManagementScreen(
+    lang:String,
+    session:EducationalSession,
+    onSessionChanged:(EducationalSession)->Unit,
+    onBack:()->Unit,
+    section: MedicationToolSection = MedicationToolSection.ALL
+){
     var weightText by remember{mutableStateOf("")}
     var selectedMedication by remember{mutableStateOf<MedicationOption?>(null)}
     var selectedPresentation by remember{mutableStateOf<MedicationPresentation?>(null)}
@@ -140,6 +148,7 @@ private fun medicationKey(m:MedicationRecord)=listOf(m.activeIngredient,m.dose,m
             }
         }
 
+        if(section != MedicationToolSection.ANESTHETICS){
         OutlinedTextField(
             value=weightText,
             onValueChange={weightText=it.filter{ch->ch.isDigit()||ch=='.'||ch==','}},
@@ -189,7 +198,9 @@ private fun medicationKey(m:MedicationRecord)=listOf(m.activeIngredient,m.dose,m
             enabled=canAddMedication,
             modifier=Modifier.fillMaxWidth()
         ){Text(tr(lang,"Agregar medicamento seleccionado","Add selected medication"))}
+        }
 
+        if(section != MedicationToolSection.MEDICATIONS){
         Text(tr(lang,"Anestésico local","Local anesthetic"),fontWeight=FontWeight.Black)
         Text(tr(lang,"Selecciona el anestésico y su presentación; se utiliza el mismo peso del paciente.","Select the anesthetic and its presentation; the same patient weight is used."))
 
@@ -264,6 +275,9 @@ private fun medicationKey(m:MedicationRecord)=listOf(m.activeIngredient,m.dose,m
             }
         }
 
+        }
+        
+        if(section != MedicationToolSection.ANESTHETICS){
         Text(medications.size.toString()+" "+tr(lang,"medicamento(s) estructurado(s)","structured medication(s)"),fontWeight=FontWeight.Bold)
         medications.forEach{medication->
             Card(Modifier.fillMaxWidth()){
@@ -274,6 +288,6 @@ private fun medicationKey(m:MedicationRecord)=listOf(m.activeIngredient,m.dose,m
                     OutlinedButton(onClick={onSessionChanged(session.copy(medicationsStructured=medications.filterNot{it.id==medication.id}))},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Eliminar","Remove"))}
                 }
             }
-        }
+        }        }
     }
 }
