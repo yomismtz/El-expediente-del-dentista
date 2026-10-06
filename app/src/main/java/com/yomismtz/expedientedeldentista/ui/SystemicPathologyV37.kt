@@ -70,6 +70,7 @@ private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String
  var disease by remember{mutableStateOf<Disease37?>(null)}
  var tobacco by rememberRecordState("history.path.tobacco","")
  var alcohol by rememberRecordState("history.path.alcohol","")
+ var noPathologicalHistory by rememberRecordState("history.path.noneDenied",false)
  val saved=session.history.diseases
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
   item{ScreenHeader("Antecedentes personales patológicos",onBack,"Primero registra tabaco y alcohol. Después selecciona una clasificación de enfermedades → enfermedad → datos del antecedente. Al guardar regresarás a la lista de enfermedades.")}
@@ -101,7 +102,15 @@ private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String
      )
     }
    }}
-   item{Text("2 · Clasificaciones de enfermedades",style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Bold)}
+   item{SectionCard("2 · Antecedentes personales patológicos"){
+    Text("Si el paciente niega enfermedades o antecedentes patológicos, puedes dejarlo asentado explícitamente sin recorrer todas las clasificaciones.",style=MaterialTheme.typography.bodySmall)
+    FilterChip(selected=noPathologicalHistory,onClick={
+     noPathologicalHistory=!noPathologicalHistory
+     if(noPathologicalHistory) onSessionChanged(session.copy(history=session.history.copy(diseases=emptyMap(),asaClass=asa37(emptyMap(),tobacco,alcohol))))
+    },label={Text("Negado · ningún antecedente personal patológico")},modifier=Modifier.fillMaxWidth())
+    if(noPathologicalHistory) Text("Registro: paciente niega antecedentes personales patológicos de las clasificaciones disponibles.",style=MaterialTheme.typography.bodySmall)
+   }}
+   item{Text("3 · Clasificaciones de enfermedades",style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Bold)}
    item{
     BoxWithConstraints(Modifier.fillMaxWidth()){
      val columns=if(maxWidth<700.dp)2 else 3
@@ -109,7 +118,7 @@ private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String
       categories37.chunked(columns).forEach{row->
        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(9.dp)){
         row.forEach{x->
-         Card(onClick={category=x},modifier=Modifier.weight(1f)){
+         Card(onClick={category={noPathologicalHistory=false;x}},modifier=Modifier.weight(1f)){
           Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
            Text(x.name,fontWeight=FontWeight.Bold)
            Text("${x.diseases.count{saved[it.id]?.present==true}}/${x.diseases.size} registrados",style=MaterialTheme.typography.bodySmall)
