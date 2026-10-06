@@ -168,66 +168,149 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
     var showIcdasHelp by remember { mutableStateOf(false) }
     val shown = if (primary) ClinicalContent.primaryTeeth else ClinicalContent.permanentTeeth
     if (selectedTooth !in shown) selectedTooth = shown.first()
-    val surfaceCodes = session.icdasSurfaces[selectedTooth] ?: emptyMap()
-    val currentCode = surfaceCodes[selectedSurface] ?: 0
-    val toothCode = surfaceCodes.values.maxOrNull() ?: 0
+    val rawCodes = session.icdasSurfaces[selectedTooth] ?: emptyMap()
     val allSurfaces = listOf(Surface.VESTIBULAR, Surface.LINGUAL_PALATAL, Surface.MESIAL, Surface.DISTAL, Surface.OCCLUSAL)
+    fun normalize(code: Int): Int = code
+    val currentCode = normalize(rawCodes[selectedSurface] ?: 0)
+    val currentRestoration = if (currentCode >= 10) currentCode / 10 else 0
+    val currentCaries = if (currentCode >= 10) currentCode % 10 else currentCode
+    val toothSpecial = rawCodes.values.firstOrNull { it in setOf(90,91,92,93,97,98,99) }
+    val toothCode = toothSpecial ?: (rawCodes.values.maxOrNull() ?: 0)
 
-    fun saveCodes(codes: Map<Surface, Int>) {
+    fun saveCodes(codes: Map<Surface, Int>, statusOverride: ToothStatus? = null, presentOverride: Boolean? = null) {
         val all = session.icdasSurfaces.toMutableMap().apply { put(selectedTooth, codes) }
         val max = codes.values.maxOrNull() ?: 0
         val record = session.teeth[selectedTooth] ?: ToothRecord()
-        val status = if(max>0) ToothStatus.CARIES else if(record.status==ToothStatus.CARIES) ToothStatus.HEALTHY else record.status
-        onSessionChanged(session.copy(icdasSurfaces=all,teeth=session.teeth+(selectedTooth to record.copy(icdas=max,status=status)),presentTeeth=session.presentTeeth+selectedTooth))
+        val status = statusOverride ?: when {
+            codes.values.any { it == 97 || it == 91 || it == 93 } -> ToothStatus.MISSING_CARIES
+            codes.values.any { it == 98 || it == 90 || it == 92 || it == 99 } -> ToothStatus.MISSING_OTHER
+            codes.values.any { (if (it >= 10) it % 10 else it) > 0 } -> ToothStatus.CARIES
+            else -> if (record.status == ToothStatus.CARIES) ToothStatus.HEALTHY else record.status
+        }
+        val present = session.presentTeeth.toMutableSet()
+        if (presentOverride == false || status == ToothStatus.MISSING_CARIES || status == ToothStatus.MISSING_OTHER) present.remove(selectedTooth)
+        else if (presentOverride == true) present.add(selectedTooth)
+        onSessionChanged(session.copy(icdasSurfaces = all, teeth = session.teeth + (selectedTooth to record.copy(icdas = max, status = status)), presentTeeth = present))
     }
-    fun setCode(code:Int) { saveCodes(surfaceCodes.toMutableMap().apply{put(selectedSurface,code)}) }
-    fun setAll(code:Int) { saveCodes(allSurfaces.associateWith{code}) }
 
-    LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-        item { ScreenHeader("ICDAS",onBack,tr(lang,"Dentición → diente → superficie → código 0–6. Cada superficie conserva su código y el resumen del diente muestra el mayor registrado.","Dentition → tooth → surface → code 0–6. Each surface keeps its code and the tooth summary shows the highest recorded code.")) }
-        item { OutlinedButton(onClick={showIcdasHelp=true},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"ⓘ Ayuda ICDAS · cómo reconocer los códigos","ⓘ ICDAS help · how to recognize the codes"))} }
+    fun setTwoDigit(restoration: Int, caries: Int) {
+        val code = if (restoration == 0 && caries == 0) 0 else restoration * 10 + caries
+        saveCodes(rawCodes.toMutableMap().apply { put(selectedSurface, code) }, presentOverride = true)
+    }
+
+    fun setSpecial(code: Int) {
+        val codes = if (code == 96) rawCodes.toMutableMap().apply { put(selectedSurface, code) } else allSurfaces.associateWith { code }
+        val status = when (code) {
+            91, 93, 97 -> ToothStatus.MISSING_CARIES
+            90, 92, 98, 99 -> ToothStatus.MISSING_OTHER
+            else -> session.teeth[selectedTooth]?.status
+        }
+        saveCodes(codes, statusOverride = status, presentOverride = if (code >= 97 || code in 90..93) false else true)
+    }
+
+    fun setAll(code: Int) { saveCodes(allSurfaces.associateWith { code }, presentOverride = true) }
+
+    LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        item { ScreenHeader("ICDAS", onBack, tr(lang,
+            "ICDAS II de dos dígitos: primer dígito = restauración/sellante; segundo dígito = caries 0–6. Se registra por superficie.",
+            "Two-digit ICDAS II: first digit = restoration/sealant; second digit = caries 0–6. Recorded by surface.")) }
+        item { OutlinedButton(onClick={showIcdasHelp=true},modifier=Modifier.fillMaxWidth()){
+            Text(tr(lang,"ⓘ Ayuda ICDAS II · codificación de dos dígitos","ⓘ ICDAS II help · two-digit coding"))
+        } }
         item { SectionCard(tr(lang,"1 · Dentición","1 · Dentition")) { Row(horizontalArrangement=Arrangement.spacedBy(8.dp),modifier=Modifier.fillMaxWidth()) {
-            FilterChip(!primary,{primary=false},{Text(tr(lang,"Permanente","Permanent"))},modifier=Modifier.weight(1f)); FilterChip(primary,{primary=true},{Text(tr(lang,"Temporal","Primary"))},modifier=Modifier.weight(1f))
+            FilterChip(!primary,{primary=false},{Text(tr(lang,"Permanente","Permanent"))},modifier=Modifier.weight(1f))
+            FilterChip(primary,{primary=true},{Text(tr(lang,"Temporal","Primary"))},modifier=Modifier.weight(1f))
         } } }
         item { SectionCard(tr(lang,"2 · Diente y superficie","2 · Tooth and surface")) {
             DentalArchSelector(shown,selectedTooth,{selectedTooth=it}){session.icdasSurfaces[it]?.values?.any{c->c>0}==true}
             DentalSurfaceDiagram(centerEnabled=true,surfaceColor={surface->
-                val c=surfaceCodes[surface]?:0
-                when { surface==selectedSurface->MaterialTheme.colorScheme.primaryContainer;c>=5->MaterialTheme.colorScheme.errorContainer;c>0->MaterialTheme.colorScheme.secondaryContainer;else->MaterialTheme.colorScheme.surfaceVariant }
+                val c=rawCodes[surface]?:0
+                when {
+                    surface==selectedSurface -> MaterialTheme.colorScheme.primaryContainer
+                    c in setOf(97,98,99) -> MaterialTheme.colorScheme.errorContainer
+                    (if(c>=10)c%10 else c)>=5 -> MaterialTheme.colorScheme.errorContainer
+                    c>0 -> MaterialTheme.colorScheme.secondaryContainer
+                    else -> MaterialTheme.colorScheme.surfaceVariant
+                }
             },onSurfaceTap={selectedSurface=it},modifier=Modifier.fillMaxWidth())
-            Text("${surfaceName(selectedSurface,lang)} · ICDAS $currentCode")
-            Text(tr(lang,"Código del diente = $toothCode (mayor código entre sus caras)","Tooth code = $toothCode (highest code among surfaces)"),fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary)
+            Text("${surfaceName(selectedSurface,lang)} · ICDAS ${"%02d".format(currentCode)}")
+            Text(tr(lang,"Código actual = ${"%02d".format(currentCode)} · restauración $currentRestoration · caries $currentCaries",
+                "Current code = ${"%02d".format(currentCode)} · restoration $currentRestoration · caries $currentCaries"),
+                fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary)
+            if (toothSpecial != null) Text(tr(lang,"Código especial del diente: $toothSpecial","Special tooth code: $toothSpecial"),fontWeight=FontWeight.Bold)
+            Text(tr(lang,"Los códigos antiguos 0–6 se interpretan como 00–06 al migrar visualmente al formato de dos dígitos.",
+                "Legacy 0–6 values are displayed as 00–06 when using the two-digit format."),style=MaterialTheme.typography.bodySmall)
         } }
-        item { Text(tr(lang,"3 · Selecciona el código ICDAS para la superficie activa","3 · Select the ICDAS code for the active surface"),fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium) }
-        items(ClinicalContent.icdas.size) { index ->
-            val guide=ClinicalContent.icdas[index]
-            Card(onClick={setCode(guide.code)},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=if(currentCode==guide.code)MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.surface)) {
-                Row(Modifier.fillMaxWidth().padding(12.dp),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
-                    Text((if(currentCode==guide.code)"✓ " else "")+guide.code.toString(),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold,color=if(currentCode==guide.code)MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.onSurface)
-                    Text(if(lang=="en")guide.en else guide.es,modifier=Modifier.weight(1f),color=if(currentCode==guide.code)MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.onSurface)
+        item { SectionCard(tr(lang,"3 · Primer dígito: restauración / sellante","3 · First digit: restoration / sealant")) {
+            ClinicalContent.icdasRestorations.forEach { guide ->
+                val active = currentRestoration == guide.code
+                Card(onClick={setTwoDigit(guide.code,currentCaries)},modifier=Modifier.fillMaxWidth(),
+                    colors=CardDefaults.cardColors(containerColor=if(active)MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.surface)) {
+                    Row(Modifier.fillMaxWidth().padding(12.dp),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
+                        Text((if(active)"✓ " else "")+guide.code.toString(),style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Bold,
+                            color=if(active)MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.onSurface)
+                        Text(if(lang=="en")guide.en else guide.es,modifier=Modifier.weight(1f),
+                            color=if(active)MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.onSurface)
+                    }
                 }
             }
-            if(currentCode==guide.code) {
-                val icdasImage=when(guide.code){0->R.drawable.icdas_uploaded_0;1->R.drawable.icdas_uploaded_1;2->R.drawable.icdas_uploaded_2;3->R.drawable.icdas_uploaded_3;4->R.drawable.icdas_uploaded_4;5->R.drawable.icdas_uploaded_5;else->R.drawable.icdas_uploaded_6}
-                LocalClinicalInlineZoomImageV48(lang,tr(lang,"ICDAS ${guide.code} · imagen clínica","ICDAS ${guide.code} · clinical image"),tr(lang,"ICDAS ${guide.code} · imagen clínica","ICDAS ${guide.code} · clinical image"),icdasImage,tr(lang,"Ejemplo clínico correspondiente al código seleccionado. Correlaciona la imagen con los criterios escritos antes de registrar la superficie.","Clinical example corresponding to the selected code. Correlate the image with the written criteria before recording the surface."),tr(lang,"Ejemplo clínico correspondiente al código seleccionado. Correlaciona la imagen con los criterios escritos antes de registrar la superficie.","Clinical example corresponding to the selected code. Correlate the image with the written criteria before recording the surface."))
+        } }
+        item { SectionCard(tr(lang,"4 · Segundo dígito: estado de caries 0–6","4 · Second digit: caries status 0–6")) {
+            ClinicalContent.icdas.forEach { guide ->
+                val active = currentCaries == guide.code
+                Card(onClick={setTwoDigit(currentRestoration,guide.code)},modifier=Modifier.fillMaxWidth(),
+                    colors=CardDefaults.cardColors(containerColor=if(active)MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.surface)) {
+                    Row(Modifier.fillMaxWidth().padding(12.dp),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
+                        Text((if(active)"✓ " else "")+guide.code.toString(),style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Bold,
+                            color=if(active)MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.onSurface)
+                        Text(if(lang=="en")guide.en else guide.es,modifier=Modifier.weight(1f),
+                            color=if(active)MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.onSurface)
+                    }
+                }
+                if(active) {
+                    val icdasImage=when(guide.code){0->R.drawable.icdas_uploaded_0;1->R.drawable.icdas_uploaded_1;2->R.drawable.icdas_uploaded_2;3->R.drawable.icdas_uploaded_3;4->R.drawable.icdas_uploaded_4;5->R.drawable.icdas_uploaded_5;else->R.drawable.icdas_uploaded_6}
+                    LocalClinicalInlineZoomImageV48(lang,tr(lang,"ICDAS ${guide.code} · imagen clínica","ICDAS ${guide.code} · clinical image"),tr(lang,"ICDAS ${guide.code} · imagen clínica","ICDAS ${guide.code} · clinical image"),icdasImage,
+                        tr(lang,"Ejemplo clínico correspondiente al segundo dígito. Correlaciona la imagen con los criterios escritos antes de registrar la superficie.","Clinical example corresponding to the second digit. Correlate the image with the written criteria before recording the surface."),
+                        tr(lang,"Ejemplo clínico correspondiente al segundo dígito. Correlaciona la imagen con los criterios escritos antes de registrar la superficie.","Clinical example corresponding to the second digit. Correlate the image with the written criteria before recording the surface."))
+                }
             }
-        }
-        item { SectionCard(tr(lang,"4 · Acciones del diente","4 · Tooth actions")) { Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick={setAll(currentCode)},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Aplicar ICDAS $currentCode a todas las superficies","Apply ICDAS $currentCode to all surfaces"))}
+        } }
+        item { SectionCard(tr(lang,"5 · Códigos especiales de diente / superficie","5 · Special tooth / surface codes")) {
+            Text(tr(lang,"La bibliografía ICDAS distingue 90–93 para implante/póntico, 96 para superficie excluida y 97–99 para ausencia/no erupción. 94 y 95 no están definidos en la codificación estándar consultada.",
+                "ICDAS references use 90–93 for implant/pontic, 96 for excluded surface and 97–99 for missing/unerupted teeth. 94 and 95 are not defined in the standard coding consulted."))
+            ClinicalContent.icdasSpecial.forEach { guide ->
+                Card(onClick={setSpecial(guide.code)},modifier=Modifier.fillMaxWidth(),
+                    colors=CardDefaults.cardColors(containerColor=if(toothCode==guide.code)MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.surface)) {
+                    Row(Modifier.fillMaxWidth().padding(12.dp),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
+                        Text((if(toothCode==guide.code)"✓ " else "")+guide.code.toString(),style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Bold,
+                            color=if(toothCode==guide.code)MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.onSurface)
+                        Text(if(lang=="en")guide.en else guide.es,modifier=Modifier.weight(1f),
+                            color=if(toothCode==guide.code)MaterialTheme.colorScheme.inverseOnSurface else MaterialTheme.colorScheme.onSurface)
+                    }
+                }
+            }
+        } }
+        item { SectionCard(tr(lang,"6 · Acciones","6 · Actions")) { Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick={setAll(currentCode)},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Aplicar ${"%02d".format(currentCode)} a todas las superficies","Apply ${"%02d".format(currentCode)} to all surfaces"))}
             OutlinedButton(onClick={setAll(0)},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Limpiar códigos ICDAS del diente","Clear ICDAS codes from tooth"))}
-            Text(tr(lang,"Usa «aplicar a todas» sólo si todas las superficies examinadas cumplen el mismo criterio.","Use “apply to all” only when every examined surface meets the same criterion."),style=MaterialTheme.typography.bodySmall)
+            Text(tr(lang,"Usa «aplicar a todas» sólo cuando todas las superficies examinadas cumplen el mismo criterio.",
+                "Use “apply to all” only when every examined surface meets the same criterion."),style=MaterialTheme.typography.bodySmall)
         } } }
-        item { NoticeCard(tr(lang,"Para práctica: selecciona una cara, asigna su código y continúa con las demás. Un diente puede tener varias superficies con códigos distintos; el resumen toma el mayor.","For practice: select a surface, assign its code and continue with the others. One tooth may have several different surface codes; the summary uses the highest.")) }
+        item { NoticeCard(tr(lang,
+            "Ejemplo: restauración de amalgama + cavidad extensa = 46. Diente sin restauración + lesión inicial = 01. Diente extraído por caries = 97. Un diente ausente por otra razón = 98.",
+            "Example: amalgam restoration + extensive cavity = 46. Unrestored tooth + initial lesion = 01. Tooth missing due to caries = 97. Tooth missing for another reason = 98.")) }
     }
     if(showIcdasHelp){
-        AlertDialog(onDismissRequest={showIcdasHelp=false},confirmButton={OutlinedButton(onClick={showIcdasHelp=false}){Text(tr(lang,"Cerrar","Close"))}},title={Text(tr(lang,"ⓘ Ayuda ICDAS 0–6","ⓘ ICDAS 0–6 help"))},text={
+        AlertDialog(onDismissRequest={showIcdasHelp=false},confirmButton={OutlinedButton(onClick={showIcdasHelp=false}){Text(tr(lang,"Cerrar","Close"))}},
+            title={Text(tr(lang,"ⓘ ICDAS II · dos dígitos","ⓘ ICDAS II · two digits"))},text={
             Column(verticalArrangement=Arrangement.spacedBy(8.dp)){
-                Text(tr(lang,"Observa la superficie limpia y valora el cambio visual y la pérdida de estructura. Usa esta imagen junto con las descripciones que ya aparecen en cada código.","Observe the clean surface and assess visual change and structural loss. Use this image together with the descriptions already shown for each code."))
-                val icdasImage=when(currentCode){0->R.drawable.icdas_uploaded_0;1->R.drawable.icdas_uploaded_1;2->R.drawable.icdas_uploaded_2;3->R.drawable.icdas_uploaded_3;4->R.drawable.icdas_uploaded_4;5->R.drawable.icdas_uploaded_5;else->R.drawable.icdas_uploaded_6}
-                LocalClinicalInlineZoomImageV48(lang,tr(lang,"ICDAS $currentCode · imagen clínica local","ICDAS $currentCode · local clinical image"),tr(lang,"ICDAS $currentCode · imagen clínica local","ICDAS $currentCode · local clinical image"),icdasImage,tr(lang,"Imagen correspondiente al código seleccionado. Úsala junto con los criterios escritos; no genera diagnóstico automático.","Image corresponding to the selected code. Use it with the written criteria; it does not generate an automatic diagnosis."),tr(lang,"Imagen correspondiente al código seleccionado. Úsala junto con los criterios escritos; no genera diagnóstico automático.","Image corresponding to the selected code. Use it with the written criteria; it does not generate an automatic diagnosis."))
-                Text(tr(lang,"Imagen local incluida en la aplicación. No sustituye los criterios escritos de los códigos 0–6.","Local image included in the app. It does not replace the written criteria for codes 0–6."),style=MaterialTheme.typography.bodySmall)
-                ClinicalContent.icdas.forEach { g -> Text("${g.code} · ${if(lang=="en")g.en else g.es}",fontWeight=if(g.code==currentCode)FontWeight.Bold else FontWeight.Normal) }
-                Text(tr(lang,"La imagen no cambia el código registrado ni genera un diagnóstico automático.","The image does not change the recorded code or generate an automatic diagnosis."),fontWeight=FontWeight.SemiBold)
+                Text(tr(lang,"Primero identifica restauración/sellante y después determina el código de caries de la superficie. Ambos se combinan en un código de dos dígitos.",
+                    "First identify restoration/sealant status and then determine the surface caries code. Combine both into a two-digit code."))
+                Text(tr(lang,"00 = sano sin restauración; 03 = superficie no restaurada con pérdida localizada de esmalte; 46 = amalgama + cavidad extensa.",
+                    "00 = sound/unrestored; 03 = unrestored surface with localized enamel breakdown; 46 = amalgam + extensive cavity."))
+                Text(tr(lang,"Especiales: 90–93 implant/póntico; 96 superficie excluida; 97 caries; 98 otras causas; 99 no erupcionado. 94–95 no se asignan.",
+                    "Special: 90–93 implant/pontic; 96 excluded surface; 97 caries; 98 other causes; 99 unerupted. 94–95 are not assigned."))
+                ClinicalContent.icdas.forEach { g -> Text("${g.code} · ${if(lang=="en")g.en else g.es}",fontWeight=if(g.code==currentCaries)FontWeight.Bold else FontWeight.Normal) }
             }
         })
     }
