@@ -6,6 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -72,14 +73,15 @@ fun ExpedienteGuideV1(lang:String,onBack:()->Unit){
                 }
             }
         }else{
-            val s=guideSectionsV1[selected!!]
-            Text("${selected!!+1}. ${tr(lang,s.title,s.title)}",style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black)
+            val selectedIndex = selected ?: 0
+            val s=guideSectionsV1[selectedIndex]
+            Text("${selectedIndex+1}. ${tr(lang,s.title,s.title)}",style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Black)
             GuideBlockV1(tr(lang,"¿Qué se llena?","What is recorded?"),tr(lang,s.fields,s.fields))
             GuideBlockV1(tr(lang,"¿Por qué se llena?","Why is it recorded?"),tr(lang,s.why,s.why))
             GuideBlockV1(tr(lang,"¿Qué debo considerar?","What should I consider?"),tr(lang,s.tips,s.tips))
             Text(tr(lang,"Ruta del expediente","Record workflow"),fontWeight=FontWeight.Black)
             Text(tr(lang,"Identificación → anamnesis → antecedentes → signos y síntomas/triage → examen → auxiliares → índices → valoración/diagnóstico → plan y tratamiento → consentimiento → evolución → cierre y seguimiento.","Identification → history → medical history → signs/symptoms/triage → examination → diagnostics → indices → assessment/diagnosis → plan/treatment → consent → progress → closing/follow-up."))
-            Button(onClick={if(selected!!+1<guideSectionsV1.size)selected=selected!!+1 else selected=null},modifier=Modifier.fillMaxWidth()){Text(if(selected!!+1<guideSectionsV1.size)tr(lang,"Siguiente apartado","Next section") else tr(lang,"Volver al índice","Back to index"))}
+            Button(onClick={if(selectedIndex+1<guideSectionsV1.size)selected=selectedIndex+1 else selected=null},modifier=Modifier.fillMaxWidth()){Text(if(selectedIndex+1<guideSectionsV1.size)tr(lang,"Siguiente apartado","Next section") else tr(lang,"Volver al índice","Back to index"))}
         }
     }
 }
