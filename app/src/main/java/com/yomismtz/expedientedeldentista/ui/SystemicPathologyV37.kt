@@ -118,7 +118,7 @@ private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String
       categories37.chunked(columns).forEach{row->
        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(9.dp)){
         row.forEach{x->
-         Card(onClick={category={noPathologicalHistory=false;x}},modifier=Modifier.weight(1f)){
+         Card(onClick={noPathologicalHistory=false;category=x},modifier=Modifier.weight(1f)){
           Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
            Text(x.name,fontWeight=FontWeight.Bold)
            Text("${x.diseases.count{saved[it.id]?.present==true}}/${x.diseases.size} registrados",style=MaterialTheme.typography.bodySmall)
