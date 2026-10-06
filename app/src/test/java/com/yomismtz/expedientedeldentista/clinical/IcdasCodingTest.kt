@@ -1,0 +1,75 @@
+package com.yomismtz.expedientedeldentista.clinical
+
+import org.junit.Assert.*
+import org.junit.Test
+
+class IcdasCodingTest {
+    @Test fun soundUnrestoredIs00() {
+        assertEquals(0, IcdasCoding.combine(0, 0))
+        assertEquals(0, IcdasCoding.fromCombined(0)?.combinedCode)
+    }
+
+    @Test fun cariesCodes01Through06AreValidWithUnrestoredSurface() {
+        (1..6).forEach { caries ->
+            assertTrue(IcdasCoding.isValidCombined(caries))
+            assertEquals(caries, IcdasCoding.combine(0, caries))
+        }
+    }
+
+    @Test fun representativeRestorationCombinationsAreValid() {
+        assertEquals(11, IcdasCoding.combine(1, 1))
+        assertEquals(20, IcdasCoding.combine(2, 0))
+        assertEquals(30, IcdasCoding.combine(3, 0))
+        assertEquals(46, IcdasCoding.combine(4, 6))
+        assertEquals(80, IcdasCoding.combine(8, 0))
+        assertTrue(IcdasCoding.isValidCombined(86))
+    }
+
+    @Test fun invalidCombinationsAreRejected() {
+        assertFalse(IcdasCoding.isValidCombined(94))
+        assertFalse(IcdasCoding.isValidCombined(95))
+        assertFalse(IcdasCoding.isValidCombined(89))
+        assertFalse(IcdasCoding.isValidCombined(90 + 1))
+        assertFalse(IcdasCoding.isValidCombined(87))
+    }
+
+    @Test fun specialCodesMatchOfficialIcdasSet() {
+        assertEquals(
+            setOf(90, 91, 92, 93, 96, 97, 98, 99),
+            IcdasCoding.specialCodes
+        )
+        assertFalse(IcdasCoding.isValidSpecial(94))
+        assertFalse(IcdasCoding.isValidSpecial(95))
+    }
+
+    @Test fun specialCodeMeaningsRemainDistinctFromCariesDigit() {
+        assertEquals(92, IcdasCoding.fromCombined(92)?.specialCode)
+        assertNull(IcdasCoding.fromCombined(94))
+        assertEquals(96, IcdasCoding.fromCombined(96)?.specialCode)
+        assertEquals(97, IcdasCoding.fromCombined(97)?.specialCode)
+        assertEquals(98, IcdasCoding.fromCombined(98)?.specialCode)
+        assertEquals(99, IcdasCoding.fromCombined(99)?.specialCode)
+    }
+
+    @Test fun legacySingleDigitMigrationDoesNotInventRestorationStatus() {
+        val migrated = IcdasCoding.fromLegacy(4)
+        assertNotNull(migrated)
+        assertEquals(4, migrated!!.cariesCode)
+        assertNull(migrated.restorationCode)
+        assertTrue(migrated.legacyPending)
+        assertEquals(4, migrated.combinedCode)
+    }
+
+    @Test fun legacyTwoDigitMigrationSeparatesComponents() {
+        val migrated = IcdasCoding.fromLegacy(46)
+        assertEquals(4, migrated?.restorationCode)
+        assertEquals(6, migrated?.cariesCode)
+        assertFalse(migrated!!.legacyPending)
+    }
+
+    @Test fun legacySpecialCodesMigrateWithoutReinterpretation() {
+        listOf(90, 91, 92, 93, 96, 97, 98, 99).forEach { code ->
+            assertEquals(code, IcdasCoding.fromLegacy(code)?.specialCode)
+        }
+    }
+}
