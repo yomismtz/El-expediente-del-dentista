@@ -49,7 +49,7 @@ object IcdasCoding {
      */
     fun fromLegacy(code: Int): IcdasSurfaceRecord? {
         if (code in 0..6) {
-            return IcdasSurfaceRecord(restorationCode = 0, cariesCode = code, legacyPending = true)
+            return IcdasSurfaceRecord(restorationCode = null, cariesCode = code, legacyPending = true)
         }
         if (isValidSpecial(code)) return IcdasSurfaceRecord(specialCode = code)
         if (code in 10..86) {
