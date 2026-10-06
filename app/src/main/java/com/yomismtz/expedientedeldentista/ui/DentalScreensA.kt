@@ -218,7 +218,10 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
         saveCodes(codes, statusOverride = status, presentOverride = if (code >= 97 || code in 90..93) false else true)
     }
 
-    fun setAll(code: Int) { saveCodes(allSurfaces.associateWith { code }, presentOverride = true) }
+    fun setAll(code: Int) {
+        val record = IcdasCoding.fromCombined(code) ?: return
+        saveCodes(allSurfaces.associateWith { record }, presentOverride = true)
+    }
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { ScreenHeader("ICDAS", onBack, tr(lang,
@@ -237,8 +240,7 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
                 val c=session.icdasSurfaceRecords[selectedTooth]?.get(surface)?.combinedCode?:0
                 when {
                     surface==selectedSurface -> MaterialTheme.colorScheme.primaryContainer
-                    session.icdasSurfaceRecords[selectedTooth]?.get(surface)?.specialCode in setOf(96,97,98,99)
-                    c in setOf(97,98,99) -> MaterialTheme.colorScheme.errorContainer
+                    session.icdasSurfaceRecords[selectedTooth]?.get(surface)?.specialCode in setOf(96,97,98,99) -> MaterialTheme.colorScheme.errorContainer
                     (if(c>=10)c%10 else c)>=5 -> MaterialTheme.colorScheme.errorContainer
                     c>0 -> MaterialTheme.colorScheme.secondaryContainer
                     else -> MaterialTheme.colorScheme.surfaceVariant
@@ -249,8 +251,7 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
                 "Current code = ${"%02d".format(currentCode)} · restoration $currentRestoration · caries $currentCaries"),
                 fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary)
             if (toothSpecial != null) Text(tr(lang,"Código especial del diente: $toothSpecial","Special tooth code: $toothSpecial"),fontWeight=FontWeight.Bold)
-            Text(tr(lang,"Los códigos antiguos 0–6 se interpretan como 00–06 al migrar visualmente al formato de dos dígitos.",
-                "Legacy 0–6 values are displayed as 00–06 when using the two-digit format."),style=MaterialTheme.typography.bodySmall)
+            if (current.legacyPending) Text(tr(lang,"⚠️ Registro antiguo: se conservó el código de caries, pero falta confirmar restauración/sellante. No se inventó ese dato.","⚠️ Legacy record: the caries code was preserved, but restoration/sealant status still needs confirmation. No value was invented."),style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.error)
         } }
         item { SectionCard(tr(lang,"3 · Primer dígito: restauración / sellante","3 · First digit: restoration / sealant")) {
             ClinicalContent.icdasRestorations.forEach { guide ->
