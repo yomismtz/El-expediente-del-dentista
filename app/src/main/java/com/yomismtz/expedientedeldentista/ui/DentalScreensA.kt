@@ -31,6 +31,8 @@ import com.yomismtz.expedientedeldentista.R
 import com.yomismtz.expedientedeldentista.clinical.ClinicalContent
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEngines
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
+import com.yomismtz.expedientedeldentista.clinical.IcdasCoding
+import com.yomismtz.expedientedeldentista.clinical.IcdasSurfaceRecord
 import com.yomismtz.expedientedeldentista.clinical.Surface
 import com.yomismtz.expedientedeldentista.clinical.SurfaceMark
 import com.yomismtz.expedientedeldentista.clinical.ToothRecord
