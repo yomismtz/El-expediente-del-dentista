@@ -168,38 +168,48 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
     var showIcdasHelp by remember { mutableStateOf(false) }
     val shown = if (primary) ClinicalContent.primaryTeeth else ClinicalContent.permanentTeeth
     if (selectedTooth !in shown) selectedTooth = shown.first()
-    val rawCodes = session.icdasSurfaces[selectedTooth] ?: emptyMap()
+    val records = session.icdasSurfaceRecords[selectedTooth] ?: emptyMap()
     val allSurfaces = listOf(Surface.VESTIBULAR, Surface.LINGUAL_PALATAL, Surface.MESIAL, Surface.DISTAL, Surface.OCCLUSAL)
-    fun normalize(code: Int): Int = code
-    val currentCode = normalize(rawCodes[selectedSurface] ?: 0)
-    val currentRestoration = if (currentCode >= 10) currentCode / 10 else 0
-    val currentCaries = if (currentCode >= 10) currentCode % 10 else currentCode
-    val toothSpecial = rawCodes.values.firstOrNull { it in setOf(90,91,92,93,97,98,99) }
-    val toothCode = toothSpecial ?: (rawCodes.values.maxOrNull() ?: 0)
+    val current = records[selectedSurface] ?: IcdasSurfaceRecord(restorationCode = 0, cariesCode = 0)
+    val currentCode = current.combinedCode
+    val currentRestoration = current.restorationCode ?: 0
+    val currentCaries = current.cariesCode ?: 0
+    val toothSpecial = records.values.firstOrNull { it.specialCode != null }?.specialCode
+    val toothCode = toothSpecial ?: (records.values.maxOfOrNull { it.combinedCode } ?: 0)
 
-    fun saveCodes(codes: Map<Surface, Int>, statusOverride: ToothStatus? = null, presentOverride: Boolean? = null) {
-        val all = session.icdasSurfaces.toMutableMap().apply { put(selectedTooth, codes) }
-        val max = codes.values.maxOrNull() ?: 0
+    fun saveCodes(codes: Map<Surface, IcdasSurfaceRecord>, statusOverride: ToothStatus? = null, presentOverride: Boolean? = null) {
+        val all = session.icdasSurfaceRecords.toMutableMap().apply { put(selectedTooth, codes) }
+        val legacy = session.icdasSurfaces.toMutableMap().apply { put(selectedTooth, codes.mapValues { it.value.combinedCode }) }
         val record = session.teeth[selectedTooth] ?: ToothRecord()
         val status = statusOverride ?: when {
-            codes.values.any { it == 97 || it == 91 || it == 93 } -> ToothStatus.MISSING_CARIES
-            codes.values.any { it == 98 || it == 90 || it == 92 || it == 99 } -> ToothStatus.MISSING_OTHER
-            codes.values.any { (if (it >= 10) it % 10 else it) > 0 } -> ToothStatus.CARIES
-            else -> if (record.status == ToothStatus.CARIES) ToothStatus.HEALTHY else record.status
+            codes.values.any { it.specialCode in setOf(91, 93, 97) } -> ToothStatus.MISSING_CARIES
+            codes.values.any { it.specialCode in setOf(90, 92, 98, 99) } -> ToothStatus.MISSING_OTHER
+            codes.values.any { it.cariesCode in 1..6 } -> ToothStatus.CARIES
+            codes.values.any { it.restorationCode in 3..8 } -> ToothStatus.RESTORED
+            codes.values.any { it.restorationCode in 1..2 } -> ToothStatus.SEALANT
+            else -> ToothStatus.HEALTHY
         }
         val present = session.presentTeeth.toMutableSet()
         if (presentOverride == false || status == ToothStatus.MISSING_CARIES || status == ToothStatus.MISSING_OTHER) present.remove(selectedTooth)
         else if (presentOverride == true) present.add(selectedTooth)
-        onSessionChanged(session.copy(icdasSurfaces = all, teeth = session.teeth + (selectedTooth to record.copy(icdas = max, status = status)), presentTeeth = present))
+        onSessionChanged(session.copy(
+            icdasSurfaceRecords = all,
+            icdasSurfaces = legacy,
+            teeth = session.teeth + (selectedTooth to record.copy(
+                icdas = codes.values.maxOfOrNull { it.combinedCode } ?: 0,
+                icdasLegacyPending = codes.values.any { it.legacyPending },
+                status = status
+            )),
+            presentTeeth = present
+        ))
     }
-
     fun setTwoDigit(restoration: Int, caries: Int) {
         val code = if (restoration == 0 && caries == 0) 0 else restoration * 10 + caries
-        saveCodes(rawCodes.toMutableMap().apply { put(selectedSurface, code) }, presentOverride = true)
+        saveCodes(records.toMutableMap().apply { put(selectedSurface, IcdasSurfaceRecord(restorationCode = restoration, cariesCode = caries)) }, presentOverride = true)
     }
 
     fun setSpecial(code: Int) {
-        val codes = if (code == 96) rawCodes.toMutableMap().apply { put(selectedSurface, code) } else allSurfaces.associateWith { code }
+        val codes = if (code == 96) records.toMutableMap().apply { put(selectedSurface, IcdasSurfaceRecord(specialCode = code)) } else allSurfaces.associateWith { IcdasSurfaceRecord(specialCode = code) }
         val status = when (code) {
             91, 93, 97 -> ToothStatus.MISSING_CARIES
             90, 92, 98, 99 -> ToothStatus.MISSING_OTHER
@@ -222,11 +232,12 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
             FilterChip(primary,{primary=true},{Text(tr(lang,"Temporal","Primary"))},modifier=Modifier.weight(1f))
         } } }
         item { SectionCard(tr(lang,"2 · Diente y superficie","2 · Tooth and surface")) {
-            DentalArchSelector(shown,selectedTooth,{selectedTooth=it}){session.icdasSurfaces[it]?.values?.any{c->c>0}==true}
+            DentalArchSelector(shown,selectedTooth,{selectedTooth=it}){session.icdasSurfaceRecords[it]?.values?.any{r->r.combinedCode>0}==true}
             DentalSurfaceDiagram(centerEnabled=true,surfaceColor={surface->
-                val c=rawCodes[surface]?:0
+                val c=session.icdasSurfaceRecords[selectedTooth]?.get(surface)?.combinedCode?:0
                 when {
                     surface==selectedSurface -> MaterialTheme.colorScheme.primaryContainer
+                    session.icdasSurfaceRecords[selectedTooth]?.get(surface)?.specialCode in setOf(96,97,98,99)
                     c in setOf(97,98,99) -> MaterialTheme.colorScheme.errorContainer
                     (if(c>=10)c%10 else c)>=5 -> MaterialTheme.colorScheme.errorContainer
                     c>0 -> MaterialTheme.colorScheme.secondaryContainer
