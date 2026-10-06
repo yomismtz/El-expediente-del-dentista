@@ -53,6 +53,62 @@ private fun temperature19(value:Double?,lang:String):String = when {
 
 private enum class GlucoseContext19 { FASTING, PREMEAL, POSTMEAL, RANDOM }
 
+private enum class GlucoseStatus19 { NO_KNOWN, DIABETES, INSULIN_RESISTANCE_OR_PREDIABETES, UNKNOWN }
+
+private fun glucoseStatusLabel19(status:GlucoseStatus19,lang:String):String = when(status) {
+    GlucoseStatus19.NO_KNOWN -> tr(lang,"Sin diabetes conocida","No known diabetes")
+    GlucoseStatus19.DIABETES -> tr(lang,"Diabetes conocida","Known diabetes")
+    GlucoseStatus19.INSULIN_RESISTANCE_OR_PREDIABETES -> tr(lang,"Resistencia a la insulina / prediabetes","Insulin resistance / prediabetes")
+    GlucoseStatus19.UNKNOWN -> tr(lang,"Desconocido / no documentado","Unknown / not documented")
+}
+
+private enum class OxygenContext19 { ROOM_AIR, SUPPLEMENTAL_OXYGEN, UNKNOWN }
+
+private fun oxygenContextLabel19(ctx:OxygenContext19,lang:String):String = when(ctx) {
+    OxygenContext19.ROOM_AIR -> tr(lang,"Aire ambiente","Room air")
+    OxygenContext19.SUPPLEMENTAL_OXYGEN -> tr(lang,"Oxígeno suplementario","Supplemental oxygen")
+    OxygenContext19.UNKNOWN -> tr(lang,"Contexto no documentado","Context not documented")
+}
+
+private fun glucoseClinicalContext19(
+    value:Int?,
+    status:GlucoseStatus19,
+    context:GlucoseContext19,
+    medications:Set<String>,
+    lang:String
+):String {
+    if(value==null) return tr(lang,"Registra diabetes/prediabetes, medicamentos y contexto de la medición antes de interpretar la glucosa.","Record diabetes/prediabetes, medications and measurement context before interpreting glucose.")
+    val therapy=if(medications.isEmpty()) tr(lang,"sin fármacos hipoglucemiantes registrados","no glucose-lowering drugs recorded")
+        else tr(lang,"con fármacos hipoglucemiantes registrados","with glucose-lowering drugs recorded")
+    val condition=glucoseStatusLabel19(status,lang)
+    val timing=glucoseContext19(context,lang)
+    return tr(
+        lang,
+        "Contexto: $condition · $timing · $therapy. La glucosa capilar es una medición de cribado/monitorización y no equivale automáticamente a glucosa plasmática diagnóstica.",
+        "Context: $condition · $timing · $therapy. Capillary glucose is a screening/monitoring measurement and is not automatically equivalent to diagnostic plasma glucose."
+    )
+}
+
+private fun spo2ClinicalContext19(
+    value:Int?,
+    context:OxygenContext19,
+    oxygenFlow:String,
+    respiratoryDisease:Boolean,
+    smoking:Boolean,
+    lang:String
+):String {
+    if(value==null) return tr(lang,"Registra si está en aire ambiente o recibe oxígeno y, si recibe, el flujo/dispositivo.","Record whether the patient is on room air or receiving oxygen and, if receiving it, the flow/device.")
+    val ctx=oxygenContextLabel19(context,lang)
+    val flow=oxygenFlow.ifBlank { tr(lang,"flujo no registrado","flow not recorded") }
+    val disease=if(respiratoryDisease) tr(lang,"con enfermedad respiratoria registrada","with recorded respiratory disease") else tr(lang,"sin enfermedad respiratoria registrada","without recorded respiratory disease")
+    val smoke=if(smoking) tr(lang,"tabaquismo actual","current tobacco use") else tr(lang,"sin tabaquismo actual registrado","no current tobacco use recorded")
+    return tr(
+        lang,
+        "Contexto SpO₂: $ctx · $flow · $disease · $smoke. Una cifra aislada no debe interpretarse sin síntomas, perfusión, dispositivo y contexto clínico.",
+        "SpO₂ context: $ctx · $flow · $disease · $smoke. A single value should not be interpreted without symptoms, perfusion, device and clinical context."
+    )
+}
+
 private fun glucoseContext19(ctx:GlucoseContext19,lang:String):String = when(ctx) {
     GlucoseContext19.FASTING -> tr(lang,"Ayuno ≥8 h","Fasting ≥8 h")
     GlucoseContext19.PREMEAL -> tr(lang,"Diabetes · antes de comer","Diabetes · premeal")
@@ -379,11 +435,18 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
     val b=vitalBandForAge19(ageForCalc)
     var spo2 by rememberRecordState("vitals.spo2",""); var rr by rememberRecordState("vitals.rr",""); var hr by rememberRecordState("vitals.hr","")
     var sys by rememberRecordState("vitals.sys",""); var dia by rememberRecordState("vitals.dia",""); var temp by rememberRecordState("vitals.temp",""); var glucose by rememberRecordState("vitals.glucose","")
-    var glucoseContext by rememberRecordState("vitals.glucoseContext",GlucoseContext19.RANDOM); var selectedSignsRaw by rememberRecordState("vitals.dentalSigns","")
+    var glucoseContext by rememberRecordState("vitals.glucoseContext",GlucoseContext19.RANDOM)
+    var glucoseStatus by rememberRecordState("vitals.glucoseStatus",GlucoseStatus19.UNKNOWN)
+    var glucoseMedicationsRaw by rememberRecordState("vitals.glucoseMedications","")
+    var oxygenContext by rememberRecordState("vitals.oxygenContext",OxygenContext19.ROOM_AIR)
+    var oxygenFlow by rememberRecordState("vitals.oxygenFlow","")
+    var respiratoryDisease by rememberRecordState("vitals.respiratoryDisease",false)
+    var currentSmoking by rememberRecordState("vitals.currentSmoking",false)
+    var selectedSignsRaw by rememberRecordState("vitals.dentalSigns","")
     var painScore by rememberRecordState("vitals.painScore","")
     var weight by rememberRecordState("vitals.weight",session.profile.weightKg); var height by rememberRecordState("vitals.height",session.profile.heightCm)
     val bmi=run{val w=weight.toDoubleOrNull();val h=height.toDoubleOrNull()?.div(100.0);if(w!=null&&h!=null&&h>0)w/h.pow(2)else null}
-    LaunchedEffect(ageText,sex,spo2,rr,hr,sys,dia,temp,glucose,weight,height,bmi,selectedSignsRaw,painScore,glucoseContext) {
+    LaunchedEffect(ageText,sex,spo2,rr,hr,sys,dia,temp,glucose,weight,height,bmi,selectedSignsRaw,painScore,glucoseContext,glucoseStatus,glucoseMedicationsRaw,oxygenContext,oxygenFlow,respiratoryDisease,currentSmoking) {
         val bp = if (sys.isNotBlank() || dia.isNotBlank()) "$sys/$dia" else ""
         val updated = session.profile.copy(
             age = ageText.filter(Char::isDigit).take(3),
@@ -432,12 +495,48 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
             ResultCard19(temperature19(temp.toDoubleOrNull(),lang)); ResultCard19(temperatureAction19(temp.toDoubleOrNull(),lang))
             OutlinedTextField(spo2,{spo2=it.filter(Char::isDigit).take(3)},label={Text("SpO₂ %")},modifier=Modifier.fillMaxWidth())
             val s=spo2.toIntOrNull()
-            ResultCard19(when{s==null->tr(lang,"Escribe la SpO₂.","Enter SpO₂.");s>=95->tr(lang,"95–100 %: habitual en la mayoría de personas sanas.","95–100%: usual in most healthy people.");s>=92->tr(lang,"92–94 %: repetir y contextualizar.","92–94%: repeat and contextualize.");s>=90->tr(lang,"90–91 %: baja.","90–91%: low.");else->tr(lang,"<90 %: baja y potencialmente urgente.","<90%: low and potentially urgent.")}); ResultCard19(spo2Action19(s,lang))
+            Text(tr(lang,"Contexto de oxigenación","Oxygenation context"),fontWeight=FontWeight.Black)
+            OxygenContext19.entries.forEach{ctx->
+                FilterChip(oxygenContext==ctx,{oxygenContext=ctx},{Text(oxygenContextLabel19(ctx,lang))},modifier=Modifier.fillMaxWidth())
+            }
+            if(oxygenContext==OxygenContext19.SUPPLEMENTAL_OXYGEN){
+                OutlinedTextField(
+                    oxygenFlow,
+                    {oxygenFlow=it.filter{ch->ch.isDigit()||ch=='.'}.take(5)},
+                    label={Text(tr(lang,"Flujo de O₂ (L/min) · opcional","O₂ flow (L/min) · optional"))},
+                    modifier=Modifier.fillMaxWidth()
+                )
+            }
+            FilterChip(respiratoryDisease,{respiratoryDisease=!respiratoryDisease},{Text(tr(lang,"Enfermedad respiratoria conocida","Known respiratory disease"))},modifier=Modifier.fillMaxWidth())
+            FilterChip(currentSmoking,{currentSmoking=!currentSmoking},{Text(tr(lang,"Tabaquismo actual","Current tobacco use"))},modifier=Modifier.fillMaxWidth())
+            ResultCard19(when{s==null->tr(lang,"Escribe la SpO₂.","Enter SpO₂.");s>=95->tr(lang,"95–100 %: habitual en la mayoría de personas sanas, especialmente en aire ambiente.","95–100%: usual in most healthy people, especially on room air.");s>=92->tr(lang,"92–94 %: repetir y contextualizar; puede ser relevante según enfermedad y oxígeno suplementario.","92–94%: repeat and contextualize; may be clinically relevant depending on disease and supplemental oxygen.");s>=90->tr(lang,"90–91 %: baja; confirmar y valorar síntomas y contexto.","90–91%: low; confirm and assess symptoms and context.");else->tr(lang,"<90 %: potencialmente urgente; confirmar inmediatamente y valorar clínicamente.","<90%: potentially urgent; confirm immediately and assess clinically.")})
+            ResultCard19(spo2ClinicalContext19(s,oxygenContext,oxygenFlow,respiratoryDisease,currentSmoking,lang))
+            ResultCard19(spo2Action19(s,lang))
         }
-        ResponsiveSectionV17(tr(lang,"5 · Glucosa capilar","5 · Capillary glucose")){
-            OutlinedTextField(glucose,{glucose=it.filter(Char::isDigit).take(4)},label={Text("mg/dL")},modifier=Modifier.fillMaxWidth())
+        ResponsiveSectionV17(
+            tr(lang,"5 · Glucosa capilar y contexto metabólico","5 · Capillary glucose and metabolic context"),
+            tr(lang,"La interpretación cambia según diabetes, prediabetes/resistencia a la insulina, tratamiento y momento de la medición.","Interpretation changes with diabetes, prediabetes/insulin resistance, treatment and measurement timing.")
+        ){
+            OutlinedTextField(glucose,{glucose=it.filter(Char::isDigit).take(4)},label={Text("Glucosa capilar · mg/dL")},modifier=Modifier.fillMaxWidth())
+            Text(tr(lang,"Condición metabólica","Metabolic condition"),fontWeight=FontWeight.Black)
+            GlucoseStatus19.entries.forEach{status->
+                FilterChip(glucoseStatus==status,{glucoseStatus=status},{Text(glucoseStatusLabel19(status,lang))},modifier=Modifier.fillMaxWidth())
+            }
+            Text(tr(lang,"Medicamentos para controlar la glucosa","Glucose-lowering medications"),fontWeight=FontWeight.Black)
+            val glucoseMedOptions=listOf(
+                "Metformina","Insulina","Sulfonilurea / secretagogo","Agonista GLP-1 / dual","Inhibidor SGLT2","Otro / no especificado"
+            )
+            val selectedGlucoseMeds=glucoseMedicationsRaw.split("|").filter{it.isNotBlank()}.toSet()
+            glucoseMedOptions.forEach{med->
+                FilterChip(selectedGlucoseMeds.contains(med),{
+                    glucoseMedicationsRaw=(if(selectedGlucoseMeds.contains(med)) selectedGlucoseMeds-med else selectedGlucoseMeds+med).joinToString("|")
+                },{Text(med)},modifier=Modifier.fillMaxWidth())
+            }
+            Text(tr(lang,"Momento de la medición","Measurement timing"),fontWeight=FontWeight.Black)
             GlucoseContext19.entries.forEach{ctx->FilterChip(glucoseContext==ctx,{glucoseContext=ctx},{Text(glucoseContext19(ctx,lang))},modifier=Modifier.fillMaxWidth())}
-            ResultCard19(glucose19(glucose.toIntOrNull(),glucoseContext,lang)); ResultCard19(glucoseAction19(glucose.toIntOrNull(),lang))
+            ResultCard19(glucose19(glucose.toIntOrNull(),glucoseContext,lang))
+            ResultCard19(glucoseClinicalContext19(glucose.toIntOrNull(),glucoseStatus,glucoseContext,selectedGlucoseMeds,lang))
+            ResultCard19(glucoseAction19(glucose.toIntOrNull(),lang))
         }
         ResponsiveSectionV17(
             tr(lang,"6 · Antecedentes sistémicos que pueden afectar la atención","6 · Systemic conditions that may affect care"),
@@ -461,7 +560,10 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
                 ResultCard19(tr(lang,"⚠️ Cruzar antecedentes con signos, síntomas, medicamentos, alergias y procedimiento antes de continuar, diferir o referir.","⚠️ Cross-check history with signs, symptoms, medications, allergies and procedure before proceeding, deferring or referring."))
             }
         }
-        ResponsiveSectionV17(tr(lang,"7 · Signos y síntomas odontológicos","7 · Dental signs and symptoms")){
+        ResponsiveSectionV17(
+            tr(lang,"7 · Signos y síntomas odontológicos","7 · Dental signs and symptoms"),
+            tr(lang,"La edad, el sexo, los signos vitales y los antecedentes modifican la interpretación; las referencias deben provenir de tablas clínicas apropiadas para el grupo del paciente.","Age, sex, vital signs and medical history modify interpretation; references should come from clinical tables appropriate for the patient group.")
+        ){
             val selectedSigns=selectedSignsRaw.split("|").filter{it.isNotBlank()}.toSet()
             AdaptiveGridV17(dentalSignsSymptoms19.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
                 val item=dentalSignsSymptoms19[i]
@@ -548,7 +650,7 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
             spo2=spo2.toIntOrNull(), glucose=glucose.toIntOrNull(), temp=temp.toDoubleOrNull(),
             bmi=bmi, signs=dashboardSigns, pain=painScore.toIntOrNull(), onSessionChanged=onSessionChanged
         )
-        NoticeCard(tr(lang,"Fuentes educativas: AAP para cribado de TA pediátrica; AHA/PALS para hipotensión pediátrica; ADA/ADA Standards 2026 para glucosa e hipertensión dental; FDA para SpO₂. La herramienta orienta el triage y no sustituye protocolos institucionales ni valoración médica.","Educational sources: AAP for pediatric BP screening; AHA/PALS for pediatric hypotension; ADA/ADA Standards 2026 for glucose and dental hypertension; FDA for SpO₂. This tool supports triage and does not replace institutional protocols or medical assessment."))
+        NoticeCard(tr(lang,"Fuentes educativas: tablas pediátricas AAP para TA por edad/sexo/talla; ADA Standards 2026 para interpretación de glucosa; FDA para limitaciones de la oximetría. La herramienta debe contrastar cada parámetro con la referencia clínica apropiada para edad, sexo y contexto; no sustituye protocolos institucionales ni valoración médica.","Educational sources: AAP pediatric BP tables by age/sex/height; ADA Standards 2026 for glucose interpretation; FDA for pulse-oximetry limitations. Each parameter should be checked against the appropriate clinical reference for age, sex and context; this tool does not replace institutional protocols or medical assessment."))
     }
 }
 @Composable
