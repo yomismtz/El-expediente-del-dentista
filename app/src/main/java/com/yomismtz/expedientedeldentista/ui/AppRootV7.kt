@@ -171,7 +171,8 @@ private fun GlobalBar19(lang:String,session:EducationalSession,onIntake:()->Unit
                 Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(6.dp)) {
                     Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(3.dp)) {
                          ClinicalCompletenessMiniV1(session)
-                     }\n                     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+                     }
+                     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
                         Button(onClick=onIntake,modifier=Modifier.weight(1f)){Text("📋 "+tr(lang,"Ingreso","Intake"),maxLines=1)}
                         OutlinedButton(onClick=onSummary,modifier=Modifier.weight(1f)){Text("🧾 "+tr(lang,"Resumen","Summary"),maxLines=1)}
                     }
