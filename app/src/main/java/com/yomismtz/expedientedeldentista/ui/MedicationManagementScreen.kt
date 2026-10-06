@@ -1,6 +1,8 @@
 package com.yomismtz.expedientedeldentista.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -110,6 +112,7 @@ private fun medicationKey(m:MedicationRecord)=listOf(m.activeIngredient,m.dose,m
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable fun MedicationManagementScreen(
     lang:String,
     session:EducationalSession,
@@ -202,17 +205,37 @@ private fun medicationKey(m:MedicationRecord)=listOf(m.activeIngredient,m.dose,m
 
         if(section != MedicationToolSection.MEDICATIONS){
         Text(tr(lang,"Anestésico local","Local anesthetic"),fontWeight=FontWeight.Black)
-        Text(tr(lang,"Selecciona el anestésico y su presentación; se utiliza el mismo peso del paciente.","Select the anesthetic and its presentation; the same patient weight is used."))
+        Text(tr(lang,"Primero captura el peso del paciente. Después selecciona el anestésico. Las opciones se muestran en dos columnas para evitar que los textos se amontonen.","First enter the patient's weight. Then select the anesthetic. Options are shown in two columns to prevent crowded text."))
 
-        anestheticReferences.chunked(2).forEach{row->
-            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){
-                row.forEach{reference->
-                    FilterChip(
-                        selected=selectedAnesthetic?.presentation?.label==reference.presentation.label,
-                        onClick={selectedAnesthetic=reference},
-                        label={Text(reference.presentation.label)}
-                    )
-                }
+        if(section == MedicationToolSection.ANESTHETICS){
+            OutlinedTextField(
+                value=weightText,
+                onValueChange={weightText=it.filter{ch->ch.isDigit()||ch=='.'||ch==','}},
+                label={Text(tr(lang,"Peso del paciente (kg) *","Patient weight (kg) *"))},
+                singleLine=true,
+                modifier=Modifier.fillMaxWidth()
+            )
+        }
+
+        FlowRow(
+            modifier=Modifier.fillMaxWidth(),
+            maxItemsInEachRow=2,
+            horizontalArrangement=Arrangement.spacedBy(8.dp),
+            verticalArrangement=Arrangement.spacedBy(8.dp)
+        ){
+            anestheticReferences.forEach{reference->
+                FilterChip(
+                    selected=selectedAnesthetic?.presentation?.label==reference.presentation.label,
+                    onClick={selectedAnesthetic=reference},
+                    modifier=Modifier.fillMaxWidth(0.48f),
+                    label={
+                        Text(
+                            reference.presentation.label,
+                            maxLines=3,
+                            minLines=3
+                        )
+                    }
+                )
             }
         }
 
