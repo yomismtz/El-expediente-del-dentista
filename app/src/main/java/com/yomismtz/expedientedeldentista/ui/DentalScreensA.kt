@@ -204,7 +204,7 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
         ))
     }
     fun setTwoDigit(restoration: Int, caries: Int) {
-        val code = if (restoration == 0 && caries == 0) 0 else restoration * 10 + caries
+        if (!IcdasCoding.isValidRestoration(restoration) || !IcdasCoding.isValidCaries(caries)) return
         saveCodes(records.toMutableMap().apply { put(selectedSurface, IcdasSurfaceRecord(restorationCode = restoration, cariesCode = caries)) }, presentOverride = true)
     }
 
