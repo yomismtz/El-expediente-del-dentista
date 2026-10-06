@@ -64,4 +64,7 @@ object IcdasCoding {
 
     fun fromCombined(code: Int): IcdasSurfaceRecord? =
         if (isValidCombined(code)) fromLegacy(code) else null
+
+    fun migrateLegacySurfaceMap(legacy: Map<Surface, Int>): Map<Surface, IcdasSurfaceRecord> =
+        legacy.mapNotNull { (surface, code) -> fromLegacy(code)?.let { surface to it } }.toMap()
 }
