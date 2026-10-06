@@ -172,6 +172,7 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
     val allSurfaces = listOf(Surface.VESTIBULAR, Surface.LINGUAL_PALATAL, Surface.MESIAL, Surface.DISTAL, Surface.OCCLUSAL)
     val current = records[selectedSurface] ?: IcdasSurfaceRecord(restorationCode = 0, cariesCode = 0)
     val currentCode = current.combinedCode
+    val restorationKnown = current.restorationCode != null
     val currentRestoration = current.restorationCode ?: 0
     val currentCaries = current.cariesCode ?: 0
     val toothSpecial = records.values.firstOrNull { it.specialCode != null }?.specialCode
@@ -247,15 +248,15 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
                 }
             },onSurfaceTap={selectedSurface=it},modifier=Modifier.fillMaxWidth())
             Text("${surfaceName(selectedSurface,lang)} · ICDAS ${"%02d".format(currentCode)}")
-            Text(tr(lang,"Código actual = ${"%02d".format(currentCode)} · restauración $currentRestoration · caries $currentCaries",
-                "Current code = ${"%02d".format(currentCode)} · restoration $currentRestoration · caries $currentCaries"),
+            Text(tr(lang,if(restorationKnown) "Código actual = ${"%02d".format(currentCode)} · restauración $currentRestoration · caries $currentCaries" else "Código actual = ${"%02d".format(currentCode)} · restauración pendiente · caries $currentCaries",
+                if(restorationKnown) "Current code = ${"%02d".format(currentCode)} · restoration $currentRestoration · caries $currentCaries" else "Current code = ${"%02d".format(currentCode)} · restoration pending · caries $currentCaries"),
                 fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary)
             if (toothSpecial != null) Text(tr(lang,"Código especial del diente: $toothSpecial","Special tooth code: $toothSpecial"),fontWeight=FontWeight.Bold)
             if (current.legacyPending) Text(tr(lang,"⚠️ Registro antiguo: se conservó el código de caries, pero falta confirmar restauración/sellante. No se inventó ese dato.","⚠️ Legacy record: the caries code was preserved, but restoration/sealant status still needs confirmation. No value was invented."),style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.error)
         } }
         item { SectionCard(tr(lang,"3 · Primer dígito: restauración / sellante","3 · First digit: restoration / sealant")) {
             ClinicalContent.icdasRestorations.forEach { guide ->
-                val active = currentRestoration == guide.code
+                val active = restorationKnown && current.specialCode == null && currentRestoration == guide.code
                 Card(onClick={setTwoDigit(guide.code,currentCaries)},modifier=Modifier.fillMaxWidth(),
                     colors=CardDefaults.cardColors(containerColor=if(active)MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.surface)) {
                     Row(Modifier.fillMaxWidth().padding(12.dp),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
