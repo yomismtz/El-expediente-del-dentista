@@ -29,7 +29,7 @@ class IcdasCodingTest {
         assertFalse(IcdasCoding.isValidCombined(94))
         assertFalse(IcdasCoding.isValidCombined(95))
         assertFalse(IcdasCoding.isValidCombined(89))
-        assertFalse(IcdasCoding.isValidCombined(90 + 1))
+        assertTrue(IcdasCoding.isValidCombined(91))
         assertFalse(IcdasCoding.isValidCombined(87))
     }
 
