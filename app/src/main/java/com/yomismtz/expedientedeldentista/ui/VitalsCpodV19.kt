@@ -480,7 +480,28 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
         }
 
         ResponsiveSectionV17(
-            tr(lang,"9 · Tratamientos posibles hoy","9 · Treatments that may be possible today"),
+            tr(lang,"9 · Semáforo de atención odontológica","9 · Dental care traffic light"),
+            tr(lang,"Resume si es razonable continuar, limitar o diferir la atención con los datos registrados.","Summarizes whether care should proceed, be limited, or be deferred from the recorded data.")
+        ){
+            val activeSystemicCount=session.history.diseases.count{it.value.present}
+            val semaphore=dentalActivitySemaphore19(
+                age=patientAge,
+                sex=sex,
+                sys=sys.toIntOrNull(),
+                dia=dia.toIntOrNull(),
+                rr=rr.toIntOrNull(),
+                hr=hr.toIntOrNull(),
+                spo2=spo2.toIntOrNull(),
+                temp=temp.toDoubleOrNull(),
+                glucose=glucose.toIntOrNull(),
+                signs=selectedSignsRaw.split("|").filter{it.isNotBlank()}.toSet(),
+                activeSystemic=activeSystemicCount
+            )
+            DentalActivitySemaphoreCard19(semaphore,lang)
+        }
+
+        ResponsiveSectionV17(
+            tr(lang,"10 · Tratamientos posibles hoy","10 · Treatments that may be possible today"),
             tr(lang,"La aplicación cruza automáticamente edad, sexo, peso, talla, IMC, TA, FR, FC, SpO₂, temperatura, glucosa, dolor y signos/síntomas. No tienes que seleccionar el tratamiento: sólo aparecen hasta 3 opciones compatibles con los datos registrados.","The app automatically cross-checks age, sex, weight, height, BMI, BP, RR, HR, SpO₂, temperature, glucose, pain and signs/symptoms. You do not select the treatment: only up to 3 options compatible with the recorded data are shown.")
         ){
             val selectedSigns=selectedSignsRaw.split("|").filter{it.isNotBlank()}.toSet()
@@ -534,6 +555,125 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
 fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onBack:()->Unit){VitalsInteractiveV19Screen(lang,session,{},onBack)}
 @Composable
 fun VitalsInteractiveV19Screen(lang:String,onBack:()->Unit){VitalsInteractiveV19Screen(lang,EducationalSession(),{},onBack)}
+
+private enum class DentalTriageLight19 { GREEN, YELLOW, RED }
+
+private data class DentalActivitySemaphore19(
+    val light:DentalTriageLight19,
+    val titleEs:String,
+    val titleEn:String,
+    val reasonEs:String,
+    val reasonEn:String,
+    val activitiesEs:List<String>,
+    val activitiesEn:List<String>
+)
+
+private fun dentalActivitySemaphore19(
+    age:Int?,
+    sex:String,
+    sys:Int?,
+    dia:Int?,
+    rr:Int?,
+    hr:Int?,
+    spo2:Int?,
+    temp:Double?,
+    glucose:Int?,
+    signs:Set<String>,
+    activeSystemic:Int
+):DentalActivitySemaphore19 {
+    val emergencySigns=setOf(
+        "Sangrado oral no controlable","Inflamación facial/cervical","Disnea",
+        "Dolor torácico","Alteración de conciencia","Convulsiones"
+    )
+    val redSign=signs.any{it in emergencySigns}
+    val redVitals=(sys!=null && (sys>180 || dia?.let{it>110}==true)) ||
+        (spo2!=null && spo2<90) ||
+        (temp!=null && temp>=40.0) ||
+        (glucose!=null && glucose>=300) ||
+        (hr!=null && (hr<40 || hr>140)) ||
+        (rr!=null && (rr<8 || rr>30))
+    if(redSign || redVitals){
+        return DentalActivitySemaphore19(
+            DentalTriageLight19.RED,
+            "🔴 ROJO · NO ATENCIÓN ODONTOLÓGICA AMBULATORIA",
+            "🔴 RED · NO AMBULATORY DENTAL CARE",
+            "Hay un signo de alarma o un parámetro potencialmente crítico. No iniciar ni continuar atención dental electiva; estabilizar según protocolo y derivar/activar emergencias cuando corresponda.",
+            "A red flag or potentially critical parameter is present. Do not start or continue elective dental care; stabilize per protocol and refer/activate emergency care when appropriate.",
+            listOf("No realizar procedimientos electivos","No iniciar cirugía/extracción","No realizar anestesia o sedación electiva","Activar protocolo de urgencias/derivación según el caso"),
+            listOf("No elective procedures","Do not start surgery/extraction","No elective anesthesia or sedation","Activate emergency/referral protocol as indicated")
+        )
+    }
+
+    val yellow= (sys!=null && (sys>=160 || dia?.let{it>=100}==true)) ||
+        (spo2!=null && spo2<95) ||
+        (temp!=null && temp>=38.0) ||
+        (glucose!=null && glucose>=180) ||
+        signs.contains("Fiebre/malestar") ||
+        signs.contains("Inflamación intraoral") ||
+        signs.contains("Trismus") ||
+        signs.contains("Disfagia") ||
+        activeSystemic>0
+    if(yellow){
+        return DentalActivitySemaphore19(
+            DentalTriageLight19.YELLOW,
+            "🟠 AMARILLO · ATENCIÓN LIMITADA / DIFERIR LO INVASIVO",
+            "🟠 YELLOW · LIMITED CARE / DEFER INVASIVE CARE",
+            "Existe un factor que puede aumentar el riesgo o requiere control previo. Priorizar valoración, medidas preventivas/diagnósticas y resolver primero el factor modificable; diferir procedimientos invasivos hasta confirmar estabilidad.",
+            "A factor may increase risk or requires prior control. Prioritize assessment, preventive/diagnostic measures and correction of modifiable factors; defer invasive procedures until stability is confirmed.",
+            listOf("Historia clínica y exploración","Radiografías/fotografías y documentación clínica cuando estén indicadas","Educación e higiene oral","Medidas preventivas y control de factores de riesgo","Tratamiento no invasivo sólo si el paciente está estable"),
+            listOf("History and examination","Radiographs/photos and documentation when indicated","Oral-hygiene education","Preventive care and risk-factor control","Non-invasive care only if the patient is stable")
+        )
+    }
+
+    return DentalActivitySemaphore19(
+        DentalTriageLight19.GREEN,
+        "🟢 VERDE · ATENCIÓN DENTAL POSIBLE",
+        "🟢 GREEN · DENTAL CARE MAY PROCEED",
+        "No se detecta un criterio de alarma en los datos registrados. La atención debe seguir el diagnóstico, el procedimiento y los protocolos institucionales.",
+        "No alarm criterion is detected in the recorded data. Care should still follow the diagnosis, procedure and institutional protocols.",
+        listOf("Valoración y diagnóstico","Prevención e higiene","Restauraciones y procedimientos no quirúrgicos","Anestesia local cuando esté indicada","Procedimientos invasivos sólo si el procedimiento y el estado clínico lo permiten"),
+        listOf("Assessment and diagnosis","Prevention and hygiene","Restorative and non-surgical procedures","Local anesthesia when indicated","Invasive procedures only when the procedure and clinical status allow")
+    )
+}
+
+@Composable
+private fun DentalActivitySemaphoreCard19(light:DentalActivitySemaphore19,lang:String){
+    val (container,title,reason,activities)=when(light.light){
+        DentalTriageLight19.GREEN->Quadruple(
+            MaterialTheme.colorScheme.primaryContainer,
+            if(lang=="en")light.titleEn else light.titleEs,
+            if(lang=="en")light.reasonEn else light.reasonEs,
+            if(lang=="en")light.activitiesEn else light.activitiesEs
+        )
+        DentalTriageLight19.YELLOW->Quadruple(
+            MaterialTheme.colorScheme.secondaryContainer,
+            if(lang=="en")light.titleEn else light.titleEs,
+            if(lang=="en")light.reasonEn else light.reasonEs,
+            if(lang=="en")light.activitiesEn else light.activitiesEs
+        )
+        DentalTriageLight19.RED->Quadruple(
+            MaterialTheme.colorScheme.errorContainer,
+            if(lang=="en")light.titleEn else light.titleEs,
+            if(lang=="en")light.reasonEn else light.reasonEs,
+            if(lang=="en")light.activitiesEn else light.activitiesEs
+        )
+    }
+    Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=container)){
+        Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
+            Text(title,fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleLarge)
+            Text(reason)
+            Text(if(lang=="en")"Activities currently compatible:" else "Actividades compatibles en este momento:",fontWeight=FontWeight.Bold)
+            activities.forEach{Text("• $it")}
+            if(light.light==DentalTriageLight19.RED){
+                Text(if(lang=="en")"⚠️ Red means do not provide routine/elective dental care in the office. If this is an emergency, activate the emergency/referral pathway rather than proceeding with routine treatment."
+                    else "⚠️ Rojo significa no realizar atención odontológica rutinaria/electiva en consulta. Si se trata de una urgencia, activar la ruta de emergencia/derivación en lugar de continuar con el tratamiento habitual.",
+                    fontWeight=FontWeight.Black)
+            }
+        }
+    }
+}
+
+private data class Quadruple<A,B,C,D>(val first:A,val second:B,val third:C,val fourth:D)
 
 private fun cpodStatus19(status:ToothStatus,lang:String):String = when(status) {
     ToothStatus.HEALTHY -> tr(lang,"Sano / presente","Sound / present")
