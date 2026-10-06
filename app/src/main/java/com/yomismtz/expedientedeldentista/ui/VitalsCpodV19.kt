@@ -53,12 +53,13 @@ private fun temperature19(value:Double?,lang:String):String = when {
 
 private enum class GlucoseContext19 { FASTING, PREMEAL, POSTMEAL, RANDOM }
 
-private enum class GlucoseStatus19 { NO_KNOWN, DIABETES, INSULIN_RESISTANCE_OR_PREDIABETES, UNKNOWN }
+private enum class GlucoseStatus19 { NO_KNOWN, DIABETES, PREDIABETES, INSULIN_RESISTANCE, UNKNOWN }
 
 private fun glucoseStatusLabel19(status:GlucoseStatus19,lang:String):String = when(status) {
     GlucoseStatus19.NO_KNOWN -> tr(lang,"Sin diabetes conocida","No known diabetes")
     GlucoseStatus19.DIABETES -> tr(lang,"Diabetes conocida","Known diabetes")
-    GlucoseStatus19.INSULIN_RESISTANCE_OR_PREDIABETES -> tr(lang,"Resistencia a la insulina / prediabetes","Insulin resistance / prediabetes")
+    GlucoseStatus19.PREDIABETES -> tr(lang,"Prediabetes","Prediabetes")
+    GlucoseStatus19.INSULIN_RESISTANCE -> tr(lang,"Resistencia a la insulina","Insulin resistance")
     GlucoseStatus19.UNKNOWN -> tr(lang,"Desconocido / no documentado","Unknown / not documented")
 }
 
@@ -140,11 +141,9 @@ private fun glucose19(value:Int?,ctx:GlucoseContext19,lang:String):String {
 }
 
 
-private fun vitalBandForAge19(age:Int):VitalBand19 = when {
-    age < 1 -> VitalBand19("0–11 meses",25,50,100,160)
-    age <= 5 -> VitalBand19("1–5 años",20,30,80,140)
-    age <= 12 -> VitalBand19("6–12 años",15,25,70,120)
-    else -> VitalBand19("≥13 años",12,20,60,100)
+private fun vitalBandForAge19(age:Int):VitalBand19 {
+    val ref=clinicalVitalBandV20(age)
+    return VitalBand19(ref.labelEs,ref.rrMin,ref.rrMax,ref.hrMin,ref.hrMax)
 }
 private data class PediatricBpScreen19(val systolic:Int,val diastolic:Int,val label:String)
 private fun pediatricBpScreen19(age:Int,sex:String):PediatricBpScreen19? {
