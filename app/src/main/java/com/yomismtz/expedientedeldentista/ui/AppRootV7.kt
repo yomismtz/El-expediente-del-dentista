@@ -73,7 +73,7 @@ fun AppRootV7(
     }
 
     Column(Modifier.fillMaxSize().navigationBarsPadding()) {
-        GlobalBar19(lang,goToIntake,{openOverlay(V7Overlay.SUMMARY)},{openOverlay(V7Overlay.PHOTOGRAPHY)},onOpenSettings)
+        GlobalBar19(lang,session,goToIntake,{openOverlay(V7Overlay.SUMMARY)},{openOverlay(V7Overlay.PHOTOGRAPHY)},onOpenSettings)
         Box(Modifier.weight(1f).fillMaxWidth()) {
             AdaptiveBaseRootV19(preferences,onPreferencesChanged,onLanguageChanged,session,onSessionChanged)
 
@@ -163,13 +163,13 @@ fun AppRootV7(
 }
 
 @Composable
-private fun GlobalBar19(lang:String,onIntake:()->Unit,onSummary:()->Unit,onPhotography:()->Unit,onSettings:(()->Unit)?) {
+private fun GlobalBar19(lang:String,session:EducationalSession,onIntake:()->Unit,onSummary:()->Unit,onPhotography:()->Unit,onSettings:(()->Unit)?) {
     Surface(color=MaterialTheme.colorScheme.surface,tonalElevation=4.dp,shadowElevation=2.dp) {
         BoxWithConstraints(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal=10.dp,vertical=7.dp)) {
             val compact=maxWidth<380.dp || LocalDensity.current.fontScale>=1.20f
             if(compact) {
                 Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(6.dp)) {
-                    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+                    Column(Modifier.fillMaxWidth(),verticalArrangement=Arrangement.spacedBy(3.dp)) {\n                         ClinicalCompletenessMiniV1(session)\n                     }\n                     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
                         Button(onClick=onIntake,modifier=Modifier.weight(1f)){Text("📋 "+tr(lang,"Ingreso","Intake"),maxLines=1)}
                         OutlinedButton(onClick=onSummary,modifier=Modifier.weight(1f)){Text("🧾 "+tr(lang,"Resumen","Summary"),maxLines=1)}
                     }
