@@ -88,26 +88,7 @@ private val quickClinicalCategories = listOf(
             QuickClinicalTool("🚨", "Urgencias odontológicas", "Dental emergencies", AppScreen.EMERGENCY),
             QuickClinicalTool("📚", "Protocolos sistémicos", "Systemic protocols", AppScreen.SYSTEMIC_PROTOCOLS)
         )
-    ),
-    QuickClinicalCategory(
-        "🧒", "Odontopediatría", "Pediatric dentistry",
-        listOf(
-            QuickClinicalTool("🧒", "Odontopediatría", "Pediatric dentistry", AppScreen.PEDIATRIC_DENTISTRY)
-        )
-    ),
-    QuickClinicalCategory(
-        "🔩", "Implantología", "Implantology",
-        listOf(
-            QuickClinicalTool("🔩", "Implantología", "Implantology", AppScreen.IMPLANTOLOGY)
-        )
-    ),
-    QuickClinicalCategory(
-        "📷", "Documentación clínica", "Clinical documentation",
-        listOf(
-            QuickClinicalTool("📷", "Fotografía clínica", "Clinical photography", AppScreen.CLINICAL_PHOTO)
-        )
-    )
-)
+    ),)
 
 @Composable
 fun QuickClinicalToolsScreen(
