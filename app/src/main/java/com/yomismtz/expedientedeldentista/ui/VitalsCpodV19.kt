@@ -370,19 +370,23 @@ private fun ResultCard19(text:String) {
 
 @Composable
 fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionChanged:(EducationalSession)->Unit,onBack:()->Unit) {
-    val patientAge=session.profile.age.toIntOrNull() ?: 18
+    val patientAge=session.profile.age.toIntOrNull()
     val patientSex=session.profile.sex
+    var ageText by rememberRecordState("vitals.age",session.profile.age)
     var sex by rememberRecordState("vitals.sex",if(patientSex=="Masculino"||patientSex=="Femenino")patientSex else "No especificado")
-    val b=vitalBandForAge19(patientAge)
+    val ageForCalc=patientAge ?: 18
+    val ageValid=patientAge in 0..120
+    val b=vitalBandForAge19(ageForCalc)
     var spo2 by rememberRecordState("vitals.spo2",""); var rr by rememberRecordState("vitals.rr",""); var hr by rememberRecordState("vitals.hr","")
     var sys by rememberRecordState("vitals.sys",""); var dia by rememberRecordState("vitals.dia",""); var temp by rememberRecordState("vitals.temp",""); var glucose by rememberRecordState("vitals.glucose","")
     var glucoseContext by rememberRecordState("vitals.glucoseContext",GlucoseContext19.RANDOM); var selectedSignsRaw by rememberRecordState("vitals.dentalSigns","")
     var painScore by rememberRecordState("vitals.painScore","")
     var weight by rememberRecordState("vitals.weight",session.profile.weightKg); var height by rememberRecordState("vitals.height",session.profile.heightCm)
     val bmi=run{val w=weight.toDoubleOrNull();val h=height.toDoubleOrNull()?.div(100.0);if(w!=null&&h!=null&&h>0)w/h.pow(2)else null}
-    LaunchedEffect(sex,spo2,rr,hr,sys,dia,temp,glucose,weight,height,bmi,selectedSignsRaw,painScore,glucoseContext) {
+    LaunchedEffect(ageText,sex,spo2,rr,hr,sys,dia,temp,glucose,weight,height,bmi,selectedSignsRaw,painScore,glucoseContext) {
         val bp = if (sys.isNotBlank() || dia.isNotBlank()) "$sys/$dia" else ""
         val updated = session.profile.copy(
+            age = ageText.filter(Char::isDigit).take(3),
             sex = if(sex=="No especificado") session.profile.sex else sex,
             heartRate = hr,
             respiratoryRate = rr,
@@ -401,9 +405,10 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
     }
     ResponsiveScreenV17(tr(lang,"Signos, síntomas y triage clínico","Clinical signs, symptoms and triage"),tr(lang,"Registra parámetros, signos y síntomas y obtén una orientación educativa sobre continuidad, diferimiento o referencia.","Record parameters, signs and symptoms and get educational guidance on proceeding, deferring or referring."),onBack){profile->
         ResponsiveSectionV17(tr(lang,"1 · Edad y sexo","1 · Age and sex")){
-            Text(tr(lang,"Edad registrada: $patientAge años.","Recorded age: $patientAge years."))
+            OutlinedTextField(value=ageText,onValueChange={ageText=it.filter(Char::isDigit).take(3)},label={Text(tr(lang,"Edad en años *","Age in years *"))},modifier=Modifier.fillMaxWidth(),singleLine=true)
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("Femenino","Masculino","No especificado").forEach{s->FilterChip(sex==s,{sex=s},{Text(if(lang=="en"&&s=="Femenino")"Female" else if(lang=="en"&&s=="Masculino")"Male" else if(lang=="en")"Not specified" else s)},modifier=Modifier.weight(1f))}}
-            Text(tr(lang,"TA pediátrica: edad + sexo + talla. El umbral AAP mostrado es sólo de cribado y no diagnostica hipertensión.","Pediatric BP: age + sex + height. The displayed AAP threshold is screening only and does not diagnose hypertension."),style=MaterialTheme.typography.bodySmall)
+            if(!ageValid) ResultCard19(tr(lang,"⚠️ La edad es obligatoria para el triage.","⚠️ Age is required for triage."))
+            Text(tr(lang,"La valoración cruza edad, sexo, talla, signos/síntomas y antecedentes sistémicos; la TA pediátrica además requiere talla.","The assessment cross-checks age, sex, height, signs/symptoms and systemic history; pediatric BP also requires height."),style=MaterialTheme.typography.bodySmall)
         }
         ResponsiveSectionV17(tr(lang,"2 · Referencias fisiológicas","2 · Physiologic references")){
             Text(tr(lang,"Grupo etario: ${b.label}. FR ${b.rrMin}–${b.rrMax}/min · FC ${b.hrMin}–${b.hrMax}/min.","Age group: ${b.label}. RR ${b.rrMin}–${b.rrMax}/min · HR ${b.hrMin}–${b.hrMax}/min."))
@@ -434,7 +439,29 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
             GlucoseContext19.entries.forEach{ctx->FilterChip(glucoseContext==ctx,{glucoseContext=ctx},{Text(glucoseContext19(ctx,lang))},modifier=Modifier.fillMaxWidth())}
             ResultCard19(glucose19(glucose.toIntOrNull(),glucoseContext,lang)); ResultCard19(glucoseAction19(glucose.toIntOrNull(),lang))
         }
-        ResponsiveSectionV17(tr(lang,"6 · Signos y síntomas odontológicos","6 · Dental signs and symptoms")){
+        ResponsiveSectionV17(
+            tr(lang,"6 · Antecedentes sistémicos que pueden afectar la atención","6 · Systemic conditions that may affect care"),
+            tr(lang,"Revisa las enfermedades registradas en antecedentes patológicos para contextualizar el triage.","Review diseases recorded in the medical history to contextualize triage.")
+        ){
+            val activeDiseases=session.history.diseases.filterValues{it.present}
+            if(activeDiseases.isEmpty()){
+                ResultCard19(tr(lang,"🟢 No hay enfermedades sistémicas registradas como presentes.","🟢 No systemic diseases are recorded as present."))
+            }else{
+                Text(tr(lang,"Enfermedades sistémicas registradas","Recorded systemic conditions"),fontWeight=FontWeight.Black)
+                activeDiseases.forEach{(id,answer)->
+                    Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){
+                        Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){
+                            Text(id,fontWeight=FontWeight.Black)
+                            if(answer.currentStatus.isNotBlank()) Text(tr(lang,"Estado: ","Status: ")+answer.currentStatus)
+                            if(answer.complications.isNotBlank()) Text(tr(lang,"Complicaciones: ","Complications: ")+answer.complications)
+                            if(answer.treatment.isNotBlank()) Text(tr(lang,"Tratamiento referido: ","Reported treatment: ")+answer.treatment)
+                        }
+                    }
+                }
+                ResultCard19(tr(lang,"⚠️ Cruzar antecedentes con signos, síntomas, medicamentos, alergias y procedimiento antes de continuar, diferir o referir.","⚠️ Cross-check history with signs, symptoms, medications, allergies and procedure before proceeding, deferring or referring."))
+            }
+        }
+        ResponsiveSectionV17(tr(lang,"7 · Signos y síntomas odontológicos","7 · Dental signs and symptoms")){
             val selectedSigns=selectedSignsRaw.split("|").filter{it.isNotBlank()}.toSet()
             AdaptiveGridV17(dentalSignsSymptoms19.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
                 val item=dentalSignsSymptoms19[i]
@@ -445,7 +472,7 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
             val pain=painScore.toIntOrNull()
             ResultCard19(if(pain==null) tr(lang,"Escala de dolor opcional: 0 sin dolor · 10 máximo.","Optional pain scale: 0 no pain · 10 maximum.") else tr(lang,"Dolor registrado: \$pain/10. La intensidad ayuda a priorizar diagnóstico y tratamiento, pero no sustituye el diagnóstico odontológico.","Recorded pain: \$pain/10. Intensity helps prioritize diagnosis and treatment but does not replace the dental diagnosis."))
         }
-        ResponsiveSectionV17(tr(lang,"7 · Peso, talla e IMC","7 · Weight, height and BMI")){
+        ResponsiveSectionV17(tr(lang,"8 · Peso, talla e IMC","8 · Weight, height and BMI")){
             val cols=if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2
             AdaptiveGridV17(2,cols){i->if(i==0)OutlinedTextField(weight,{weight=it.filter{ch->ch.isDigit()||ch=='.'}.take(6)},label={Text("kg")},modifier=Modifier.fillMaxWidth())else OutlinedTextField(height,{height=it.filter{ch->ch.isDigit()||ch=='.'}.take(6)},label={Text("cm")},modifier=Modifier.fillMaxWidth())}
             Text(if(bmi==null)tr(lang,"IMC = peso / talla²","BMI = weight / height²") else "IMC = ${"%.1f".format(bmi)} kg/m²",fontWeight=FontWeight.Bold)
@@ -453,12 +480,12 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
         }
 
         ResponsiveSectionV17(
-            tr(lang,"8 · Tratamientos posibles hoy","8 · Treatments that may be possible today"),
+            tr(lang,"9 · Tratamientos posibles hoy","9 · Treatments that may be possible today"),
             tr(lang,"La aplicación cruza automáticamente edad, sexo, peso, talla, IMC, TA, FR, FC, SpO₂, temperatura, glucosa, dolor y signos/síntomas. No tienes que seleccionar el tratamiento: sólo aparecen hasta 3 opciones compatibles con los datos registrados.","The app automatically cross-checks age, sex, weight, height, BMI, BP, RR, HR, SpO₂, temperature, glucose, pain and signs/symptoms. You do not select the treatment: only up to 3 options compatible with the recorded data are shown.")
         ){
             val selectedSigns=selectedSignsRaw.split("|").filter{it.isNotBlank()}.toSet()
             val decision=evaluateClinicalDecisionV1(
-                age=patientAge, sex=sex, sys=sys.toIntOrNull(), dia=dia.toIntOrNull(),
+                age=ageForCalc, sex=sex, sys=sys.toIntOrNull(), dia=dia.toIntOrNull(),
                 rr=rr.toIntOrNull(), hr=hr.toIntOrNull(), spo2=spo2.toIntOrNull(),
                 glucose=glucose.toIntOrNull(), temp=temp.toDoubleOrNull(), bmi=bmi,
                 signs=selectedSigns, pain=painScore.toIntOrNull(), profile=session.profile
@@ -488,7 +515,7 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
             )
             ResultCard19(
                 anestheticRecommendation19(
-                    patientAge,sys.toIntOrNull(),dia.toIntOrNull(),hr.toIntOrNull(),
+                    ageForCalc,sys.toIntOrNull(),dia.toIntOrNull(),hr.toIntOrNull(),
                     spo2.toIntOrNull(),temp.toDoubleOrNull(),selectedSigns,bmi,lang
                 )
             )
