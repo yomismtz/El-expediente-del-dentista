@@ -97,6 +97,9 @@ fun AppRootV19(
                 }, { r -> onLoadRecord(r); recordMenuOpen = false }, onDeleteRecord, onExportRecord, { raw -> onImportRecord(raw)?.also { saved -> onLoadRecord(saved); recordMenuOpen=false } }, {
                     quickToolsOpen = true
                     recordMenuOpen = false
+                }, {
+                    guideOpen = true
+                    recordMenuOpen = false
                 })
             }
         }
