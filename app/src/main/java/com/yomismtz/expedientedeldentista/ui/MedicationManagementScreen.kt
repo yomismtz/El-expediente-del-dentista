@@ -125,6 +125,7 @@ private fun medicationKey(m:MedicationRecord)=listOf(m.activeIngredient,m.dose,m
     var selectedPresentation by remember{mutableStateOf<MedicationPresentation?>(null)}
     var selectedFrequency by remember{mutableStateOf("")}
     var selectedAnesthetic by remember{mutableStateOf<AnestheticReference?>(null)}
+    val noCurrentMedications=rememberRecordState("history.medications.noneDenied",false)
 
     val medications=session.medicationsStructured
     val weight=weightText.replace(",","." ).toDoubleOrNull()
@@ -152,6 +153,11 @@ private fun medicationKey(m:MedicationRecord)=listOf(m.activeIngredient,m.dose,m
         }
 
         if(section != MedicationToolSection.ANESTHETICS){
+        FilterChip(selected=noCurrentMedications.value,onClick={
+            noCurrentMedications.value=!noCurrentMedications.value
+            if(noCurrentMedications.value) onSessionChanged(session.copy(medicationsStructured=emptyList()))
+        },label={Text(tr(lang,"Ninguno · no toma medicamentos actualmente","None · no current medications"))},modifier=Modifier.fillMaxWidth())
+        if(noCurrentMedications.value) Text(tr(lang,"Registro explícito: el paciente no refiere medicamentos actuales.","Explicit record: the patient reports no current medications."),style=MaterialTheme.typography.bodySmall)
         OutlinedTextField(
             value=weightText,
             onValueChange={weightText=it.filter{ch->ch.isDigit()||ch=='.'||ch==','}},
@@ -197,7 +203,7 @@ private fun medicationKey(m:MedicationRecord)=listOf(m.activeIngredient,m.dose,m
 
         val canAddMedication=weight!=null&&weight>0&&medicationDraft!=null&&selectedFrequency.isNotBlank()&&!duplicate
         Button(
-            onClick={if(canAddMedication){onSessionChanged(session.copy(medicationsStructured=medications+medicationDraft!!));selectedMedication=null;selectedPresentation=null;selectedFrequency=""}},
+            onClick={if(canAddMedication){onSessionChanged(session.copy(medicationsStructured=medications+medicationDraft!!));noCurrentMedications.value=false;selectedMedication=null;selectedPresentation=null;selectedFrequency=""}},
             enabled=canAddMedication,
             modifier=Modifier.fillMaxWidth()
         ){Text(tr(lang,"Agregar medicamento seleccionado","Add selected medication"))}
