@@ -28,7 +28,7 @@ object IcdasCoding {
     fun isValidSpecial(code: Int) = code in specialCodes
 
     fun isValidCombined(code: Int): Boolean {
-        if (code == 0) return true
+        if (code in 0..6) return true // 00–06; leading zero is not representable by Int
         if (code in specialCodes) return true
         if (code !in 10..86) return false
         return isValidRestoration(code / 10) && isValidCaries(code % 10)
