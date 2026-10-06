@@ -184,13 +184,13 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
         val all = session.icdasSurfaceRecords.toMutableMap().apply { put(selectedTooth, codes) }
         val legacy = session.icdasSurfaces.toMutableMap().apply { put(selectedTooth, codes.mapValues { it.value.combinedCode }) }
         val record = session.teeth[selectedTooth] ?: ToothRecord()
+        // ICDAS is a surface-level detection system. Do not overwrite the
+        // epidemiological CPOD/ceod tooth status from an ICDAS lesion/restoration.
+        // Missing/special tooth states are the exception because they define tooth presence.
         val status = statusOverride ?: when {
             codes.values.any { it.specialCode in setOf(91, 93, 97) } -> ToothStatus.MISSING_CARIES
             codes.values.any { it.specialCode in setOf(90, 92, 98, 99) } -> ToothStatus.MISSING_OTHER
-            codes.values.any { it.cariesCode in 1..6 } -> ToothStatus.CARIES
-            codes.values.any { it.restorationCode in 3..8 } -> ToothStatus.RESTORED
-            codes.values.any { it.restorationCode in 1..2 } -> ToothStatus.SEALANT
-            else -> ToothStatus.HEALTHY
+            else -> record.status
         }
         val present = session.presentTeeth.toMutableSet()
         if (presentOverride == false || status == ToothStatus.MISSING_CARIES || status == ToothStatus.MISSING_OTHER) present.remove(selectedTooth)
