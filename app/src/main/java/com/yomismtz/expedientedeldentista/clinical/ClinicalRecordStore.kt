@@ -71,14 +71,14 @@ class ClinicalRecordStore(context: Context) {
     fun exportRecordJson(id: String): JSONObject? = loadAll().firstOrNull { it.id == id }?.let { record ->
         JSONObject()
             .put("format", "YSM_DENTAL_RECORD")
-            .put("version", 1)
+            .put("version", 2)
             .put("exportedAt", System.currentTimeMillis())
             .put("record", recordToJson(record))
     }
 
     fun importRecordJson(root: JSONObject): SavedRecord {
         require(root.optString("format") == "YSM_DENTAL_RECORD") { "Formato de respaldo no reconocido" }
-        require(root.optInt("version", 0) == 1) { "Versión de respaldo no compatible" }
+        require(root.optInt("version", 0) in setOf(1, 2)) { "Versión de respaldo no compatible" }
         val source = recordFromJson(root.getJSONObject("record"))
         val now = System.currentTimeMillis()
         val imported = source.copy(id = UUID.randomUUID().toString(), updatedAt = now)
@@ -156,12 +156,26 @@ class ClinicalRecordStore(context: Context) {
         val o = JSONObject()
         o.put("profile", profileToJson(s.profile))
         o.put("history", historyToJson(s.history))
-        o.put("teeth", JSONObject().also { j -> s.teeth.forEach { (k,v) -> j.put(k.toString(), JSONObject().put("status",v.status.name).put("icdas",v.icdas).put("diagnosisId",v.diagnosisId).put("treatmentId",v.treatmentId)) } })
+        o.put("teeth", JSONObject().also { j -> s.teeth.forEach { (k,v) -> j.put(k.toString(), JSONObject().put("status",v.status.name).put("icdas",v.icdas).put("icdasLegacyPending",v.icdasLegacyPending).put("diagnosisId",v.diagnosisId).put("treatmentId",v.treatmentId)) } })
         fun surfaceMap(m: Map<Int, Map<Surface, *>>, encode:(Any)->Any): JSONObject = JSONObject().also { root ->
             m.forEach { (tooth, surfaces) -> root.put(tooth.toString(), JSONObject().also { z -> surfaces.forEach { (surface,value) -> z.put(surface.name, encode(value as Any)) } }) }
         }
         o.put("odontogramSurfaces", surfaceMap(s.odontogramSurfaces) { (it as SurfaceMark).name })
-        o.put("icdasSurfaces", surfaceMap(s.icdasSurfaces) { it as Int })
+        o.put("icdasSurfaceRecords", JSONObject().also { root ->
+            s.icdasSurfaceRecords.forEach { (tooth, surfaces) ->
+                root.put(tooth.toString(), JSONObject().also { z ->
+                    surfaces.forEach { (surface, value) ->
+                        z.put(surface.name, JSONObject()
+                            .put("restorationCode", value.restorationCode)
+                            .put("cariesCode", value.cariesCode)
+                            .put("specialCode", value.specialCode)
+                            .put("legacyPending", value.legacyPending))
+                    }
+                })
+            }
+        })
+        // Retain the old integer map in exports for backward compatibility only.
+        o.put("icdasSurfaces", surfaceMap(s.icdasSurfaceRecords) { (it as IcdasSurfaceRecord).combinedCode })
         o.put("oleary", JSONObject().also { j -> s.oleary.forEach { (k,v) -> j.put(k.toString(), JSONArray(v.map { it.name })) } })
         o.put("presentTeeth", JSONArray(s.presentTeeth.toList()))
         o.put("ipcCodes", JSONArray(s.ipcCodes))
@@ -186,13 +200,30 @@ class ClinicalRecordStore(context: Context) {
         fun <T> keys(j:JSONObject, f:(String)->T): List<T> { val out=mutableListOf<T>(); val it=j.keys(); while(it.hasNext()) out+=f(it.next()); return out }
         fun surfaceMarks(name:String)=o.optJSONObject(name)?.let { root -> keys(root) { tk -> tk.toInt() to keys(root.getJSONObject(tk)) { sk -> Surface.valueOf(sk) to SurfaceMark.valueOf(root.getJSONObject(tk).getString(sk)) }.toMap() }.toMap() } ?: emptyMap()
         fun surfaceInts(name:String)=o.optJSONObject(name)?.let { root -> keys(root) { tk -> tk.toInt() to keys(root.getJSONObject(tk)) { sk -> Surface.valueOf(sk) to root.getJSONObject(tk).getInt(sk) }.toMap() }.toMap() } ?: emptyMap()
-        val teeth=o.optJSONObject("teeth")?.let { j -> keys(j){k-> val v=j.getJSONObject(k); k.toInt() to ToothRecord(ToothStatus.valueOf(v.getString("status")),v.optInt("icdas"),v.optString("diagnosisId").takeIf{it.isNotBlank()&&it!="null"},v.optString("treatmentId").takeIf{it.isNotBlank()&&it!="null"})}.toMap()}?: emptyMap()
+        fun surfaceRecords(): Map<Int, Map<Surface, IcdasSurfaceRecord>> {
+            val root = o.optJSONObject("icdasSurfaceRecords")
+            if (root != null) return keys(root) { tk ->
+                tk.toInt() to keys(root.getJSONObject(tk)) { sk ->
+                    val v = root.getJSONObject(tk).getJSONObject(sk)
+                    Surface.valueOf(sk) to IcdasSurfaceRecord(
+                        restorationCode = v.optInt("restorationCode").takeIf { v.has("restorationCode") && !v.isNull("restorationCode") },
+                        cariesCode = v.optInt("cariesCode").takeIf { v.has("cariesCode") && !v.isNull("cariesCode") },
+                        specialCode = v.optInt("specialCode").takeIf { v.has("specialCode") && !v.isNull("specialCode") },
+                        legacyPending = v.optBoolean("legacyPending")
+                    )
+                }.toMap()
+            }.toMap()
+            return surfaceInts("icdasSurfaces").mapValues { (_, surfaces) ->
+                surfaces.mapValues { (_, code) -> IcdasCoding.fromLegacy(code) ?: IcdasSurfaceRecord(legacyPending = true) }
+            }
+        }
+        val teeth=o.optJSONObject("teeth")?.let { j -> keys(j){k-> val v=j.getJSONObject(k); k.toInt() to ToothRecord(ToothStatus.valueOf(v.getString("status")),v.optInt("icdas"),v.optBoolean("icdasLegacyPending"),v.optString("diagnosisId").takeIf{it.isNotBlank()&&it!="null"},v.optString("treatmentId").takeIf{it.isNotBlank()&&it!="null"})}.toMap()}?: emptyMap()
         val oleary=o.optJSONObject("oleary")?.let { j -> keys(j){k-> k.toInt() to jsonStrings(j.getJSONArray(k)).map{Surface.valueOf(it)}.toSet()}.toMap()}?: emptyMap()
         val perio=o.optJSONObject("periodontogram")?.let { j -> keys(j){k->k.toInt() to perioFromJson(j.getJSONObject(k))}.toMap()}?: emptyMap()
         return EducationalSession(
             profile=o.optJSONObject("profile")?.let(::profileFromJson)?:PatientProfile(),
             history=o.optJSONObject("history")?.let(::historyFromJson)?:HistoryState(),
-            teeth=teeth, odontogramSurfaces=surfaceMarks("odontogramSurfaces"), icdasSurfaces=surfaceInts("icdasSurfaces"),
+            teeth=teeth, odontogramSurfaces=surfaceMarks("odontogramSurfaces"), icdasSurfaceRecords=surfaceRecords(), icdasSurfaces=surfaceInts("icdasSurfaces"),
             oleary=oleary, presentTeeth=jsonInts(o.optJSONArray("presentTeeth")).toSet(), ipcCodes=jsonStrings(o.optJSONArray("ipcCodes")).ifEmpty{List(6){"0"}},
             ihosDebris=jsonIntMap(o.optJSONObject("ihosDebris")), ihosCalculus=jsonIntMap(o.optJSONObject("ihosCalculus")),
             periodontogram=perio, pulpal=o.optJSONObject("pulpal")?.let(::pulpalFromJson)?:PulpalAssessment(),
