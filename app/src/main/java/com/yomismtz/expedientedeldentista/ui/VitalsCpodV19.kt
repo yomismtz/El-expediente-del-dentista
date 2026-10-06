@@ -412,7 +412,7 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
         }
         ResponsiveSectionV17(tr(lang,"2 · Referencias fisiológicas","2 · Physiologic references")){
             Text(tr(lang,"Grupo etario: ${b.label}. FR ${b.rrMin}–${b.rrMax}/min · FC ${b.hrMin}–${b.hrMax}/min.","Age group: ${b.label}. RR ${b.rrMin}–${b.rrMax}/min · HR ${b.hrMin}–${b.hrMax}/min."))
-            pediatricBpScreen19(patientAge,sex)?.let{Text(it.label,style=MaterialTheme.typography.bodySmall)}
+            pediatricBpScreen19(ageForCalc,sex)?.let{Text(it.label,style=MaterialTheme.typography.bodySmall)}
             Text(tr(lang,"SpO₂ habitual en personas sanas: 95–100 %. Temperatura habitual aproximada: 36.1–37.2 °C.","Usual SpO₂ in healthy people: 95–100%. Approximate usual temperature: 36.1–37.2 °C."),style=MaterialTheme.typography.bodySmall)
         }
         ResponsiveSectionV17(tr(lang,"3 · FR, FC y presión arterial","3 · RR, HR and blood pressure")){
@@ -425,7 +425,7 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
             }}
             Text("FR ${b.rrMin}–${b.rrMax}: ${vitalRange19(rr.toDoubleOrNull(),b.rrMin.toDouble(),b.rrMax.toDouble(),lang)}")
             Text("FC ${b.hrMin}–${b.hrMax}: ${vitalRange19(hr.toDoubleOrNull(),b.hrMin.toDouble(),b.hrMax.toDouble(),lang)}")
-            ResultCard19(rhythmAction19(rr.toIntOrNull(),hr.toIntOrNull(),b,lang)); ResultCard19(bpAction19(patientAge,sex,sys.toIntOrNull(),dia.toIntOrNull(),lang))
+            ResultCard19(rhythmAction19(rr.toIntOrNull(),hr.toIntOrNull(),b,lang)); ResultCard19(bpAction19(ageForCalc,sex,sys.toIntOrNull(),dia.toIntOrNull(),lang))
         }
         ResponsiveSectionV17(tr(lang,"4 · Temperatura y oxigenación","4 · Temperature and oxygenation")){
             OutlinedTextField(temp,{temp=it.filter{ch->ch.isDigit()||ch=='.'}.take(5)},label={Text("°C")},modifier=Modifier.fillMaxWidth())
@@ -476,7 +476,7 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
             val cols=if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2
             AdaptiveGridV17(2,cols){i->if(i==0)OutlinedTextField(weight,{weight=it.filter{ch->ch.isDigit()||ch=='.'}.take(6)},label={Text("kg")},modifier=Modifier.fillMaxWidth())else OutlinedTextField(height,{height=it.filter{ch->ch.isDigit()||ch=='.'}.take(6)},label={Text("cm")},modifier=Modifier.fillMaxWidth())}
             Text(if(bmi==null)tr(lang,"IMC = peso / talla²","BMI = weight / height²") else "IMC = ${"%.1f".format(bmi)} kg/m²",fontWeight=FontWeight.Bold)
-            ResultCard19(bmiAction19(patientAge,sex,bmi,lang))
+            ResultCard19(bmiAction19(ageForCalc,sex,bmi,lang))
         }
 
         ResponsiveSectionV17(
@@ -543,7 +543,7 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
         }
         val dashboardSigns=selectedSignsRaw.split("|").filter{it.isNotBlank()}.toSet()
         ClinicalDecisionDashboardV1(
-            lang=lang, session=session, age=patientAge, sex=sex,
+            lang=lang, session=session, age=ageForCalc, sex=sex,
             sys=sys.toIntOrNull(), dia=dia.toIntOrNull(), rr=rr.toIntOrNull(), hr=hr.toIntOrNull(),
             spo2=spo2.toIntOrNull(), glucose=glucose.toIntOrNull(), temp=temp.toDoubleOrNull(),
             bmi=bmi, signs=dashboardSigns, pain=painScore.toIntOrNull(), onSessionChanged=onSessionChanged
