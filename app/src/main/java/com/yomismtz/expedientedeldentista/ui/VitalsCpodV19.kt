@@ -481,6 +481,7 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
         }
         ResponsiveSectionV17(tr(lang,"2 · Referencias fisiológicas","2 · Physiologic references")){
             Text(tr(lang,"Grupo etario: ${b.label}. FR ${b.rrMin}–${b.rrMax}/min · FC ${b.hrMin}–${b.hrMax}/min.","Age group: ${b.label}. RR ${b.rrMin}–${b.rrMax}/min · HR ${b.hrMin}–${b.hrMax}/min."))
+            Text(clinicalReferenceSourcesV20(lang),style=MaterialTheme.typography.bodySmall)
             pediatricBpScreen19(ageForCalc,sex)?.let{Text(it.label,style=MaterialTheme.typography.bodySmall)}
             Text(tr(lang,"SpO₂ habitual en personas sanas: 95–100 %. Temperatura habitual aproximada: 36.1–37.2 °C.","Usual SpO₂ in healthy people: 95–100%. Approximate usual temperature: 36.1–37.2 °C."),style=MaterialTheme.typography.bodySmall)
         }
@@ -595,6 +596,7 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
             val semaphore=dentalActivitySemaphore19(
                 age=patientAge,
                 sex=sex,
+                heightCm=height.toDoubleOrNull(),
                 sys=sys.toIntOrNull(),
                 dia=dia.toIntOrNull(),
                 rr=rr.toIntOrNull(),
@@ -603,7 +605,9 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
                 temp=temp.toDoubleOrNull(),
                 glucose=glucose.toIntOrNull(),
                 signs=selectedSignsRaw.split("|").filter{it.isNotBlank()}.toSet(),
-                activeSystemic=activeSystemicCount
+                activeSystemic=activeSystemicCount,
+                glucoseStatus=glucoseStatus,
+                oxygenContext=oxygenContext
             )
             DentalActivitySemaphoreCard19(semaphore,lang)
         }
@@ -679,6 +683,7 @@ private data class DentalActivitySemaphore19(
 private fun dentalActivitySemaphore19(
     age:Int?,
     sex:String,
+    heightCm:Double?,
     sys:Int?,
     dia:Int?,
     rr:Int?,
@@ -687,60 +692,65 @@ private fun dentalActivitySemaphore19(
     temp:Double?,
     glucose:Int?,
     signs:Set<String>,
-    activeSystemic:Int
+    activeSystemic:Int,
+    glucoseStatus:GlucoseStatus19,
+    oxygenContext:OxygenContext19
 ):DentalActivitySemaphore19 {
-    val emergencySigns=setOf(
-        "Sangrado oral no controlable","Inflamación facial/cervical","Disnea",
-        "Dolor torácico","Alteración de conciencia","Convulsiones"
-    )
-    val redSign=signs.any{it in emergencySigns}
-    val redVitals=(sys!=null && (sys>180 || dia?.let{it>110}==true)) ||
-        (spo2!=null && spo2<90) ||
-        (temp!=null && temp>=40.0) ||
-        (glucose!=null && glucose>=300) ||
-        (hr!=null && (hr<40 || hr>140)) ||
-        (rr!=null && (rr<8 || rr>30))
-    if(redSign || redVitals){
+    val emergencySigns=setOf("Sangrado oral no controlable","Inflamación facial/cervical","Disnea","Dolor torácico","Alteración de conciencia","Convulsiones")
+    val redReasons=mutableListOf<String>()
+    if(signs.any{it in emergencySigns})redReasons.add("signo/síntoma de alarma")
+    if(sys!=null && (sys>180 || dia?.let{it>120}==true))redReasons.add("TA >180/120 mmHg")
+    if(spo2!=null && spo2<90)redReasons.add("SpO₂ <90%")
+    if(temp!=null && temp>=40)redReasons.add("temperatura ≥40 °C")
+    if(glucose!=null && glucose<54)redReasons.add("hipoglucemia <54 mg/dL")
+    if(glucose!=null && glucose>=350)redReasons.add("glucosa ≥350 mg/dL")
+    if(hr!=null && (hr<40 || hr>140))redReasons.add("FC extrema")
+    if(rr!=null && (rr<8 || rr>30))redReasons.add("FR extrema")
+    if(redReasons.isNotEmpty()){
         return DentalActivitySemaphore19(
             DentalTriageLight19.RED,
-            "🔴 ROJO · NO ATENCIÓN ODONTOLÓGICA AMBULATORIA",
-            "🔴 RED · NO AMBULATORY DENTAL CARE",
-            "Hay un signo de alarma o un parámetro potencialmente crítico. No iniciar ni continuar atención dental electiva; estabilizar según protocolo y derivar/activar emergencias cuando corresponda.",
-            "A red flag or potentially critical parameter is present. Do not start or continue elective dental care; stabilize per protocol and refer/activate emergency care when appropriate.",
-            listOf("No realizar procedimientos electivos","No iniciar cirugía/extracción","No realizar anestesia o sedación electiva","Activar protocolo de urgencias/derivación según el caso"),
-            listOf("No elective procedures","Do not start surgery/extraction","No elective anesthesia or sedation","Activate emergency/referral protocol as indicated")
+            "🔴 ROJO · NO TRABAJAR EN CONSULTA AMBULATORIA",
+            "🔴 RED · DO NOT TREAT IN THE OUTPATIENT OFFICE",
+            "Criterio: " + redReasons.joinToString(", ") + ". No permite atención odontológica rutinaria/electiva. Primero estabilizar, repetir/confirmar cuando corresponda y activar la ruta médica o de urgencias.",
+            "Criterion: " + redReasons.joinToString(", ") + ". Routine/elective dental care is not allowed. Stabilize first, repeat/confirm when appropriate, and activate the medical/emergency pathway.",
+            listOf("⛔ No procedimientos electivos ni invasivos","⛔ No extracción/cirugía/endodoncia electiva","⛔ No sedación ni anestesia electiva","🚑 Activar urgencias/derivación según criterio clínico","🔁 Repetir medición cuando corresponda"),
+            listOf("⛔ No elective or invasive procedures","⛔ No elective extraction/surgery/endodontics","⛔ No elective sedation or anesthesia","🚑 Activate emergency/referral pathway as indicated","🔁 Repeat measurements when appropriate")
         )
     }
-
-    val yellow= (sys!=null && (sys>=160 || dia?.let{it>=100}==true)) ||
-        (spo2!=null && spo2<95) ||
-        (temp!=null && temp>=38.0) ||
-        (glucose!=null && glucose>=180) ||
-        signs.contains("Fiebre/malestar") ||
-        signs.contains("Inflamación intraoral") ||
-        signs.contains("Trismus") ||
-        signs.contains("Disfagia") ||
-        activeSystemic>0
-    if(yellow){
+    val requirements=mutableListOf<String>()
+    if(age==null)requirements.add("registrar edad")
+    if(age!=null && age<18 && (sex=="No especificado" || sex.isBlank()))requirements.add("registrar sexo para TA pediátrica")
+    if(age!=null && age<18 && heightCm==null)requirements.add("registrar talla para TA pediátrica")
+    if(sys!=null && dia!=null && (sys>=140 || dia>=90))requirements.add("repetir TA y valorar médico si persiste")
+    if(age!=null && rr!=null){val b=clinicalVitalBandV20(age);if(rr<b.rrMin||rr>b.rrMax)requirements.add("repetir FR en reposo y buscar causa")}
+    if(age!=null && hr!=null){val b=clinicalVitalBandV20(age);if(hr<b.hrMin||hr>b.hrMax)requirements.add("repetir FC en reposo y buscar causa")}
+    if(spo2!=null && spo2<95)requirements.add("repetir SpO₂ y valorar síntomas, perfusión y dispositivo")
+    if(glucose!=null && (glucose>=180 || glucose<70))requirements.add("confirmar contexto de glucosa, fármacos y comida")
+    if(temp!=null && temp>=38)requirements.add("repetir temperatura y buscar causa")
+    if(signs.contains("Fiebre/malestar"))requirements.add("valorar infección sistémica")
+    if(signs.contains("Inflamación intraoral")||signs.contains("Supuración/fístula"))requirements.add("controlar foco odontógeno antes de electivo")
+    if(activeSystemic>0)requirements.add("revisar enfermedad sistémica, medicamentos y estabilidad")
+    if(glucoseStatus==GlucoseStatus19.UNKNOWN && glucose!=null)requirements.add("documentar diabetes/prediabetes/resistencia a la insulina")
+    if(oxygenContext==OxygenContext19.UNKNOWN && spo2!=null)requirements.add("documentar aire ambiente u oxígeno")
+    if(requirements.isNotEmpty()){
         return DentalActivitySemaphore19(
             DentalTriageLight19.YELLOW,
-            "🟠 AMARILLO · ATENCIÓN LIMITADA / DIFERIR LO INVASIVO",
-            "🟠 YELLOW · LIMITED CARE / DEFER INVASIVE CARE",
-            "Existe un factor que puede aumentar el riesgo o requiere control previo. Priorizar valoración, medidas preventivas/diagnósticas y resolver primero el factor modificable; diferir procedimientos invasivos hasta confirmar estabilidad.",
-            "A factor may increase risk or requires prior control. Prioritize assessment, preventive/diagnostic measures and correction of modifiable factors; defer invasive procedures until stability is confirmed.",
-            listOf("Historia clínica y exploración","Radiografías/fotografías y documentación clínica cuando estén indicadas","Educación e higiene oral","Medidas preventivas y control de factores de riesgo","Tratamiento no invasivo sólo si el paciente está estable"),
-            listOf("History and examination","Radiographs/photos and documentation when indicated","Oral-hygiene education","Preventive care and risk-factor control","Non-invasive care only if the patient is stable")
+            "🟠 AMARILLO · TRABAJAR SÓLO CON REQUISITOS",
+            "🟠 YELLOW · TREAT ONLY WITH REQUIREMENTS",
+            "No hay un criterio rojo inmediato, pero falta confirmar estabilidad o existe un factor que cambia el riesgo. Amarillo no autoriza automáticamente procedimientos invasivos.",
+            "There is no immediate red criterion, but stability needs confirmation or a risk-changing factor is present. Yellow does not automatically clear invasive procedures.",
+            listOf("✅ Historia, exploración, documentación y prevención si está estable.","🔁 Requisitos: " + requirements.joinToString("; ") + ".","⚕️ Si se confirma una alteración o aparecen síntomas, diferir lo invasivo y valorar médicamente.","💉 Anestesia/sedación sólo después de resolver la condición limitante y según protocolo."),
+            listOf("✅ History, examination, documentation and prevention if stable.","🔁 Requirements: " + requirements.joinToString("; ") + ".","⚕️ If an abnormality is confirmed or symptoms appear, defer invasive care and obtain medical assessment.","💉 Anesthesia/sedation only after the limiting condition is addressed and per protocol.")
         )
     }
-
     return DentalActivitySemaphore19(
         DentalTriageLight19.GREEN,
-        "🟢 VERDE · ATENCIÓN DENTAL POSIBLE",
-        "🟢 GREEN · DENTAL CARE MAY PROCEED",
-        "No se detecta un criterio de alarma en los datos registrados. La atención debe seguir el diagnóstico, el procedimiento y los protocolos institucionales.",
-        "No alarm criterion is detected in the recorded data. Care should still follow the diagnosis, procedure and institutional protocols.",
-        listOf("Valoración y diagnóstico","Prevención e higiene","Restauraciones y procedimientos no quirúrgicos","Anestesia local cuando esté indicada","Procedimientos invasivos sólo si el procedimiento y el estado clínico lo permiten"),
-        listOf("Assessment and diagnosis","Prevention and hygiene","Restorative and non-surgical procedures","Local anesthesia when indicated","Invasive procedures only when the procedure and clinical status allow")
+        "🟢 VERDE · SE PUEDE TRABAJAR",
+        "🟢 GREEN · CARE MAY PROCEED",
+        "No se detecta criterio rojo ni requisito pendiente importante en los datos registrados. Es orientación educativa de triage, no autorización legal o anestésica.",
+        "No red criterion or major pending requirement was detected in the recorded data. This is educational triage guidance, not legal or anesthesia clearance.",
+        listOf("✅ Historia y exploración","✅ Prevención e higiene","✅ Restauraciones y procedimientos no quirúrgicos","✅ Anestesia local si está indicada y el producto/protocolo lo permite","⚠️ Procedimientos invasivos sólo si diagnóstico, procedimiento y estado clínico lo permiten"),
+        listOf("✅ History and examination","✅ Prevention and hygiene","✅ Restorative and non-surgical procedures","✅ Local anesthesia when indicated and permitted","⚠️ Invasive procedures only when diagnosis, procedure and clinical status allow")
     )
 }
 
