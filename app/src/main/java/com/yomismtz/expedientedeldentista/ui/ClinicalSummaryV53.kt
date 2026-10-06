@@ -29,7 +29,7 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
     val p=session.profile
     val teeth=session.teeth
     val present=teeth.count { (_,it) -> it.status.name !in setOf("MISSING_CARIES","MISSING_OTHER") }
-    val caries=teeth.values.count { it.icdas>0 }
+    val caries=teeth.keys.count { tooth -> session.icdasSurfaceRecords[tooth]?.values?.any { it.cariesCode in 1..6 } == true }
     val perio=if(session.periodontogram.isEmpty()) "Pendiente" else "Registrado"
     val pulpal=if(session.pulpal.tooth>0) "Registrado · OD "+session.pulpal.tooth else "Pendiente"
     val history=if(session.history.diseases.values.any { it.present }) "Con antecedentes seleccionados" else "Sin antecedentes activos registrados"
@@ -129,7 +129,7 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
         }
         if(qualityIssues.isNotEmpty()) SummaryCardV53(tr(lang,"🧪 Validación del expediente","🧪 Record validation")) { qualityIssues.take(10).forEach { issue -> Text((if(issue.severity=="ERROR")"⛔" else "⚠️")+" "+if(lang=="en")issue.messageEn else issue.messageEs,fontWeight=FontWeight.SemiBold); Text(issue.field,style=MaterialTheme.typography.bodySmall) }; Text(tr(lang,"Detecta datos incompletos o inconsistentes; no sustituye la revisión clínica.","Detects incomplete or inconsistent data; it does not replace clinical review."),style=MaterialTheme.typography.bodySmall) }
         SummaryCardV53(tr(lang,"Exploración y análisis","Examination and analysis")){
-            SummaryLineV53("Dientes registrados",teeth.size.toString()); SummaryLineV53("Dientes presentes",present.toString()); SummaryLineV53("Dientes con ICDAS > 0",caries.toString()); SummaryLineV53("CPOD / DMFT","${cpod.total} (C ${cpod.carious} · P ${cpod.missing} · O ${cpod.filled})"); SummaryLineV53("ceod / dmft","${ceod.total} (c ${ceod.carious} · e ${ceod.missing} · o ${ceod.filled})"); SummaryLineV53("Periodontograma",perio); SummaryLineV53("Pulpar / periapical",pulpal); SummaryLineV53("IPC",if(session.ipcCodes.any{it!="0"}) "Registrado" else "Pendiente"); SummaryLineV53("O'Leary",if(session.oleary.isNotEmpty()) "Registrado" else "Pendiente"); SummaryLineV53("Tratamientos vinculados",if(linkedTreatment.isEmpty()) "Pendiente" else linkedTreatment.joinToString(", ") { "OD ${it}" }); SummaryLineV53("Fotografías clínicas",session.clinicalPhotos.size.toString())
+            SummaryLineV53("Dientes registrados",teeth.size.toString()); SummaryLineV53("Dientes presentes",present.toString()); SummaryLineV53("Dientes con caries ICDAS 1–6",caries.toString()); SummaryLineV53("CPOD / DMFT","${cpod.total} (C ${cpod.carious} · P ${cpod.missing} · O ${cpod.filled})"); SummaryLineV53("ceod / dmft","${ceod.total} (c ${ceod.carious} · e ${ceod.missing} · o ${ceod.filled})"); SummaryLineV53("Periodontograma",perio); SummaryLineV53("Pulpar / periapical",pulpal); SummaryLineV53("IPC",if(session.ipcCodes.any{it!="0"}) "Registrado" else "Pendiente"); SummaryLineV53("O'Leary",if(session.oleary.isNotEmpty()) "Registrado" else "Pendiente"); SummaryLineV53("Tratamientos vinculados",if(linkedTreatment.isEmpty()) "Pendiente" else linkedTreatment.joinToString(", ") { "OD ${it}" }); SummaryLineV53("Fotografías clínicas",session.clinicalPhotos.size.toString())
         }
         SummaryCardV53(tr(lang,"Lista de revisión","Review checklist")){
             checks.forEach { (label,ok) -> Text((if(ok)"✓" else "○")+" "+label,fontWeight=if(ok) FontWeight.Medium else FontWeight.SemiBold) }
