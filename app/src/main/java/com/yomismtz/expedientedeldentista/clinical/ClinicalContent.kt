@@ -123,7 +123,7 @@ object ClinicalContent {
         IcdasRestorationGuide(3, "Restauración del color del diente", "Tooth-colored restoration"),
         IcdasRestorationGuide(4, "Restauración de amalgama", "Amalgam restoration"),
         IcdasRestorationGuide(5, "Corona de acero inoxidable", "Stainless steel crown"),
-        IcdasRestorationGuide(6, "Corona o carilla de porcelana, oro o PFM", "Porcelain, gold, PFM crown or veneer"),
+        IcdasRestorationGuide(6, "Corona, carilla, inlay u onlay de porcelana, oro, PFM u otro material restaurador", "Porcelain, gold, PFM crown, veneer, inlay, onlay or other restorative material"),
         IcdasRestorationGuide(7, "Restauración perdida o fracturada", "Lost or broken restoration"),
         IcdasRestorationGuide(8, "Restauración temporal", "Temporary restoration")
     )
