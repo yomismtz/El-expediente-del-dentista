@@ -79,8 +79,9 @@ fun AppRootV19(
 ) {
     var settingsOpen by rememberSaveable { mutableStateOf(false) }
     var recordMenuOpen by rememberSaveable { mutableStateOf(activeRecordId == null) }
+    var quickToolsOpen by rememberSaveable { mutableStateOf(false) }
     Box(Modifier.fillMaxSize()) {
-        if (!recordMenuOpen && activeRecordId != null) AppRootV7(
+        if (!quickToolsOpen && !recordMenuOpen && activeRecordId != null) AppRootV7(
             preferences = preferences,
             onPreferencesChanged = onPreferencesChanged,
             onLanguageChanged = onLanguageChanged,
@@ -88,11 +89,22 @@ fun AppRootV19(
             onSessionChanged = onSessionChanged,
             onOpenSettings = { settingsOpen = true }
         )
-        if (recordMenuOpen) {
+        if (recordMenuOpen && !quickToolsOpen) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                 RecordMenuV19(savedRecords, activeRecordId, { profile ->
                     onNewRecord(profile); recordMenuOpen = false
-                }, { r -> onLoadRecord(r); recordMenuOpen = false }, onDeleteRecord, onExportRecord, { raw -> onImportRecord(raw)?.also { saved -> onLoadRecord(saved); recordMenuOpen=false } })
+                }, { r -> onLoadRecord(r); recordMenuOpen = false }, onDeleteRecord, onExportRecord, { raw -> onImportRecord(raw)?.also { saved -> onLoadRecord(saved); recordMenuOpen=false } }, {
+                    quickToolsOpen = true
+                    recordMenuOpen = false
+                })
+            }
+        }
+        if (quickToolsOpen) {
+            Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                QuickClinicalToolsScreen(preferences.languageTag) {
+                    quickToolsOpen = false
+                    recordMenuOpen = true
+                }
             }
         }
         if (settingsOpen) {
@@ -256,7 +268,8 @@ private fun RecordMenuV19(
     onLoad: (SavedRecord) -> Unit,
     onDelete: (String) -> Unit,
     onExport: (String) -> String?,
-    onImport: (String) -> SavedRecord?
+    onImport: (String) -> SavedRecord?,
+    onQuickTools: () -> Unit
 ) {
     val context=LocalContext.current
     var exportPayload by remember { mutableStateOf<String?>(null) }
@@ -300,6 +313,12 @@ private fun RecordMenuV19(
                 Column(Modifier.padding(22.dp), verticalArrangement=Arrangement.spacedBy(5.dp)) {
                     Text("📚 CARGAR EXPEDIENTE", style=MaterialTheme.typography.titleLarge, fontWeight=FontWeight.Black)
                     Text("Consulta y continúa una práctica guardada anteriormente.")
+                }
+            }
+            Card(onClick=onQuickTools, modifier=Modifier.fillMaxWidth(), colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.tertiaryContainer)) {
+                Column(Modifier.padding(22.dp), verticalArrangement=Arrangement.spacedBy(5.dp)) {
+                    Text("🧰 HERRAMIENTAS CLÍNICAS", style=MaterialTheme.typography.titleLarge, fontWeight=FontWeight.Black)
+                    Text("Usa calculadoras, índices y herramientas clínicas sin crear un expediente.")
                 }
             }
             Card(onClick={mode="backup"}, modifier=Modifier.fillMaxWidth()) {
