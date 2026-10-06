@@ -1562,7 +1562,7 @@ private data class E(val n:String,val d:String)
         onClick={
          val newValue=!(present[h.id]?:false)
          present[h.id]=newValue
-         if(newValue) noneDenied=false
+         if(newValue) noneDenied.value=false
          openId=if(newValue)h.id else if(openId==h.id)"" else openId
         },
         label={Text(h.name,maxLines=2,softWrap=true)},
