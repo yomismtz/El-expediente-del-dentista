@@ -120,9 +120,9 @@ fun PeriodontogramScreen(
                         }
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
-                        FilterChip(index in record.bleedingSites,{val s=record.bleedingSites.toMutableSet();if(!s.add(index))s.remove(index);update(record.copy(bleedingSites=s,bleeding=s.isNotEmpty()))},{Text(tr(lang,"Sangrado","Bleeding"))},modifier=Modifier.weight(1f))
-                        FilterChip(index in record.plaqueSites,{val s=record.plaqueSites.toMutableSet();if(!s.add(index))s.remove(index);update(record.copy(plaqueSites=s,plaque=s.isNotEmpty()))},{Text(tr(lang,"Placa","Plaque"))},modifier=Modifier.weight(1f))
-                        FilterChip(index in record.suppurationSites,{val s=record.suppurationSites.toMutableSet();if(!s.add(index))s.remove(index);update(record.copy(suppurationSites=s,suppuration=s.isNotEmpty()))},{Text(tr(lang,"Supuración","Suppuration"))},modifier=Modifier.weight(1f))
+                        FilterChip(index in record.bleedingSites,{val s=record.bleedingSites.toMutableSet();if(!s.add(index))s.remove(index);update(record.copy(bleedingSites=s,bleeding=s.isNotEmpty()))},{Text(if(index in record.bleedingSites) tr(lang,"Sangrado","Bleeding") else tr(lang,"Sin sangrado","No bleeding"))},modifier=Modifier.weight(1f))
+                        FilterChip(index in record.plaqueSites,{val s=record.plaqueSites.toMutableSet();if(!s.add(index))s.remove(index);update(record.copy(plaqueSites=s,plaque=s.isNotEmpty()))},{Text(if(index in record.plaqueSites) tr(lang,"Placa","Plaque") else tr(lang,"Sin placa","No plaque"))},modifier=Modifier.weight(1f))
+                        FilterChip(index in record.suppurationSites,{val s=record.suppurationSites.toMutableSet();if(!s.add(index))s.remove(index);update(record.copy(suppurationSites=s,suppuration=s.isNotEmpty()))},{Text(if(index in record.suppurationSites) tr(lang,"Supuración","Suppuration") else tr(lang,"Sin supuración","No suppuration"))},modifier=Modifier.weight(1f))
                     }
                 }
                 if(record.bleedingSites.isNotEmpty()) PeriodontalFindingImage19(lang,"bleeding")
