@@ -257,7 +257,7 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
                     else -> MaterialTheme.colorScheme.surfaceVariant
                 }
             },onSurfaceTap={selectedSurface=it},modifier=Modifier.fillMaxWidth())
-            Text("${surfaceName(selectedSurface,lang)} · ICDAS ${"%02d".format(currentCode)}")
+            Text("${surfaceName(selectedSurface,lang)} · ICDAS ${if (surfaceRecorded) "%02d".format(currentCode) else tr(lang, "no registrado", "not recorded")}")
             Text(tr(lang,if(restorationKnown) "Código actual = ${"%02d".format(currentCode)} · restauración $currentRestoration · caries $currentCaries" else "Código actual = ${"%02d".format(currentCode)} · restauración pendiente · caries $currentCaries",
                 if(restorationKnown) "Current code = ${"%02d".format(currentCode)} · restoration $currentRestoration · caries $currentCaries" else "Current code = ${"%02d".format(currentCode)} · restoration pending · caries $currentCaries"),
                 fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary)
