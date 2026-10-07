@@ -28,9 +28,9 @@ import com.yomismtz.expedientedeldentista.clinical.ClinicalQualityV1
 fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->Unit) {
     val p=session.profile
     val teeth=session.teeth
-    val pathNone by rememberRecordState("history.path.noneDenied",false)
-    val allergiesNone by rememberRecordState("history.path.allergies.noneDenied",false)
-    val medicationsNone by rememberRecordState("history.medications.noneDenied",false)
+    val pathNone=rememberRecordState("history.path.noneDenied",false).value
+    val allergiesNone=rememberRecordState("history.path.allergies.noneDenied",false).value
+    val medicationsNone=rememberRecordState("history.medications.noneDenied",false).value
     val allergyIds=setOf("drug_allergy","latex_allergy","food_allergy","allergic_rhinitis","urticaria","atopic_dermatitis","anaphylaxis","contact_dermatitis")
     val positiveAllergy=session.history.diseases.any { (id,a) -> a.present && id in allergyIds }
     val present=teeth.count { (_,it) -> it.status.name !in setOf("MISSING_CARIES","MISSING_OTHER") }
