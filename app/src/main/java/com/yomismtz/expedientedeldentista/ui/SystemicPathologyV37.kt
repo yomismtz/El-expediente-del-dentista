@@ -105,22 +105,29 @@ private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String
    }}
    item{SectionCard("2 · Antecedentes personales patológicos"){
     Text("Si el paciente niega enfermedades o antecedentes patológicos, puedes dejarlo asentado explícitamente sin recorrer todas las clasificaciones.",style=MaterialTheme.typography.bodySmall)
+    val hasPositivePathology=saved.values.any{it.present}
     FilterChip(selected=noPathologicalHistory,onClick={
-     noPathologicalHistory=!noPathologicalHistory
-     if(noPathologicalHistory) onSessionChanged(session.copy(history=session.history.copy(diseases=emptyMap(),asaClass=asa37(emptyMap(),tobacco,alcohol))))
+     if(!noPathologicalHistory && !hasPositivePathology){
+      noPathologicalHistory=true
+      onSessionChanged(session.copy(history=session.history.copy(diseases=emptyMap(),asaClass=asa37(emptyMap(),tobacco,alcohol))))
+     }else if(noPathologicalHistory){
+      noPathologicalHistory=false
+     }
     },label={Text("Negado · ningún antecedente personal patológico")},modifier=Modifier.fillMaxWidth())
+    if(hasPositivePathology && !noPathologicalHistory) Text("Para marcar «Negado», primero revisa los antecedentes positivos registrados; la opción negativa no elimina datos clínicos existentes.",style=MaterialTheme.typography.bodySmall)
     if(noPathologicalHistory) Text("Registro: paciente niega antecedentes personales patológicos de las clasificaciones disponibles.",style=MaterialTheme.typography.bodySmall)
    }}
    item{
     Text("Alergias",fontWeight=FontWeight.Bold)
+    val hasPositiveAllergy=saved.any{it.key in setOf("drug_allergy","latex_allergy","food_allergy","allergic_rhinitis","urticaria","atopic_dermatitis","anaphylaxis","contact_dermatitis") && it.value.present}
     FilterChip(selected=noAllergies,onClick={
-     noAllergies=!noAllergies
-     if(noAllergies){
-      val allergyIds=setOf("drug_allergy","latex_allergy","food_allergy","allergic_rhinitis","urticaria","atopic_dermatitis","anaphylaxis","contact_dermatitis")
-      val cleared=saved.filterKeys{it !in allergyIds}
-      onSessionChanged(session.copy(history=session.history.copy(diseases=cleared,asaClass=asa37(cleared,tobacco,alcohol))))
+     if(!noAllergies && !hasPositiveAllergy){
+      noAllergies=true
+     }else if(noAllergies){
+      noAllergies=false
      }
     },label={Text("Negado · ninguna alergia conocida")},modifier=Modifier.fillMaxWidth())
+    if(hasPositiveAllergy && !noAllergies) Text("Para marcar «Negado», primero revisa las alergias positivas registradas; la opción negativa no elimina datos clínicos existentes.",style=MaterialTheme.typography.bodySmall)
     if(noAllergies) Text("Registro explícito: el paciente no refiere alergias conocidas.",style=MaterialTheme.typography.bodySmall)
    }
    item{Text("3 · Clasificaciones de enfermedades",style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Bold)}
