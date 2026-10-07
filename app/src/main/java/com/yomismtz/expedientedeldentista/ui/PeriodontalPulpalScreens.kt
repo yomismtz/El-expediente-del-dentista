@@ -224,7 +224,7 @@ fun PulpalScreen(
                 if(a.heatPositive) PulpalClinicalImage19(lang,"heat")
                 BooleanRow(tr(lang, "No responde a pruebas de sensibilidad", "No response to sensitivity testing"), a.sensitivityNegative) { update(a.copy(sensitivityNegative = it)) }
                 if(a.sensitivityNegative) PulpalClinicalImage19(lang,"negative")
-                if(!a.coldPositive && !a.coldLingering && !a.heatPositive && !a.sensitivityNegative) PulpalClinicalImage19(lang,"normal")
+                if(!a.coldPositive && !a.coldLingering && !a.heatPositive && !a.sensitivityNegative) Text(tr(lang,"No se ha seleccionado una respuesta de sensibilidad.","No sensitivity response has been selected."),style=MaterialTheme.typography.bodySmall)
             }
         }
         item {
