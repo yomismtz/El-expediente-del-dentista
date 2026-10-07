@@ -81,12 +81,14 @@ fun OdontogramV20Screen(
     val all=quadrants.flatMap{it.teeth}
     if(selectedTooth !in all) selectedTooth=all.first()
 
-    val record=session.teeth[selectedTooth]?:ToothRecord()
-    val missing=record.status in setOf(ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER)
+    val record=session.teeth[selectedTooth]
+    val isRecorded=record!=null
+    val currentRecord=record?:ToothRecord()
+    val missing=record?.status in setOf(ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER)
     val marks=session.odontogramSurfaces[selectedTooth]?:emptyMap()
 
     fun saveSurface(surface:Surface){
-        if(missing) return
+        if(!isRecorded || missing) return
         val updated=marks.toMutableMap()
         if(selectedMark==SurfaceMark.HEALTHY) updated.remove(surface) else updated[surface]=selectedMark
         val status=when{
@@ -97,7 +99,7 @@ fun OdontogramV20Screen(
         }
         onSessionChanged(session.copy(
             odontogramSurfaces=session.odontogramSurfaces+(selectedTooth to updated),
-            teeth=session.teeth+(selectedTooth to record.copy(status=status)),
+            teeth=session.teeth+(selectedTooth to currentRecord.copy(status=status)),
             presentTeeth=session.presentTeeth+selectedTooth
         ))
     }
@@ -109,7 +111,7 @@ fun OdontogramV20Screen(
         onSessionChanged(session.copy(
             presentTeeth=present,
             odontogramSurfaces=surfaces,
-            teeth=session.teeth+(selectedTooth to record.copy(status=if(value)ToothStatus.MISSING_OTHER else ToothStatus.HEALTHY))
+            teeth=session.teeth+(selectedTooth to currentRecord.copy(status=if(value)ToothStatus.MISSING_OTHER else ToothStatus.HEALTHY))
         ))
     }
 
@@ -131,12 +133,13 @@ fun OdontogramV20Screen(
                 AdaptiveGridV17(q.teeth.size,q.teeth.size){i->
                     val tooth=q.teeth[i]
                     val status=session.teeth[tooth]?.status
+                    val isRecordedTooth=status!=null
                     val isMissing=status in setOf(ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER)
                     val selected=selectedTooth==tooth
                     val hasMark=session.odontogramSurfaces[tooth]?.isNotEmpty()==true
-                    Card(onClick={selectedTooth=tooth},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=when{selected->MaterialTheme.colorScheme.primary;isMissing->MaterialTheme.colorScheme.errorContainer;hasMark->MaterialTheme.colorScheme.secondaryContainer;else->MaterialTheme.colorScheme.surface}),border=BorderStroke(1.dp,if(selected)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha=.4f)),shape=RoundedCornerShape(12.dp)){
+                    Card(onClick={selectedTooth=tooth},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=when{selected->MaterialTheme.colorScheme.primary;isMissing->MaterialTheme.colorScheme.errorContainer;hasMark->MaterialTheme.colorScheme.secondaryContainer;!isRecordedTooth->MaterialTheme.colorScheme.surfaceVariant;else->MaterialTheme.colorScheme.surface}),border=BorderStroke(1.dp,if(selected)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha=.4f)),shape=RoundedCornerShape(12.dp)){
                         Column(Modifier.fillMaxWidth().padding(vertical=7.dp),horizontalAlignment=Alignment.CenterHorizontally){
-                            Text(if(isMissing)"✕" else "🦷",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleLarge)
+                            Text(if(isMissing)"✕" else if(!isRecordedTooth)"?" else "🦷",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleLarge)
                             Text(tooth.toString(),fontWeight=FontWeight.Black,color=if(selected)MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface)
                         }
                     }
@@ -153,14 +156,21 @@ fun OdontogramV20Screen(
             quadrants.forEach { q -> quadrantContent(q) }
         }
 
-        ResponsiveSectionV17(tr(lang,"3 · OD $selectedTooth","3 · Tooth $selectedTooth"),if(missing)tr(lang,"Diente ausente: se muestra una X en su viñeta.","Missing tooth: an X is shown in its tile.") else tr(lang,"Puedes combinar marcas en distintas caras del mismo diente.","You can combine marks on different surfaces of the same tooth.")){
+        ResponsiveSectionV17(tr(lang,"3 · OD $selectedTooth","3 · Tooth $selectedTooth"),if(!isRecorded)tr(lang,"Diente no registrado: primero marca explícitamente Presente o Ausente.","Tooth not registered: first explicitly mark it Present or Missing.") else if(missing)tr(lang,"Diente ausente: se muestra una X en su viñeta.","Missing tooth: an X is shown in its tile.") else tr(lang,"Puedes combinar marcas en distintas caras del mismo diente.","You can combine marks on different surfaces of the same tooth.")){
             Text(tr(lang,"Marca de superficie","Surface mark"),fontWeight=FontWeight.Black)
             AdaptiveGridV17(SurfaceMark.entries.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 4){i->
                 val mark=SurfaceMark.entries[i]
-                FilterChip(selectedMark==mark,{selectedMark=mark},{Text(markLabelV20(mark,lang))},Modifier.fillMaxWidth(),enabled=!missing)
+                FilterChip(selectedMark==mark,{selectedMark=mark},{Text(markLabelV20(mark,lang))},Modifier.fillMaxWidth(),enabled=isRecorded && !missing)
             }
 
-            if(missing){
+            if(!isRecorded){
+                Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surfaceVariant),modifier=Modifier.fillMaxWidth()){
+                    Column(Modifier.padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally){
+                        Text("?",style=MaterialTheme.typography.displayMedium,fontWeight=FontWeight.Black)
+                        Text(tr(lang,"OD $selectedTooth no registrado. Selecciona \"Presente\" para registrarlo como sano o \"Ausente\" para registrar su ausencia.","Tooth $selectedTooth is not registered. Select \"Present\" to record it as sound or \"Missing\" to record its absence."),fontWeight=FontWeight.Bold)
+                    }
+                }
+            }else if(missing){
                 Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.errorContainer),modifier=Modifier.fillMaxWidth()){
                     Column(Modifier.padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally){
                         Text("✕",style=MaterialTheme.typography.displayMedium,fontWeight=FontWeight.Black)
@@ -187,8 +197,8 @@ fun OdontogramV20Screen(
                 },modifier=Modifier.fillMaxWidth()) { Text(tr(lang,"Limpiar todas las caras del OD $selectedTooth","Clear all surfaces on tooth $selectedTooth")) }
             }
 
-            val linkedPlan=record.diagnosisId?.let { id -> ClinicalContent.treatmentPlans.firstOrNull { it.id==id } }
-            val linkedOption=linkedPlan?.options?.firstOrNull { it.id==record.treatmentId }
+            val linkedPlan=record?.diagnosisId?.let { id -> ClinicalContent.treatmentPlans.firstOrNull { it.id==id } }
+            val linkedOption=linkedPlan?.options?.firstOrNull { it.id==record?.treatmentId }
             Text(tr(lang,"Cadena clínica del OD","Tooth clinical chain"),fontWeight=FontWeight.Black)
             Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer),modifier=Modifier.fillMaxWidth()){
                 Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){
@@ -203,11 +213,11 @@ fun OdontogramV20Screen(
                 Text(tr(lang,"Cambiar diagnóstico educativo","Change teaching diagnosis"),fontWeight=FontWeight.Black)
                 AdaptiveGridV17(ClinicalContent.treatmentPlans.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
                     val plan=ClinicalContent.treatmentPlans[i]
-                    FilterChip(record.diagnosisId==plan.id,{onSessionChanged(session.copy(teeth=session.teeth+(selectedTooth to record.copy(diagnosisId=plan.id,treatmentId=null)),clinicalEvents=session.clinicalEvents+ClinicalEvent(System.currentTimeMillis(),"tooth_diagnosis_link","OD $selectedTooth → diagnóstico: "+plan.diagnosisEs)))},{Text(if(lang=="en")plan.diagnosisEn else plan.diagnosisEs)},Modifier.fillMaxWidth())
+                    FilterChip(record?.diagnosisId==plan.id,{onSessionChanged(session.copy(teeth=session.teeth+(selectedTooth to currentRecord.copy(diagnosisId=plan.id,treatmentId=null)),clinicalEvents=session.clinicalEvents+ClinicalEvent(System.currentTimeMillis(),"tooth_diagnosis_link","OD $selectedTooth → diagnóstico: "+plan.diagnosisEs)))},{Text(if(lang=="en")plan.diagnosisEn else plan.diagnosisEs)},Modifier.fillMaxWidth())
                 }
                 Text(tr(lang,"Tratamiento educativo","Teaching treatment"),fontWeight=FontWeight.Black)
                 linkedPlan.options.forEach { option->
-                    FilterChip(linkedOption?.id==option.id,{onSessionChanged(session.copy(teeth=session.teeth+(selectedTooth to record.copy(treatmentId=option.id)),clinicalEvents=session.clinicalEvents+ClinicalEvent(System.currentTimeMillis(),"tooth_treatment_link","OD $selectedTooth → tratamiento: "+option.labelEs)))},{Text(if(lang=="en")option.labelEn else option.labelEs)},Modifier.fillMaxWidth())
+                    FilterChip(linkedOption?.id==option.id,{onSessionChanged(session.copy(teeth=session.teeth+(selectedTooth to currentRecord.copy(treatmentId=option.id)),clinicalEvents=session.clinicalEvents+ClinicalEvent(System.currentTimeMillis(),"tooth_treatment_link","OD $selectedTooth → tratamiento: "+option.labelEs)))},{Text(if(lang=="en")option.labelEn else option.labelEs)},Modifier.fillMaxWidth())
                 }
             }
 
@@ -215,7 +225,7 @@ fun OdontogramV20Screen(
             AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
                 val targetMissing=i==1
                 FilterChip(
-                    selected=missing==targetMissing,
+                    selected=isRecorded && missing==targetMissing,
                     onClick={setMissing(targetMissing)},
                     label={Text(if(targetMissing)tr(lang,"✕ Ausente por otra causa","✕ Missing for another reason") else tr(lang,"🦷 Presente","🦷 Present"))},
                     modifier=Modifier.fillMaxWidth()
