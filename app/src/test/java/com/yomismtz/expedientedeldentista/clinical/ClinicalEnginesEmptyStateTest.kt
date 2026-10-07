@@ -34,4 +34,35 @@ class ClinicalEnginesEmptyStateTest {
         assertTrue(result.pulpalEs.contains("no concluida"))
         assertTrue(result.apicalEs.contains("no concluida"))
     }
+
+    @Test fun partialOLearyIsNotReportedAsZero() {
+        val s = EducationalSession(presentTeeth = setOf(11, 12), oleary = mapOf(11 to emptySet()))
+        assertEquals(null, ClinicalEngines.olearyPercentageOrNull(s))
+    }
+
+    @Test fun explicitZeroOLearyRequiresEveryPresentTooth() {
+        val s = EducationalSession(
+            presentTeeth = setOf(11, 12),
+            oleary = mapOf(11 to emptySet(), 12 to emptySet())
+        )
+        assertEquals(0.0, ClinicalEngines.olearyPercentageOrNull(s), 0.001)
+    }
+
+    @Test fun partialIhosIsNotReportedAsHealthy() {
+        val s = EducationalSession(
+            ihosDebris = mapOf(16 to 0),
+            ihosCalculus = mapOf(16 to 0)
+        )
+        assertEquals(null, ClinicalEngines.ihosOrNull(s))
+    }
+
+    @Test fun completeIhosCanBeZeroWhenAllSitesAreExplicitlyRecorded() {
+        val teeth = listOf(16, 11, 26, 36, 31, 46)
+        val s = EducationalSession(
+            ihosDebris = teeth.associateWith { 0 },
+            ihosCalculus = teeth.associateWith { 0 }
+        )
+        assertEquals(0.0, ClinicalEngines.ihosOrNull(s), 0.001)
+    }
+
 }
