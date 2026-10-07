@@ -56,8 +56,8 @@ fun OcclusionInteractiveV19Screen(lang:String,onBack:()->Unit) {
         listOf("Sin mordida cruzada","Anterior","Posterior derecha","Posterior izquierda","Posterior bilateral","Con desplazamiento funcional"),
         listOf("Coincidentes","Superior desviada derecha","Superior desviada izquierda","Inferior desviada derecha","Inferior desviada izquierda","Discrepancia superior-inferior"),
         listOf("Sin alteración aparente","Apiñamiento leve","Apiñamiento moderado","Apiñamiento severo","Diastemas/espacios","Rotaciones/inclinaciones"),
-        listOf("Ovoide simétrica","Triangular","Cuadrada/amplia","Estrecha","Asimétrica"),
-        listOf("Curva de Spee discreta","Curva aumentada","Curva plana","Mordida profunda","Mordida abierta"),
+        listOf("Sin alteración aparente","Ovoide simétrica","Triangular","Cuadrada/amplia","Estrecha","Asimétrica"),
+        listOf("Sin alteración aparente","Curva de Spee discreta","Curva aumentada","Curva plana","Mordida profunda","Mordida abierta"),
         listOf("Relación transversal habitual","Cruzada unilateral","Cruzada bilateral","Mordida en tijera/Brodie","Asimetría transversal"),
         listOf("Posteriores bilaterales","Predominio derecho","Predominio izquierdo","Contacto prematuro aparente","Ausencia de contacto posterior"),
         listOf("Cierre sin desplazamiento","Deslizamiento funcional derecho","Deslizamiento funcional izquierdo","Discrepancia RC/MI aparente","No valorable"),
@@ -171,6 +171,7 @@ private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int
   "Diastemas/espacios"->Triple("Espaciamiento / diastema",R.drawable.allimg_035_espaciamiento_dental_diastema,"Imagen clínica local de espaciamiento dental.")
   else->null}
  9->when(choice){
+  "Sin alteración aparente"->null
   "Ovoide simétrica"->Triple("Arcada ovoide",R.drawable.new17_arcada_de_forma_ovoide,"Imagen de forma de arcada ovoide.")
   "Triangular"->Triple("Arcada triangular",R.drawable.new17_arcada_de_forma_triangular,"Imagen de forma de arcada triangular.")
   "Cuadrada/amplia"->Triple("Arcada cuadrada",R.drawable.new17_arcada_de_forma_cuadrada,"Imagen de forma de arcada cuadrada.")
@@ -178,6 +179,7 @@ private fun occlusionChoiceVisual19(section:Int,choice:String):Triple<String,Int
   "Asimétrica"->Triple("Arcada asimétrica",R.drawable.new17_arcada_de_forma_asimetrica,"Imagen de asimetría de arcada.")
   else->null}
  10->when(choice){
+  "Sin alteración aparente"->null
   "Curva de Spee discreta"->Triple("Curva de Spee discreta",R.drawable.allimg_021_curva_de_spee_discreta,"Imagen local.")
   "Curva aumentada"->Triple("Curva de Spee profunda",R.drawable.allimg_024_curva_de_spee_profunda,"Imagen local.")
   "Curva plana"->Triple("Curva de Spee plana",R.drawable.allimg_022_curva_de_spee_plana,"Imagen local.")
