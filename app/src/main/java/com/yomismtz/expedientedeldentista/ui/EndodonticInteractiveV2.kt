@@ -433,6 +433,7 @@ fun EndodonticInteractiveV2Screen(
                             tr(lang, "Ionómero de vidrio", "Glass ionomer"),
                             tr(lang, "Incrustación", "Indirect restoration"),
                             tr(lang, "Corona", "Crown"),
+                            tr(lang, "Sin restauración definitiva aún", "No definitive restoration yet"),
                             tr(lang, "Pendiente de plan restaurador", "Restorative plan pending")
                         )
                         ChipChoices(restorationOptions.map { it to (restoration == it) }, { restoration = restorationOptions[it] }, columns = 2)
