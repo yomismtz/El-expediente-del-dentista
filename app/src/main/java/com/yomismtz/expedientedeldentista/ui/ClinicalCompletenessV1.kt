@@ -19,8 +19,8 @@ private data class CompletionItemV1(val title:String,val done:Boolean)
 private data class CompletionResultV1(val items:List<CompletionItemV1>,val warnings:List<String>)
 
 private fun completionResultV1(
- session:EducationalSession, hereditaryNone:Boolean, nonPathStatus:Map<String,String>,
- habitsNone:Boolean, mucosaStatus:Map<String,String>, pathNone:Boolean,
+ session:EducationalSession, hereditaryNone:Boolean, hereditaryPositive:Boolean, nonPathStatus:Map<String,String>,
+ habitsNone:Boolean, habitsPositive:Boolean, mucosaStatus:Map<String,String>, pathNone:Boolean,
  medicationsNone:Boolean, allergiesNone:Boolean
 ):CompletionResultV1{
  val diseases=session.history.diseases
@@ -38,8 +38,8 @@ private fun completionResultV1(
  val vitalsDone=session.clinicalMeasurements.isNotEmpty() || listOf(session.profile.bloodPressure,session.profile.heartRate,session.profile.temperature,session.profile.spo2).any{it.isNotBlank()}
  val items=listOf(
   CompletionItemV1("Identificación",identification), CompletionItemV1("Motivo de consulta",reason),
-  CompletionItemV1("Heredo-familiares",hereditaryNone), CompletionItemV1("Antecedentes patológicos",appDone),
-  CompletionItemV1("No patológicos",nonPathDone), CompletionItemV1("Hábitos / parafunciones",habitsNone),
+  CompletionItemV1("Heredo-familiares",hereditaryNone || hereditaryPositive), CompletionItemV1("Antecedentes patológicos",appDone),
+  CompletionItemV1("No patológicos",nonPathDone), CompletionItemV1("Hábitos / parafunciones",habitsNone || habitsPositive),
   CompletionItemV1("Medicamentos",medsDone), CompletionItemV1("Alergias",allergiesDone),
   CompletionItemV1("Signos vitales",vitalsDone), CompletionItemV1("Examen de mucosas",mucosaDone)
  )
@@ -54,13 +54,17 @@ private fun completionResultV1(
 @Composable
 fun ClinicalCompletenessCardV1(lang:String,session:EducationalSession){
  val hereditaryNone by rememberRecordState("history.hereditary.none",false)
+ val hereditarySelected=rememberRecordStateMap<String,Boolean>("history.hereditary.selected")
+ val hereditaryPositive=hereditarySelected.values.any{it}
  val nonPathStatus=rememberRecordStateMap<String,String>("history.nonpath.sectionStatus")
  val habitsNone by rememberRecordState("history.habits.noneDenied",false)
+ val habitsPresent=rememberRecordStateMap<String,Boolean>("history.habits.present")
+ val habitsPositive=habitsPresent.values.any{it}
  val mucosaStatus=rememberRecordStateMap<String,String>("history.oralExam.siteStatus")
  val pathNone by rememberRecordState("history.path.noneDenied",false)
  val medicationsNone by rememberRecordState("history.medications.noneDenied",false)
  val allergiesNone by rememberRecordState("history.path.allergies.noneDenied",false)
- val result=completionResultV1(session,hereditaryNone,nonPathStatus,habitsNone,mucosaStatus,pathNone,medicationsNone,allergiesNone)
+ val result=completionResultV1(session,hereditaryNone,hereditaryPositive,nonPathStatus,habitsNone,habitsPositive,mucosaStatus,pathNone,medicationsNone,allergiesNone)
  val done=result.items.count{it.done}; val total=result.items.size
  val pending=result.items.filterNot{it.done}.map{it.title}; val complete=done==total
  Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=if(complete)MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primaryContainer)){
@@ -79,13 +83,17 @@ fun ClinicalCompletenessCardV1(lang:String,session:EducationalSession){
 @Composable
 fun ClinicalCompletenessMiniV1(session:EducationalSession){
  val hereditaryNone by rememberRecordState("history.hereditary.none",false)
+ val hereditarySelected=rememberRecordStateMap<String,Boolean>("history.hereditary.selected")
+ val hereditaryPositive=hereditarySelected.values.any{it}
  val nonPathStatus=rememberRecordStateMap<String,String>("history.nonpath.sectionStatus")
  val habitsNone by rememberRecordState("history.habits.noneDenied",false)
+ val habitsPresent=rememberRecordStateMap<String,Boolean>("history.habits.present")
+ val habitsPositive=habitsPresent.values.any{it}
  val mucosaStatus=rememberRecordStateMap<String,String>("history.oralExam.siteStatus")
  val pathNone by rememberRecordState("history.path.noneDenied",false)
  val medicationsNone by rememberRecordState("history.medications.noneDenied",false)
  val allergiesNone by rememberRecordState("history.path.allergies.noneDenied",false)
- val result=completionResultV1(session,hereditaryNone,nonPathStatus,habitsNone,mucosaStatus,pathNone,medicationsNone,allergiesNone)
+ val result=completionResultV1(session,hereditaryNone,hereditaryPositive,nonPathStatus,habitsNone,habitsPositive,mucosaStatus,pathNone,medicationsNone,allergiesNone)
  val done=result.items.count{it.done}; val total=result.items.size
  Text(if(result.warnings.isNotEmpty())"⚠ ${done}/${total} · revisar congruencia" else "✓ ${done}/${total} · captura clínica",style=MaterialTheme.typography.bodySmall,fontWeight=FontWeight.Bold,color=if(result.warnings.isNotEmpty())MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
 }
