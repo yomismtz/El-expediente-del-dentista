@@ -173,6 +173,7 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
     val records = session.icdasSurfaceRecords[selectedTooth] ?: emptyMap()
     val allSurfaces = listOf(Surface.VESTIBULAR, Surface.LINGUAL_PALATAL, Surface.MESIAL, Surface.DISTAL, Surface.OCCLUSAL)
     val current = records[selectedSurface] ?: IcdasSurfaceRecord(restorationCode = 0, cariesCode = 0)
+    val surfaceRecorded = records.containsKey(selectedSurface)
     val currentCode = current.combinedCode
     val restorationKnown = current.restorationCode != null
     val currentRestoration = current.restorationCode ?: 0
@@ -214,11 +215,18 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
     fun setSpecial(code: Int) {
         val codes = if (code == 96) records.toMutableMap().apply { put(selectedSurface, IcdasSurfaceRecord(specialCode = code)) } else allSurfaces.associateWith { IcdasSurfaceRecord(specialCode = code) }
         val status = when (code) {
-            91, 93, 97 -> ToothStatus.MISSING_CARIES
-            90, 92, 98, 99 -> ToothStatus.MISSING_OTHER
+            97 -> ToothStatus.MISSING_CARIES
+            98, 99 -> ToothStatus.MISSING_OTHER
             else -> session.teeth[selectedTooth]?.status
         }
-        saveCodes(codes, statusOverride = status, presentOverride = if (code >= 97 || code in 90..93) false else true)
+        saveCodes(codes, statusOverride = status, presentOverride = code !in setOf(97, 98, 99))
+    }
+
+    fun clearIcdas() {
+        val all = session.icdasSurfaceRecords.toMutableMap().apply { remove(selectedTooth) }
+        val legacy = session.icdasSurfaces.toMutableMap().apply { remove(selectedTooth) }
+        val record = session.teeth[selectedTooth] ?: ToothRecord()
+        onSessionChanged(session.copy(icdasSurfaceRecords = all, icdasSurfaces = legacy, teeth = session.teeth + (selectedTooth to record.copy(icdas = 0, icdasLegacyPending = false))))
     }
 
     fun setAll(code: Int) {
@@ -307,7 +315,7 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
         } }
         item { SectionCard(tr(lang,"6 · Acciones","6 · Actions")) { Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick={setAll(currentCode)},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Aplicar ${"%02d".format(currentCode)} a todas las superficies","Apply ${"%02d".format(currentCode)} to all surfaces"))}
-            OutlinedButton(onClick={setAll(0)},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Limpiar códigos ICDAS del diente","Clear ICDAS codes from tooth"))}
+            OutlinedButton(onClick={clearIcdas},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Limpiar códigos ICDAS del diente","Clear ICDAS codes from tooth"))}
             Text(tr(lang,"Usa «aplicar a todas» sólo cuando todas las superficies examinadas cumplen el mismo criterio.",
                 "Use “apply to all” only when every examined surface meets the same criterion."),style=MaterialTheme.typography.bodySmall)
         } } }
