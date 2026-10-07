@@ -4,6 +4,16 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class IcdasCodingTest {
+    @Test fun clearAndSpecialSemanticsAreRepresentable() {
+        val session = EducationalSession(
+            icdasSurfaceRecords = mapOf(16 to mapOf(Surface.OCCLUSAL to IcdasSurfaceRecord(restorationCode = 4, cariesCode = 6)))
+        )
+        assertTrue(session.icdasSurfaceRecords[16]?.containsKey(Surface.OCCLUSAL) == true)
+        assertEquals(46, session.icdasSurfaceRecords[16]?.get(Surface.OCCLUSAL)?.combinedCode)
+        assertEquals(90, IcdasCoding.fromCombined(90)?.specialCode)
+        assertEquals(97, IcdasCoding.fromCombined(97)?.specialCode)
+    }
+
     @Test fun soundUnrestoredIs00() {
         assertEquals(0, IcdasCoding.combine(0, 0))
         assertEquals(0, IcdasCoding.fromCombined(0)?.combinedCode)
