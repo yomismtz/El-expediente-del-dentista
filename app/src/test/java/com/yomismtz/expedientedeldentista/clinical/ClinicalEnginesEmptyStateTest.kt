@@ -15,6 +15,20 @@ class ClinicalEnginesEmptyStateTest {
         assertEquals("Periodontalmente sano", ClinicalEngines.ipcInterpretation("0", "es"))
     }
 
+    @Test fun heatAloneDoesNotForceEndodonticTreatment() {
+        val s = EducationalSession(pulpal = PulpalAssessment(tooth = 16, heatPositive = true))
+        val dx = ClinicalEngines.pulpalDiagnosis(s.pulpal)
+        assertTrue(dx.pulpalEs.contains("no concluida"))
+        assertEquals(null, ClinicalEngines.derivedTreatmentPlanId(s, 16))
+    }
+
+    @Test fun necrosisEvidenceCanDeriveNecrosisPlan() {
+        val s = EducationalSession(pulpal = PulpalAssessment(tooth = 16, sensitivityNegative = true))
+        val dx = ClinicalEngines.pulpalDiagnosis(s.pulpal)
+        assertTrue(dx.pulpalEs.contains("Necrosis pulpar"))
+        assertEquals("necrosis", ClinicalEngines.derivedTreatmentPlanId(s, 16))
+    }
+
     @Test fun emptyPulpalIsNotEvaluated() {
         val result = ClinicalEngines.pulpalDiagnosis(PulpalAssessment())
         assertTrue(result.pulpalEs.contains("no concluida"))
