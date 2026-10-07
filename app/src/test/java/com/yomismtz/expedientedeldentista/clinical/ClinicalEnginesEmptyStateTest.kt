@@ -46,7 +46,7 @@ class ClinicalEnginesEmptyStateTest {
             presentTeeth = setOf(11, 12),
             oleary = mapOf(11 to emptySet(), 12 to emptySet())
         )
-        assertEquals(0.0, ClinicalEngines.olearyPercentageOrNull(s), 0.001)
+        assertEquals(0.0, requireNotNull(ClinicalEngines.olearyPercentageOrNull(s)), 0.001)
     }
 
     @Test fun partialIhosIsNotReportedAsHealthy() {
@@ -63,7 +63,7 @@ class ClinicalEnginesEmptyStateTest {
             ihosDebris = teeth.associateWith { 0 },
             ihosCalculus = teeth.associateWith { 0 }
         )
-        assertEquals(0.0, ClinicalEngines.ihosOrNull(s), 0.001)
+        assertEquals(0.0, requireNotNull(ClinicalEngines.ihosOrNull(s)), 0.001)
     }
 
 }
