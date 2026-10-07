@@ -40,7 +40,7 @@ object ClinicalEngines {
         return if (lang == "en") en else es
     }
 
-    fun olearyPercentage(session: EducationalSession): Double {
+    fun olearyPercentageOrNull(session: EducationalSession): Double? {
         val present = session.presentTeeth.filter { tooth ->
             when (session.teeth[tooth]?.status ?: ToothStatus.HEALTHY) {
                 ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER -> false
@@ -48,12 +48,12 @@ object ClinicalEngines {
             }
         }
         val denominator = present.size * 4
-        if (denominator == 0) return 0.0
+        if (denominator == 0) return null
         val affected = present.sumOf { session.oleary[it]?.size ?: 0 }
         return affected * 100.0 / denominator
     }
 
-    fun ihos(session: EducationalSession): Double {
+    fun ihosOrNull(session: EducationalSession): Double? {
         val indexTeeth = listOf(16, 11, 26, 36, 31, 46)
         val valid = indexTeeth.filter { tooth ->
             when (session.teeth[tooth]?.status ?: ToothStatus.HEALTHY) {
@@ -61,10 +61,14 @@ object ClinicalEngines {
                 else -> true
             }
         }
-        if (valid.isEmpty()) return 0.0
+        if (valid.isEmpty()) return null
         val total = valid.sumOf { (session.ihosDebris[it] ?: 0) + (session.ihosCalculus[it] ?: 0) }
         return total.toDouble() / valid.size
     }
+
+    fun olearyPercentage(session: EducationalSession): Double = olearyPercentageOrNull(session) ?: 0.0
+
+    fun ihos(session: EducationalSession): Double = ihosOrNull(session) ?: 0.0
 
     fun ihosInterpretation(value: Double, lang: String): String {
         val es = when {
