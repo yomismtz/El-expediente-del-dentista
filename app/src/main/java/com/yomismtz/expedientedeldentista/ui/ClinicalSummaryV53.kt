@@ -32,7 +32,7 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
     val caries=teeth.keys.count { tooth -> session.icdasSurfaceRecords[tooth]?.values?.any { it.cariesCode in 1..6 } == true }
     val perio=if(session.periodontogram.isEmpty()) "Pendiente" else "Registrado"
     val pulpal=if(session.pulpal.tooth>0) "Registrado · OD "+session.pulpal.tooth else "Pendiente"
-    val history=if(session.history.diseases.values.any { it.present }) "Con antecedentes seleccionados" else "Sin antecedentes activos registrados"
+    val history=if(session.history.diseases.values.any { it.present }) "Con antecedentes seleccionados" else "Sin antecedentes positivos seleccionados"
     val cpod=ClinicalEngines.cpod(session.teeth,false)
     val ceod=ClinicalEngines.cpod(session.teeth,true)
     val alerts=ClinicalSafetyEngine.alerts(session)
@@ -94,7 +94,7 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
             SummaryLineV53("Peso / talla",if(p.weightKg.isBlank()&&p.heightCm.isBlank())"—" else p.weightKg+" kg / "+p.heightCm+" cm")
             SummaryLineV53("IMC",p.bmi.ifBlank{"—"})
             SummaryLineV53("Dolor",if(p.painScore.isBlank())"—" else p.painScore+"/10")
-            SummaryLineV53("Signos",triageSigns.joinToString(", ").ifBlank{"Ninguno registrado"})
+            SummaryLineV53("Signos",triageSigns.joinToString(", ").ifBlank{"Sin signos seleccionados"})
         }
         SummaryCardV53(tr(lang,"Triage, tratamientos y anestesia","Triage, treatments and anesthesia")){
             Text(if(lang=="en")triage.titleEn else triage.titleEs,fontWeight=FontWeight.Black)
