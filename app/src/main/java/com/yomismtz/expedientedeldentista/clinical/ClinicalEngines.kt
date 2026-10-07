@@ -114,7 +114,7 @@ object ClinicalEngines {
             a.spontaneousPain || a.nightPain || a.coldLingering || (a.heatPositive && a.coldPositive) -> "irreversible"
             a.coldPositive || a.sweetsPain -> "reversible"
             a.deepCariesOrExposure -> "irreversible_asymptomatic"
-            else -> "normal"
+            else -> "not_evaluated"
         }
 
         val apical = when {
@@ -123,7 +123,7 @@ object ClinicalEngines {
             a.apicalRadiopacity -> "condensing_osteitis"
             (a.percussionPain || a.palpationPain) -> "symptomatic_apical"
             a.apicalRadiolucency && !a.percussionPain && !a.palpationPain -> "asymptomatic_apical"
-            else -> "normal_apical"
+            else -> "not_evaluated_apical"
         }
 
         val pulpalEs = when (pulpal) {
@@ -133,7 +133,7 @@ object ClinicalEngines {
             "irreversible" -> "Pulpitis irreversible sintomática"
             "irreversible_asymptomatic" -> "Pulpitis irreversible asintomática (orientación educativa)"
             "reversible" -> "Pulpitis reversible"
-            else -> "Pulpa normal / hallazgos insuficientes para patología pulpar"
+            else -> "Evaluación pulpar no concluida / datos insuficientes"
         }
         val pulpalEn = when (pulpal) {
             "previously_treated" -> "Previously treated"
@@ -142,7 +142,7 @@ object ClinicalEngines {
             "irreversible" -> "Symptomatic irreversible pulpitis"
             "irreversible_asymptomatic" -> "Asymptomatic irreversible pulpitis (educational orientation)"
             "reversible" -> "Reversible pulpitis"
-            else -> "Normal pulp / insufficient findings for pulpal disease"
+            else -> "Pulpal assessment not concluded / insufficient data"
         }
         val apicalEs = when (apical) {
             "acute_abscess" -> "Absceso apical agudo"
@@ -150,7 +150,7 @@ object ClinicalEngines {
             "condensing_osteitis" -> "Osteítis condensante"
             "symptomatic_apical" -> "Periodontitis apical sintomática"
             "asymptomatic_apical" -> "Periodontitis apical asintomática"
-            else -> "Tejidos apicales normales / sin datos suficientes"
+            else -> "Evaluación periapical no concluida / datos insuficientes"
         }
         val apicalEn = when (apical) {
             "acute_abscess" -> "Acute apical abscess"
@@ -158,7 +158,7 @@ object ClinicalEngines {
             "condensing_osteitis" -> "Condensing osteitis"
             "symptomatic_apical" -> "Symptomatic apical periodontitis"
             "asymptomatic_apical" -> "Asymptomatic apical periodontitis"
-            else -> "Normal apical tissues / insufficient data"
+            else -> "Apical assessment not concluded / insufficient data"
         }
 
         val explainEs = buildList {
