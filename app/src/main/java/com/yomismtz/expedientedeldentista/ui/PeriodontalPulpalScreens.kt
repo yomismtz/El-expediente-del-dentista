@@ -95,7 +95,7 @@ fun PeriodontogramScreen(
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
                         listOf(0,1,2,3,4,5,6,7,8,9,10,12,15).forEach { mm ->
                             FilterChip(
-                                selected = record.probingDepths.getOrElse(index) { 0 } == mm,
+                                selected = hasPeriodontalRecord && record.probingDepths.getOrElse(index) { 0 } == mm,
                                 onClick = {
                                     val values = record.probingDepths.take(6).toMutableList()
                                     while (values.size < 6) values.add(0)
@@ -114,16 +114,16 @@ fun PeriodontogramScreen(
                     Text(site, fontWeight = FontWeight.SemiBold)
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
                         listOf(-5,-3,-2,-1,0,1,2,3,4,5,7,10,15).forEach { mm ->
-                            FilterChip(record.recessionBySite.getOrElse(index) { 0 } == mm, {
+                            FilterChip(hasPeriodontalRecord && record.recessionBySite.getOrElse(index) { 0 } == mm, {
                                 val values=record.recessionBySite.toMutableList(); while(values.size<6) values.add(0); values[index]=mm
                                 update(record.copy(recessionBySite=values,recessionMm=values.maxByOrNull { kotlin.math.abs(it) } ?: 0))
                             }, { Text(mm.toString()) }, modifier=Modifier.weight(1f))
                         }
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
-                        FilterChip(index in record.bleedingSites,{val s=record.bleedingSites.toMutableSet();if(!s.add(index))s.remove(index);update(record.copy(bleedingSites=s,bleeding=s.isNotEmpty()))},{Text(if(index in record.bleedingSites) tr(lang,"Sangrado","Bleeding") else tr(lang,"Sin sangrado","No bleeding"))},modifier=Modifier.weight(1f))
-                        FilterChip(index in record.plaqueSites,{val s=record.plaqueSites.toMutableSet();if(!s.add(index))s.remove(index);update(record.copy(plaqueSites=s,plaque=s.isNotEmpty()))},{Text(if(index in record.plaqueSites) tr(lang,"Placa","Plaque") else tr(lang,"Sin placa","No plaque"))},modifier=Modifier.weight(1f))
-                        FilterChip(index in record.suppurationSites,{val s=record.suppurationSites.toMutableSet();if(!s.add(index))s.remove(index);update(record.copy(suppurationSites=s,suppuration=s.isNotEmpty()))},{Text(if(index in record.suppurationSites) tr(lang,"Supuración","Suppuration") else tr(lang,"Sin supuración","No suppuration"))},modifier=Modifier.weight(1f))
+                        FilterChip(hasPeriodontalRecord && index in record.bleedingSites,{val s=record.bleedingSites.toMutableSet();if(!s.add(index))s.remove(index);update(record.copy(bleedingSites=s,bleeding=s.isNotEmpty()))},{Text(if(index in record.bleedingSites) tr(lang,"Sangrado","Bleeding") else tr(lang,"Sin sangrado","No bleeding"))},modifier=Modifier.weight(1f))
+                        FilterChip(hasPeriodontalRecord && index in record.plaqueSites,{val s=record.plaqueSites.toMutableSet();if(!s.add(index))s.remove(index);update(record.copy(plaqueSites=s,plaque=s.isNotEmpty()))},{Text(if(index in record.plaqueSites) tr(lang,"Placa","Plaque") else tr(lang,"Sin placa","No plaque"))},modifier=Modifier.weight(1f))
+                        FilterChip(hasPeriodontalRecord && index in record.suppurationSites,{val s=record.suppurationSites.toMutableSet();if(!s.add(index))s.remove(index);update(record.copy(suppurationSites=s,suppuration=s.isNotEmpty()))},{Text(if(index in record.suppurationSites) tr(lang,"Supuración","Suppuration") else tr(lang,"Sin supuración","No suppuration"))},modifier=Modifier.weight(1f))
                     }
                 }
                 if(record.bleedingSites.isNotEmpty()) PeriodontalFindingImage19(lang,"bleeding")
@@ -131,14 +131,14 @@ fun PeriodontogramScreen(
                 Text(tr(lang, "Movilidad", "Mobility"), fontWeight = FontWeight.SemiBold)
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     (0..3).forEach { grade ->
-                        FilterChip(record.mobility == grade, { update(record.copy(mobility = grade)) }, { Text(grade.toString()) }, modifier = Modifier.weight(1f))
+                        FilterChip(hasPeriodontalRecord && record.mobility == grade, { update(record.copy(mobility = grade)) }, { Text(grade.toString()) }, modifier = Modifier.weight(1f))
                     }
                 }
                 if(record.mobility > 0) PeriodontalFindingImage19(lang,"mobility")
                 Text(tr(lang, "Furcación", "Furcation"), fontWeight = FontWeight.SemiBold)
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     (0..3).forEach { grade ->
-                        FilterChip(record.furcation == grade, { update(record.copy(furcation = grade)) }, { Text(grade.toString()) }, modifier = Modifier.weight(1f))
+                        FilterChip(hasPeriodontalRecord && record.furcation == grade, { update(record.copy(furcation = grade)) }, { Text(grade.toString()) }, modifier = Modifier.weight(1f))
                     }
                 }
                 if(record.furcation > 0) PeriodontalFindingImage19(lang,"furcation")
@@ -150,8 +150,8 @@ fun PeriodontogramScreen(
                     Text(tr(lang, "OD $selectedTooth: Pendiente · aún no hay registro periodontal para este diente.", "Tooth $selectedTooth: Pending · no periodontal record has been entered for this tooth."), fontWeight = FontWeight.Bold)
                 } else {
                 val maxPd = record.probingDepths.maxOrNull() ?: 0
-                val bleedingText = if(record.bleeding) tr(lang,"con sangrado al sondaje","with bleeding on probing") else tr(lang,"sin sangrado al sondaje","without bleeding on probing")
-                val plaqueText = if(record.plaque) tr(lang,"placa presente","plaque present") else tr(lang,"sin placa marcada","no plaque marked")
+                val bleedingText = if(record.bleeding) tr(lang,"con sangrado al sondaje","with bleeding on probing") else tr(lang,"sangrado no marcado (no equivale a negativo)","bleeding not marked (not equivalent to negative)")
+                val plaqueText = if(record.plaque) tr(lang,"placa presente","plaque present") else tr(lang,"placa no marcada (no equivale a negativo)","plaque not marked (not equivalent to negative)")
                 Text(tr(lang,
                     "OD $selectedTooth: profundidad máxima seleccionada $maxPd mm; $bleedingText; $plaqueText; movilidad grado ${record.mobility}; furcación grado ${record.furcation}; margen/recesión ${record.recessionMm} mm.",
                     "Tooth $selectedTooth: selected maximum probing depth $maxPd mm; $bleedingText; $plaqueText; mobility grade ${record.mobility}; furcation grade ${record.furcation}; gingival margin/recession ${record.recessionMm} mm."),fontWeight=FontWeight.Bold)
@@ -166,10 +166,13 @@ fun PeriodontogramScreen(
                 val bleedingSites=records.sumOf { if(it.bleedingSites.isNotEmpty()) it.bleedingSites.size else if(it.bleeding) 1 else 0 }
                 val plaqueSites=records.sumOf { if(it.plaqueSites.isNotEmpty()) it.plaqueSites.size else if(it.plaque) 1 else 0 }
                 val suppurationSites=records.sumOf { if(it.suppurationSites.isNotEmpty()) it.suppurationSites.size else if(it.suppuration) 1 else 0 }
-                val bleedingPct=if(totalSites>0) bleedingSites*100f/totalSites else 0f
-                val plaquePct=if(totalSites>0) plaqueSites*100f/totalSites else 0f
+                val percentages = if(totalSites>0) {
+                    val bleedingPct=bleedingSites*100f/totalSites
+                    val plaquePct=plaqueSites*100f/totalSites
+                    tr(lang,"Sangrado: $bleedingSites sitios ("+String.format("%.1f",bleedingPct)+"%); placa: $plaqueSites ("+String.format("%.1f",plaquePct)+"%); supuración: $suppurationSites.","Bleeding: $bleedingSites sites ("+String.format("%.1f",bleedingPct)+"%); plaque: $plaqueSites ("+String.format("%.1f",plaquePct)+"%); suppuration: $suppurationSites.")
+                } else tr(lang,"Sin profundidades de sondaje registradas; los porcentajes de sangrado/placa no se calculan todavía.","No probing depths recorded; bleeding/plaque percentages are not calculated yet.")
                 Text(tr(lang,"Dientes registrados: ${records.size}. Sitios medidos: $totalSites. Profundidad máxima: ${measuredSites.maxOrNull() ?: 0} mm. Sitios ≥4 mm: ${measuredSites.count { it>=4 }}; ≥6 mm: ${measuredSites.count { it>=6 }}.","Recorded teeth: ${records.size}. Measured sites: $totalSites. Maximum depth: ${measuredSites.maxOrNull() ?: 0} mm. Sites ≥4 mm: ${measuredSites.count { it>=4 }}; ≥6 mm: ${measuredSites.count { it>=6 }}."),fontWeight=FontWeight.Bold)
-                Text(tr(lang,"Sangrado: $bleedingSites sitios ("+String.format("%.1f",bleedingPct)+"%); placa: $plaqueSites ("+String.format("%.1f",plaquePct)+"%); supuración: $suppurationSites. Dientes con movilidad: ${records.count { it.mobility>0 }}; furcación: ${records.count { it.furcation>0 }}.","Bleeding: $bleedingSites sites ("+String.format("%.1f",bleedingPct)+"%); plaque: $plaqueSites ("+String.format("%.1f",plaquePct)+"%); suppuration: $suppurationSites. Teeth with mobility: ${records.count { it.mobility>0 }}; furcation: ${records.count { it.furcation>0 }}."))
+                Text(percentages)
                 Text(tr(lang,"Resumen descriptivo; no asigna automáticamente diagnóstico, estadio ni grado periodontal.","Descriptive summary; it does not automatically assign periodontal diagnosis, stage or grade."),style=MaterialTheme.typography.bodySmall)
             }
         }
