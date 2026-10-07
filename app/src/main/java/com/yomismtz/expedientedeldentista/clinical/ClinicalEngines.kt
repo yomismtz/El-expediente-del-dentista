@@ -361,7 +361,7 @@ object ClinicalEngines {
         val record=session.teeth[tooth] ?: ToothRecord()
         val icdas=session.icdasSurfaceRecords[tooth]?.values?.mapNotNull { it.cariesCode }?.maxOrNull() ?: if (record.icdasLegacyPending) record.icdas else record.icdas % 10
         val pulpal=session.pulpal.takeIf { it.tooth==tooth }
-        if(pulpal!=null && (pulpal.spontaneousPain || pulpal.nightPain || pulpal.coldLingering || pulpal.heatPositive || pulpal.sensitivityNegative || pulpal.previousRootCanal || pulpal.previousPartialEndo)) {
+        if(pulpal!=null && (pulpal.spontaneousPain || pulpal.nightPain || pulpal.coldLingering || (pulpal.heatPositive && pulpal.coldPositive) || pulpal.sensitivityNegative || pulpal.previousRootCanal || pulpal.previousPartialEndo)) {
             return when(pulpalDiagnosis(pulpal).pulpalEs) {
                 "Necrosis pulpar" -> "necrosis"
                 "Pulpitis irreversible sintomática" -> "irreversible_pulpitis"
