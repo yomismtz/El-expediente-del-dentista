@@ -54,6 +54,7 @@ fun PeriodontogramScreen(
     onBack: () -> Unit
 ) {
     var selectedTooth by remember { mutableStateOf(16) }
+    val hasPeriodontalRecord = session.periodontogram.containsKey(selectedTooth)
     val storedRecord = session.periodontogram[selectedTooth] ?: PerioRecord()
     // Older/imported records may contain fewer than six sites. Normalize locally before any UI indexing.
     val record = storedRecord.copy(
@@ -145,12 +146,16 @@ fun PeriodontogramScreen(
         }
         item {
             SectionCard(tr(lang,"3 · Resumen periodontal automático","3 · Automatic periodontal summary")) {
+                if (!hasPeriodontalRecord) {
+                    Text(tr(lang, "OD $selectedTooth: Pendiente · aún no hay registro periodontal para este diente.", "Tooth $selectedTooth: Pending · no periodontal record has been entered for this tooth."), fontWeight = FontWeight.Bold)
+                } else {
                 val maxPd = record.probingDepths.maxOrNull() ?: 0
                 val bleedingText = if(record.bleeding) tr(lang,"con sangrado al sondaje","with bleeding on probing") else tr(lang,"sin sangrado al sondaje","without bleeding on probing")
                 val plaqueText = if(record.plaque) tr(lang,"placa presente","plaque present") else tr(lang,"sin placa marcada","no plaque marked")
                 Text(tr(lang,
                     "OD $selectedTooth: profundidad máxima seleccionada $maxPd mm; $bleedingText; $plaqueText; movilidad grado ${record.mobility}; furcación grado ${record.furcation}; margen/recesión ${record.recessionMm} mm.",
                     "Tooth $selectedTooth: selected maximum probing depth $maxPd mm; $bleedingText; $plaqueText; mobility grade ${record.mobility}; furcation grade ${record.furcation}; gingival margin/recession ${record.recessionMm} mm."),fontWeight=FontWeight.Bold)
+                }
             }
         }
         item {
