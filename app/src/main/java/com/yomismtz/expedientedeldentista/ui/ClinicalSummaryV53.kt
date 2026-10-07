@@ -28,6 +28,11 @@ import com.yomismtz.expedientedeldentista.clinical.ClinicalQualityV1
 fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->Unit) {
     val p=session.profile
     val teeth=session.teeth
+    val pathNone by rememberRecordState("history.path.noneDenied",false)
+    val allergiesNone by rememberRecordState("history.path.allergies.noneDenied",false)
+    val medicationsNone by rememberRecordState("history.medications.noneDenied",false)
+    val allergyIds=setOf("drug_allergy","latex_allergy","food_allergy","allergic_rhinitis","urticaria","atopic_dermatitis","anaphylaxis","contact_dermatitis")
+    val positiveAllergy=session.history.diseases.any { (id,a) -> a.present && id in allergyIds }
     val present=teeth.count { (_,it) -> it.status.name !in setOf("MISSING_CARIES","MISSING_OTHER") }
     val caries=teeth.keys.count { tooth -> session.icdasSurfaceRecords[tooth]?.values?.any { it.cariesCode in 1..6 } == true }
     val perio=if(session.periodontogram.isEmpty()) "Pendiente" else "Registrado"
@@ -42,7 +47,7 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
         "Identificación" to (p.patientInitials.isNotBlank() && p.age.isNotBlank() && p.sex.isNotBlank()),
         "Motivo / anamnesis" to (p.reasonForVisit.isNotBlank()),
         "Signos vitales" to (p.bloodPressure.isNotBlank() || p.heartRate.isNotBlank() || p.temperature.isNotBlank()),
-        "Antecedentes sistémicos" to (session.history.diseases.isNotEmpty() || session.history.tobaccoAlcohol.isNotBlank()),
+        "Antecedentes sistémicos" to (pathNone || session.history.diseases.values.any { it.present } || session.history.tobaccoAlcohol.isNotBlank()),
         "Odontograma" to (teeth.isNotEmpty()),
         "Periodontograma" to (session.periodontogram.isNotEmpty()),
         "Pulpar / periapical" to (session.pulpal.tooth > 0)
@@ -66,7 +71,7 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
             SummaryLineV53("Iniciales",p.patientInitials.ifBlank{"—"}); SummaryLineV53("Edad",p.age.ifBlank{"—"}); SummaryLineV53("Sexo",p.sex.ifBlank{"—"}); SummaryLineV53("Motivo",p.reasonForVisit.ifBlank{"—"})
         }
         SummaryCardV53(tr(lang,"Antecedentes y estado general","History and general status")){
-            SummaryLineV53("ASA",session.history.asaClass.toString()); SummaryLineV53("Antecedentes",history); SummaryLineV53("Tabaco / alcohol",session.history.tobaccoAlcohol.ifBlank{"No registrado"}); SummaryLineV53("Medicamentos",p.medications.ifBlank{"No registrados"}); SummaryLineV53("Alergias",p.allergies.ifBlank{"No registradas"})
+            SummaryLineV53("ASA",session.history.asaClass.toString()); SummaryLineV53("Antecedentes",if(pathNone)"Negado · ningún antecedente personal patológico" else history); SummaryLineV53("Tabaco / alcohol",session.history.tobaccoAlcohol.ifBlank{"No registrado"}); SummaryLineV53("Medicamentos",when { medicationsNone -> "Negado · ningún medicamento actual referido"; session.medicationsStructured.isNotEmpty() -> "${session.medicationsStructured.size} medicamento(s) estructurado(s) registrado(s)"; p.medications.isNotBlank() -> p.medications; else -> "No registrados" }); SummaryLineV53("Alergias",when { allergiesNone -> "Negado · ninguna alergia conocida"; positiveAllergy -> "Alergia(s) registrada(s)"; p.allergies.isNotBlank() -> p.allergies; else -> "No registradas" })
         }
         if(alerts.isNotEmpty()) {
             SummaryCardV53(tr(lang,"⚠️ Alertas y recordatorios de seguridad","⚠️ Safety alerts and reminders")) {
