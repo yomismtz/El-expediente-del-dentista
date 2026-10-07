@@ -1,6 +1,7 @@
 package com.yomismtz.expedientedeldentista.clinical
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -37,7 +38,7 @@ class ClinicalEnginesEmptyStateTest {
 
     @Test fun partialOLearyIsNotReportedAsZero() {
         val s = EducationalSession(presentTeeth = setOf(11, 12), oleary = mapOf(11 to emptySet()))
-        assertEquals(null, ClinicalEngines.olearyPercentageOrNull(s))
+        assertNull(ClinicalEngines.olearyPercentageOrNull(s))
     }
 
     @Test fun explicitZeroOLearyRequiresEveryPresentTooth() {
@@ -53,7 +54,7 @@ class ClinicalEnginesEmptyStateTest {
             ihosDebris = mapOf(16 to 0),
             ihosCalculus = mapOf(16 to 0)
         )
-        assertEquals(null, ClinicalEngines.ihosOrNull(s))
+        assertNull(ClinicalEngines.ihosOrNull(s))
     }
 
     @Test fun completeIhosCanBeZeroWhenAllSitesAreExplicitlyRecorded() {
