@@ -47,23 +47,38 @@ object ClinicalEngines {
                 else -> true
             }
         }
+        if (present.isEmpty()) return null
+        // An empty set is a valid explicit score (0%). A missing map entry means the tooth has not been evaluated yet.
+        if (present.any { it !in session.oleary }) return null
         val denominator = present.size * 4
         if (denominator == 0) return null
-        val affected = present.sumOf { session.oleary[it]?.size ?: 0 }
+        val affected = present.sumOf { session.oleary[it].orEmpty().size }
         return affected * 100.0 / denominator
     }
 
     fun ihosOrNull(session: EducationalSession): Double? {
-        val indexTeeth = listOf(16, 11, 26, 36, 31, 46)
-        val valid = indexTeeth.filter { tooth ->
-            when (session.teeth[tooth]?.status ?: ToothStatus.HEALTHY) {
-                ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER -> false
-                else -> true
+        // Each OHI-S index site may use its documented substitute. Calculate only when all six sites have both scores.
+        val slots = listOf(
+            listOf(16, 17, 18),
+            listOf(11, 21),
+            listOf(26, 27, 28),
+            listOf(36, 37, 38),
+            listOf(31, 41),
+            listOf(46, 47, 48)
+        )
+        val selected = slots.map { candidates ->
+            candidates.firstOrNull { tooth ->
+                when (session.teeth[tooth]?.status) {
+                    ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER -> false
+                    else -> session.ihosDebris.containsKey(tooth) && session.ihosCalculus.containsKey(tooth)
+                }
             }
         }
-        if (valid.isEmpty()) return null
-        val total = valid.sumOf { (session.ihosDebris[it] ?: 0) + (session.ihosCalculus[it] ?: 0) }
-        return total.toDouble() / valid.size
+        if (selected.any { it == null }) return null
+        val total = selected.filterNotNull().sumOf { tooth ->
+            session.ihosDebris.getValue(tooth) + session.ihosCalculus.getValue(tooth)
+        }
+        return total.toDouble() / selected.size
     }
 
     fun olearyPercentage(session: EducationalSession): Double = olearyPercentageOrNull(session) ?: 0.0
