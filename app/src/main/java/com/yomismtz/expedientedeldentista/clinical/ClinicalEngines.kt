@@ -81,7 +81,7 @@ object ClinicalEngines {
     }
 
     fun ipcHighest(codes: List<String>): String {
-        return codes.mapNotNull { it.toIntOrNull() }.maxOrNull()?.toString() ?: if (codes.any { it == "X" }) "X" else "9"
+        return codes.mapNotNull { it.toIntOrNull() }.maxOrNull()?.toString() ?: if (codes.any { it == "X" }) "X" else ""
     }
 
     fun ipcInterpretation(code: String, lang: String): String {
