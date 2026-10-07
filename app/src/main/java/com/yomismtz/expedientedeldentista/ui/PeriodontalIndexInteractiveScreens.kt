@@ -91,7 +91,7 @@ private val ipcSextants = listOf(
 
 private fun highestIpc(codes: List<String>): String {
     val numeric = codes.mapNotNull { it.toIntOrNull() }
-    return if (numeric.isNotEmpty()) numeric.maxOrNull().toString() else "X"
+    return if (numeric.isNotEmpty()) numeric.maxOrNull().toString() else if (codes.any { it == "X" }) "X" else ""
 }
 
 @Composable
@@ -106,18 +106,18 @@ fun IpcInteractiveV2Screen(
     var selectedSite by remember { mutableStateOf(0) }
     var siteCodes by rememberRecordState("ipc.siteCodes", emptyMap<Int, List<String>>())
 
-    fun toothCodes(tooth: Int): List<String> = siteCodes[tooth] ?: List(6) { "0" }
+    fun toothCodes(tooth: Int): List<String> = siteCodes[tooth] ?: List(6) { "" }
     fun toothResult(tooth: Int): String = highestIpc(toothCodes(tooth))
     fun sextantResult(s: IpcSextant): String {
         val toothResults = s.teeth.map { toothResult(it) }
-        val evaluable = toothResults.count { it != "X" }
+        val evaluable = toothResults.count { it.isNotBlank() && it != "X" }
         return if (evaluable < 2) "X" else highestIpc(toothResults)
     }
     fun syncSession(newMap: Map<Int, List<String>>) {
         siteCodes = newMap
         val sextantCodes = ipcSextants.map { s ->
-            val results = s.teeth.map { tooth -> highestIpc(newMap[tooth] ?: List(6) { "0" }) }
-            val evaluable = results.count { it != "X" }
+            val results = s.teeth.map { tooth -> highestIpc(newMap[tooth] ?: List(6) { "" }) }
+            val evaluable = results.count { it.isNotBlank() && it != "X" }
             if (evaluable < 2) "X" else highestIpc(results)
         }
         onSessionChanged(session.copy(ipcCodes = sextantCodes))
@@ -160,7 +160,7 @@ fun IpcInteractiveV2Screen(
                                 Column(Modifier.padding(9.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text("S${s.number}", fontWeight = FontWeight.Black, color = IndexDeep)
                                     Text(s.label, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
-                                    Text("Código ${sextantResult(s)}", style = MaterialTheme.typography.labelSmall, color = IndexPurple)
+                                    Text("${tr(lang, "Código", "Code")} ${sextantResult(s).ifBlank { tr(lang, "pendiente", "pending") }}", style = MaterialTheme.typography.labelSmall, color = IndexPurple)
                                 }
                             }
                         }
@@ -202,14 +202,14 @@ fun IpcInteractiveV2Screen(
                             FilterChip(
                                 selected = selectedSite == index,
                                 onClick = { selectedSite = index },
-                                label = { Text("$site · $code") },
+                                label = { Text("$site · ${if (code.isBlank()) "—" else code}") },
                                 modifier = Modifier.weight(1f)
                             )
                         }
                     }
                 }
                 Spacer(Modifier.height(4.dp))
-                Text("${tr(lang, "Código del sitio seleccionado", "Selected site code")}: ${ipcSites[selectedSite]}", fontWeight = FontWeight.Bold)
+                Text("${tr(lang, "Código del sitio seleccionado", "Selected site code")}: ${ipcSites[selectedSite]} · ${if (toothCodes(selectedTooth)[selectedSite].isBlank()) tr(lang, "pendiente", "pending") else toothCodes(selectedTooth)[selectedSite]}", fontWeight = FontWeight.Bold)
                 listOf("0", "1", "2", "3", "4", "X").chunked(2).forEach { row ->
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                         row.forEach { code ->
@@ -226,8 +226,8 @@ fun IpcInteractiveV2Screen(
                         }
                     }
                 }
-                IpcCodeImage19(lang,toothCodes(selectedTooth)[selectedSite])
-                Text("${tr(lang, "Resultado del diente", "Tooth result")}: ${toothResult(selectedTooth)}", fontWeight = FontWeight.Bold, color = IndexPurple)
+                if (toothCodes(selectedTooth)[selectedSite].isNotBlank()) IpcCodeImage19(lang,toothCodes(selectedTooth)[selectedSite])
+                Text("${tr(lang, "Resultado del diente", "Tooth result")}: ${toothResult(selectedTooth).ifBlank { tr(lang, "Pendiente", "Pending") }}", fontWeight = FontWeight.Bold, color = IndexPurple)
             }
         }
         item {
@@ -241,7 +241,7 @@ fun IpcInteractiveV2Screen(
             }
         }
         item {
-            val summary = ipcSextants.joinToString(" · ") { "S${it.number}=${sextantResult(it)}" }
+            val summary = ipcSextants.joinToString(" · ") { "S${it.number}=${sextantResult(it).ifBlank { tr(lang, "pendiente", "pending") }}" }
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = IndexMint.copy(alpha = .22f)),
