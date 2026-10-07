@@ -82,11 +82,18 @@ private fun buildIntakeSectionsV54(lang:String,s:EducationalSession,ms:Map<Strin
     ).filter{it.isNotBlank()}.joinToString(" · ").ifBlank{tr54(lang,"Sin signos vitales registrados.","No vital signs recorded.")}
 
     val mucosa=mutableListOf<String>()
-    (ms.keys+ml.keys+mp.keys).distinct().forEach { k ->
-        val f=listOf(ms[k],ml[k],mp[k]).filterNotNull().map{it.trim()}.filter{it.isNotBlank()&&!it.equals("Normal",true)&&!it.equals("Normal.",true)}.distinct()
+    val mucosaZones=(ms.keys+ml.keys+mp.keys).distinct()
+    mucosaZones.forEach { k ->
+        val f=listOf(ms[k],ml[k],mp[k]).filterNotNull().map{it.trim()}.filter{it.isNotBlank()&&!it.equals("Normal",true)&&!it.equals("Normal.",true)&&!it.equals("Sano",true)&&!it.equals("Sano.",true)}.distinct()
         if(f.isNotEmpty()) mucosa.add(humanize54(k)+": "+f.joinToString(", "))
     }
-    val mucosaText=if(mucosa.isEmpty()) tr54(lang,"Sin hallazgos de mucosa registrados.","No mucosal findings recorded.") else patient+" presenta "+mucosa.joinToString("; ")+"."
+    val mucosaWithStatus=mucosaZones.mapNotNull { k -> ms[k]?.trim()?.takeIf{it.isNotBlank()} }
+    val allMucosaHealthy=mucosaZones.isNotEmpty() && mucosaWithStatus.size==mucosaZones.size && mucosaWithStatus.all{it.equals("Sano",true)||it.equals("Normal",true)} && mucosa.isEmpty()
+    val mucosaText=when {
+        allMucosaHealthy -> tr54(lang,"Sano / sin alteración evidente en las zonas examinadas.","Healthy / no evident alteration in the examined areas.")
+        mucosa.isEmpty() -> tr54(lang,"Sin hallazgos de mucosa registrados.","No mucosal findings recorded.")
+        else -> patient+" presenta "+mucosa.joinToString("; ")+"."
+    }
 
     val caries=s.teeth.filterValues{it.status==ToothStatus.CARIES||it.status==ToothStatus.MISSING_CARIES||it.icdas>0}.keys.toMutableSet()
     s.odontogramSurfaces.forEach { (tooth,marks)->if(marks.values.any{it==SurfaceMark.CARIES}) caries.add(tooth) }
