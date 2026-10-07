@@ -44,7 +44,8 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
     val selectedSurfaces = (session.oleary[selectedTooth] ?: emptySet()).intersect(surfaces.toSet())
     val plaqueFaces = present.sumOf { tooth -> (session.oleary[tooth] ?: emptySet()).count { it in surfaces } }
     val totalFaces = present.size * 4
-    val percentage = if (totalFaces == 0) 0.0 else ClinicalEngines.round1(plaqueFaces * 100.0 / totalFaces)
+    val percentage = ClinicalEngines.olearyPercentageOrNull(session)
+    val hasOLearyData = session.oleary.isNotEmpty() || session.presentTeeth.isNotEmpty()
 
     fun setMarks(newSet: Set<Surface>) {
         val map = session.oleary.toMutableMap().apply { put(selectedTooth, newSet) }
@@ -103,8 +104,12 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
         } }
         item { SectionCard(tr(lang,"4 · Cálculo automático","4 · Automatic calculation")) {
             Text(tr(lang,"Porcentaje = superficies con placa ÷ superficies evaluables × 100.","Percentage = plaque-positive surfaces ÷ evaluable surfaces × 100."),style=MaterialTheme.typography.bodySmall)
-            Text("$plaqueFaces / $totalFaces × 100",style=MaterialTheme.typography.titleMedium)
-            Text("$percentage %",style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold)
+            if (!hasOLearyData || percentage == null) {
+                Text(tr(lang, "O’Leary: Pendiente · aún no hay dientes evaluados", "O’Leary: Pending · no teeth evaluated yet"), style=MaterialTheme.typography.headlineMedium, fontWeight=FontWeight.Bold)
+            } else {
+                Text("$plaqueFaces / $totalFaces × 100",style=MaterialTheme.typography.titleMedium)
+                Text("$percentage %",style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold)
+            }
             Text(tr(lang,"Caras evaluables = dientes presentes × 4. Los dientes ausentes quedan fuera del denominador.","Evaluable surfaces = present teeth × 4. Missing teeth are excluded from the denominator."))
         } }
     }
