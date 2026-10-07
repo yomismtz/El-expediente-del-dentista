@@ -20,7 +20,7 @@ class ClinicalEnginesEmptyStateTest {
         val s = EducationalSession(pulpal = PulpalAssessment(tooth = 16, heatPositive = true))
         val dx = ClinicalEngines.pulpalDiagnosis(s.pulpal)
         assertTrue(dx.pulpalEs.contains("no concluida"))
-        assertEquals(null, ClinicalEngines.derivedTreatmentPlanId(s, 16))
+        assertNull(ClinicalEngines.derivedTreatmentPlanId(s, 16))
     }
 
     @Test fun necrosisEvidenceCanDeriveNecrosisPlan() {
