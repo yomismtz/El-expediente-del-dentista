@@ -310,9 +310,9 @@ fun IhosInteractiveV2Screen(
         return rows.map { s -> session.ihosCalculus[selections[s.indexTooth] ?: s.indexTooth] ?: 0 }.average()
     }
 
-    val hasIhosData = evaluableSlots().any { s ->
+    val hasIhosData = evaluableSlots().isNotEmpty() && evaluableSlots().all { s ->
         val tooth = selections[s.indexTooth] ?: s.indexTooth
-        session.ihosDebris.containsKey(tooth) || session.ihosCalculus.containsKey(tooth)
+        session.ihosDebris.containsKey(tooth) && session.ihosCalculus.containsKey(tooth)
     }
     val dAvg = round1(debrisAverage())
     val cAvg = round1(calculusAverage())
@@ -443,7 +443,7 @@ fun IhosInteractiveV2Screen(
                 Column(Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(tr(lang, "5 · Resumen del IHOS", "5 · OHI-S summary"), fontWeight = FontWeight.Black, color = IndexDeep)
                     if (!hasIhosData) {
-                        Text(tr(lang, "IHOS: Pendiente · aún no hay puntuaciones registradas", "OHI-S: Pending · no scores recorded yet"), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black, color = IndexPurple)
+                        Text(tr(lang, "IHOS: Pendiente · faltan puntuaciones para completar los sitios evaluables", "OHI-S: Pending · scores are missing for evaluable sites"), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black, color = IndexPurple)
                     } else {
                         Text("${tr(lang, "Promedio detritos", "Debris average")}: $dAvg")
                         Text("${tr(lang, "Promedio cálculo", "Calculus average")}: $cAvg")
