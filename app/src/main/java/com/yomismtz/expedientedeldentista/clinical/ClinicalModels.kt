@@ -177,7 +177,7 @@ data class EducationalSession(
     val icdasSurfaces: Map<Int, Map<Surface, Int>> = emptyMap(),
     val oleary: Map<Int, Set<Surface>> = emptyMap(),
     val presentTeeth: Set<Int> = emptySet(),
-    val ipcCodes: List<String> = List(6) { "0" },
+    val ipcCodes: List<String> = emptyList(),
     val ihosDebris: Map<Int, Int> = emptyMap(),
     val ihosCalculus: Map<Int, Int> = emptyMap(),
     val periodontogram: Map<Int, PerioRecord> = emptyMap(),
