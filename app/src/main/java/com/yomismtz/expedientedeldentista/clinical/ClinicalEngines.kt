@@ -230,11 +230,13 @@ object ClinicalEngines {
         val bleedingCount = records.count { it.bleeding }
         val suppuration = records.any { it.suppuration }
         val severeMobility = records.any { it.mobilityRecorded && it.mobility >= 2 }
-        val es = "Profundidad máxima registrada: ${maxPocket} mm. Dientes con sangrado: $bleedingCount. " +
+        val depthTextEs = maxPocket?.let { "$it mm" } ?: "pendiente"
+        val depthTextEn = maxPocket?.let { "$it mm" } ?: "pending"
+        val es = "Profundidad máxima registrada: $depthTextEs. Dientes con sangrado: $bleedingCount. " +
             (if (suppuration) "Hay supuración registrada. " else "") +
             (if (severeMobility) "Existe movilidad grado 2–3. " else "") +
             "El diagnóstico periodontal definitivo requiere integrar pérdida de inserción, radiografías, extensión y factores de riesgo."
-        val en = "Maximum recorded probing depth: ${maxPocket} mm. Teeth with bleeding: $bleedingCount. " +
+        val en = "Maximum recorded probing depth: $depthTextEn. Teeth with bleeding: $bleedingCount. " +
             (if (suppuration) "Suppuration is recorded. " else "") +
             (if (severeMobility) "Grade 2–3 mobility is present. " else "") +
             "Definitive periodontal diagnosis requires attachment loss, radiographs, extent and risk factors."
