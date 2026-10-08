@@ -163,8 +163,8 @@ fun PeriodontogramScreen(
                 val bleedingText = if(record.bleeding) tr(lang,"con sangrado al sondaje","with bleeding on probing") else tr(lang,"sangrado no marcado (no equivale a negativo)","bleeding not marked (not equivalent to negative)")
                 val plaqueText = if(record.plaque) tr(lang,"placa presente","plaque present") else tr(lang,"placa no marcada (no equivale a negativo)","plaque not marked (not equivalent to negative)")
                 Text(tr(lang,
-                    "OD $selectedTooth: profundidad máxima seleccionada $maxPd mm; $bleedingText; $plaqueText; movilidad grado ${record.mobility}; furcación grado ${record.furcation}; margen/recesión ${record.recessionMm} mm.",
-                    "Tooth $selectedTooth: selected maximum probing depth $maxPd mm; $bleedingText; $plaqueText; mobility grade ${record.mobility}; furcation grade ${record.furcation}; gingival margin/recession ${record.recessionMm} mm."),fontWeight=FontWeight.Bold)
+                    "OD $selectedTooth: profundidad máxima " + (maxPd?.let { "$it mm" } ?: "pendiente") + "; $bleedingText; $plaqueText; movilidad " + (if (record.mobilityRecorded) "grado ${record.mobility}" else "pendiente") + "; furcación " + (if (record.furcationRecorded) "grado ${record.furcation}" else "pendiente") + "; margen/recesión " + (if (record.recessionRecordedSites.isNotEmpty()) "${record.recessionMm} mm" else "pendiente") + ".",
+                    "Tooth $selectedTooth: maximum probing depth " + (maxPd?.let { "$it mm" } ?: "pending") + "; $bleedingText; $plaqueText; mobility " + (if (record.mobilityRecorded) "grade ${record.mobility}" else "pending") + "; furcation " + (if (record.furcationRecorded) "grade ${record.furcation}" else "pending") + "; gingival margin/recession " + (if (record.recessionRecordedSites.isNotEmpty()) "${record.recessionMm} mm" else "pending") + "."),fontWeight=FontWeight.Bold)
                 }
             }
         }
