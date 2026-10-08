@@ -23,6 +23,12 @@ import com.yomismtz.expedientedeldentista.clinical.ClinicalSafetyEngine
 import com.yomismtz.expedientedeldentista.clinical.ClinicalAlert
 import com.yomismtz.expedientedeldentista.clinical.evaluateClinicalDecisionV1
 import com.yomismtz.expedientedeldentista.clinical.ClinicalQualityV1
+import com.yomismtz.expedientedeldentista.clinical.validateOdontogramCompleteness
+import com.yomismtz.expedientedeldentista.clinical.OdontogramCompletenessStatus
+import com.yomismtz.expedientedeldentista.clinical.validateBirthDate
+import com.yomismtz.expedientedeldentista.clinical.BirthDateStatus
+import com.yomismtz.expedientedeldentista.clinical.validateAgeConsistency
+import com.yomismtz.expedientedeldentista.clinical.AgeConsistencyStatus
 
 @Composable
 fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->Unit) {
@@ -43,16 +49,23 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
     val alerts=ClinicalSafetyEngine.alerts(session)
     val linkedTreatment=teeth.filterValues { it.diagnosisId!=null || it.treatmentId!=null }.keys.sorted()
     val qualityIssues=ClinicalQualityV1.validate(session)+ClinicalQualityV1.medicationIssues(session)+ClinicalQualityV1.photoIssues(session)
+    val odontogramStatus=validateOdontogramCompleteness(session)
+    val odontogramComplete=odontogramStatus.status==OdontogramCompletenessStatus.COMPLETE_PERMANENT || odontogramStatus.status==OdontogramCompletenessStatus.COMPLETE_PRIMARY
+    val identificationComplete=p.patientInitials.isNotBlank() && validateBirthDate(p.birthDate)==BirthDateStatus.VALID && validateAgeConsistency(p.birthDate,p.age)==AgeConsistencyStatus.VALID && p.sex.isNotBlank()
+    val periodontalRecorded=session.periodontogram.values.any { it.probingDepthRecordedSites.isNotEmpty() || it.mobilityRecorded || it.furcationRecorded || it.recessionRecordedSites.isNotEmpty() || it.bleedingSites.isNotEmpty() || it.plaqueSites.isNotEmpty() || it.suppurationSites.isNotEmpty() }
+    val pulpalEvidence=session.pulpal.tooth>0 && listOf(session.pulpal.spontaneousPain,session.pulpal.nightPain,session.pulpal.coldPositive,session.pulpal.coldLingering,session.pulpal.heatPositive,session.pulpal.sweetsPain,session.pulpal.percussionPain,session.pulpal.palpationPain,session.pulpal.swelling,session.pulpal.fistula,session.pulpal.sensitivityNegative,session.pulpal.apicalRadiolucency,session.pulpal.widenedPdl,session.pulpal.apicalRadiopacity,session.pulpal.deepCariesOrExposure,session.pulpal.previousRootCanal,session.pulpal.previousPartialEndo).any { it }
     val checks: List<Pair<String, Boolean>> = listOf(
-        "Identificación" to (p.patientInitials.isNotBlank() && p.age.isNotBlank() && p.sex.isNotBlank()),
-        "Motivo / anamnesis" to (p.reasonForVisit.isNotBlank()),
-        "Signos vitales" to (p.bloodPressure.isNotBlank() || p.heartRate.isNotBlank() || p.temperature.isNotBlank()),
-        "Antecedentes sistémicos" to (pathNone || session.history.diseases.values.any { it.present } || session.history.tobaccoAlcohol.isNotBlank()),
-        "Odontograma" to (teeth.isNotEmpty()),
-        "Periodontograma" to (session.periodontogram.isNotEmpty()),
-        "Pulpar / periapical" to (session.pulpal.tooth > 0)
+        "Identificación validada" to identificationComplete,
+        "Motivo / anamnesis" to p.reasonForVisit.isNotBlank(),
+        "Signos vitales" to (p.bloodPressure.isNotBlank() || p.heartRate.isNotBlank() || p.temperature.isNotBlank() || p.spo2.isNotBlank()),
+        "Antecedentes sistémicos" to (pathNone || session.history.diseases.values.any { it.recorded || it.present } || session.history.tobaccoAlcohol.isNotBlank()),
+        "Odontograma completo" to odontogramComplete,
+        "Periodontograma evaluado" to periodontalRecorded,
+        "Evaluación pulpar / periapical" to pulpalEvidence
     )
     val done=checks.count{it.second}
+    val hasAnyClinicalData=p.patientInitials.isNotBlank() || p.reasonForVisit.isNotBlank() || teeth.isNotEmpty() || session.periodontogram.isNotEmpty() || session.pulpal.tooth>0 || session.history.diseases.isNotEmpty() || session.clinicalMeasurements.isNotEmpty()
+    val pendingChecks=checks.filterNot{it.second}.map{it.first}
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick=onBack){Text("‹")}
@@ -64,7 +77,11 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
         Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=if(done==checks.size) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primaryContainer)){
             Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){
                 Text("✓ "+done+" / "+checks.size+" "+tr(lang,"apartados principales completos","main sections complete"),fontWeight=FontWeight.Black)
-                Text(if(done==checks.size) tr(lang,"Revisión básica completa.","Basic review complete.") else tr(lang,"Hay apartados pendientes; puedes corregirlos antes de finalizar.","Some sections are pending; you can correct them before finishing."))
+                Text(if(done==checks.size) tr(lang,"Revisión básica completa.","Basic review complete.") else if(hasAnyClinicalData) tr(lang,"⚠️ Expediente parcial: hay datos capturados y apartados sin completar.","⚠️ Partial record: some data are captured and some sections remain incomplete.") else tr(lang,"Expediente sin datos clínicos suficientes para revisión.","No clinical data available for review."))
+                if(pendingChecks.isNotEmpty()) Text(tr(lang,"Pendientes: ","Pending: ")+pendingChecks.joinToString(" · "),style=MaterialTheme.typography.bodySmall)
+                if(odontogramStatus.status==OdontogramCompletenessStatus.PARTIAL_PERMANENT) Text("Odontograma parcial: faltan ${odontogramStatus.missingPermanent.size} dientes permanentes por registrar.",style=MaterialTheme.typography.bodySmall)
+                if(odontogramStatus.status==OdontogramCompletenessStatus.PARTIAL_PRIMARY) Text("Odontograma temporal parcial: faltan ${odontogramStatus.missingPrimary.size} dientes por registrar.",style=MaterialTheme.typography.bodySmall)
+                if(odontogramStatus.status==OdontogramCompletenessStatus.MIXED_DENTITION) Text("Dentición mixta: revisar manualmente; no se declara completa automáticamente.",style=MaterialTheme.typography.bodySmall)
             }
         }
         SummaryCardV53(tr(lang,"Identificación","Identification")){
