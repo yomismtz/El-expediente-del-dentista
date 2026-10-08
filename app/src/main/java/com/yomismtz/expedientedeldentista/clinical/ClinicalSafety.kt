@@ -1,5 +1,9 @@
 package com.yomismtz.expedientedeldentista.clinical
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
+
 data class ClinicalAlert(
     val severity: Severity,
     val titleEs: String,
@@ -12,10 +16,28 @@ data class ClinicalAlert(
     fun detail(lang:String)=if(lang=="en")detailEn else detailEs
 }
 
+enum class BirthDateStatus { EMPTY, VALID, INVALID_FORMAT, INVALID_DATE, FUTURE }
+
+fun validateBirthDate(value:String, today:LocalDate=LocalDate.now()):BirthDateStatus {
+    val text=value.trim()
+    if(text.isBlank()) return BirthDateStatus.EMPTY
+    val formats=listOf(DateTimeFormatter.ISO_LOCAL_DATE, DateTimeFormatter.ofPattern("dd/MM/uuuu"), DateTimeFormatter.ofPattern("d/M/uuuu"))
+    val date=formats.firstNotNullOfOrNull { formatter -> runCatching { LocalDate.parse(text,formatter) }.getOrNull() }
+        ?: return BirthDateStatus.INVALID_FORMAT
+    if(date.isAfter(today)) return BirthDateStatus.FUTURE
+    return BirthDateStatus.VALID
+}
+
 object ClinicalSafetyEngine {
     fun alerts(session: EducationalSession): List<ClinicalAlert> {
         val p=session.profile
         val out=mutableListOf<ClinicalAlert>()
+        when(validateBirthDate(p.birthDate)) {
+            BirthDateStatus.INVALID_FORMAT -> out += ClinicalAlert(ClinicalAlert.Severity.WARNING,"Fecha de nacimiento inválida","Invalid date of birth","Revisar el formato. Usa AAAA-MM-DD o DD/MM/AAAA y una fecha de calendario válida.","Review the format. Use YYYY-MM-DD or DD/MM/YYYY and a valid calendar date.")
+            BirthDateStatus.INVALID_DATE -> out += ClinicalAlert(ClinicalAlert.Severity.WARNING,"Fecha de nacimiento inválida","Invalid date of birth","La fecha no corresponde a un día de calendario válido.","The date is not a valid calendar date.")
+            BirthDateStatus.FUTURE -> out += ClinicalAlert(ClinicalAlert.Severity.WARNING,"Fecha de nacimiento futura","Future date of birth","La fecha de nacimiento no puede ser posterior a la fecha actual.","Date of birth cannot be later than today.")
+            else -> Unit
+        }
         val bp=Regex("""(\d{2,3})\s*/\s*(\d{2,3})""").find(p.bloodPressure)
         val sys=bp?.groupValues?.getOrNull(1)?.toIntOrNull()
         val dia=bp?.groupValues?.getOrNull(2)?.toIntOrNull()
