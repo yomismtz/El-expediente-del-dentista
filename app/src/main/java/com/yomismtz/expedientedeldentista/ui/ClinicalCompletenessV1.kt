@@ -91,7 +91,15 @@ fun ClinicalCompletenessCardV1(lang:String,session:EducationalSession){
   Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
    Text(if(complete)"🟢 Expediente de captura completo" else "🟡 Expediente de captura en progreso",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleMedium)
    Text("${done}/${total} apartados del núcleo de historia clínica registrados.")
-   if(pending.isNotEmpty()) Text("Pendientes: ${pending.joinToString(" · ")}",style=MaterialTheme.typography.bodySmall)
+   Text("Estado por apartado",fontWeight=FontWeight.Bold,style=MaterialTheme.typography.titleSmall)
+   result.items.forEach { item ->
+    Text(
+     "${if(item.done) "✓" else "○"} ${item.title}: ${if(item.done) "registrado" else "pendiente"}",
+     style=MaterialTheme.typography.bodySmall,
+     color=if(item.done) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
+    )
+   }
+   if(pending.isNotEmpty()) Text("Acción requerida: completar ${pending.joinToString(" · ")}.",style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.error)
    if(result.warnings.isNotEmpty()){
     Text("⚠ Revisar congruencia",fontWeight=FontWeight.Bold)
     result.warnings.forEach{Text("• ${it}",style=MaterialTheme.typography.bodySmall)}
