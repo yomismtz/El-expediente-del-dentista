@@ -78,12 +78,20 @@ data class ToothRecord(
 
 data class PerioRecord(
     val probingDepths: List<Int> = List(6) { 0 },
+    /** Sites whose probing depth was explicitly assessed, including a valid measured value of 0 mm. */
+    val probingDepthRecordedSites: Set<Int> = emptySet(),
     val bleeding: Boolean = false,
     val plaque: Boolean = false,
     val suppuration: Boolean = false,
     val mobility: Int = 0,
+    /** True when mobility was explicitly assessed; grade 0 is a valid negative finding. */
+    val mobilityRecorded: Boolean = false,
     val furcation: Int = 0,
+    /** True when furcation was explicitly assessed; grade 0 is a valid negative finding. */
+    val furcationRecorded: Boolean = false,
     val recessionMm: Int = 0,
+    /** Sites whose recession/margin was explicitly assessed, including 0 mm. */
+    val recessionRecordedSites: Set<Int> = emptySet(),
     val bleedingSites: Set<Int> = emptySet(),
     val plaqueSites: Set<Int> = emptySet(),
     val suppurationSites: Set<Int> = emptySet(),
