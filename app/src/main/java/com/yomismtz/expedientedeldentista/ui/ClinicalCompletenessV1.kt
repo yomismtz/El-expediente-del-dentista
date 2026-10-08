@@ -14,6 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
+import com.yomismtz.expedientedeldentista.clinical.AgeConsistencyStatus
+import com.yomismtz.expedientedeldentista.clinical.BirthDateStatus
+import com.yomismtz.expedientedeldentista.clinical.SexRecordStatus
+import com.yomismtz.expedientedeldentista.clinical.validateAgeConsistency
+import com.yomismtz.expedientedeldentista.clinical.validateBirthDate
+import com.yomismtz.expedientedeldentista.clinical.validateRecordedSex
 
 private data class CompletionItemV1(val title:String,val done:Boolean)
 private data class CompletionResultV1(val items:List<CompletionItemV1>,val warnings:List<String>)
@@ -30,7 +36,10 @@ private fun completionResultV1(
  val nonPathDone=nonPathSections.all{nonPathStatus[it].orEmpty().isNotBlank()}
  val mucosaSites=listOf("Labio superior","Labio inferior","Carrillo derecho / mucosa bucal","Carrillo izquierdo / mucosa bucal","Piso de boca","Paladar duro","Paladar blando","Orofaringe / pared posterior","Úvula","Amígdala derecha","Amígdala izquierda","Lengua · dorso","Lengua · bordes laterales","Lengua · cara ventral")
  val mucosaDone=mucosaSites.all{mucosaStatus[it].orEmpty().isNotBlank()}
- val identification=session.profile.patientInitials.isNotBlank() && session.profile.age.toIntOrNull()?.let{it in 0..120}==true && session.profile.sex.isNotBlank()
+ val birthDateOk=validateBirthDate(session.profile.birthDate)==BirthDateStatus.VALID
+ val ageOk=validateAgeConsistency(session.profile.birthDate,session.profile.age)==AgeConsistencyStatus.VALID
+ val sexOk=validateRecordedSex(session.profile.sex)==SexRecordStatus.RECORDED
+ val identification=session.profile.patientInitials.isNotBlank() && birthDateOk && ageOk && sexOk
  val reason=session.profile.reasonForVisit.isNotBlank()
  val appDone=pathNone || diseases.values.any{it.present} || session.history.tobaccoAlcohol.isNotBlank()
  val medsDone=medicationsNone || session.medicationsStructured.isNotEmpty()
