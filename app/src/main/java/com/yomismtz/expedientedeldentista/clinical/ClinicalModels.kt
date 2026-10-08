@@ -52,7 +52,9 @@ data class DiseaseAnswer(
     val onset: String = "",
     val treatment: String = "",
     val currentStatus: String = "",
-    val complications: String = ""
+    val complications: String = "",
+    /** True when this condition was explicitly assessed, including an explicit negative answer. */
+    val recorded: Boolean = false
 )
 
 data class HistoryState(
