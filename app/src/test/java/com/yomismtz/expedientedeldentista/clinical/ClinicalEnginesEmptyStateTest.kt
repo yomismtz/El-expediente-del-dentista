@@ -108,7 +108,7 @@ class ClinicalEnginesEmptyStateTest {
         assertEquals(BirthDateStatus.VALID, validateBirthDate("08/10/2000", today))
         assertEquals(BirthDateStatus.VALID, validateBirthDate("2000-10-08", today))
         assertEquals(BirthDateStatus.INVALID_FORMAT, validateBirthDate("08-10-2000", today))
-        assertEquals(BirthDateStatus.INVALID_FORMAT, validateBirthDate("31/02/2000", today))
+        assertEquals(BirthDateStatus.INVALID_DATE, validateBirthDate("31/02/2000", today))
         assertEquals(BirthDateStatus.FUTURE, validateBirthDate("09/10/2026", today))
     }
 
