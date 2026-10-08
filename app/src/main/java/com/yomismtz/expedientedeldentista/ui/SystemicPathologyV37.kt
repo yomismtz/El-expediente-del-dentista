@@ -379,8 +379,14 @@ private fun presetTreatments37(d:Disease37):List<String> = when(d.id){
   val customOk=d.id!="genetic_other" || customDisease.isNotBlank()
   val canSave=customOk && onset.isNotBlank() && status.isNotBlank() && treatment.isNotBlank() && complications.isNotBlank()
   Button(enabled=canSave,onClick={
-   onSave(DiseaseAnswer(true,onset,treatment,status,complications))
-  },modifier=Modifier.fillMaxWidth()){Text("💾 Guardar antecedente")}
+   onSave(DiseaseAnswer(true,onset,treatment,status,complications,true))
+  },modifier=Modifier.fillMaxWidth()){Text("💾 Guardar antecedente positivo")}
+  OutlinedButton(onClick={
+   onSave(DiseaseAnswer(false,recorded=true))
+  },modifier=Modifier.fillMaxWidth()){
+   Text("✓ Registrar explícitamente que NO presenta esta condición")
+  }
+  Text("No registrar una opción no significa que el paciente la niegue; queda como no preguntada/no registrada.",style=MaterialTheme.typography.bodySmall)
   Button(onClick=onProtocol,modifier=Modifier.fillMaxWidth()){Text("📚 Consultar protocolo odontológico")}
  }
 }
