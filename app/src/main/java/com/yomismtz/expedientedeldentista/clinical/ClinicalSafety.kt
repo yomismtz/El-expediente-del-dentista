@@ -33,10 +33,47 @@ fun validateBirthDate(value:String, today:LocalDate=LocalDate.now()):BirthDateSt
     return BirthDateStatus.VALID
 }
 
+
+/** Calculates completed years from a validated date of birth. Returns null when the date is not valid. */
+fun calculateAgeYears(value:String, today:LocalDate=LocalDate.now()):Int? {
+    if (validateBirthDate(value,today) != BirthDateStatus.VALID) return null
+    val normalized=value.trim()
+    val date=if (normalized.matches(Regex("""^\\d{4}-\\d{2}-\\d{2}$"""))) {
+        LocalDate.parse(normalized,DateTimeFormatter.ISO_LOCAL_DATE)
+    } else {
+        LocalDate.parse(normalized,DateTimeFormatter.ofPattern("d/M/uuuu").withResolverStyle(ResolverStyle.STRICT))
+    }
+    return java.time.Period.between(date,today).years
+}
+
+enum class AgeConsistencyStatus { EMPTY_BIRTH_DATE, INVALID_BIRTH_DATE, EMPTY_RECORDED_AGE, VALID, MISMATCH, INVALID_RECORDED_AGE }
+
+fun validateAgeConsistency(birthDate:String, recordedAge:String, today:LocalDate=LocalDate.now()):AgeConsistencyStatus {
+    val birthStatus=validateBirthDate(birthDate,today)
+    if (birthStatus == BirthDateStatus.EMPTY) return AgeConsistencyStatus.EMPTY_BIRTH_DATE
+    if (birthStatus != BirthDateStatus.VALID) return AgeConsistencyStatus.INVALID_BIRTH_DATE
+    if (recordedAge.isBlank()) return AgeConsistencyStatus.EMPTY_RECORDED_AGE
+    val age=recordedAge.trim().toIntOrNull() ?: return AgeConsistencyStatus.INVALID_RECORDED_AGE
+    if (age !in 0..120) return AgeConsistencyStatus.INVALID_RECORDED_AGE
+    return if (calculateAgeYears(birthDate,today)==age) AgeConsistencyStatus.VALID else AgeConsistencyStatus.MISMATCH
+}
+
+enum class SexRecordStatus { EMPTY, RECORDED }
+fun validateRecordedSex(value:String):SexRecordStatus = if (value.trim().isBlank()) SexRecordStatus.EMPTY else SexRecordStatus.RECORDED
+
 object ClinicalSafetyEngine {
     fun alerts(session: EducationalSession): List<ClinicalAlert> {
         val p=session.profile
         val out=mutableListOf<ClinicalAlert>()
+        when(validateAgeConsistency(p.birthDate,p.age)) {
+            AgeConsistencyStatus.MISMATCH -> out += ClinicalAlert(ClinicalAlert.Severity.WARNING,"Edad no coincide con la fecha de nacimiento","Age does not match date of birth","La edad registrada no corresponde a los años cumplidos según la fecha de nacimiento; corregir el dato antes de usarlo clínicamente.","The recorded age does not match completed years from the date of birth; correct it before clinical use.")
+            AgeConsistencyStatus.INVALID_RECORDED_AGE -> out += ClinicalAlert(ClinicalAlert.Severity.WARNING,"Edad registrada inválida","Invalid recorded age","La edad debe ser un número entero entre 0 y 120 años.","Age must be a whole number between 0 and 120 years.")
+            AgeConsistencyStatus.EMPTY_RECORDED_AGE -> out += ClinicalAlert(ClinicalAlert.Severity.INFO,"Edad calculable pendiente de registrar","Calculated age pending","Existe una fecha de nacimiento válida, pero falta la edad calculada/registrada.","A valid date of birth exists, but the calculated/recorded age is missing.")
+            else -> Unit
+        }
+        if (validateRecordedSex(p.sex) == SexRecordStatus.EMPTY) {
+            out += ClinicalAlert(ClinicalAlert.Severity.INFO,"Sexo registrado pendiente","Recorded sex pending","Cuando este dato sea clínicamente necesario, debe registrarse según lo referido y sin inferirlo por apariencia.","When clinically necessary, record this information as reported; do not infer it from appearance.")
+        }
         when(validateBirthDate(p.birthDate)) {
             BirthDateStatus.INVALID_FORMAT -> out += ClinicalAlert(ClinicalAlert.Severity.WARNING,"Fecha de nacimiento inválida","Invalid date of birth","Revisar el formato. Usa AAAA-MM-DD o DD/MM/AAAA y una fecha de calendario válida.","Review the format. Use YYYY-MM-DD or DD/MM/YYYY and a valid calendar date.")
             BirthDateStatus.INVALID_DATE -> out += ClinicalAlert(ClinicalAlert.Severity.WARNING,"Fecha de nacimiento inválida","Invalid date of birth","La fecha no corresponde a un día de calendario válido.","The date is not a valid calendar date.")
