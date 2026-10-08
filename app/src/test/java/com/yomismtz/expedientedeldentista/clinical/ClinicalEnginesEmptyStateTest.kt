@@ -112,4 +112,17 @@ class ClinicalEnginesEmptyStateTest {
         assertEquals(BirthDateStatus.FUTURE, validateBirthDate("09/10/2026", today))
     }
 
+    @Test fun ageCalculationAndConsistencyWork() {
+        val today = java.time.LocalDate.of(2026, 10, 8)
+        assertEquals(26, calculateAgeYears("08/10/2000", today))
+        assertEquals(AgeConsistencyStatus.VALID, validateAgeConsistency("08/10/2000", "26", today))
+        assertEquals(AgeConsistencyStatus.MISMATCH, validateAgeConsistency("08/10/2000", "25", today))
+        assertEquals(AgeConsistencyStatus.INVALID_RECORDED_AGE, validateAgeConsistency("08/10/2000", "abc", today))
+    }
+
+    @Test fun sexValidationRequiresExplicitRecordedValue() {
+        assertEquals(SexRecordStatus.EMPTY, validateRecordedSex(""))
+        assertEquals(SexRecordStatus.RECORDED, validateRecordedSex("referido por paciente"))
+    }
+
 }
