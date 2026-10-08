@@ -125,8 +125,6 @@ class ClinicalEnginesEmptyStateTest {
         assertEquals(SexRecordStatus.RECORDED, validateRecordedSex("referido por paciente"))
     }
 
-}
-
 
 @Test
 fun emptyOdontogramIsNotConsideredComplete() {
@@ -162,4 +160,6 @@ fun mixedDentitionIsNotSilentlyDeclaredComplete() {
     val teeth = mapOf(11 to ToothRecord(), 51 to ToothRecord())
     val result = validateOdontogramCompleteness(EducationalSession(teeth = teeth))
     assertEquals(OdontogramCompletenessStatus.MIXED_DENTITION, result.status)
+}
+
 }
