@@ -21,7 +21,7 @@ enum class BirthDateStatus { EMPTY, VALID, INVALID_FORMAT, INVALID_DATE, FUTURE 
 fun validateBirthDate(value:String, today:LocalDate=LocalDate.now()):BirthDateStatus {
     val text=value.trim()
     if(text.isBlank()) return BirthDateStatus.EMPTY
-    val normalized = text.replace('-', '/')
+    val normalized = text
     val pattern = when {
         Regex("""^\d{4}-\d{2}-\d{2}$""").matches(text) -> DateTimeFormatter.ISO_LOCAL_DATE
         Regex("""^\d{1,2}/\d{1,2}/\d{4}$""").matches(normalized) -> DateTimeFormatter.ofPattern("d/M/uuuu")
