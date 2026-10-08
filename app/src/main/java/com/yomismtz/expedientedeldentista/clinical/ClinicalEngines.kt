@@ -223,10 +223,13 @@ object ClinicalEngines {
     fun periodontalSummary(session: EducationalSession, lang: String): String {
         val records = session.periodontogram.values
         if (records.isEmpty()) return if (lang == "en") "No periodontal chart data yet." else "Aún no hay datos en el periodontograma."
-        val maxPocket = records.flatMap { it.probingDepths }.maxOrNull() ?: 0
+        val measuredDepths = records.flatMap { record ->
+            record.probingDepthRecordedSites.mapNotNull { record.probingDepths.getOrNull(it) }
+        }
+        val maxPocket = measuredDepths.maxOrNull()
         val bleedingCount = records.count { it.bleeding }
         val suppuration = records.any { it.suppuration }
-        val severeMobility = records.any { it.mobility >= 2 }
+        val severeMobility = records.any { it.mobilityRecorded && it.mobility >= 2 }
         val es = "Profundidad máxima registrada: ${maxPocket} mm. Dientes con sangrado: $bleedingCount. " +
             (if (suppuration) "Hay supuración registrada. " else "") +
             (if (severeMobility) "Existe movilidad grado 2–3. " else "") +
