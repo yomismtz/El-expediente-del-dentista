@@ -78,4 +78,28 @@ class ClinicalEnginesEmptyStateTest {
         assertEquals(0.0, requireNotNull(ClinicalEngines.ihosOrNull(s)), 0.001)
     }
 
+    @Test fun periodontalZeroIsOnlyClinicalWhenExplicitlyRecorded() {
+        val pending = PerioRecord()
+        val explicitZero = PerioRecord(
+            probingDepths = List(6) { 0 },
+            probingDepthRecordedSites = (0..5).toSet(),
+            mobility = 0,
+            mobilityRecorded = true,
+            furcation = 0,
+            furcationRecorded = true,
+            recessionBySite = List(6) { 0 },
+            recessionRecordedSites = (0..5).toSet()
+        )
+
+        assertTrue(pending.probingDepthRecordedSites.isEmpty())
+        assertTrue(!pending.mobilityRecorded)
+        assertTrue(!pending.furcationRecorded)
+        assertTrue(pending.recessionRecordedSites.isEmpty())
+
+        assertEquals((0..5).toSet(), explicitZero.probingDepthRecordedSites)
+        assertTrue(explicitZero.mobilityRecorded)
+        assertTrue(explicitZero.furcationRecorded)
+        assertEquals((0..5).toSet(), explicitZero.recessionRecordedSites)
+    }
+
 }
