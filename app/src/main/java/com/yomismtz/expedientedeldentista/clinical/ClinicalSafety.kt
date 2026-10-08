@@ -21,9 +21,13 @@ enum class BirthDateStatus { EMPTY, VALID, INVALID_FORMAT, INVALID_DATE, FUTURE 
 fun validateBirthDate(value:String, today:LocalDate=LocalDate.now()):BirthDateStatus {
     val text=value.trim()
     if(text.isBlank()) return BirthDateStatus.EMPTY
-    val formats=listOf(DateTimeFormatter.ISO_LOCAL_DATE, DateTimeFormatter.ofPattern("dd/MM/uuuu"), DateTimeFormatter.ofPattern("d/M/uuuu"))
-    val date=formats.firstNotNullOfOrNull { formatter -> runCatching { LocalDate.parse(text,formatter) }.getOrNull() }
-        ?: return BirthDateStatus.INVALID_FORMAT
+    val normalized = text.replace('-', '/')
+    val pattern = when {
+        Regex("""^\d{4}-\d{2}-\d{2}$""").matches(text) -> DateTimeFormatter.ISO_LOCAL_DATE
+        Regex("""^\d{1,2}/\d{1,2}/\d{4}$""").matches(normalized) -> DateTimeFormatter.ofPattern("d/M/uuuu")
+        else -> return BirthDateStatus.INVALID_FORMAT
+    }
+    val date=runCatching { LocalDate.parse(text,pattern) }.getOrElse { return BirthDateStatus.INVALID_DATE }
     if(date.isAfter(today)) return BirthDateStatus.FUTURE
     return BirthDateStatus.VALID
 }
