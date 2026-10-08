@@ -3,6 +3,7 @@ package com.yomismtz.expedientedeldentista.clinical
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.time.format.ResolverStyle
 
 data class ClinicalAlert(
     val severity: Severity,
@@ -24,7 +25,7 @@ fun validateBirthDate(value:String, today:LocalDate=LocalDate.now()):BirthDateSt
     val normalized = text
     val pattern = when {
         Regex("""^\d{4}-\d{2}-\d{2}$""").matches(text) -> DateTimeFormatter.ISO_LOCAL_DATE
-        Regex("""^\d{1,2}/\d{1,2}/\d{4}$""").matches(normalized) -> DateTimeFormatter.ofPattern("d/M/uuuu")
+        Regex("""^\d{1,2}/\d{1,2}/\d{4}$""").matches(normalized) -> DateTimeFormatter.ofPattern("d/M/uuuu").withResolverStyle(ResolverStyle.STRICT)
         else -> return BirthDateStatus.INVALID_FORMAT
     }
     val date=runCatching { LocalDate.parse(text,pattern) }.getOrElse { return BirthDateStatus.INVALID_DATE }
