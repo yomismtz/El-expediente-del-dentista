@@ -57,9 +57,19 @@ fun PeriodontogramScreen(
     val hasPeriodontalRecord = session.periodontogram.containsKey(selectedTooth)
     val storedRecord = session.periodontogram[selectedTooth] ?: PerioRecord()
     // Older/imported records may contain fewer than six sites. Normalize locally before any UI indexing.
+    val legacyProbingRecorded = storedRecord.probingDepthRecordedSites.ifEmpty {
+        storedRecord.probingDepths.mapIndexedNotNull { index, value -> if (value != 0) index else null }.toSet()
+    }
+    val legacyRecessionRecorded = storedRecord.recessionRecordedSites.ifEmpty {
+        storedRecord.recessionBySite.mapIndexedNotNull { index, value -> if (value != 0) index else null }.toSet()
+    }
     val record = storedRecord.copy(
         probingDepths = List(6) { storedRecord.probingDepths.getOrElse(it) { 0 } },
+        probingDepthRecordedSites = legacyProbingRecorded.filter { it in 0..5 }.toSet(),
+        mobilityRecorded = storedRecord.mobilityRecorded || storedRecord.mobility != 0,
+        furcationRecorded = storedRecord.furcationRecorded || storedRecord.furcation != 0,
         recessionBySite = List(6) { storedRecord.recessionBySite.getOrElse(it) { 0 } },
+        recessionRecordedSites = legacyRecessionRecorded.filter { it in 0..5 }.toSet(),
         bleedingSites = storedRecord.bleedingSites.filter { it in 0..5 }.toSet(),
         plaqueSites = storedRecord.plaqueSites.filter { it in 0..5 }.toSet(),
         suppurationSites = storedRecord.suppurationSites.filter { it in 0..5 }.toSet()
@@ -95,12 +105,12 @@ fun PeriodontogramScreen(
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
                         listOf(0,1,2,3,4,5,6,7,8,9,10,12,15).forEach { mm ->
                             FilterChip(
-                                selected = hasPeriodontalRecord && record.probingDepths.getOrElse(index) { 0 } == mm,
+                                selected = hasPeriodontalRecord && index in record.probingDepthRecordedSites && record.probingDepths.getOrElse(index) { 0 } == mm,
                                 onClick = {
                                     val values = record.probingDepths.take(6).toMutableList()
                                     while (values.size < 6) values.add(0)
                                     values[index] = mm
-                                    update(record.copy(probingDepths = values))
+                                    update(record.copy(probingDepths = values, probingDepthRecordedSites = record.probingDepthRecordedSites + index))
                                 },
                                 label = { Text(mm.toString()) },
                                 modifier = Modifier.weight(1f)
@@ -114,9 +124,9 @@ fun PeriodontogramScreen(
                     Text(site, fontWeight = FontWeight.SemiBold)
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
                         listOf(-5,-3,-2,-1,0,1,2,3,4,5,7,10,15).forEach { mm ->
-                            FilterChip(hasPeriodontalRecord && record.recessionBySite.getOrElse(index) { 0 } == mm, {
+                            FilterChip(hasPeriodontalRecord && index in record.recessionRecordedSites && record.recessionBySite.getOrElse(index) { 0 } == mm, {
                                 val values=record.recessionBySite.toMutableList(); while(values.size<6) values.add(0); values[index]=mm
-                                update(record.copy(recessionBySite=values,recessionMm=values.maxByOrNull { kotlin.math.abs(it) } ?: 0))
+                                update(record.copy(recessionBySite=values,recessionRecordedSites=record.recessionRecordedSites + index,recessionMm=values.maxByOrNull { kotlin.math.abs(it) } ?: 0))
                             }, { Text(mm.toString()) }, modifier=Modifier.weight(1f))
                         }
                     }
@@ -127,18 +137,18 @@ fun PeriodontogramScreen(
                     }
                 }
                 if(record.bleedingSites.isNotEmpty()) PeriodontalFindingImage19(lang,"bleeding")
-                if(record.recessionBySite.any { it != 0 }) PeriodontalFindingImage19(lang,"attachment")
+                if(record.recessionRecordedSites.any { record.recessionBySite.getOrElse(it) { 0 } != 0 }) PeriodontalFindingImage19(lang,"attachment")
                 Text(tr(lang, "Movilidad", "Mobility"), fontWeight = FontWeight.SemiBold)
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     (0..3).forEach { grade ->
-                        FilterChip(hasPeriodontalRecord && record.mobility == grade, { update(record.copy(mobility = grade)) }, { Text(grade.toString()) }, modifier = Modifier.weight(1f))
+                        FilterChip(hasPeriodontalRecord && record.mobilityRecorded && record.mobility == grade, { update(record.copy(mobility = grade, mobilityRecorded = true)) }, { Text(grade.toString()) }, modifier = Modifier.weight(1f))
                     }
                 }
                 if(record.mobility > 0) PeriodontalFindingImage19(lang,"mobility")
                 Text(tr(lang, "Furcación", "Furcation"), fontWeight = FontWeight.SemiBold)
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     (0..3).forEach { grade ->
-                        FilterChip(hasPeriodontalRecord && record.furcation == grade, { update(record.copy(furcation = grade)) }, { Text(grade.toString()) }, modifier = Modifier.weight(1f))
+                        FilterChip(hasPeriodontalRecord && record.furcationRecorded && record.furcation == grade, { update(record.copy(furcation = grade, furcationRecorded = true)) }, { Text(grade.toString()) }, modifier = Modifier.weight(1f))
                     }
                 }
                 if(record.furcation > 0) PeriodontalFindingImage19(lang,"furcation")
@@ -149,7 +159,7 @@ fun PeriodontogramScreen(
                 if (!hasPeriodontalRecord) {
                     Text(tr(lang, "OD $selectedTooth: Pendiente · aún no hay registro periodontal para este diente.", "Tooth $selectedTooth: Pending · no periodontal record has been entered for this tooth."), fontWeight = FontWeight.Bold)
                 } else {
-                val maxPd = record.probingDepths.maxOrNull() ?: 0
+                val maxPd = record.probingDepthRecordedSites.mapNotNull { record.probingDepths.getOrNull(it) }.maxOrNull()
                 val bleedingText = if(record.bleeding) tr(lang,"con sangrado al sondaje","with bleeding on probing") else tr(lang,"sangrado no marcado (no equivale a negativo)","bleeding not marked (not equivalent to negative)")
                 val plaqueText = if(record.plaque) tr(lang,"placa presente","plaque present") else tr(lang,"placa no marcada (no equivale a negativo)","plaque not marked (not equivalent to negative)")
                 Text(tr(lang,
