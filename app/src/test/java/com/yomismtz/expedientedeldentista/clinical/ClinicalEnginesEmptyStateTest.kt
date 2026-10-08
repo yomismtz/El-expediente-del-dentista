@@ -6,6 +6,18 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ClinicalEnginesEmptyStateTest {
+    @Test fun medicalHistoryNegativeIsDistinctFromUnrecorded() {
+        val unrecorded = DiseaseAnswer()
+        val explicitNegative = DiseaseAnswer(recorded = true)
+        val positive = DiseaseAnswer(present = true, recorded = true)
+
+        assertTrue(!unrecorded.recorded)
+        assertTrue(explicitNegative.recorded)
+        assertTrue(!explicitNegative.present)
+        assertTrue(positive.recorded)
+        assertTrue(positive.present)
+    }
+
     @Test fun emptyIpcIsNotHealthy() {
         assertTrue(EducationalSession().ipcCodes.isEmpty())
         assertEquals("", ClinicalEngines.ipcHighest(emptyList()))
