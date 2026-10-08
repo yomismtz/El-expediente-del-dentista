@@ -20,6 +20,8 @@ import com.yomismtz.expedientedeldentista.clinical.SexRecordStatus
 import com.yomismtz.expedientedeldentista.clinical.validateAgeConsistency
 import com.yomismtz.expedientedeldentista.clinical.validateBirthDate
 import com.yomismtz.expedientedeldentista.clinical.validateRecordedSex
+import com.yomismtz.expedientedeldentista.clinical.validateOdontogramCompleteness
+import com.yomismtz.expedientedeldentista.clinical.OdontogramCompletenessStatus
 
 private data class CompletionItemV1(val title:String,val done:Boolean)
 private data class CompletionResultV1(val items:List<CompletionItemV1>,val warnings:List<String>)
@@ -45,17 +47,26 @@ private fun completionResultV1(
  val medsDone=medicationsNone || session.medicationsStructured.isNotEmpty()
  val allergiesDone=allergiesNone || allergyById || session.profile.allergies.isNotBlank()
  val vitalsDone=session.clinicalMeasurements.isNotEmpty() || listOf(session.profile.bloodPressure,session.profile.heartRate,session.profile.temperature,session.profile.spo2).any{it.isNotBlank()}
+ val odontogram=validateOdontogramCompleteness(session)
+ val odontogramDone=odontogram.status==OdontogramCompletenessStatus.COMPLETE_PERMANENT || odontogram.status==OdontogramCompletenessStatus.COMPLETE_PRIMARY
  val items=listOf(
   CompletionItemV1("Identificación",identification), CompletionItemV1("Motivo de consulta",reason),
   CompletionItemV1("Heredo-familiares",hereditaryNone || hereditaryPositive), CompletionItemV1("Antecedentes patológicos",appDone),
   CompletionItemV1("No patológicos",nonPathDone), CompletionItemV1("Hábitos / parafunciones",habitsNone || habitsPositive),
   CompletionItemV1("Medicamentos",medsDone), CompletionItemV1("Alergias",allergiesDone),
-  CompletionItemV1("Signos vitales",vitalsDone), CompletionItemV1("Examen de mucosas",mucosaDone)
+  CompletionItemV1("Signos vitales",vitalsDone), CompletionItemV1("Examen de mucosas",mucosaDone), CompletionItemV1("Odontograma",odontogramDone)
  )
  val warnings=buildList{
   if(session.history.asaClass>1 && diseases.values.none{it.present} && !pathNone) add("ASA > I sin antecedentes patológicos registrados; revisar congruencia.")
   if(allergiesNone && allergyById) add("Alergias marcadas como negadas y, al mismo tiempo, existe una alergia registrada.")
   if(medicationsNone && session.medicationsStructured.isNotEmpty()) add("Medicamentos marcados como ninguno y, al mismo tiempo, hay medicamentos registrados.")
+  when(odontogram.status){
+   OdontogramCompletenessStatus.PARTIAL_PERMANENT -> add("Odontograma permanente incompleto: faltan ${odontogram.missingPermanent.size} dientes por registrar explícitamente.")
+   OdontogramCompletenessStatus.PARTIAL_PRIMARY -> add("Odontograma temporal incompleto: faltan ${odontogram.missingPrimary.size} dientes por registrar explícitamente.")
+   OdontogramCompletenessStatus.MIXED_DENTITION -> add("Odontograma con dentición mixta: requiere revisión clínica/manual; no se declara completo automáticamente.")
+   OdontogramCompletenessStatus.EMPTY -> add("Odontograma sin dientes registrados explícitamente.")
+   else -> Unit
+  }
  }
  return CompletionResultV1(items,warnings)
 }
