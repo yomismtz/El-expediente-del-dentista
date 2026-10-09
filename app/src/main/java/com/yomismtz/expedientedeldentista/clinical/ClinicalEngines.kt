@@ -2,6 +2,10 @@ package com.yomismtz.expedientedeldentista.clinical
 
 import kotlin.math.roundToInt
 
+enum class CariesIndexStatus { EMPTY, PARTIAL, COMPLETE }
+
+data class CariesIndexAssessment(val status: CariesIndexStatus, val result: IndexResult, val assessedTeeth: Int, val expectedTeeth: Int, val missingTeeth: Set<Int>)
+
 object ClinicalEngines {
     fun isPrimaryTooth(tooth: Int): Boolean = tooth in ClinicalContent.primaryTeeth
 
@@ -22,6 +26,29 @@ object ClinicalEngines {
         return IndexResult(c, p, o, c + p + o)
     }
 
+    fun cariesIndexAssessment(teeth: Map<Int, ToothRecord>, primary: Boolean): CariesIndexAssessment {
+        val domain = if (primary) ClinicalContent.primaryTeeth.toSet() else ClinicalContent.permanentTeeth.toSet()
+        val assessed = domain.filter { it in teeth }.toSet()
+        var carious = 0
+        var missingDueToCaries = 0
+        var restored = 0
+        assessed.forEach { tooth ->
+            when (teeth.getValue(tooth).status) {
+                ToothStatus.CARIES -> carious++
+                ToothStatus.MISSING_CARIES -> missingDueToCaries++
+                ToothStatus.RESTORED -> restored++
+                ToothStatus.HEALTHY, ToothStatus.MISSING_OTHER, ToothStatus.UNERUPTED,
+                ToothStatus.EXTRACTION_INDICATED, ToothStatus.SEALANT -> Unit
+            }
+        }
+        val status = when {
+            assessed.isEmpty() -> CariesIndexStatus.EMPTY
+            assessed.size == domain.size -> CariesIndexStatus.COMPLETE
+            else -> CariesIndexStatus.PARTIAL
+        }
+        return CariesIndexAssessment(status, IndexResult(carious, missingDueToCaries, restored, carious + missingDueToCaries + restored), assessed.size, domain.size, domain - assessed)
+    }
+
     fun cpodInterpretation(value: Int, lang: String): String {
         val es = when (value) {
             0 -> "Libre de caries registrada en el índice"
@@ -40,13 +67,16 @@ object ClinicalEngines {
         return if (lang == "en") en else es
     }
 
-    fun olearyPercentageOrNull(session: EducationalSession): Double? {
-        val present = session.presentTeeth.filter { tooth ->
-            when (session.teeth[tooth]?.status ?: ToothStatus.HEALTHY) {
+    fun olearyEligibleTeeth(session: EducationalSession, toothDomain: Set<Int>? = null): Set<Int> =
+        session.presentTeeth.filter { tooth ->
+            (toothDomain == null || tooth in toothDomain) && when (session.teeth[tooth]?.status ?: ToothStatus.HEALTHY) {
                 ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER, ToothStatus.UNERUPTED -> false
                 else -> true
             }
-        }
+        }.toSet()
+
+    fun olearyPercentageOrNull(session: EducationalSession, toothDomain: Set<Int>? = null): Double? {
+        val present = olearyEligibleTeeth(session, toothDomain)
         if (present.isEmpty()) return null
         // An empty set is a valid explicit score (0%). A missing map entry means the tooth has not been evaluated yet.
         if (present.any { it !in session.oleary }) return null
@@ -267,7 +297,7 @@ object ClinicalEngines {
                 append(if (diseases.isEmpty()) "no selected conditions" else diseases.joinToString(", "))
                 append(". Medications: ${p.medications.ifBlank { "none entered" }}. Allergies: ${p.allergies.ifBlank { "none entered" }}.\n")
                 append("Caries indices: DMFT=${permanent.total} (D=${permanent.carious}, M=${permanent.missing}, F=${permanent.filled}); dmft=${primary.total}.\n")
-                append("Periodontal screening: highest CPI code $ipc. OHI-S=${"%.2f".format(ihos(session))}. O'Leary=${"%.1f".format(olearyPercentage(session))}%.\n")
+                append("Periodontal screening: highest CPI code $ipc. OHI-S=${ihosOrNull(session)?.let { "%.2f".format(it) } ?: "Pendiente"}. O'Leary=${olearyPercentageOrNull(session)?.let { "%.1f".format(it) } ?: "Pendiente"}%.\n")
                 append("Pulpal/periapical educational orientation: ${diagnosis.pulpalEn}; ${diagnosis.apicalEn}.\n")
                 append("This automatically generated text is for learning how an intake note is organized; it is not a real clinical record.")
             }

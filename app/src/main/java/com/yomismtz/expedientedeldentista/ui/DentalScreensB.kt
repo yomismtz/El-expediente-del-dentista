@@ -40,16 +40,17 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
     var selectedTooth by remember { mutableStateOf(shown.first()) }
     if (selectedTooth !in shown) selectedTooth = shown.first()
     val surfaces = listOf(Surface.VESTIBULAR, Surface.LINGUAL_PALATAL, Surface.MESIAL, Surface.DISTAL)
-    val present = if (session.presentTeeth.intersect(shown.toSet()).isEmpty()) shown.toSet() else session.presentTeeth.intersect(shown.toSet())
+    val present = ClinicalEngines.olearyEligibleTeeth(session, shown.toSet())
     val selectedSurfaces = (session.oleary[selectedTooth] ?: emptySet()).intersect(surfaces.toSet())
-    val plaqueFaces = present.sumOf { tooth -> (session.oleary[tooth] ?: emptySet()).count { it in surfaces } }
+    val plaqueFaces = present.sumOf { tooth -> session.oleary[tooth].orEmpty().count { it in surfaces } }
     val totalFaces = present.size * 4
-    val percentage = ClinicalEngines.olearyPercentageOrNull(session)
-    val hasOLearyData = session.oleary.isNotEmpty() || session.presentTeeth.isNotEmpty()
+    val percentage = ClinicalEngines.olearyPercentageOrNull(session, shown.toSet())
+    val recordedPresentCount = present.count { it in session.oleary }
+    val otherDentitionPresent = session.presentTeeth - shown.toSet()
 
     fun setMarks(newSet: Set<Surface>) {
         val map = session.oleary.toMutableMap().apply { put(selectedTooth, newSet) }
-        onSessionChanged(session.copy(oleary = map, presentTeeth = present + selectedTooth))
+        onSessionChanged(session.copy(oleary = map, presentTeeth = otherDentitionPresent + present + selectedTooth))
     }
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -62,10 +63,10 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
             Text(tr(lang,"Selecciona el órgano dentario y confirma si entra en el denominador.","Select the tooth and confirm whether it belongs in the denominator."),style=MaterialTheme.typography.bodySmall)
             DentalArchSelector(shown,selectedTooth,{selectedTooth=it}) { tooth -> session.oleary[tooth]?.any{it in surfaces}==true }
             Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                FilterChip(selectedTooth in present,{onSessionChanged(session.copy(presentTeeth=present+selectedTooth))},{Text(tr(lang,"Presente","Present"))})
+                FilterChip(selectedTooth in present,{onSessionChanged(session.copy(presentTeeth=otherDentitionPresent + present + selectedTooth))},{Text(tr(lang,"Presente","Present"))})
                 FilterChip(selectedTooth !in present,{
                     val p=present-selectedTooth; val map=session.oleary.toMutableMap().apply{remove(selectedTooth)}
-                    onSessionChanged(session.copy(presentTeeth=p,oleary=map))
+                    onSessionChanged(session.copy(presentTeeth=otherDentitionPresent + p,oleary=map))
                 },{Text(tr(lang,"Ausente / excluir","Missing / exclude"))})
             }
         } }
@@ -104,11 +105,18 @@ fun OlearyScreen(lang: String, session: EducationalSession, onSessionChanged: (E
         } }
         item { SectionCard(tr(lang,"4 · Cálculo automático","4 · Automatic calculation")) {
             Text(tr(lang,"Porcentaje = superficies con placa ÷ superficies evaluables × 100.","Percentage = plaque-positive surfaces ÷ evaluable surfaces × 100."),style=MaterialTheme.typography.bodySmall)
-            if (!hasOLearyData || percentage == null) {
-                Text(tr(lang, "O’Leary: Pendiente · aún no hay dientes evaluados", "O’Leary: Pending · no teeth evaluated yet"), style=MaterialTheme.typography.headlineMedium, fontWeight=FontWeight.Bold)
-            } else {
-                Text("$plaqueFaces / $totalFaces × 100",style=MaterialTheme.typography.titleMedium)
-                Text("$percentage %",style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold)
+            when {
+                present.isEmpty() -> Text(tr(lang,"O’Leary pendiente: marca explícitamente los dientes presentes que vas a evaluar.","O’Leary pending: explicitly mark the present teeth to be assessed."),style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Bold)
+                percentage == null -> {
+                    Text(tr(lang,"O’Leary incompleto: ${recordedPresentCount}/${present.size} dientes presentes tienen registro de superficies.","O’Leary incomplete: ${recordedPresentCount}/${present.size} present teeth have a surface record."),style=MaterialTheme.typography.titleMedium,fontWeight=FontWeight.Bold)
+                    Text(tr(lang,"Caras con placa registradas: $plaqueFaces. No se publica porcentaje hasta completar los dientes presentes.","Recorded plaque-positive surfaces: $plaqueFaces. No percentage is shown until all present teeth are assessed."))
+                }
+                else -> {
+                    Text("$plaqueFaces / $totalFaces × 100",style=MaterialTheme.typography.titleMedium)
+                    Text("$percentage %",style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold)
+                    if (percentage == 0.0) Text(tr(lang,"0 % explícito: todas las superficies de los dientes presentes fueron evaluadas y ninguna se marcó con placa.","Explicit 0%: all surfaces on present teeth were assessed and none was marked with plaque."))
+                    if (percentage == 100.0) Text(tr(lang,"100 %: todas las superficies evaluadas de los dientes presentes se marcaron con placa.","100%: every assessed surface on the present teeth was marked with plaque."))
+                }
             }
             Text(tr(lang,"Caras evaluables = dientes presentes × 4. Los dientes ausentes quedan fuera del denominador.","Evaluable surfaces = present teeth × 4. Missing teeth are excluded from the denominator."))
         } }

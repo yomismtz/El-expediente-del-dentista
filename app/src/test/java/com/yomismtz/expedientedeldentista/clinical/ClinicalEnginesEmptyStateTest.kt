@@ -205,4 +205,71 @@ fun mixedDentitionIsNotSilentlyDeclaredComplete() {
     assertEquals(OdontogramCompletenessStatus.MIXED_DENTITION, result.status)
 }
 
+    @Test fun emptyCariesIndexIsPendingRatherThanHealthy() {
+        val assessment = ClinicalEngines.cariesIndexAssessment(emptyMap(), primary = false)
+        assertEquals(CariesIndexStatus.EMPTY, assessment.status)
+        assertEquals(0, assessment.assessedTeeth)
+        assertEquals(32, assessment.expectedTeeth)
+        assertEquals(32, assessment.missingTeeth.size)
+        assertEquals(0, assessment.result.total)
+    }
+
+    @Test fun explicitHealthyToothDiffersFromUnassessedTeeth() {
+        val assessment = ClinicalEngines.cariesIndexAssessment(
+            mapOf(11 to ToothRecord(status = ToothStatus.HEALTHY)),
+            primary = false
+        )
+        assertEquals(CariesIndexStatus.PARTIAL, assessment.status)
+        assertEquals(1, assessment.assessedTeeth)
+        assertEquals(31, assessment.missingTeeth.size)
+    }
+
+    @Test fun permanentCariesIndexCountsCariesMissingDueToCariesAndRestoredTeeth() {
+        val teeth = mapOf(
+            11 to ToothRecord(status = ToothStatus.CARIES),
+            12 to ToothRecord(status = ToothStatus.MISSING_CARIES),
+            13 to ToothRecord(status = ToothStatus.RESTORED),
+            14 to ToothRecord(status = ToothStatus.MISSING_OTHER),
+            15 to ToothRecord(status = ToothStatus.EXTRACTION_INDICATED),
+            16 to ToothRecord(status = ToothStatus.UNERUPTED)
+        )
+        val result = ClinicalEngines.cariesIndexAssessment(teeth, primary = false).result
+        assertEquals(1, result.carious)
+        assertEquals(1, result.missing)
+        assertEquals(1, result.filled)
+        assertEquals(3, result.total)
+    }
+
+    @Test fun completePermanentCariesIndexRequiresExplicitStatusForAllThirtyTwoTeeth() {
+        val domain = ClinicalContent.permanentTeeth.associateWith { ToothRecord(status = ToothStatus.HEALTHY) }.toMutableMap()
+        domain[11] = ToothRecord(status = ToothStatus.CARIES)
+        val assessment = ClinicalEngines.cariesIndexAssessment(domain, primary = false)
+        assertEquals(CariesIndexStatus.COMPLETE, assessment.status)
+        assertEquals(32, assessment.assessedTeeth)
+        assertEquals(0, assessment.missingTeeth.size)
+        assertEquals(1, assessment.result.carious)
+    }
+
+    @Test fun emptyOLearyIsNotZeroPercent() {
+        assertNull(ClinicalEngines.olearyPercentageOrNull(EducationalSession()))
+    }
+
+    @Test fun completeOLearyCanBeExplicitlyOneHundredPercent() {
+        val allSurfaces = setOf(Surface.VESTIBULAR, Surface.LINGUAL_PALATAL, Surface.MESIAL, Surface.DISTAL)
+        val s = EducationalSession(
+            presentTeeth = setOf(11, 12),
+            oleary = mapOf(11 to allSurfaces, 12 to allSurfaces)
+        )
+        assertEquals(100.0, requireNotNull(ClinicalEngines.olearyPercentageOrNull(s)), 0.001)
+    }
+
+    @Test fun olearyCanBeCalculatedForSelectedDentitionOnly() {
+        val s = EducationalSession(
+            presentTeeth = setOf(11, 51),
+            oleary = mapOf(11 to emptySet(), 51 to setOf(Surface.VESTIBULAR))
+        )
+        assertEquals(0.0, requireNotNull(ClinicalEngines.olearyPercentageOrNull(s, setOf(11))), 0.001)
+        assertEquals(25.0, requireNotNull(ClinicalEngines.olearyPercentageOrNull(s, setOf(51))), 0.001)
+    }
+
 }

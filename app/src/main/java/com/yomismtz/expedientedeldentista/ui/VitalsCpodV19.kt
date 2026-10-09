@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.yomismtz.expedientedeldentista.clinical.ClinicalContent
+import com.yomismtz.expedientedeldentista.clinical.CariesIndexStatus
 import com.yomismtz.expedientedeldentista.clinical.ClinicalEngines
 import com.yomismtz.expedientedeldentista.clinical.EducationalSession
 import com.yomismtz.expedientedeldentista.clinical.evaluateClinicalDecisionV1
@@ -817,7 +818,8 @@ fun CpodInteractiveV19Screen(lang:String,session:EducationalSession,onSessionCha
     if(selected !in shown) selected=shown.first()
     val record=session.teeth[selected]
     val currentRecord=record?:ToothRecord()
-    val result=ClinicalEngines.cpod(session.teeth,primary)
+    val assessment=ClinicalEngines.cariesIndexAssessment(session.teeth,primary)
+    val result=assessment.result
     val choices=listOf(ToothStatus.HEALTHY,ToothStatus.CARIES,ToothStatus.RESTORED,ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER,ToothStatus.UNERUPTED,ToothStatus.EXTRACTION_INDICATED,ToothStatus.SEALANT)
     fun setStatus(status:ToothStatus) {
         val present=session.presentTeeth.toMutableSet()
@@ -840,9 +842,14 @@ fun CpodInteractiveV19Screen(lang:String,session:EducationalSession,onSessionCha
         Card(modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)) {
             Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(6.dp)) {
                 Text(tr(lang,"4 · Resultado ","4 · Result ")+(if(primary)"ceod" else "CPOD"),fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleLarge)
+                Text(tr(lang,"Dientes evaluados: ${assessment.assessedTeeth}/${assessment.expectedTeeth} · pendientes: ${assessment.missingTeeth.size}","Teeth assessed: ${assessment.assessedTeeth}/${assessment.expectedTeeth} · pending: ${assessment.missingTeeth.size}"),fontWeight=FontWeight.SemiBold)
                 Text(if(primary)"c = ${result.carious}   e = ${result.missing}   o = ${result.filled}" else "C = ${result.carious}   P = ${result.missing}   O = ${result.filled}")
-                Text("${if(primary)"ceod" else "CPOD"} = ${result.total}",fontWeight=FontWeight.Black,style=MaterialTheme.typography.headlineSmall)
-                Text(ClinicalEngines.cpodInterpretation(result.total,lang))
+                if(assessment.status==CariesIndexStatus.COMPLETE) {
+                    Text("${if(primary)"ceod" else "CPOD"} = ${result.total}",fontWeight=FontWeight.Black,style=MaterialTheme.typography.headlineSmall)
+                    Text(ClinicalEngines.cpodInterpretation(result.total,lang))
+                } else {
+                    Text(tr(lang,"Conteo provisional: no se interpreta el índice hasta registrar explícitamente todos los dientes de esta dentición.","Provisional count: the index is not interpreted until every tooth in this dentition is explicitly recorded."),color=MaterialTheme.colorScheme.error,fontWeight=FontWeight.SemiBold)
+                }
             }
         }
         NoticeCard(tr(lang,"La unidad es el diente. Caries activa tiene prioridad sobre una restauración para el conteo. Ausencias por causas distintas de caries no suman como P/e.","The unit is the tooth. Active caries takes priority over a restoration for counting. Missing teeth for causes other than caries do not count as M/e."))
