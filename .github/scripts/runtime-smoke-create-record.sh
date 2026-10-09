@@ -91,4 +91,13 @@ adb shell input keyevent 4
 wait_for_text "Abrir expediente"
 assert_alive "closing the record sections"
 
-echo "Create/open/close record smoke test passed."
+# Verify the record survives a full application process restart, not just navigation.
+adb shell am force-stop "$PKG"
+adb shell am start -W -n "$PKG/.MainActivity"
+wait_for_text "ABC"
+assert_alive "reopening app after process restart"
+tap_text "ABC"
+wait_for_text "Secciones del expediente"
+assert_alive "reopening persisted record after process restart"
+
+echo "Create/open/close/restart/reopen record smoke test passed."
