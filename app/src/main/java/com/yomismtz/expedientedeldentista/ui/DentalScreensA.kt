@@ -236,9 +236,9 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
         onSessionChanged(session.copy(icdasSurfaceRecords = all, icdasSurfaces = legacy, teeth = session.teeth + (selectedTooth to record.copy(icdas = 0, icdasLegacyPending = false))))
     }
 
-    fun setAll(code: Int) {
-        val record = IcdasCoding.fromCombined(code) ?: return
-        saveCodes(allSurfaces.associateWith { record }, presentOverride = true)
+    fun setAll() {
+        if (!surfaceComplete) return
+        saveCodes(allSurfaces.associateWith { current }, presentOverride = true)
     }
 
     LazyColumn(Modifier.fillMaxSize().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -321,7 +321,7 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
             }
         } }
         item { SectionCard(tr(lang,"6 · Acciones","6 · Actions")) { Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick={setAll(currentCode)},enabled=surfaceComplete,modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Aplicar ${"%02d".format(currentCode)} a todas las superficies","Apply ${"%02d".format(currentCode)} to all surfaces"))}
+            OutlinedButton(onClick={setAll()},enabled=surfaceComplete,modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Aplicar ${"%02d".format(currentCode)} a todas las superficies","Apply ${"%02d".format(currentCode)} to all surfaces"))}
             OutlinedButton(onClick={clearIcdas()},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Limpiar códigos ICDAS del diente","Clear ICDAS codes from tooth"))}
             Text(tr(lang,"Usa «aplicar a todas» sólo cuando todas las superficies examinadas cumplen el mismo criterio.",
                 "Use “apply to all” only when every examined surface meets the same criterion."),style=MaterialTheme.typography.bodySmall)
