@@ -13,7 +13,7 @@ object ClinicalEngines {
         domain.forEach { tooth ->
             when (teeth[tooth]?.status ?: ToothStatus.HEALTHY) {
                 ToothStatus.CARIES -> c++
-                ToothStatus.EXTRACTION_INDICATED -> if (primary) p++ else c++
+                ToothStatus.EXTRACTION_INDICATED, ToothStatus.UNERUPTED -> Unit
                 ToothStatus.MISSING_CARIES -> p++
                 ToothStatus.RESTORED -> o++
                 else -> Unit
@@ -43,7 +43,7 @@ object ClinicalEngines {
     fun olearyPercentageOrNull(session: EducationalSession): Double? {
         val present = session.presentTeeth.filter { tooth ->
             when (session.teeth[tooth]?.status ?: ToothStatus.HEALTHY) {
-                ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER -> false
+                ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER, ToothStatus.UNERUPTED -> false
                 else -> true
             }
         }

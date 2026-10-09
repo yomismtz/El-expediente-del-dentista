@@ -2,6 +2,7 @@ package com.yomismtz.expedientedeldentista.clinical
 
 import org.junit.Assert.*
 import org.junit.Test
+import com.yomismtz.expedientedeldentista.clinical.auditOdontogram
 
 class IcdasCodingTest {
     @Test fun clearAndSpecialSemanticsAreRepresentable() {
@@ -82,4 +83,25 @@ class IcdasCodingTest {
             assertEquals(code, IcdasCoding.fromLegacy(code)?.specialCode)
         }
     }
+
+    @Test fun odontogramAuditDetectsMissingToothWithIcdasAndSurfaceDisagreement() {
+        val session = EducationalSession(
+            teeth = mapOf(16 to ToothRecord(status = ToothStatus.MISSING_OTHER)),
+            odontogramSurfaces = mapOf(16 to mapOf(Surface.OCCLUSAL to SurfaceMark.CARIES)),
+            icdasSurfaceRecords = mapOf(16 to mapOf(Surface.OCCLUSAL to IcdasSurfaceRecord(restorationCode = 0, cariesCode = 0)))
+        )
+        val issues = auditOdontogram(session)
+        assertTrue(issues.any { it.code == "MISSING_WITH_SURFACE_MARKS" })
+        assertTrue(issues.any { it.code == "TOOTH_STATUS_WITH_ICDAS" })
+        assertTrue(issues.any { it.code == "CARIES_SURFACE_ICDAS_SOUND" })
+    }
+
+    @Test fun uneruptedToothIsExplicitAndAuditedAgainstIcdas() {
+        val session = EducationalSession(
+            teeth = mapOf(18 to ToothRecord(status = ToothStatus.UNERUPTED)),
+            icdasSurfaceRecords = mapOf(18 to mapOf(Surface.OCCLUSAL to IcdasSurfaceRecord(specialCode = 99)))
+        )
+        assertTrue(auditOdontogram(session).any { it.code == "TOOTH_STATUS_WITH_ICDAS" })
+    }
+
 }

@@ -29,6 +29,7 @@ import com.yomismtz.expedientedeldentista.clinical.Surface
 import com.yomismtz.expedientedeldentista.clinical.SurfaceMark
 import com.yomismtz.expedientedeldentista.clinical.ToothRecord
 import com.yomismtz.expedientedeldentista.clinical.ToothStatus
+import com.yomismtz.expedientedeldentista.clinical.auditOdontogram
 
 private data class OdontoArchV20(val titleEs:String,val titleEn:String,val teeth:List<Int>)
 private data class OdontoQuadrantV20(val titleEs:String,val titleEn:String,val teeth:List<Int>)
@@ -85,13 +86,17 @@ fun OdontogramV20Screen(
     val isRecorded=record!=null
     val currentRecord=record?:ToothRecord()
     val missing=record?.status in setOf(ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER)
+    val unerupted=record?.status == ToothStatus.UNERUPTED
+    val unavailable=missing || unerupted
+    val auditIssues=auditOdontogram(session).filter { it.tooth == selectedTooth }
     val marks=session.odontogramSurfaces[selectedTooth]?:emptyMap()
 
     fun saveSurface(surface:Surface){
-        if(!isRecorded || missing) return
+        if(!isRecorded || unavailable) return
         val updated=marks.toMutableMap()
         if(selectedMark==SurfaceMark.HEALTHY) updated.remove(surface) else updated[surface]=selectedMark
         val status=when{
+            currentRecord.status==ToothStatus.EXTRACTION_INDICATED->ToothStatus.EXTRACTION_INDICATED
             updated.values.any{it==SurfaceMark.CARIES}->ToothStatus.CARIES
             updated.values.any{it==SurfaceMark.RESTORATION}->ToothStatus.RESTORED
             updated.values.any{it==SurfaceMark.SEALANT}->ToothStatus.SEALANT
@@ -104,15 +109,15 @@ fun OdontogramV20Screen(
         ))
     }
 
-    fun setMissing(value:Boolean){
+    fun setWholeStatus(status:ToothStatus){
         val present=session.presentTeeth.toMutableSet()
-        if(value) present.remove(selectedTooth) else present.add(selectedTooth)
-        val surfaces=if(value) session.odontogramSurfaces-selectedTooth else session.odontogramSurfaces
-        onSessionChanged(session.copy(
-            presentTeeth=present,
-            odontogramSurfaces=surfaces,
-            teeth=session.teeth+(selectedTooth to currentRecord.copy(status=if(value)ToothStatus.MISSING_OTHER else ToothStatus.HEALTHY))
-        ))
+        if(status in setOf(ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER,ToothStatus.UNERUPTED)) present.remove(selectedTooth) else present.add(selectedTooth)
+        val surfaces=if(status in setOf(ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER,ToothStatus.UNERUPTED)) session.odontogramSurfaces-selectedTooth else session.odontogramSurfaces
+        val effectiveStatus=if(status==ToothStatus.HEALTHY){
+            val retained=surfaces[selectedTooth].orEmpty().values
+            when { retained.any{it==SurfaceMark.CARIES}->ToothStatus.CARIES; retained.any{it==SurfaceMark.RESTORATION}->ToothStatus.RESTORED; retained.any{it==SurfaceMark.SEALANT}->ToothStatus.SEALANT; else->ToothStatus.HEALTHY }
+        } else status
+        onSessionChanged(session.copy(presentTeeth=present,odontogramSurfaces=surfaces,teeth=session.teeth+(selectedTooth to currentRecord.copy(status=effectiveStatus))))
     }
 
     ResponsiveScreenV17(
@@ -135,11 +140,12 @@ fun OdontogramV20Screen(
                     val status=session.teeth[tooth]?.status
                     val isRecordedTooth=status!=null
                     val isMissing=status in setOf(ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER)
+                    val isUnerupted=status==ToothStatus.UNERUPTED
                     val selected=selectedTooth==tooth
                     val hasMark=session.odontogramSurfaces[tooth]?.isNotEmpty()==true
                     Card(onClick={selectedTooth=tooth},modifier=Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=when{selected->MaterialTheme.colorScheme.primary;isMissing->MaterialTheme.colorScheme.errorContainer;hasMark->MaterialTheme.colorScheme.secondaryContainer;!isRecordedTooth->MaterialTheme.colorScheme.surfaceVariant;else->MaterialTheme.colorScheme.surface}),border=BorderStroke(1.dp,if(selected)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha=.4f)),shape=RoundedCornerShape(12.dp)){
                         Column(Modifier.fillMaxWidth().padding(vertical=7.dp),horizontalAlignment=Alignment.CenterHorizontally){
-                            Text(if(isMissing)"✕" else if(!isRecordedTooth)"?" else "🦷",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleLarge)
+                            Text(if(isMissing)"✕" else if(isUnerupted)"U" else if(!isRecordedTooth)"?" else "🦷",fontWeight=FontWeight.Black,style=MaterialTheme.typography.titleLarge)
                             Text(tooth.toString(),fontWeight=FontWeight.Black,color=if(selected)MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface)
                         }
                     }
@@ -156,11 +162,11 @@ fun OdontogramV20Screen(
             quadrants.forEach { q -> quadrantContent(q) }
         }
 
-        ResponsiveSectionV17(tr(lang,"3 · OD $selectedTooth","3 · Tooth $selectedTooth"),if(!isRecorded)tr(lang,"Diente no registrado: primero marca explícitamente Presente o Ausente.","Tooth not registered: first explicitly mark it Present or Missing.") else if(missing)tr(lang,"Diente ausente: se muestra una X en su viñeta.","Missing tooth: an X is shown in its tile.") else tr(lang,"Puedes combinar marcas en distintas caras del mismo diente.","You can combine marks on different surfaces of the same tooth.")){
+        ResponsiveSectionV17(tr(lang,"3 · OD $selectedTooth","3 · Tooth $selectedTooth"),if(!isRecorded)tr(lang,"Diente no registrado: primero marca explícitamente Presente o Ausente.","Tooth not registered: first explicitly mark it Present or Missing.") else if(missing)tr(lang,"Diente ausente: se muestra una X en su viñeta.","Missing tooth: an X is shown in its tile.") else if(unerupted)tr(lang,"Diente no erupcionado: no se registran superficies clínicas todavía.","Unerupted tooth: clinical surfaces are not recorded yet.") else tr(lang,"Puedes combinar marcas en distintas caras del mismo diente.","You can combine marks on different surfaces of the same tooth.")){
             Text(tr(lang,"Marca de superficie","Surface mark"),fontWeight=FontWeight.Black)
             AdaptiveGridV17(SurfaceMark.entries.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)2 else 4){i->
                 val mark=SurfaceMark.entries[i]
-                FilterChip(selectedMark==mark,{selectedMark=mark},{Text(markLabelV20(mark,lang))},Modifier.fillMaxWidth(),enabled=isRecorded && !missing)
+                FilterChip(selectedMark==mark,{selectedMark=mark},{Text(markLabelV20(mark,lang))},Modifier.fillMaxWidth(),enabled=isRecorded && !unavailable)
             }
 
             if(!isRecorded){
@@ -175,6 +181,13 @@ fun OdontogramV20Screen(
                     Column(Modifier.padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally){
                         Text("✕",style=MaterialTheme.typography.displayMedium,fontWeight=FontWeight.Black)
                         Text(tr(lang,"OD $selectedTooth ausente. Márcalo presente para registrar superficies.","Tooth $selectedTooth is missing. Mark it present to record surfaces."),fontWeight=FontWeight.Bold)
+                    }
+                }
+            }else if(unerupted){
+                Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surfaceVariant),modifier=Modifier.fillMaxWidth()){
+                    Column(Modifier.padding(18.dp),horizontalAlignment=Alignment.CenterHorizontally){
+                        Text("U",style=MaterialTheme.typography.displayMedium,fontWeight=FontWeight.Black)
+                        Text(tr(lang,"Diente no erupcionado; excluido del registro de superficies hasta valoración clínica.","Unerupted tooth; excluded from surface recording pending clinical assessment."),fontWeight=FontWeight.Bold)
                     }
                 }
             }else{
@@ -222,14 +235,23 @@ fun OdontogramV20Screen(
             }
 
             Text(tr(lang,"Estado del diente completo","Whole-tooth status"),fontWeight=FontWeight.Black)
-            AdaptiveGridV17(2,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
-                val targetMissing=i==1
-                FilterChip(
-                    selected=isRecorded && missing==targetMissing,
-                    onClick={setMissing(targetMissing)},
-                    label={Text(if(targetMissing)tr(lang,"✕ Ausente por otra causa","✕ Missing for another reason") else tr(lang,"🦷 Presente","🦷 Present"))},
-                    modifier=Modifier.fillMaxWidth()
-                )
+            val wholeStatuses=listOf(ToothStatus.HEALTHY,ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER,ToothStatus.UNERUPTED,ToothStatus.EXTRACTION_INDICATED)
+            AdaptiveGridV17(wholeStatuses.size,if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2){i->
+                val status=wholeStatuses[i]
+                val label=when(status){
+                    ToothStatus.HEALTHY->tr(lang,"Presente","Present")
+                    ToothStatus.MISSING_CARIES->tr(lang,"Ausente por caries","Missing due to caries")
+                    ToothStatus.MISSING_OTHER->tr(lang,"Ausente por otra causa","Missing for another reason")
+                    ToothStatus.UNERUPTED->tr(lang,"No erupcionado","Unerupted")
+                    ToothStatus.EXTRACTION_INDICATED->tr(lang,"Extracción indicada","Extraction indicated")
+                    else->status.name
+                }
+                FilterChip(selected=isRecorded && record?.status==status,onClick={setWholeStatus(status)},label={Text(label)},modifier=Modifier.fillMaxWidth())
+            }
+            auditIssues.forEach { issue ->
+                Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.errorContainer),modifier=Modifier.fillMaxWidth()) {
+                    Text("⚠ ${issue.messageEs}",Modifier.padding(10.dp),color=MaterialTheme.colorScheme.onErrorContainer,style=MaterialTheme.typography.bodySmall)
+                }
             }
         }
 

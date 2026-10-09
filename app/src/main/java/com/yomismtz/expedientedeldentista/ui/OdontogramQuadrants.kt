@@ -61,6 +61,7 @@ private fun wholeStatusName(status: ToothStatus, lang: String) = when (status) {
     ToothStatus.HEALTHY -> tr(lang, "Presente / sano", "Present / sound")
     ToothStatus.MISSING_CARIES -> tr(lang, "Ausente por caries", "Missing due to caries")
     ToothStatus.MISSING_OTHER -> tr(lang, "Ausente por otra causa", "Missing for another reason")
+    ToothStatus.UNERUPTED -> tr(lang, "No erupcionado", "Unerupted")
     ToothStatus.EXTRACTION_INDICATED -> tr(lang, "Extracción indicada", "Extraction indicated")
     else -> status.name
 }
@@ -112,7 +113,7 @@ fun OdontogramQuadrantsScreen(
     fun setWholeStatus(status: ToothStatus) {
         val teeth = session.teeth + (selectedTooth to record.copy(status = status))
         val present = session.presentTeeth.toMutableSet()
-        if (status == ToothStatus.MISSING_CARIES || status == ToothStatus.MISSING_OTHER) present.remove(selectedTooth) else present.add(selectedTooth)
+        if (status == ToothStatus.MISSING_CARIES || status == ToothStatus.MISSING_OTHER || status == ToothStatus.UNERUPTED) present.remove(selectedTooth) else present.add(selectedTooth)
         onSessionChanged(session.copy(teeth = teeth, presentTeeth = present))
     }
 
@@ -190,7 +191,7 @@ fun OdontogramQuadrantsScreen(
                         Text(if (selectedMark == SurfaceMark.HEALTHY) tr(lang, "Limpiar todas las caras", "Clear all surfaces") else tr(lang, "Aplicar a todas las caras", "Apply to all surfaces"))
                     }
                     Text(tr(lang, "Estado del diente completo", "Whole-tooth status"), fontWeight = FontWeight.Bold, color = QDeep)
-                    listOf(ToothStatus.HEALTHY, ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER, ToothStatus.EXTRACTION_INDICATED).forEach { status ->
+                    listOf(ToothStatus.HEALTHY, ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER, ToothStatus.UNERUPTED, ToothStatus.EXTRACTION_INDICATED).forEach { status ->
                         FilterChip(
                             selected = record.status == status && (status != ToothStatus.HEALTHY || marks.isEmpty()),
                             onClick = { setWholeStatus(status) },

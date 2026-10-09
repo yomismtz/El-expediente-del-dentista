@@ -39,7 +39,7 @@ fun ClinicalSummaryV53Screen(lang:String,session:EducationalSession,onBack:()->U
     val medicationsNone=rememberRecordState("history.medications.noneDenied",false).value
     val allergyIds=setOf("drug_allergy","latex_allergy","food_allergy","allergic_rhinitis","urticaria","atopic_dermatitis","anaphylaxis","contact_dermatitis")
     val positiveAllergy=session.history.diseases.any { (id,a) -> a.present && id in allergyIds }
-    val present=teeth.count { (_,it) -> it.status.name !in setOf("MISSING_CARIES","MISSING_OTHER") }
+    val present=teeth.count { (_,it) -> it.status.name !in setOf("MISSING_CARIES","MISSING_OTHER","UNERUPTED") }
     val caries=teeth.keys.count { tooth -> session.icdasSurfaceRecords[tooth]?.values?.any { it.cariesCode in 1..6 } == true }
     val perio=if(session.periodontogram.isEmpty()) "Pendiente" else "Registrado"
     val pulpal=if(session.pulpal.tooth>0) "Registrado · OD "+session.pulpal.tooth else "Pendiente"

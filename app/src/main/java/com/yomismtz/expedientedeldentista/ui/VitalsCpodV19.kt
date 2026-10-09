@@ -805,6 +805,7 @@ private fun cpodStatus19(status:ToothStatus,lang:String):String = when(status) {
     ToothStatus.MISSING_CARIES -> tr(lang,"Ausente por caries","Missing due to caries")
     ToothStatus.MISSING_OTHER -> tr(lang,"Ausente por otra causa","Missing other cause")
     ToothStatus.EXTRACTION_INDICATED -> tr(lang,"Extracción indicada","Extraction indicated")
+    ToothStatus.UNERUPTED -> tr(lang,"No erupcionado","Unerupted")
     ToothStatus.SEALANT -> tr(lang,"Sellador / no cuenta como O","Sealant / not counted as F")
 }
 
@@ -817,10 +818,10 @@ fun CpodInteractiveV19Screen(lang:String,session:EducationalSession,onSessionCha
     val record=session.teeth[selected]
     val currentRecord=record?:ToothRecord()
     val result=ClinicalEngines.cpod(session.teeth,primary)
-    val choices=listOf(ToothStatus.HEALTHY,ToothStatus.CARIES,ToothStatus.RESTORED,ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER,ToothStatus.SEALANT)
+    val choices=listOf(ToothStatus.HEALTHY,ToothStatus.CARIES,ToothStatus.RESTORED,ToothStatus.MISSING_CARIES,ToothStatus.MISSING_OTHER,ToothStatus.UNERUPTED,ToothStatus.EXTRACTION_INDICATED,ToothStatus.SEALANT)
     fun setStatus(status:ToothStatus) {
         val present=session.presentTeeth.toMutableSet()
-        if(status==ToothStatus.MISSING_CARIES||status==ToothStatus.MISSING_OTHER)present.remove(selected) else present.add(selected)
+        if(status==ToothStatus.MISSING_CARIES||status==ToothStatus.MISSING_OTHER||status==ToothStatus.UNERUPTED)present.remove(selected) else present.add(selected)
         onSessionChanged(session.copy(teeth=session.teeth+(selected to currentRecord.copy(status=status)),presentTeeth=present))
     }
 
