@@ -59,7 +59,10 @@ data class DiseaseAnswer(
 
 data class HistoryState(
     val diseases: Map<String, DiseaseAnswer> = emptyMap(),
+    /** Algorithmic educational estimate derived from recorded history; not a clinician-confirmed ASA class. */
     val asaClass: Int = 1,
+    /** Clinician-confirmed ASA physical status, kept separate from the educational estimate. Null means not assessed. */
+    val asaClassClinician: Int? = null,
     val asaEmergency: Boolean = false,
     val tobaccoAlcohol: String = "",
     val hospitalizations: String = "",
