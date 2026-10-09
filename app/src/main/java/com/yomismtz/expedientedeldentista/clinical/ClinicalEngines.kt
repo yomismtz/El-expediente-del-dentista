@@ -297,7 +297,7 @@ object ClinicalEngines {
                 append(if (diseases.isEmpty()) "no selected conditions" else diseases.joinToString(", "))
                 append(". Medications: ${p.medications.ifBlank { "none entered" }}. Allergies: ${p.allergies.ifBlank { "none entered" }}.\n")
                 append("Caries indices: DMFT=${permanent.total} (D=${permanent.carious}, M=${permanent.missing}, F=${permanent.filled}); dmft=${primary.total}.\n")
-                append("Periodontal screening: highest CPI code $ipc. OHI-S=${ihosOrNull(session)?.let { "%.2f".format(it) } ?: "Pendiente"}. O'Leary=${olearyPercentageOrNull(session)?.let { "%.1f".format(it) } ?: "Pendiente"}%.\n")
+                append("Periodontal screening: highest CPI code $ipc. OHI-S=${ihosOrNull(session)?.let { "%.2f".format(it) } ?: "Pending"}. O'Leary=${olearyPercentageOrNull(session)?.let { "%.1f".format(it) + "%" } ?: "Pending"}.\\n")
                 append("Pulpal/periapical educational orientation: ${diagnosis.pulpalEn}; ${diagnosis.apicalEn}.\n")
                 append("This automatically generated text is for learning how an intake note is organized; it is not a real clinical record.")
             }
@@ -311,7 +311,7 @@ object ClinicalEngines {
                 append(if (diseases.isEmpty()) "sin padecimientos seleccionados" else diseases.joinToString(", "))
                 append(". Medicamentos: ${p.medications.ifBlank { "ninguno capturado" }}. Alergias: ${p.allergies.ifBlank { "ninguna capturada" }}.\n")
                 append("Índices de caries: CPOD=${permanent.total} (C=${permanent.carious}, P=${permanent.missing}, O=${permanent.filled}); ceod=${primary.total}.\n")
-                append("Tamizaje periodontal: código IPC más alto $ipc. IHOS=${"%.2f".format(ihos(session))}. O'Leary=${"%.1f".format(olearyPercentage(session))}%.\n")
+                append("Tamizaje periodontal: código IPC más alto $ipc. IHOS=${ihosOrNull(session)?.let { "%.2f".format(it) } ?: "Pendiente"}. O'Leary=${olearyPercentageOrNull(session)?.let { "%.1f".format(it) + "%" } ?: "Pendiente"}.\\n")
                 append("Orientación pulpar/periapical educativa: ${diagnosis.pulpalEs}; ${diagnosis.apicalEs}.\n")
                 append("Este texto automático sirve para aprender cómo se integra una nota de ingreso; no constituye un expediente clínico real.")
             }
