@@ -49,4 +49,4 @@ jobs:
           emulator-boot-timeout: 900
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
-          script: bash .github/scripts/runtime-smoke-create-record.sh
+          script: gradle :app:connectedDebugAndroidTest --stacktrace && bash .github/scripts/runtime-smoke-create-record.sh
