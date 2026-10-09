@@ -22,6 +22,8 @@ import com.yomismtz.expedientedeldentista.clinical.validateBirthDate
 import com.yomismtz.expedientedeldentista.clinical.validateRecordedSex
 import com.yomismtz.expedientedeldentista.clinical.validateOdontogramCompleteness
 import com.yomismtz.expedientedeldentista.clinical.OdontogramCompletenessStatus
+import com.yomismtz.expedientedeldentista.clinical.AsaRecordStatus
+import com.yomismtz.expedientedeldentista.clinical.validateClinicianAsaClass
 
 private data class CompletionItemV1(val title:String,val done:Boolean)
 private data class CompletionResultV1(val items:List<CompletionItemV1>,val warnings:List<String>)
@@ -54,7 +56,8 @@ private fun completionResultV1(
   CompletionItemV1("Heredo-familiares",hereditaryNone || hereditaryPositive), CompletionItemV1("Antecedentes patológicos",appDone),
   CompletionItemV1("No patológicos",nonPathDone), CompletionItemV1("Hábitos / parafunciones",habitsNone || habitsPositive),
   CompletionItemV1("Medicamentos",medsDone), CompletionItemV1("Alergias",allergiesDone),
-  CompletionItemV1("Signos vitales",vitalsDone), CompletionItemV1("Examen de mucosas",mucosaDone), CompletionItemV1("Odontograma",odontogramDone)
+  CompletionItemV1("Signos vitales",vitalsDone), CompletionItemV1("Examen de mucosas",mucosaDone), CompletionItemV1("Odontograma",odontogramDone),
+  CompletionItemV1("Clasificación ASA clínica",validateClinicianAsaClass(session.history.asaClassClinician)==AsaRecordStatus.VALID)
  )
  val warnings=buildList{
   if(session.history.asaClass>1 && diseases.values.none{it.present} && !pathNone) add("ASA > I sin antecedentes patológicos registrados; revisar congruencia.")
