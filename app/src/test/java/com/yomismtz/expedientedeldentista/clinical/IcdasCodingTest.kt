@@ -101,7 +101,15 @@ class IcdasCodingTest {
             teeth = mapOf(18 to ToothRecord(status = ToothStatus.UNERUPTED)),
             icdasSurfaceRecords = mapOf(18 to mapOf(Surface.OCCLUSAL to IcdasSurfaceRecord(specialCode = 99)))
         )
-        assertTrue(auditOdontogram(session).any { it.code == "TOOTH_STATUS_WITH_ICDAS" })
+        assertTrue(auditOdontogram(session).none { it.code == "TOOTH_STATUS_WITH_ICDAS" })
+    }
+
+    @Test fun missingToothWithMatchingIcdas97IsConsistent() {
+        val session = EducationalSession(
+            teeth = mapOf(16 to ToothRecord(status = ToothStatus.MISSING_CARIES)),
+            icdasSurfaceRecords = mapOf(16 to mapOf(Surface.OCCLUSAL to IcdasSurfaceRecord(specialCode = 97)))
+        )
+        assertTrue(auditOdontogram(session).none { it.code == "TOOTH_STATUS_WITH_ICDAS" })
     }
 
 }

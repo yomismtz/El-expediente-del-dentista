@@ -23,7 +23,13 @@ fun auditOdontogram(session: EducationalSession): List<OdontogramAuditIssue> {
                 "El diente está marcado ausente, pero conserva marcas de superficies.",
                 "The tooth is marked missing but still has conventional surface marks.")
         }
-        if ((absent || record.status == ToothStatus.UNERUPTED) && icdas.isNotEmpty()) {
+        val compatibleSpecialStatus = when (record.status) {
+            ToothStatus.MISSING_CARIES -> 97 in specialCodes
+            ToothStatus.MISSING_OTHER -> 98 in specialCodes
+            ToothStatus.UNERUPTED -> 99 in specialCodes
+            else -> false
+        }
+        if ((absent || record.status == ToothStatus.UNERUPTED) && icdas.isNotEmpty() && !compatibleSpecialStatus) {
             issues += OdontogramAuditIssue(tooth, "TOOTH_STATUS_WITH_ICDAS",
                 "El estado del diente no coincide con los registros ICDAS conservados; revisar antes de cerrar.",
                 "The tooth status conflicts with retained ICDAS records; review before closing.")
