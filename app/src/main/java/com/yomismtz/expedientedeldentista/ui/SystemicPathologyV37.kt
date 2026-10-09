@@ -76,6 +76,17 @@ private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String
  LazyColumn(Modifier.fillMaxSize().padding(18.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
   item{ScreenHeader("Antecedentes personales patológicos",onBack,"Primero registra tabaco y alcohol. Después selecciona una clasificación de enfermedades → enfermedad → datos del antecedente. Al guardar regresarás a la lista de enfermedades.")}
   if(category==null){
+   item{SectionCard("Clasificación ASA clínica"){
+    val asaOptions=listOf(1 to "ASA I",2 to "ASA II",3 to "ASA III",4 to "ASA IV",5 to "ASA V",6 to "ASA VI")
+    Text("Registra la clasificación confirmada por el profesional. La estimación automática basada en antecedentes es sólo educativa y no sustituye la valoración clínica.",style=MaterialTheme.typography.bodySmall)
+    ChipChoices(asaOptions.map{it.second to (session.history.asaClassClinician==it.first)},{i->
+     onSessionChanged(session.copy(history=session.history.copy(asaClassClinician=asaOptions[i].first)))
+    },columns=3)
+    OutlinedButton(onClick={onSessionChanged(session.copy(history=session.history.copy(asaClassClinician=null)))},modifier=Modifier.fillMaxWidth()){
+     Text("Dejar ASA clínica como no evaluada")
+    }
+    Text(if(session.history.asaClassClinician==null) "Estado: pendiente; no se confunde con ASA I por defecto." else "ASA clínica registrada: ASA ${session.history.asaClassClinician}.",style=MaterialTheme.typography.bodySmall)
+   }}
    item{SectionCard("1 · Tabaco y alcohol"){
     Text("Registra primero las exposiciones personales. Después podrás entrar directamente a las clasificaciones de enfermedades.",style=MaterialTheme.typography.bodySmall)
     Text("¿Fuma / usa nicotina?",fontWeight=FontWeight.Bold)
