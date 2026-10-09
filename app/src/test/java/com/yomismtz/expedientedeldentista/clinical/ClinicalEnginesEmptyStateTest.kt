@@ -159,22 +159,22 @@ fun emptyOdontogramIsNotConsideredComplete() {
     assertEquals(OdontogramCompletenessStatus.EMPTY, result.status)
     assertEquals(32, result.missingPermanent.size)
     assertEquals(20, result.missingPrimary.size)
+}
 
-    @Test fun cpodDoesNotCountExtractionIndicationOrUneruptedTeethAsDmft() {
-        val records = mapOf(
-            11 to ToothRecord(status = ToothStatus.EXTRACTION_INDICATED),
-            12 to ToothRecord(status = ToothStatus.UNERUPTED),
-            13 to ToothRecord(status = ToothStatus.MISSING_CARIES),
-            14 to ToothRecord(status = ToothStatus.CARIES),
-            15 to ToothRecord(status = ToothStatus.RESTORED)
-        )
-        val result = ClinicalEngines.cpod(records, primary = false)
-        assertEquals(1, result.carious)
-        assertEquals(1, result.missing)
-        assertEquals(1, result.filled)
-        assertEquals(3, result.total)
-    }
-
+@Test
+fun cpodDoesNotCountExtractionIndicationOrUneruptedTeethAsDmft() {
+    val records = mapOf(
+        11 to ToothRecord(status = ToothStatus.EXTRACTION_INDICATED),
+        12 to ToothRecord(status = ToothStatus.UNERUPTED),
+        13 to ToothRecord(status = ToothStatus.MISSING_CARIES),
+        14 to ToothRecord(status = ToothStatus.CARIES),
+        15 to ToothRecord(status = ToothStatus.RESTORED)
+    )
+    val result = ClinicalEngines.cpod(records, primary = false)
+    assertEquals(1, result.carious)
+    assertEquals(1, result.missing)
+    assertEquals(1, result.filled)
+    assertEquals(3, result.total)
 }
 
 @Test
