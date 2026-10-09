@@ -47,6 +47,35 @@ class ClinicalRecordPayloadIntegrityTest {
         assertEquals(0, legacyReads)
     }
 
+
+    @Test
+    fun whitespaceEncryptedPayloadFailsWithoutFallingBackToLegacy() {
+        var legacyReads = 0
+        val error = runCatching {
+            resolveStoredClinicalPayload("   ", { error("decrypt must not run") }) {
+                legacyReads++
+                "legacy-data"
+            }
+        }.exceptionOrNull()
+
+        assertTrue(error is IllegalStateException)
+        assertEquals(0, legacyReads)
+    }
+
+    @Test
+    fun thrownDecryptionErrorFailsWithoutFallingBackToLegacy() {
+        var legacyReads = 0
+        val error = runCatching {
+            resolveStoredClinicalPayload("ciphertext", { throw SecurityException("invalid tag") }) {
+                legacyReads++
+                "legacy-data"
+            }
+        }.exceptionOrNull()
+
+        assertTrue(error is SecurityException)
+        assertEquals(0, legacyReads)
+    }
+
     @Test
     fun validEncryptedPayloadIsReturnedAsEncrypted() {
         val result = resolveStoredClinicalPayload("ciphertext", { "decrypted-json" }) {
