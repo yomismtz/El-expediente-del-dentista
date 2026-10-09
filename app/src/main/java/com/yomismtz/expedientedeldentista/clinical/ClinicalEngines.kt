@@ -49,6 +49,25 @@ object ClinicalEngines {
         return CariesIndexAssessment(status, IndexResult(carious, missingDueToCaries, restored, carious + missingDueToCaries + restored), assessed.size, domain.size, domain - assessed)
     }
 
+    fun cariesIndexSummary(session: EducationalSession, lang: String): String {
+        val permanent = cariesIndexAssessment(session.teeth, primary = false)
+        val primary = cariesIndexAssessment(session.teeth, primary = true)
+        fun indexText(assessment: CariesIndexAssessment, isPrimary: Boolean): String {
+            val result = assessment.result
+            val counts = if (isPrimary) "c=${result.carious}, e=${result.missing}, o=${result.filled}" else "C=${result.carious}, P=${result.missing}, O=${result.filled}"
+            return when (assessment.status) {
+                CariesIndexStatus.COMPLETE -> "${result.total} ($counts)"
+                CariesIndexStatus.EMPTY -> if (lang == "en") "pending (0/${assessment.expectedTeeth} teeth assessed)" else "pendiente (0/${assessment.expectedTeeth} dientes evaluados)"
+                CariesIndexStatus.PARTIAL -> if (lang == "en") "incomplete (${assessment.assessedTeeth}/${assessment.expectedTeeth} assessed; provisional $counts)" else "incompleto (${assessment.assessedTeeth}/${assessment.expectedTeeth} evaluados; conteo provisional $counts)"
+            }
+        }
+        return if (lang == "en") {
+            "Caries indices: DMFT ${indexText(permanent, false)}; dmft ${indexText(primary, true)}."
+        } else {
+            "Índices de caries: CPOD ${indexText(permanent, false)}; ceod ${indexText(primary, true)}."
+        }
+    }
+
     fun cpodInterpretation(value: Int, lang: String): String {
         val es = when (value) {
             0 -> "Libre de caries registrada en el índice"
@@ -82,7 +101,8 @@ object ClinicalEngines {
         if (present.any { it !in session.oleary }) return null
         val denominator = present.size * 4
         if (denominator == 0) return null
-        val affected = present.sumOf { session.oleary[it].orEmpty().size }
+        val scoredSurfaces = setOf(Surface.VESTIBULAR, Surface.LINGUAL_PALATAL, Surface.MESIAL, Surface.DISTAL)
+        val affected = present.sumOf { tooth -> session.oleary[tooth].orEmpty().count { it in scoredSurfaces } }
         return affected * 100.0 / denominator
     }
 
@@ -282,8 +302,6 @@ object ClinicalEngines {
                 if (lang == "en") guide.nameEn else guide.nameEs
             } else null
         }
-        val permanent = cpod(session.teeth, primary = false)
-        val primary = cpod(session.teeth, primary = true)
         val diagnosis = pulpalDiagnosis(session.pulpal)
         val ipc = ipcHighest(session.ipcCodes)
 
@@ -296,7 +314,7 @@ object ClinicalEngines {
                 append("Systemic history: ASA ${history.asaClass}${if (history.asaEmergency) "E" else ""}; ")
                 append(if (diseases.isEmpty()) "no selected conditions" else diseases.joinToString(", "))
                 append(". Medications: ${p.medications.ifBlank { "none entered" }}. Allergies: ${p.allergies.ifBlank { "none entered" }}.\n")
-                append("Caries indices: DMFT=${permanent.total} (D=${permanent.carious}, M=${permanent.missing}, F=${permanent.filled}); dmft=${primary.total}.\n")
+                append(cariesIndexSummary(session, lang) + "\n")
                 append("Periodontal screening: highest CPI code $ipc. OHI-S=${ihosOrNull(session)?.let { "%.2f".format(it) } ?: "Pending"}. O'Leary=${olearyPercentageOrNull(session)?.let { "%.1f".format(it) + "%" } ?: "Pending"}.\\n")
                 append("Pulpal/periapical educational orientation: ${diagnosis.pulpalEn}; ${diagnosis.apicalEn}.\n")
                 append("This automatically generated text is for learning how an intake note is organized; it is not a real clinical record.")
@@ -310,7 +328,7 @@ object ClinicalEngines {
                 append("Antecedentes sistémicos: ASA ${history.asaClass}${if (history.asaEmergency) "E" else ""}; ")
                 append(if (diseases.isEmpty()) "sin padecimientos seleccionados" else diseases.joinToString(", "))
                 append(". Medicamentos: ${p.medications.ifBlank { "ninguno capturado" }}. Alergias: ${p.allergies.ifBlank { "ninguna capturada" }}.\n")
-                append("Índices de caries: CPOD=${permanent.total} (C=${permanent.carious}, P=${permanent.missing}, O=${permanent.filled}); ceod=${primary.total}.\n")
+                append(cariesIndexSummary(session, lang) + "\n")
                 append("Tamizaje periodontal: código IPC más alto $ipc. IHOS=${ihosOrNull(session)?.let { "%.2f".format(it) } ?: "Pendiente"}. O'Leary=${olearyPercentageOrNull(session)?.let { "%.1f".format(it) + "%" } ?: "Pendiente"}.\\n")
                 append("Orientación pulpar/periapical educativa: ${diagnosis.pulpalEs}; ${diagnosis.apicalEs}.\n")
                 append("Este texto automático sirve para aprender cómo se integra una nota de ingreso; no constituye un expediente clínico real.")
@@ -321,8 +339,6 @@ object ClinicalEngines {
     fun generateAutomaticClinicalNote(session: EducationalSession, lang: String): String {
         val p = session.profile
         val history = session.history
-        val permanent = cpod(session.teeth, false)
-        val primary = cpod(session.teeth, true)
         val diagnosis = pulpalDiagnosis(session.pulpal)
         val plans = ClinicalContent.treatmentPlans.associateBy { it.id }
         val options = ClinicalContent.treatmentPlans.flatMap { it.options }.associateBy { it.id }
@@ -342,7 +358,7 @@ object ClinicalEngines {
             append("Reason: " + p.reasonForVisit.ifBlank { "Not entered" } + ". Current condition: " + p.currentCondition.ifBlank { "Not entered" } + ".\n")
             append("Relevant history: ASA " + history.asaClass + if(history.asaEmergency) "E" else "" + "; medications " + p.medications.ifBlank{"not entered"} + "; allergies " + p.allergies.ifBlank{"not entered"} + ".\n")
             append("Vitals/context: BP " + bp.ifBlank{"—"} + "; HR " + p.heartRate.ifBlank{"—"} + "; RR " + p.respiratoryRate.ifBlank{"—"} + "; SpO2 " + p.spo2.ifBlank{"—"} + "%; temperature " + p.temperature.ifBlank{"—"} + " °C; glucose " + p.glucose.ifBlank{"—"} + " mg/dL; pain " + p.painScore.ifBlank{"—"} + "/10.\n")
-            append("Dental findings: " + p.clinicalSigns.ifBlank{"none entered"} + ". DMFT=" + permanent.total + "; dmft=" + primary.total + "; highest CPI=" + ipcHighest(session.ipcCodes) + ".\n")
+            append("Dental findings: " + p.clinicalSigns.ifBlank{"none entered"} + ". " + cariesIndexSummary(session, lang) + "; highest CPI=" + ipcHighest(session.ipcCodes) + ".\n")
             append("Pulpal/periapical educational orientation: " + diagnosis.pulpalEn + "; " + diagnosis.apicalEn + ".\n")
             if (linked.isNotEmpty()) append("Tooth-linked findings: " + linked.joinToString(" | ") + ".\n")
             append("Recorded clinical events: " + session.clinicalEvents.size + "; longitudinal measurements: " + session.clinicalMeasurements.size + ".\n")
@@ -354,7 +370,7 @@ object ClinicalEngines {
             append("Motivo de consulta: " + p.reasonForVisit.ifBlank { "No capturado" } + ". Padecimiento actual: " + p.currentCondition.ifBlank { "No capturado" } + ".\n")
             append("Antecedentes relevantes: ASA " + history.asaClass + if(history.asaEmergency) "E" else "" + "; medicamentos " + p.medications.ifBlank{"no capturados"} + "; alergias " + p.allergies.ifBlank{"no capturadas"} + ".\n")
             append("Signos/contexto: TA " + bp.ifBlank{"—"} + "; FC " + p.heartRate.ifBlank{"—"} + "; FR " + p.respiratoryRate.ifBlank{"—"} + "; SpO₂ " + p.spo2.ifBlank{"—"} + "%; temperatura " + p.temperature.ifBlank{"—"} + " °C; glucosa " + p.glucose.ifBlank{"—"} + " mg/dL; dolor " + p.painScore.ifBlank{"—"} + "/10.\n")
-            append("Hallazgos odontológicos: " + p.clinicalSigns.ifBlank{"ninguno capturado"} + ". CPOD=" + permanent.total + "; ceod=" + primary.total + "; IPC más alto=" + ipcHighest(session.ipcCodes) + ".\n")
+            append("Hallazgos odontológicos: " + p.clinicalSigns.ifBlank{"ninguno capturado"} + ". " + cariesIndexSummary(session, lang) + "; IPC más alto=" + ipcHighest(session.ipcCodes) + ".\n")
             append("Orientación pulpar/periapical educativa: " + diagnosis.pulpalEs + "; " + diagnosis.apicalEs + ".\n")
             if (linked.isNotEmpty()) append("Hallazgos vinculados por diente: " + linked.joinToString(" | ") + ".\n")
             append("Eventos clínicos registrados: " + session.clinicalEvents.size + "; mediciones longitudinales: " + session.clinicalMeasurements.size + ".\n")
