@@ -84,6 +84,27 @@ class IcdasCodingTest {
         }
     }
 
+    @Test fun incompleteSurfaceIsNotConsideredComplete() {
+        assertFalse(IcdasSurfaceRecord(restorationCode = 2, legacyPending = true).isComplete)
+        assertFalse(IcdasSurfaceRecord(cariesCode = 3, legacyPending = true).isComplete)
+        assertTrue(IcdasSurfaceRecord(restorationCode = 0, cariesCode = 0).isComplete)
+    }
+
+    @Test fun specialCode99MapsToUnerupted() {
+        assertEquals(ToothStatus.UNERUPTED, IcdasCoding.toothStatusForSpecial(99, ToothStatus.HEALTHY))
+        assertEquals(ToothStatus.MISSING_CARIES, IcdasCoding.toothStatusForSpecial(97, ToothStatus.HEALTHY))
+        assertEquals(ToothStatus.MISSING_OTHER, IcdasCoding.toothStatusForSpecial(98, ToothStatus.HEALTHY))
+        assertEquals(ToothStatus.HEALTHY, IcdasCoding.toothStatusForSpecial(96, ToothStatus.HEALTHY))
+    }
+
+    @Test fun ambiguousLegacyCodeDoesNotInventRestoration() {
+        val migrated = IcdasCoding.migrateLegacySurfaceMap(mapOf(Surface.OCCLUSAL to 5))[Surface.OCCLUSAL]
+        assertEquals(5, migrated?.cariesCode)
+        assertNull(migrated?.restorationCode)
+        assertTrue(migrated?.legacyPending == true)
+        assertFalse(migrated?.isComplete == true)
+    }
+
     @Test fun odontogramAuditDetectsMissingToothWithIcdasAndSurfaceDisagreement() {
         val session = EducationalSession(
             teeth = mapOf(16 to ToothRecord(status = ToothStatus.MISSING_OTHER)),

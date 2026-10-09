@@ -51,6 +51,7 @@ fun auditOdontogram(session: EducationalSession): List<OdontogramAuditIssue> {
         }
         marks.forEach { (surface, mark) ->
             val code = icdas[surface] ?: return@forEach
+            if (!code.isComplete || code.legacyPending) return@forEach
             if (mark == SurfaceMark.CARIES && code.cariesCode == 0 && code.specialCode == null) {
                 issues += OdontogramAuditIssue(tooth, "CARIES_SURFACE_ICDAS_SOUND",
                     "La cara $surface está marcada con caries en el odontograma, pero ICDAS registra caries 0.",

@@ -14,6 +14,9 @@ data class IcdasSurfaceRecord(
     val specialCode: Int? = null,
     val legacyPending: Boolean = false
 ) {
+    val isComplete: Boolean
+        get() = specialCode != null || (restorationCode != null && cariesCode != null)
+
     val combinedCode: Int
         get() = specialCode ?: ((restorationCode ?: 0) * 10 + (cariesCode ?: 0))
 }
@@ -26,6 +29,13 @@ object IcdasCoding {
     fun isValidRestoration(code: Int) = code in restorationCodes
     fun isValidCaries(code: Int) = code in cariesCodes
     fun isValidSpecial(code: Int) = code in specialCodes
+
+    fun toothStatusForSpecial(code: Int, current: ToothStatus): ToothStatus = when (code) {
+        91, 93, 97 -> ToothStatus.MISSING_CARIES
+        90, 92, 98 -> ToothStatus.MISSING_OTHER
+        99 -> ToothStatus.UNERUPTED
+        else -> current
+    }
 
     fun isValidCombined(code: Int): Boolean {
         if (code in 0..6) return true // 00–06; leading zero is not representable by Int

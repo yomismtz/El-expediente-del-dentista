@@ -173,8 +173,9 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
     if (selectedTooth !in shown) selectedTooth = shown.first()
     val records = session.icdasSurfaceRecords[selectedTooth] ?: emptyMap()
     val allSurfaces = listOf(Surface.VESTIBULAR, Surface.LINGUAL_PALATAL, Surface.MESIAL, Surface.DISTAL, Surface.OCCLUSAL)
-    val current = records[selectedSurface] ?: IcdasSurfaceRecord(restorationCode = 0, cariesCode = 0)
+    val current = records[selectedSurface] ?: IcdasSurfaceRecord()
     val surfaceRecorded = records.containsKey(selectedSurface)
+    val surfaceComplete = surfaceRecorded && current.isComplete && !current.legacyPending
     val currentCode = current.combinedCode
     val restorationKnown = current.restorationCode != null
     val currentRestoration = current.restorationCode ?: 0
@@ -189,11 +190,8 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
         // ICDAS is a surface-level detection system. Do not overwrite the
         // epidemiological CPOD/ceod tooth status from an ICDAS lesion/restoration.
         // Missing/special tooth states are the exception because they define tooth presence.
-        val status = statusOverride ?: when {
-            codes.values.any { it.specialCode in setOf(91, 93, 97) } -> ToothStatus.MISSING_CARIES
-            codes.values.any { it.specialCode in setOf(90, 92, 98, 99) } -> ToothStatus.MISSING_OTHER
-            else -> record.status
-        }
+        val specialCode = codes.values.firstOrNull { it.specialCode != null }?.specialCode
+        val status = statusOverride ?: (specialCode?.let { IcdasCoding.toothStatusForSpecial(it, record.status) } ?: record.status)
         val present = session.presentTeeth.toMutableSet()
         if (presentOverride == false || status == ToothStatus.MISSING_CARIES || status == ToothStatus.MISSING_OTHER) present.remove(selectedTooth)
         else if (presentOverride == true) present.add(selectedTooth)
@@ -208,6 +206,18 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
             presentTeeth = present
         ))
     }
+    fun setRestoration(restoration: Int) {
+        if (!IcdasCoding.isValidRestoration(restoration)) return
+        val caries = current.cariesCode
+        saveCodes(records.toMutableMap().apply { put(selectedSurface, IcdasSurfaceRecord(restorationCode = restoration, cariesCode = caries, legacyPending = caries == null)) }, presentOverride = true)
+    }
+
+    fun setCaries(caries: Int) {
+        if (!IcdasCoding.isValidCaries(caries)) return
+        val restoration = current.restorationCode
+        saveCodes(records.toMutableMap().apply { put(selectedSurface, IcdasSurfaceRecord(restorationCode = restoration, cariesCode = caries, legacyPending = restoration == null)) }, presentOverride = true)
+    }
+
     fun setTwoDigit(restoration: Int, caries: Int) {
         if (!IcdasCoding.isValidRestoration(restoration) || !IcdasCoding.isValidCaries(caries)) return
         saveCodes(records.toMutableMap().apply { put(selectedSurface, IcdasSurfaceRecord(restorationCode = restoration, cariesCode = caries)) }, presentOverride = true)
@@ -215,11 +225,7 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
 
     fun setSpecial(code: Int) {
         val codes = if (code == 96) records.toMutableMap().apply { put(selectedSurface, IcdasSurfaceRecord(specialCode = code)) } else allSurfaces.associateWith { IcdasSurfaceRecord(specialCode = code) }
-        val status = when (code) {
-            97 -> ToothStatus.MISSING_CARIES
-            98, 99 -> ToothStatus.MISSING_OTHER
-            else -> session.teeth[selectedTooth]?.status
-        }
+        val status = IcdasCoding.toothStatusForSpecial(code, session.teeth[selectedTooth]?.status ?: ToothStatus.HEALTHY)
         saveCodes(codes, statusOverride = status, presentOverride = code !in setOf(97, 98, 99))
     }
 
@@ -258,17 +264,17 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
                     else -> MaterialTheme.colorScheme.surfaceVariant
                 }
             },onSurfaceTap={selectedSurface=it},modifier=Modifier.fillMaxWidth())
-            Text("${surfaceName(selectedSurface,lang)} · ICDAS ${if (surfaceRecorded) "%02d".format(currentCode) else tr(lang, "no registrado", "not recorded")}")
-            Text(tr(lang,if(restorationKnown) "Código actual = ${"%02d".format(currentCode)} · restauración $currentRestoration · caries $currentCaries" else "Código actual = ${"%02d".format(currentCode)} · restauración pendiente · caries $currentCaries",
-                if(restorationKnown) "Current code = ${"%02d".format(currentCode)} · restoration $currentRestoration · caries $currentCaries" else "Current code = ${"%02d".format(currentCode)} · restoration pending · caries $currentCaries"),
+            Text("${surfaceName(selectedSurface,lang)} · ICDAS ${if (surfaceComplete) "%02d".format(currentCode) else tr(lang, "no registrado / incompleto", "not recorded / incomplete")}")
+            Text(tr(lang,if(surfaceComplete) "Código registrado = ${"%02d".format(currentCode)} · restauración $currentRestoration · caries $currentCaries" else "Selecciona ambos dígitos; no se asigna 00 automáticamente.",
+                if(surfaceComplete) "Recorded code = ${"%02d".format(currentCode)} · restoration $currentRestoration · caries $currentCaries" else "Select both digits; 00 is not assigned automatically."),
                 fontWeight=FontWeight.Bold,color=MaterialTheme.colorScheme.primary)
             if (toothSpecial != null) Text(tr(lang,"Código especial del diente: $toothSpecial","Special tooth code: $toothSpecial"),fontWeight=FontWeight.Bold)
-            if (current.legacyPending) Text(tr(lang,"⚠️ Registro antiguo: se conservó el código de caries, pero falta confirmar restauración/sellante. No se inventó ese dato.","⚠️ Legacy record: the caries code was preserved, but restoration/sealant status still needs confirmation. No value was invented."),style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.error)
+            if (current.legacyPending) Text(tr(lang,"⚠️ Registro antiguo o incompleto: falta confirmar al menos un dígito. No se inventó ese dato.","⚠️ Legacy or incomplete record: at least one digit still needs confirmation. No value was invented."),style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.error)
         } }
         item { SectionCard(tr(lang,"3 · Primer dígito: restauración / sellante","3 · First digit: restoration / sealant")) {
             ClinicalContent.icdasRestorations.forEach { guide ->
                 val active = restorationKnown && current.specialCode == null && currentRestoration == guide.code
-                Card(onClick={setTwoDigit(guide.code,currentCaries)},modifier=Modifier.fillMaxWidth(),
+                Card(onClick={setRestoration(guide.code)},modifier=Modifier.fillMaxWidth(),
                     colors=CardDefaults.cardColors(containerColor=if(active)MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.surface)) {
                     Row(Modifier.fillMaxWidth().padding(12.dp),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
                         Text((if(active)"✓ " else "")+guide.code.toString(),style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Bold,
@@ -281,8 +287,8 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
         } }
         item { SectionCard(tr(lang,"4 · Segundo dígito: estado de caries 0–6","4 · Second digit: caries status 0–6")) {
             ClinicalContent.icdas.forEach { guide ->
-                val active = currentCaries == guide.code
-                Card(onClick={setTwoDigit(currentRestoration,guide.code)},modifier=Modifier.fillMaxWidth(),
+                val active = surfaceRecorded && current.cariesCode == guide.code
+                Card(onClick={setCaries(guide.code)},modifier=Modifier.fillMaxWidth(),
                     colors=CardDefaults.cardColors(containerColor=if(active)MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.surface)) {
                     Row(Modifier.fillMaxWidth().padding(12.dp),horizontalArrangement=Arrangement.spacedBy(10.dp)) {
                         Text((if(active)"✓ " else "")+guide.code.toString(),style=MaterialTheme.typography.headlineSmall,fontWeight=FontWeight.Bold,
@@ -315,7 +321,7 @@ fun IcdasScreen(lang: String, session: EducationalSession, onSessionChanged: (Ed
             }
         } }
         item { SectionCard(tr(lang,"6 · Acciones","6 · Actions")) { Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick={setAll(currentCode)},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Aplicar ${"%02d".format(currentCode)} a todas las superficies","Apply ${"%02d".format(currentCode)} to all surfaces"))}
+            OutlinedButton(onClick={setAll(currentCode)},enabled=surfaceComplete,modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Aplicar ${"%02d".format(currentCode)} a todas las superficies","Apply ${"%02d".format(currentCode)} to all surfaces"))}
             OutlinedButton(onClick={clearIcdas()},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Limpiar códigos ICDAS del diente","Clear ICDAS codes from tooth"))}
             Text(tr(lang,"Usa «aplicar a todas» sólo cuando todas las superficies examinadas cumplen el mismo criterio.",
                 "Use “apply to all” only when every examined surface meets the same criterion."),style=MaterialTheme.typography.bodySmall)
