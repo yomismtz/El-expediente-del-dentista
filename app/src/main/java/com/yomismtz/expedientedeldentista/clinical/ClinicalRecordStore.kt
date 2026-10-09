@@ -14,6 +14,24 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.UUID
 
+
+internal data class StoredClinicalPayload(val encrypted: Boolean, val raw: String)
+
+internal fun resolveStoredClinicalPayload(
+    secure: String?,
+    decrypt: (String) -> String?,
+    readLegacy: () -> String
+): StoredClinicalPayload {
+    if (secure == null) return StoredClinicalPayload(encrypted = false, raw = readLegacy())
+    check(secure.isNotBlank()) {
+        "El expediente cifrado está vacío o dañado; los datos almacenados se conservaron."
+    }
+    val plaintext = decrypt(secure) ?: throw IllegalStateException(
+        "No se pudo descifrar el expediente con Android Keystore; los datos almacenados se conservaron."
+    )
+    return StoredClinicalPayload(encrypted = true, raw = plaintext)
+}
+
 data class SavedRecord(
     val id: String,
     val title: String,
@@ -27,16 +45,7 @@ class ClinicalRecordStore(context: Context) {
 
     fun loadAll(): List<SavedRecord> {
         val secure = prefs.getString("records_secure", null)
-        val hasSecurePayload = secure != null
-        val raw = if (hasSecurePayload) {
-            val encoded = secure.orEmpty()
-            check(encoded.isNotBlank()) {
-                "El expediente cifrado está vacío o dañado; los datos almacenados se conservaron."
-            }
-            decrypt(encoded) ?: throw IllegalStateException(
-                "No se pudo descifrar el expediente con Android Keystore; los datos almacenados se conservaron."
-            )
-        } else {
+        val stored = resolveStoredClinicalPayload(secure, ::decrypt) {
             val legacy = prefs.getString("records", "[]") ?: "[]"
             if (legacy != "[]") {
                 val migrated = runCatching {
@@ -47,6 +56,8 @@ class ClinicalRecordStore(context: Context) {
             }
             legacy
         }
+        val hasSecurePayload = stored.encrypted
+        val raw = stored.raw
 
         val a = try {
             JSONArray(raw)
