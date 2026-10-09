@@ -49,6 +49,7 @@ private fun statusName(status: ToothStatus, lang: String) = when (status) {
     ToothStatus.RESTORED -> tr(lang, "Obturado", "Filled")
     ToothStatus.MISSING_CARIES -> tr(lang, "Ausente por caries", "Missing due to caries")
     ToothStatus.MISSING_OTHER -> tr(lang, "Ausente por otra causa", "Missing for another reason")
+    ToothStatus.UNERUPTED -> tr(lang, "No erupcionado", "Unerupted")
     ToothStatus.EXTRACTION_INDICATED -> tr(lang, "Extracción indicada", "Extraction indicated")
     ToothStatus.SEALANT -> tr(lang, "Sellador", "Sealant")
 }
