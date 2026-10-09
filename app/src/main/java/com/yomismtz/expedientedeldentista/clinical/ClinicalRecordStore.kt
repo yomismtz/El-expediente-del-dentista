@@ -45,7 +45,7 @@ class ClinicalRecordStore(context: Context) {
 
     fun loadAll(): List<SavedRecord> {
         val secure = prefs.getString("records_secure", null)
-        val stored = resolveStoredClinicalPayload(secure, ::decrypt) {
+        val stored = resolveStoredClinicalPayload(secure, this::decrypt) {
             val legacy = prefs.getString("records", "[]") ?: "[]"
             if (legacy != "[]") {
                 val migrated = runCatching {
