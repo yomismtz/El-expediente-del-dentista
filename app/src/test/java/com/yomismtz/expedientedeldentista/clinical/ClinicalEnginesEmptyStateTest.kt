@@ -125,6 +125,19 @@ class ClinicalEnginesEmptyStateTest {
         assertEquals(SexRecordStatus.RECORDED, validateRecordedSex("referido por paciente"))
     }
 
+    @Test fun asaDefaultIsNotMistakenForClinicianAssessment() {
+        assertEquals(1, EducationalSession().history.asaClass)
+        assertEquals(null, EducationalSession().history.asaClassClinician)
+        assertEquals(AsaRecordStatus.NOT_ASSESSED, validateClinicianAsaClass(null))
+    }
+
+    @Test fun clinicianAsaRequiresValidClassFromOneToSix() {
+        assertEquals(AsaRecordStatus.VALID, validateClinicianAsaClass(1))
+        assertEquals(AsaRecordStatus.VALID, validateClinicianAsaClass(6))
+        assertEquals(AsaRecordStatus.INVALID, validateClinicianAsaClass(0))
+        assertEquals(AsaRecordStatus.INVALID, validateClinicianAsaClass(7))
+    }
+
 
 @Test
 fun emptyOdontogramIsNotConsideredComplete() {
