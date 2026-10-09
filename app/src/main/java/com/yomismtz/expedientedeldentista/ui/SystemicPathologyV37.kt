@@ -141,7 +141,7 @@ private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String
          Card(onClick={noPathologicalHistory=false;if(x.name=="Alérgicas")noAllergies=false;category=x},modifier=Modifier.weight(1f)){
           Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(4.dp)){
            Text(x.name,fontWeight=FontWeight.Bold)
-           Text("${x.diseases.count{saved[it.id]?.recorded==true}}/${x.diseases.size} evaluados",style=MaterialTheme.typography.bodySmall)
+           Text("${x.diseases.count{(saved[it.id]?.let { answer -> answer.recorded || answer.present } == true)}}/${x.diseases.size} evaluados",style=MaterialTheme.typography.bodySmall)
           }
          }
         }
@@ -152,7 +152,7 @@ private fun asa37(map:Map<String,DiseaseAnswer>,tobacco:String="",alcohol:String
     }
    }
   }else if(disease==null){
-   item{Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Button(onClick={category=null}){Text("← Clasificaciones")};Text("${category!!.diseases.count{saved[it.id]?.recorded==true}} evaluados",style=MaterialTheme.typography.bodySmall,fontWeight=FontWeight.SemiBold)}}
+   item{Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Button(onClick={category=null}){Text("← Clasificaciones")};Text("${category!!.diseases.count{(saved[it.id]?.let { answer -> answer.recorded || answer.present } == true)}} evaluados",style=MaterialTheme.typography.bodySmall,fontWeight=FontWeight.SemiBold)}}
    item{
     BoxWithConstraints(Modifier.fillMaxWidth()){
      val columns=if(maxWidth<700.dp)2 else 3
