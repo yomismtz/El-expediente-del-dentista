@@ -285,6 +285,9 @@ private fun presetTreatments37(d:Disease37):List<String> = when(d.id){
  var treatment by remember(d.id){mutableStateOf(initial.treatment)}
  var status by remember(d.id){mutableStateOf(initial.currentStatus)}
  var complications by remember(d.id){mutableStateOf(initial.complications)}
+ var allergen by remember(d.id){mutableStateOf(initial.allergen)}
+ var reaction by remember(d.id){mutableStateOf(initial.reaction)}
+ val isAllergy=d.id in setOf("drug_allergy","latex_allergy","food_allergy","allergic_rhinitis","urticaria","atopic_dermatitis","anaphylaxis","contact_dermatitis")
  var customDisease by rememberRecordState("history.path."+d.id+".customName","")
  var treatmentMode by remember(d.id){
   mutableStateOf(
@@ -329,6 +332,23 @@ private fun presetTreatments37(d:Disease37):List<String> = when(d.id){
     singleLine=true
    )
   }
+  if(isAllergy){
+   Text("Datos específicos de alergia / reacción adversa",fontWeight=FontWeight.Bold)
+   OutlinedTextField(
+    value=allergen,
+    onValueChange={allergen=it},
+    label={Text("Sustancia, medicamento o material implicado *")},
+    supportingText={Text("Registra lo referido; si se desconoce, no lo inventes.")},
+    modifier=Modifier.fillMaxWidth()
+   )
+   OutlinedTextField(
+    value=reaction,
+    onValueChange={reaction=it},
+    label={Text("Reacción descrita por el paciente *")},
+    supportingText={Text("Describe manifestaciones y gravedad referidas; no deduzcas causalidad.")},
+    modifier=Modifier.fillMaxWidth()
+   )
+  }
 
   Text("1 · ¿Desde cuándo?",fontWeight=FontWeight.Bold)
   ChipChoices(dates.map{x->x to (onset==x)},{i->onset=dates[i]},columns=3)
@@ -366,11 +386,14 @@ private fun presetTreatments37(d:Disease37):List<String> = when(d.id){
   ChipChoices(complicationOptions.map{x->x to (complications==x)},{i->complications=complicationOptions[i]},columns=2)
 
   val projected=DiseaseAnswer(
-   true,
-   onset,
-   if(treatment.isNotBlank())treatment else treatmentMode,
-   status,
-   complications
+   present=true,
+   onset=onset,
+   treatment=if(treatment.isNotBlank())treatment else treatmentMode,
+   currentStatus=status,
+   complications=complications,
+   recorded=true,
+   allergen=allergen,
+   reaction=reaction
   )
   val localAsa=asa37(mapOf(d.id to projected))
   Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){
@@ -388,9 +411,10 @@ private fun presetTreatments37(d:Disease37):List<String> = when(d.id){
   if(d.protocol=="exanthem")NoticeCard("Registrar edad al padecerla, tratamiento recibido y complicaciones; una imagen aislada no confirma el diagnóstico.")
 
   val customOk=d.id!="genetic_other" || customDisease.isNotBlank()
-  val canSave=customOk && onset.isNotBlank() && status.isNotBlank() && treatment.isNotBlank() && complications.isNotBlank()
+  val allergyDetailsOk=!isAllergy || (allergen.isNotBlank() && reaction.isNotBlank())
+  val canSave=customOk && onset.isNotBlank() && status.isNotBlank() && treatment.isNotBlank() && complications.isNotBlank() && allergyDetailsOk
   Button(enabled=canSave,onClick={
-   onSave(DiseaseAnswer(true,onset,treatment,status,complications,true))
+   onSave(DiseaseAnswer(present=true,onset=onset,treatment=treatment.ifBlank{treatmentMode},currentStatus=status,complications=complications,recorded=true,allergen=allergen.trim(),reaction=reaction.trim()))
   },modifier=Modifier.fillMaxWidth()){Text("💾 Guardar antecedente positivo")}
   OutlinedButton(onClick={
    onSave(DiseaseAnswer(false,recorded=true))
