@@ -27,8 +27,15 @@ class ClinicalRecordStore(context: Context) {
 
     fun loadAll(): List<SavedRecord> {
         val secure = prefs.getString("records_secure", null)
-        val raw = if (!secure.isNullOrBlank()) {
-            decrypt(secure) ?: "[]"
+        val hasSecurePayload = secure != null
+        val raw = if (hasSecurePayload) {
+            val encoded = secure.orEmpty()
+            check(encoded.isNotBlank()) {
+                "El expediente cifrado está vacío o dañado; los datos almacenados se conservaron."
+            }
+            decrypt(encoded) ?: throw IllegalStateException(
+                "No se pudo descifrar el expediente con Android Keystore; los datos almacenados se conservaron."
+            )
         } else {
             val legacy = prefs.getString("records", "[]") ?: "[]"
             if (legacy != "[]") {
@@ -40,18 +47,38 @@ class ClinicalRecordStore(context: Context) {
             }
             legacy
         }
-        return runCatching {
-            val a = JSONArray(raw)
-            val needsIcdasMigration = (0 until a.length()).any { i ->
-                val session = a.getJSONObject(i).optJSONObject("session")
-                session != null && session.optJSONObject("icdasSurfaceRecords") == null &&
-                    (session.optJSONObject("icdasSurfaces") != null || session.optJSONObject("teeth") != null)
+
+        val a = try {
+            JSONArray(raw)
+        } catch (error: Exception) {
+            if (hasSecurePayload) {
+                throw IllegalStateException(
+                    "El expediente cifrado no contiene datos válidos; se conservó el contenido original para recuperación.",
+                    error
+                )
             }
-            val records = (0 until a.length()).mapNotNull { i -> runCatching { recordFromJson(a.getJSONObject(i)) }.getOrNull() }
-                .sortedByDescending { it.updatedAt }
-            if (needsIcdasMigration && records.isNotEmpty()) write(records)
-            records
-        }.getOrDefault(emptyList())
+            return emptyList()
+        }
+        val needsIcdasMigration = (0 until a.length()).any { i ->
+            val session = a.getJSONObject(i).optJSONObject("session")
+            session != null && session.optJSONObject("icdasSurfaceRecords") == null &&
+                (session.optJSONObject("icdasSurfaces") != null || session.optJSONObject("teeth") != null)
+        }
+        val records = (0 until a.length()).mapNotNull { i ->
+            try {
+                recordFromJson(a.getJSONObject(i))
+            } catch (error: Exception) {
+                if (hasSecurePayload) {
+                    throw IllegalStateException(
+                        "No se pudo leer el registro cifrado número ${i + 1}; se conservó el contenido original para recuperación.",
+                        error
+                    )
+                }
+                null
+            }
+        }.sortedByDescending { it.updatedAt }
+        if (needsIcdasMigration && records.isNotEmpty()) write(records)
+        return records
     }
 
     fun create(session: EducationalSession = EducationalSession()): SavedRecord {
