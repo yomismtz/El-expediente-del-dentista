@@ -138,6 +138,20 @@ class ClinicalEnginesEmptyStateTest {
         assertEquals(AsaRecordStatus.INVALID, validateClinicianAsaClass(7))
     }
 
+    @Test fun allergyHistoryCanStoreSpecificAgentAndReportedReaction() {
+        val allergy = DiseaseAnswer(
+            present = true,
+            recorded = true,
+            allergen = "sustancia referida",
+            reaction = "manifestación referida"
+        )
+        assertTrue(allergy.present)
+        assertTrue(allergy.recorded)
+        assertEquals("sustancia referida", allergy.allergen)
+        assertEquals("manifestación referida", allergy.reaction)
+        assertEquals("", DiseaseAnswer(present = true, recorded = true).allergen)
+    }
+
 
 @Test
 fun emptyOdontogramIsNotConsideredComplete() {
