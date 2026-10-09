@@ -54,7 +54,11 @@ data class DiseaseAnswer(
     val currentStatus: String = "",
     val complications: String = "",
     /** True when this condition was explicitly assessed, including an explicit negative answer. */
-    val recorded: Boolean = false
+    val recorded: Boolean = false,
+    /** Specific substance/allergen when recording an allergy. */
+    val allergen: String = "",
+    /** Reaction reported by the patient; do not infer from the suspected allergen. */
+    val reaction: String = ""
 )
 
 data class HistoryState(
