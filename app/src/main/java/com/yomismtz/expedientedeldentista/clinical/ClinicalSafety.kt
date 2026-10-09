@@ -61,6 +61,13 @@ fun validateAgeConsistency(birthDate:String, recordedAge:String, today:LocalDate
 enum class SexRecordStatus { EMPTY, RECORDED }
 fun validateRecordedSex(value:String):SexRecordStatus = if (value.trim().isBlank()) SexRecordStatus.EMPTY else SexRecordStatus.RECORDED
 
+enum class AsaRecordStatus { NOT_ASSESSED, VALID, INVALID }
+fun validateClinicianAsaClass(value:Int?):AsaRecordStatus = when(value) {
+    null -> AsaRecordStatus.NOT_ASSESSED
+    in 1..6 -> AsaRecordStatus.VALID
+    else -> AsaRecordStatus.INVALID
+}
+
 object ClinicalSafetyEngine {
     fun alerts(session: EducationalSession): List<ClinicalAlert> {
         val p=session.profile
@@ -73,6 +80,11 @@ object ClinicalSafetyEngine {
         }
         if (validateRecordedSex(p.sex) == SexRecordStatus.EMPTY) {
             out += ClinicalAlert(ClinicalAlert.Severity.INFO,"Sexo registrado pendiente","Recorded sex pending","Cuando este dato sea clínicamente necesario, debe registrarse según lo referido y sin inferirlo por apariencia.","When clinically necessary, record this information as reported; do not infer it from appearance.")
+        }
+        when (validateClinicianAsaClass(session.history.asaClassClinician)) {
+            AsaRecordStatus.NOT_ASSESSED -> out += ClinicalAlert(ClinicalAlert.Severity.INFO,"Clasificación ASA clínica pendiente","Clinical ASA classification pending","La ASA automática es sólo orientativa. Falta registrar la clasificación confirmada por el profesional.","The automatic ASA value is educational only. The clinician-confirmed classification has not been recorded.")
+            AsaRecordStatus.INVALID -> out += ClinicalAlert(ClinicalAlert.Severity.WARNING,"Clasificación ASA inválida","Invalid ASA classification","Registra una clase ASA válida de I a VI.","Record a valid ASA class from I to VI.")
+            AsaRecordStatus.VALID -> Unit
         }
         when(validateBirthDate(p.birthDate)) {
             BirthDateStatus.INVALID_FORMAT -> out += ClinicalAlert(ClinicalAlert.Severity.WARNING,"Fecha de nacimiento inválida","Invalid date of birth","Revisar el formato. Usa AAAA-MM-DD o DD/MM/AAAA y una fecha de calendario válida.","Review the format. Use YYYY-MM-DD or DD/MM/YYYY and a valid calendar date.")
