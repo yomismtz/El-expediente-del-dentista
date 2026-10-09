@@ -53,9 +53,9 @@ object IcdasCoding {
     /**
      * Migrates the former Int representation without inventing a restoration code.
      *
-     * Legacy 0-6 values are ambiguous: they are retained as caries 0-6 with
-     * restoration 0 only as a display-compatible interpretation and marked
-     * legacyPending=true so the clinician can complete the restoration status.
+     * Legacy 0-6 values are ambiguous: preserve the value as the caries digit,
+     * leave restoration unknown, and mark legacyPending=true. combinedCode is a
+     * compatibility projection only while pending; the UI must not present it as complete.
      */
     fun fromLegacy(code: Int): IcdasSurfaceRecord? {
         if (code in 0..6) {
