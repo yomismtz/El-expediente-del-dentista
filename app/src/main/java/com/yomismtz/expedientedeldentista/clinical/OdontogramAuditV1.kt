@@ -39,10 +39,15 @@ fun auditOdontogram(session: EducationalSession): List<OdontogramAuditIssue> {
                 "ICDAS 97 indica ausencia por caries; revisar el estado general del diente.",
                 "ICDAS 97 indicates missing due to caries; review whole-tooth status.")
         }
-        if (record.status != ToothStatus.MISSING_OTHER && (98 in specialCodes || 99 in specialCodes)) {
-            issues += OdontogramAuditIssue(tooth, "ICDAS_98_99_STATUS_MISMATCH",
-                "ICDAS 98/99 indica ausencia por otra causa o diente no erupcionado; revisar el estado general.",
-                "ICDAS 98/99 indicates missing for another reason or unerupted tooth; review whole-tooth status.")
+        if (record.status != ToothStatus.MISSING_OTHER && 98 in specialCodes) {
+            issues += OdontogramAuditIssue(tooth, "ICDAS_98_STATUS_MISMATCH",
+                "ICDAS 98 indica ausencia por otra causa; revisar el estado general del diente.",
+                "ICDAS 98 indicates missing for another reason; review whole-tooth status.")
+        }
+        if (record.status != ToothStatus.UNERUPTED && 99 in specialCodes) {
+            issues += OdontogramAuditIssue(tooth, "ICDAS_99_STATUS_MISMATCH",
+                "ICDAS 99 indica diente no erupcionado; revisar el estado general del diente.",
+                "ICDAS 99 indicates an unerupted tooth; review whole-tooth status.")
         }
         marks.forEach { (surface, mark) ->
             val code = icdas[surface] ?: return@forEach
