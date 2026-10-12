@@ -474,7 +474,14 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
         if (updated != session.profile) onSessionChanged(session.copy(profile = updated))
     }
     ResponsiveScreenV17(tr(lang,"Signos, síntomas y triage clínico","Clinical signs, symptoms and triage"),tr(lang,"Registra parámetros, signos y síntomas y obtén una orientación educativa sobre continuidad, diferimiento o referencia.","Record parameters, signs and symptoms and get educational guidance on proceeding, deferring or referring."),onBack){profile->
-        ResponsiveSectionV17(tr(lang,"1 · Edad y sexo","1 · Age and sex")){
+        ResponsiveSectionV17(tr(lang,"1 · Peso y talla","1 · Weight and height")){
+            val cols=if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2
+            AdaptiveGridV17(2,cols){i->if(i==0)OutlinedTextField(weight,{weight=it.filter{ch->ch.isDigit()||ch=='.'}.take(6)},label={Text("kg")},modifier=Modifier.fillMaxWidth())else OutlinedTextField(height,{height=it.filter{ch->ch.isDigit()||ch=='.'}.take(6)},label={Text("cm")},modifier=Modifier.fillMaxWidth())}
+            Text(if(bmi==null)tr(lang,"IMC = peso / talla²","BMI = weight / height²") else "IMC = ${"%.1f".format(bmi)} kg/m²",fontWeight=FontWeight.Bold)
+            ResultCard19(bmiAction19(ageForCalc,sex,bmi,lang))
+        }
+
+        ResponsiveSectionV17(tr(lang,"2 · Edad y sexo","2 · Age and sex")){
             OutlinedTextField(value=ageText,onValueChange={ageText=it.filter(Char::isDigit).take(3)},label={Text(tr(lang,"Edad en años *","Age in years *"))},modifier=Modifier.fillMaxWidth(),singleLine=true)
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("Femenino","Masculino","No especificado").forEach{s->FilterChip(sex==s,{sex=s},{Text(if(lang=="en"&&s=="Femenino")"Female" else if(lang=="en"&&s=="Masculino")"Male" else if(lang=="en")"Not specified" else s)},modifier=Modifier.weight(1f))}}
             if(!ageValid) ResultCard19(tr(lang,"⚠️ La edad es obligatoria para el triage.","⚠️ Age is required for triage."))
@@ -581,12 +588,6 @@ fun VitalsInteractiveV19Screen(lang:String,session:EducationalSession,onSessionC
             OutlinedTextField(painScore,{painScore=it.filter(Char::isDigit).take(2)},label={Text(tr(lang,"Dolor 0–10","Pain 0–10"))},modifier=Modifier.fillMaxWidth())
             val pain=painScore.toIntOrNull()
             ResultCard19(if(pain==null) tr(lang,"Escala de dolor opcional: 0 sin dolor · 10 máximo.","Optional pain scale: 0 no pain · 10 maximum.") else tr(lang,"Dolor registrado: \$pain/10. La intensidad ayuda a priorizar diagnóstico y tratamiento, pero no sustituye el diagnóstico odontológico.","Recorded pain: \$pain/10. Intensity helps prioritize diagnosis and treatment but does not replace the dental diagnosis."))
-        }
-        ResponsiveSectionV17(tr(lang,"8 · Peso, talla e IMC","8 · Weight, height and BMI")){
-            val cols=if(profile.largeSystemText||profile.width==ScreenWidthV17.COMPACT)1 else 2
-            AdaptiveGridV17(2,cols){i->if(i==0)OutlinedTextField(weight,{weight=it.filter{ch->ch.isDigit()||ch=='.'}.take(6)},label={Text("kg")},modifier=Modifier.fillMaxWidth())else OutlinedTextField(height,{height=it.filter{ch->ch.isDigit()||ch=='.'}.take(6)},label={Text("cm")},modifier=Modifier.fillMaxWidth())}
-            Text(if(bmi==null)tr(lang,"IMC = peso / talla²","BMI = weight / height²") else "IMC = ${"%.1f".format(bmi)} kg/m²",fontWeight=FontWeight.Bold)
-            ResultCard19(bmiAction19(ageForCalc,sex,bmi,lang))
         }
 
         ResponsiveSectionV17(
