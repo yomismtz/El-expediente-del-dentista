@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 
 private data class LocalAnesthetic(val name:String,val mgPerMl:Double,val cartridgeMl:Double,val maxMgKg:Double?,val maxAbsoluteMg:Double?,val notes:String,val minAgeYears:Double?=null)
 private val dentalAnestheticsV40=listOf(
- LocalAnesthetic("Lidocaína 2% + epinefrina 1:100,000",20.0,1.8,4.4,300.0,"36 mg de lidocaína + 0.018 mg de epinefrina por cartucho de 1.8 mL. Referencia sistémica: 7 mg/kg o 500 mg; verificar además el límite individual de epinefrina."),
+ LocalAnesthetic("Lidocaína 2% + epinefrina 1:100,000",20.0,1.8,4.4,300.0,"36 mg de lidocaína + 0.018 mg de epinefrina por cartucho de 1.8 mL. Referencia dental pediátrica conservadora: 4.4 mg/kg, máximo de referencia 300 mg; verificar además el límite individual de epinefrina."),
  LocalAnesthetic("Articaína 4% + epinefrina",40.0,1.8,7.0,500.0,"72 mg por cartucho de 1.8 mL. Referencia de ficha técnica: 7 mg/kg y máximo absoluto según producto. No calcular para menores de 4 años; confirmar ficha técnica.",4.0),
  LocalAnesthetic("Prilocaína 3% + felipresina",30.0,1.8,null,null,"54 mg por cartucho de 1.8 mL. El cuadro nacional documenta 1–2 cartuchos en adultos y 1/2–1 en niños; no se extrapola un máximo mg/kg universal."),
  LocalAnesthetic("Mepivacaína 3%",30.0,1.8,4.4,300.0,"54 mg por cartucho de 1.8 mL. El máximo debe verificarse en la ficha técnica de la presentación usada."),
@@ -300,7 +300,7 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
       ChipChoices(p.mgKgDay.map{v->"${v.toInt()} mg/kg/día" to (medDoseDay==v)},{i->medDoseDay=p.mgKgDay[i];medInterval=null},2)
       Text("La pauta sólo debe seleccionarse cuando corresponda a la indicación y población de la fuente.",fontWeight=FontWeight.Bold)
      }}
-     if(medDoseDay!=null&&medWeight.toDoubleOrNull()!=null&&p.maxMgDay!=null&&p.intervals.size==1&&p.intervals.contains(medInterval)){
+     if(medDoseDay!=null&&medWeight.toDoubleOrNull()!=null&&p.maxMgDay!=null&&p.intervals.size==1&&p.intervals.singleOrNull()==medInterval){
       val rawDaily=medWeight.toDouble()*medDoseDay!!
       val daily=if(p.maxMgDay!=null) minOf(rawDaily,p.maxMgDay) else rawDaily
       item{SectionCard("7 · Cálculo por día"){
