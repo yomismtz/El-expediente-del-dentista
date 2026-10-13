@@ -49,7 +49,7 @@ private val quickClinicalCategories = listOf(
             QuickClinicalTool("🔎", "ICDAS", "ICDAS", AppScreen.ICDAS),
             QuickClinicalTool("📊", "CPOD / DMFT", "DMFT", AppScreen.CPOD),
             QuickClinicalTool("🪥", "Índice de O'Leary", "O'Leary plaque index", AppScreen.OLEARY),
-            QuickClinicalTool("🦠", "Índice de placa comunitario (IPC)", "Community plaque index", AppScreen.IPC),
+            QuickClinicalTool("🦠", "Índice periodontal comunitario (IPC)", "Community Periodontal Index (CPI)", AppScreen.IPC),
             QuickClinicalTool("🧼", "IHOS", "Simplified oral hygiene index", AppScreen.IHOS),
             QuickClinicalTool("📈", "Periodontograma", "Periodontogram", AppScreen.PERIODONTOGRAM)
         )
