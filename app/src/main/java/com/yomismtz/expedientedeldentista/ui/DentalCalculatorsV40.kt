@@ -300,7 +300,7 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
       ChipChoices(p.mgKgDay.map{v->"${v.toInt()} mg/kg/día" to (medDoseDay==v)},{i->medDoseDay=p.mgKgDay[i];medInterval=null},2)
       Text("La pauta sólo debe seleccionarse cuando corresponda a la indicación y población de la fuente.",fontWeight=FontWeight.Bold)
      }}
-     if(medDoseDay!=null&&medWeight.toDoubleOrNull()!=null&&p.maxMgDay!=null&&p.intervals.size==1&&p.intervals.singleOrNull()==medInterval){
+      if(medDoseDay!=null&&medWeight.toDoubleOrNull()!=null){
       val rawDaily=medWeight.toDouble()*medDoseDay!!
       val daily=if(p.maxMgDay!=null) minOf(rawDaily,p.maxMgDay) else rawDaily
       item{SectionCard("7 · Cálculo por día"){
@@ -310,7 +310,7 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
       item{SectionCard("8 · Intervalo"){
        ChipChoices(p.intervals.map{h->"Cada $h horas" to (medInterval==h)},{i->medInterval=p.intervals[i]},2)
       }}
-      if(medInterval!=null){
+       if(medInterval!=null&&p.maxMgDay!=null&&p.intervals.size==1&&p.intervals.singleOrNull()==medInterval){
        val doses=24.0/medInterval!!
        val perDose=daily/doses
        val mlDose=perDose/p.mgPerMl
