@@ -269,12 +269,12 @@ private data class IhosSlot(
 )
 
 private val ihosSlots = listOf(
-    IhosSlot(16, "Vestibular", "Buccal", listOf(17, 18)),
+    IhosSlot(16, "Vestibular", "Buccal", listOf(17)),
     IhosSlot(11, "Labial", "Labial", listOf(21)),
-    IhosSlot(26, "Vestibular", "Buccal", listOf(27, 28)),
-    IhosSlot(36, "Lingual", "Lingual", listOf(37, 38)),
+    IhosSlot(26, "Vestibular", "Buccal", listOf(27)),
+    IhosSlot(36, "Lingual", "Lingual", listOf(37)),
     IhosSlot(31, "Labial", "Labial", listOf(41)),
-    IhosSlot(46, "Lingual", "Lingual", listOf(47, 48))
+    IhosSlot(46, "Lingual", "Lingual", listOf(47))
 )
 
 private fun round1(v: Double): Double = round(v * 10.0) / 10.0
@@ -296,22 +296,26 @@ fun IhosInteractiveV2Screen(
     var excludedSlots by rememberRecordState("ihos.excludedSlots", emptySet<Int>())
 
     val slot = ihosSlots[selectedSlot]
-    val selectedTooth = selections[slot.indexTooth] ?: slot.indexTooth
+    fun selectedIhosTooth(s: IhosSlot): Int {
+        val allowed = listOf(s.indexTooth) + s.substitutes
+        return selections[s.indexTooth]?.takeIf { it in allowed } ?: s.indexTooth
+    }
+    val selectedTooth = selectedIhosTooth(slot)
 
     fun evaluableSlots(): List<IhosSlot> = ihosSlots.filter { it.indexTooth !in excludedSlots }
     fun debrisAverage(): Double {
         val rows = evaluableSlots()
         if (rows.isEmpty()) return 0.0
-        return rows.map { s -> session.ihosDebris[selections[s.indexTooth] ?: s.indexTooth] ?: 0 }.average()
+        return rows.map { s -> session.ihosDebris[selectedIhosTooth(s)] ?: 0 }.average()
     }
     fun calculusAverage(): Double {
         val rows = evaluableSlots()
         if (rows.isEmpty()) return 0.0
-        return rows.map { s -> session.ihosCalculus[selections[s.indexTooth] ?: s.indexTooth] ?: 0 }.average()
+        return rows.map { s -> session.ihosCalculus[selectedIhosTooth(s)] ?: 0 }.average()
     }
 
     val hasIhosData = evaluableSlots().isNotEmpty() && evaluableSlots().all { s ->
-        val tooth = selections[s.indexTooth] ?: s.indexTooth
+        val tooth = selectedIhosTooth(s)
         session.ihosDebris.containsKey(tooth) && session.ihosCalculus.containsKey(tooth)
     }
     val dAvg = round1(debrisAverage())
@@ -339,7 +343,7 @@ fun IhosInteractiveV2Screen(
                 ihosSlots.chunked(3).forEach { row ->
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         row.forEach { s ->
-                            val current = selections[s.indexTooth] ?: s.indexTooth
+                            val current = selectedIhosTooth(s)
                             Card(
                                 modifier = Modifier.weight(1f).clickable { selectedSlot = ihosSlots.indexOf(s) },
                                 shape = RoundedCornerShape(14.dp),
@@ -370,8 +374,8 @@ fun IhosInteractiveV2Screen(
         item {
             SectionCard("${tr(lang, "2 · Selección para", "2 · Selection for")} ${slot.indexTooth}") {
                 Text(tr(lang,
-                    "Usa el diente índice si es evaluable. En posteriores, el sustituto es el siguiente molar plenamente erupcionado distal al área de premolares; en los incisivos centrales, se usa el central contralateral.",
-                    "Use the index tooth when evaluable. Posterior substitutes are the next fully erupted molars distal to the premolar area; for central incisors, use the contralateral central incisor."
+                    "Usa el diente índice o su sustituto adyacente estándar: 17 por 16, 21 por 11, 27 por 26, 37 por 36, 41 por 31 y 47 por 46. No uses terceros molares como sustitutos automáticos.",
+                    "Use the index tooth or its standard adjacent substitute: 17 for 16, 21 for 11, 27 for 26, 37 for 36, 41 for 31 and 47 for 46. Do not automatically use third molars as substitutes."
                 ), style = MaterialTheme.typography.bodySmall)
                 val candidates = listOf(slot.indexTooth) + slot.substitutes
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {

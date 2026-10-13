@@ -69,21 +69,15 @@ object ClinicalEngines {
     }
 
     fun cpodInterpretation(value: Int, lang: String): String {
-        val es = when (value) {
-            0 -> "Libre de caries registrada en el índice"
-            in 1..2 -> "Baja experiencia de caries"
-            in 3..4 -> "Experiencia moderada de caries"
-            in 5..6 -> "Alta experiencia de caries"
-            else -> "Muy alta experiencia de caries"
+        // CPOD/ceod is a tooth count. Severity bands depend on the population,
+        // age and survey protocol; do not apply unsupported universal cutoffs.
+        return if (lang == "en") {
+            if (value == 0) "No affected teeth recorded in this index" else
+                "$value teeth counted in the index; interpret using the applicable age/population reference"
+        } else {
+            if (value == 0) "Sin dientes afectados registrados en este índice" else
+                "$value dientes contabilizados en el índice; interpretar con la referencia aplicable a edad y población"
         }
-        val en = when (value) {
-            0 -> "No caries experience recorded in the index"
-            in 1..2 -> "Low caries experience"
-            in 3..4 -> "Moderate caries experience"
-            in 5..6 -> "High caries experience"
-            else -> "Very high caries experience"
-        }
-        return if (lang == "en") en else es
     }
 
     fun olearyEligibleTeeth(session: EducationalSession, toothDomain: Set<Int>? = null): Set<Int> =
@@ -108,13 +102,15 @@ object ClinicalEngines {
 
     fun ihosOrNull(session: EducationalSession): Double? {
         // Each OHI-S index site may use its documented substitute. Calculate only when all six sites have both scores.
+        // Greene–Vermillion OHI-S: only the standard adjacent substitutes are used.
+        // Third molars are not an automatic substitute when the index/second molar is absent.
         val slots = listOf(
-            listOf(16, 17, 18),
+            listOf(16, 17),
             listOf(11, 21),
-            listOf(26, 27, 28),
-            listOf(36, 37, 38),
+            listOf(26, 27),
+            listOf(36, 37),
             listOf(31, 41),
-            listOf(46, 47, 48)
+            listOf(46, 47)
         )
         val selected = slots.map { candidates ->
             candidates.firstOrNull { tooth ->
