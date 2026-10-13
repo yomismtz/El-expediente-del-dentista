@@ -2,7 +2,7 @@ name: Android Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, audit-clinical-indices]
   pull_request:
     branches: [audit-safety-calculators]
   workflow_dispatch:
