@@ -272,8 +272,6 @@ fun mixedDentitionIsNotSilentlyDeclaredComplete() {
         assertEquals(25.0, requireNotNull(ClinicalEngines.olearyPercentageOrNull(s, setOf(51))), 0.001)
     }
 
-}
-
 
 @Test
 fun partialCariesIndexCannotBeInterpretedAsFinal() {
@@ -304,4 +302,5 @@ fun uneruptedToothCannotBeUsedAsAnIhosSubstituteSite() {
         ihosCalculus = scores
     )
     assertNull(ClinicalEngines.ihosOrNull(session))
+}
 }
