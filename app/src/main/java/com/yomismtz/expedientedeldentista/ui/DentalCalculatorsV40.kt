@@ -8,14 +8,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-private data class LocalAnesthetic(val name:String,val mgPerMl:Double,val cartridgeMl:Double,val maxMgKg:Double?,val maxAbsoluteMg:Double?,val notes:String)
+private data class LocalAnesthetic(val name:String,val mgPerMl:Double,val cartridgeMl:Double,val maxMgKg:Double?,val maxAbsoluteMg:Double?,val notes:String,val minAgeYears:Double?=null)
 private val dentalAnestheticsV40=listOf(
- LocalAnesthetic("Lidocaína 2% + epinefrina 1:100,000",20.0,1.8,7.0,500.0,"36 mg de lidocaína + 0.018 mg de epinefrina por cartucho de 1.8 mL. Referencia sistémica: 7 mg/kg o 500 mg; verificar además el límite individual de epinefrina."),
- LocalAnesthetic("Articaína 4% + epinefrina",40.0,1.8,7.0,500.0,"72 mg por cartucho de 1.8 mL. Referencia educativa: 7 mg/kg, máximo 500 mg; confirmar ficha técnica del producto concreto."),
+ LocalAnesthetic("Lidocaína 2% + epinefrina 1:100,000",20.0,1.8,4.4,300.0,"36 mg de lidocaína + 0.018 mg de epinefrina por cartucho de 1.8 mL. Referencia dental pediátrica conservadora: 4.4 mg/kg, máximo de referencia 300 mg; verificar además el límite individual de epinefrina."),
+ LocalAnesthetic("Articaína 4% + epinefrina",40.0,1.8,7.0,500.0,"72 mg por cartucho de 1.8 mL. Referencia de ficha técnica: 7 mg/kg y máximo absoluto según producto. No calcular para menores de 4 años; confirmar ficha técnica.",4.0),
  LocalAnesthetic("Prilocaína 3% + felipresina",30.0,1.8,null,null,"54 mg por cartucho de 1.8 mL. El cuadro nacional documenta 1–2 cartuchos en adultos y 1/2–1 en niños; no se extrapola un máximo mg/kg universal."),
- LocalAnesthetic("Mepivacaína 3%",30.0,1.8,null,null,"54 mg por cartucho de 1.8 mL. El máximo debe verificarse en la ficha técnica de la presentación usada."),
- LocalAnesthetic("Mepivacaína 2% + vasoconstrictor",20.0,1.8,null,null,"36 mg por cartucho de 1.8 mL. Verificar vasoconstrictor y límites en la ficha técnica del producto."),
- LocalAnesthetic("Bupivacaína 0.5%",5.0,1.8,null,175.0,"9 mg por 1.8 mL. El cuadro nacional documenta máximo de dosis única de 175 mg para infiltración regional; confirmar presentación odontológica concreta.")
+ LocalAnesthetic("Mepivacaína 3%",30.0,1.8,4.4,300.0,"54 mg por cartucho de 1.8 mL. El máximo debe verificarse en la ficha técnica de la presentación usada."),
+ LocalAnesthetic("Mepivacaína 2% + vasoconstrictor",20.0,1.8,4.4,300.0,"36 mg por cartucho de 1.8 mL. Verificar vasoconstrictor y límites en la ficha técnica del producto."),
+ LocalAnesthetic("Bupivacaína 0.5%",5.0,1.8,1.3,90.0,"9 mg por cartucho de 1.8 mL. Referencia dental pediátrica: 1.3 mg/kg, máximo de referencia 90 mg. No calcular para menores de 12 años; confirmar ficha técnica.",12.0)
 )
 
 private data class DrugOptionV40(val name:String,val presentation:String,val note:String)
@@ -144,10 +144,7 @@ private fun drugPresentationsV40(name:String):List<DrugPresentationV40> = when(n
 private data class WeightDoseV40(val drug:String,val presentation:String,val mgPerMl:Double,val mgKgDay:List<Double>,val intervals:List<Int>,val maxMgDay:Double?,val source:String)
 private val verifiedWeightDosesV40=listOf(
  WeightDoseV40("Amoxicilina","Suspensión oral 500 mg/5 mL",100.0,listOf(90.0,100.0),listOf(8),4500.0,"IMSS GPC 120GER · indicación documentada: neumonía adquirida en la comunidad pediátrica"),
- WeightDoseV40("Amoxicilina / ácido clavulánico","Suspensión 125 mg/31.25 mg por 5 mL",25.0,listOf(20.0,40.0),listOf(8),null,"Listado Institucional IMSS · dosis expresada según componente amoxicilina"),
- WeightDoseV40("Ibuprofeno","Suspensión oral 2 g/100 mL (100 mg/5 mL)",20.0,listOf(20.0,30.0,40.0),listOf(6,8),null,"Listado Institucional IMSS: equivalencia educativa de pauta documentada"),
- WeightDoseV40("Paracetamol / acetaminofén","Solución oral 100 mg/mL",100.0,listOf(40.0,60.0,120.0),listOf(4,6),null,"IMSS GPC: 10–30 mg/kg por dosis cada 4–6 h; seleccionar sólo la pauta que corresponda a la fuente/indicación"),
- WeightDoseV40("Naproxeno","Suspensión oral 125 mg/5 mL",25.0,listOf(15.0),listOf(8),null,"IMSS Grupo 20: máximo pediátrico documentado 15 mg/kg/día; equivalencia educativa del máximo diario"),
+  // Se bloquean cálculos para pautas sin máximo diario y combinaciones dosis/intervalo verificadas.
  WeightDoseV40("Azitromicina","Suspensión 200 mg/5 mL",40.0,listOf(10.0),listOf(24),500.0,"IMSS GPC 261: 10 mg/kg/día, máximo 500 mg, para sinusitis bacteriana pediátrica; no extrapolar automáticamente a odontología"),
  WeightDoseV40("Clindamicina","Suspensión 75 mg/5 mL",15.0,listOf(30.0),listOf(8),1800.0,"IMSS GPC 261: 30 mg/kg/día en 3 dosis, máximo 1.8 g, para sinusitis bacteriana pediátrica; no extrapolar automáticamente a odontología"),
  WeightDoseV40("Claritromicina","Suspensión 125 mg/5 mL",25.0,listOf(15.0),listOf(12),1000.0,"IMSS GPC 261: 15 mg/kg/día en 2 dosis, máximo 1 g, para sinusitis bacteriana pediátrica; no extrapolar automáticamente a odontología"),
@@ -190,6 +187,7 @@ private val drugGroupsV40=listOf(
 fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
  var tab by remember{mutableStateOf(0)}
  var weight by rememberRecordState("calculators.anesthetic.weight","")
+  var anestheticAge by rememberRecordState("calculators.anesthetic.age","")
  var selected by rememberRecordState("calculators.anesthetic.selected",0)
  var medGroup by rememberRecordState<Int?>("calculators.medGroup",null)
  var medDrug by rememberRecordState<Int?>("calculators.medDrug",null)
@@ -203,11 +201,13 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
  var bmiWeight by rememberRecordState("calculators.bmiWeight","")
  var bmiHeightCm by rememberRecordState("calculators.bmiHeightCm","")
  val w=weight.toDoubleOrNull()
+  val ageYears=anestheticAge.toDoubleOrNull()
  val anesthetic=dentalAnestheticsV40[selected.coerceIn(0,dentalAnestheticsV40.lastIndex)]
+  val ageAllowsCalculation=ageYears!=null&&ageYears>=0.5&&(anesthetic.minAgeYears==null||ageYears>=anesthetic.minAgeYears)
  val mgLimit=when{
-  w!=null&&anesthetic.maxMgKg!=null&&anesthetic.maxAbsoluteMg!=null->minOf(w*anesthetic.maxMgKg,anesthetic.maxAbsoluteMg)
-  w!=null&&anesthetic.maxMgKg!=null->w*anesthetic.maxMgKg
-  anesthetic.maxAbsoluteMg!=null->anesthetic.maxAbsoluteMg
+  ageAllowsCalculation&&w!=null&&w>0&&anesthetic.maxMgKg!=null&&anesthetic.maxAbsoluteMg!=null->minOf(w*anesthetic.maxMgKg,anesthetic.maxAbsoluteMg)
+  ageAllowsCalculation&&w!=null&&w>0&&anesthetic.maxMgKg!=null->w*anesthetic.maxMgKg
+  ageAllowsCalculation&&anesthetic.maxAbsoluteMg!=null->anesthetic.maxAbsoluteMg
   else->null
  }
  val mgPerCartridge=anesthetic.mgPerMl*anesthetic.cartridgeMl
@@ -234,6 +234,7 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
   }
   if(tab==0){
    item{SectionCard("1 · Paciente"){
+     OutlinedTextField(anestheticAge,{anestheticAge=it.filter{x->x.isDigit()||x=='.'}.take(5)},label={Text("Edad en años (ej. 8 o 0.8)")},modifier=Modifier.fillMaxWidth())
     OutlinedTextField(weight,{weight=it.filter{x->x.isDigit()||x=='.'}.take(6)},label={Text("Peso (kg)")},modifier=Modifier.fillMaxWidth())
    }}
    item{SectionCard("2 · Anestésico"){
@@ -243,7 +244,7 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
    item{SectionCard("3 · Datos y cálculo automático"){
     Text("Concentración: "+anesthetic.mgPerMl+" mg/mL · cartucho de "+anesthetic.cartridgeMl+" mL · "+"%.1f".format(mgPerCartridge)+" mg/cartucho.",fontWeight=FontWeight.Bold)
     if(anesthetic.maxMgKg!=null) Text("Referencia seleccionada: "+anesthetic.maxMgKg+" mg/kg"+(anesthetic.maxAbsoluteMg?.let{" · máximo absoluto "+it.toInt()+" mg"}?:""))
-    Text(if(mgLimit==null)"Esta presentación no tiene un límite mg/kg precargado verificable; consulta su ficha técnica." else "Límite matemático por anestésico local: %.1f mg".format(mgLimit),fontWeight=FontWeight.Bold)
+     Text(when { ageYears==null||ageYears<0||w==null||w<=0 -> "Introduce edad válida y peso medido para habilitar el cálculo."; ageYears<0.5 -> "NO CALCULADO: en menores de 6 meses se requiere valoración específica."; anesthetic.minAgeYears!=null&&ageYears<anesthetic.minAgeYears -> "NO CALCULADO: esta referencia no se aplica a menores de "+anesthetic.minAgeYears.toInt()+" años."; mgLimit==null -> "NO CALCULADO: no hay límite validado para esta presentación."; else -> "Límite matemático de referencia: %.1f mg".format(mgLimit) },fontWeight=FontWeight.Bold)
     Text(if(cartridges==null)"No se calcula número de cartuchos para esta presentación." else "Equivalencia teórica por anestésico local: %.2f cartuchos".format(cartridges),fontWeight=FontWeight.Bold)
     Text("Revisa también vasoconstrictor, edad, comorbilidades, interacciones y ficha técnica. La app no decide cuántos cartuchos administrar.")
    }}
@@ -299,7 +300,7 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
       ChipChoices(p.mgKgDay.map{v->"${v.toInt()} mg/kg/día" to (medDoseDay==v)},{i->medDoseDay=p.mgKgDay[i];medInterval=null},2)
       Text("La pauta sólo debe seleccionarse cuando corresponda a la indicación y población de la fuente.",fontWeight=FontWeight.Bold)
      }}
-     if(medDoseDay!=null&&medWeight.toDoubleOrNull()!=null){
+      if(medDoseDay!=null&&medWeight.toDoubleOrNull()!=null){
       val rawDaily=medWeight.toDouble()*medDoseDay!!
       val daily=if(p.maxMgDay!=null) minOf(rawDaily,p.maxMgDay) else rawDaily
       item{SectionCard("7 · Cálculo por día"){
@@ -309,7 +310,7 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
       item{SectionCard("8 · Intervalo"){
        ChipChoices(p.intervals.map{h->"Cada $h horas" to (medInterval==h)},{i->medInterval=p.intervals[i]},2)
       }}
-      if(medInterval!=null){
+       if(medInterval!=null&&p.maxMgDay!=null&&p.intervals.size==1&&p.intervals.singleOrNull()==medInterval){
        val doses=24.0/medInterval!!
        val perDose=daily/doses
        val mlDose=perDose/p.mgPerMl

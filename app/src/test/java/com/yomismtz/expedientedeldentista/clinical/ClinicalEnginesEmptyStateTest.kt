@@ -273,3 +273,35 @@ fun mixedDentitionIsNotSilentlyDeclaredComplete() {
     }
 
 }
+
+
+@Test
+fun partialCariesIndexCannotBeInterpretedAsFinal() {
+    val partial = ClinicalEngines.cariesIndexAssessment(
+        mapOf(11 to ToothRecord(status = ToothStatus.CARIES)),
+        primary = false
+    )
+    assertEquals(CariesIndexStatus.PARTIAL, partial.status)
+    assertEquals(1, partial.assessedTeeth)
+    assertTrue(partial.missingTeeth.isNotEmpty())
+    assertTrue(ClinicalEngines.cariesIndexSummary(EducationalSession(teeth = mapOf(11 to ToothRecord(status = ToothStatus.CARIES))), "es").contains("incompleto"))
+}
+
+@Test
+fun completeExplicitlyRecordedPermanentDentitionCanHaveZeroIndex() {
+    val records = ClinicalContent.permanentTeeth.associateWith { ToothRecord(status = ToothStatus.HEALTHY) }
+    val assessment = ClinicalEngines.cariesIndexAssessment(records, primary = false)
+    assertEquals(CariesIndexStatus.COMPLETE, assessment.status)
+    assertEquals(0, assessment.result.total)
+}
+
+@Test
+fun uneruptedToothCannotBeUsedAsAnIhosSubstituteSite() {
+    val scores = listOf(16, 11, 26, 36, 31, 46).associateWith { 0 }
+    val session = EducationalSession(
+        teeth = mapOf(16 to ToothRecord(status = ToothStatus.UNERUPTED)),
+        ihosDebris = scores,
+        ihosCalculus = scores
+    )
+    assertNull(ClinicalEngines.ihosOrNull(session))
+}
