@@ -119,7 +119,7 @@ object ClinicalEngines {
         val selected = slots.map { candidates ->
             candidates.firstOrNull { tooth ->
                 when (session.teeth[tooth]?.status) {
-                    ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER -> false
+                    ToothStatus.MISSING_CARIES, ToothStatus.MISSING_OTHER, ToothStatus.UNERUPTED -> false
                     else -> session.ihosDebris.containsKey(tooth) && session.ihosCalculus.containsKey(tooth)
                 }
             }
