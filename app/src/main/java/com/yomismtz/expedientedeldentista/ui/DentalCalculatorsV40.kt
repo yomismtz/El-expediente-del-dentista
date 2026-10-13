@@ -8,14 +8,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-private data class LocalAnesthetic(val name:String,val mgPerMl:Double,val cartridgeMl:Double,val maxMgKg:Double?,val maxAbsoluteMg:Double?,val notes:String)
+private data class LocalAnesthetic(val name:String,val mgPerMl:Double,val cartridgeMl:Double,val maxMgKg:Double?,val maxAbsoluteMg:Double?,val notes:String,val minAgeYears:Double?=null)
 private val dentalAnestheticsV40=listOf(
- LocalAnesthetic("Lidocaína 2% + epinefrina 1:100,000",20.0,1.8,7.0,500.0,"36 mg de lidocaína + 0.018 mg de epinefrina por cartucho de 1.8 mL. Referencia sistémica: 7 mg/kg o 500 mg; verificar además el límite individual de epinefrina."),
- LocalAnesthetic("Articaína 4% + epinefrina",40.0,1.8,7.0,500.0,"72 mg por cartucho de 1.8 mL. Referencia educativa: 7 mg/kg, máximo 500 mg; confirmar ficha técnica del producto concreto."),
+ LocalAnesthetic("Lidocaína 2% + epinefrina 1:100,000",20.0,1.8,4.4,300.0,"36 mg de lidocaína + 0.018 mg de epinefrina por cartucho de 1.8 mL. Referencia sistémica: 7 mg/kg o 500 mg; verificar además el límite individual de epinefrina."),
+ LocalAnesthetic("Articaína 4% + epinefrina",40.0,1.8,7.0,500.0,"72 mg por cartucho de 1.8 mL. Referencia de ficha técnica: 7 mg/kg y máximo absoluto según producto. No calcular para menores de 4 años; confirmar ficha técnica.",4.0),
  LocalAnesthetic("Prilocaína 3% + felipresina",30.0,1.8,null,null,"54 mg por cartucho de 1.8 mL. El cuadro nacional documenta 1–2 cartuchos en adultos y 1/2–1 en niños; no se extrapola un máximo mg/kg universal."),
- LocalAnesthetic("Mepivacaína 3%",30.0,1.8,null,null,"54 mg por cartucho de 1.8 mL. El máximo debe verificarse en la ficha técnica de la presentación usada."),
- LocalAnesthetic("Mepivacaína 2% + vasoconstrictor",20.0,1.8,null,null,"36 mg por cartucho de 1.8 mL. Verificar vasoconstrictor y límites en la ficha técnica del producto."),
- LocalAnesthetic("Bupivacaína 0.5%",5.0,1.8,null,175.0,"9 mg por 1.8 mL. El cuadro nacional documenta máximo de dosis única de 175 mg para infiltración regional; confirmar presentación odontológica concreta.")
+ LocalAnesthetic("Mepivacaína 3%",30.0,1.8,4.4,300.0,"54 mg por cartucho de 1.8 mL. El máximo debe verificarse en la ficha técnica de la presentación usada."),
+ LocalAnesthetic("Mepivacaína 2% + vasoconstrictor",20.0,1.8,4.4,300.0,"36 mg por cartucho de 1.8 mL. Verificar vasoconstrictor y límites en la ficha técnica del producto."),
+ LocalAnesthetic("Bupivacaína 0.5%",5.0,1.8,1.3,90.0,"9 mg por cartucho de 1.8 mL. Referencia dental pediátrica: 1.3 mg/kg, máximo de referencia 90 mg. No calcular para menores de 12 años; confirmar ficha técnica.",12.0)
 )
 
 private data class DrugOptionV40(val name:String,val presentation:String,val note:String)
