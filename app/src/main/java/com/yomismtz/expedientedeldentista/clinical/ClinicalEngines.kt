@@ -102,13 +102,15 @@ object ClinicalEngines {
 
     fun ihosOrNull(session: EducationalSession): Double? {
         // Each OHI-S index site may use its documented substitute. Calculate only when all six sites have both scores.
+        // Greene–Vermillion OHI-S: only the standard adjacent substitutes are used.
+        // Third molars are not an automatic substitute when the index/second molar is absent.
         val slots = listOf(
-            listOf(16, 17, 18),
+            listOf(16, 17),
             listOf(11, 21),
-            listOf(26, 27, 28),
-            listOf(36, 37, 38),
+            listOf(26, 27),
+            listOf(36, 37),
             listOf(31, 41),
-            listOf(46, 47, 48)
+            listOf(46, 47)
         )
         val selected = slots.map { candidates ->
             candidates.firstOrNull { tooth ->
