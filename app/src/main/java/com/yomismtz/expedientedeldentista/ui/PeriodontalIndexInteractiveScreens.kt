@@ -311,11 +311,11 @@ fun IhosInteractiveV2Screen(
     fun calculusAverage(): Double {
         val rows = evaluableSlots()
         if (rows.isEmpty()) return 0.0
-        return rows.map { s -> session.ihosCalculus[selections[s.indexTooth] ?: s.indexTooth] ?: 0 }.average()
+        return rows.map { s -> session.ihosCalculus[selectedIhosTooth(s)] ?: 0 }.average()
     }
 
     val hasIhosData = evaluableSlots().isNotEmpty() && evaluableSlots().all { s ->
-        val tooth = selections[s.indexTooth] ?: s.indexTooth
+        val tooth = selectedIhosTooth(s)
         session.ihosDebris.containsKey(tooth) && session.ihosCalculus.containsKey(tooth)
     }
     val dAvg = round1(debrisAverage())
@@ -343,7 +343,7 @@ fun IhosInteractiveV2Screen(
                 ihosSlots.chunked(3).forEach { row ->
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         row.forEach { s ->
-                            val current = selections[s.indexTooth] ?: s.indexTooth
+                            val current = selectedIhosTooth(s)
                             Card(
                                 modifier = Modifier.weight(1f).clickable { selectedSlot = ihosSlots.indexOf(s) },
                                 shape = RoundedCornerShape(14.dp),
