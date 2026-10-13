@@ -269,12 +269,12 @@ private data class IhosSlot(
 )
 
 private val ihosSlots = listOf(
-    IhosSlot(16, "Vestibular", "Buccal", listOf(17, 18)),
+    IhosSlot(16, "Vestibular", "Buccal", listOf(17)),
     IhosSlot(11, "Labial", "Labial", listOf(21)),
-    IhosSlot(26, "Vestibular", "Buccal", listOf(27, 28)),
-    IhosSlot(36, "Lingual", "Lingual", listOf(37, 38)),
+    IhosSlot(26, "Vestibular", "Buccal", listOf(27)),
+    IhosSlot(36, "Lingual", "Lingual", listOf(37)),
     IhosSlot(31, "Labial", "Labial", listOf(41)),
-    IhosSlot(46, "Lingual", "Lingual", listOf(47, 48))
+    IhosSlot(46, "Lingual", "Lingual", listOf(47))
 )
 
 private fun round1(v: Double): Double = round(v * 10.0) / 10.0
