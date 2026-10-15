@@ -145,13 +145,65 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                     TextButton(onClick={showElementaryHelp=!showElementaryHelp}){Text("?")}
                 }
                 if(showElementaryHelp){
+                    val helpSelection=tissueLesion[selected.id].orEmpty()
+                    val helpImage=when {
+                        helpSelection.startsWith("Mácula") -> R.drawable.edu_lesion_macula
+                        helpSelection=="Pápula" -> R.drawable.edu_lesion_papula
+                        helpSelection.startsWith("Placa") -> R.drawable.edu_lesion_placa
+                        helpSelection=="Nódulo" || helpSelection=="Masa" -> R.drawable.edu_lesion_nodulo
+                        helpSelection=="Vesícula" -> R.drawable.edu_lesion_vesicula
+                        helpSelection.startsWith("Ampolla") -> R.drawable.edu_lesion_ampolla
+                        helpSelection=="Pústula" -> R.drawable.edu_lesion_pustula
+                        helpSelection=="Erosión" -> R.drawable.edu_lesion_erosion
+                        helpSelection=="Úlcera" -> R.drawable.edu_lesion_ulcera
+                        helpSelection.startsWith("Fisura") -> R.drawable.edu_lesion_fisura
+                        helpSelection.startsWith("Fístula") -> R.drawable.edu_lesion_fistula
+                        else -> null
+                    }
+                    val helpDefinition=when {
+                        helpSelection.startsWith("Mácula") -> "Cambio circunscrito de color, plano, sin elevación ni depresión palpable."
+                        helpSelection=="Eritema" -> "Enrojecimiento de la mucosa; describe distribución, intensidad, síntomas y persistencia."
+                        helpSelection=="Petequia" -> "Pequeño punto hemorrágico; registra número, agrupación, localización y posible trauma."
+                        helpSelection.startsWith("Púrpura") -> "Extravasación de sangre en el tejido; describe extensión, color, evolución y antecedentes."
+                        helpSelection=="Pápula" -> "Elevación sólida, pequeña y circunscrita."
+                        helpSelection.startsWith("Placa") -> "Área relativamente extensa, elevada o engrosada; describe color, superficie y si se desprende."
+                        helpSelection=="Nódulo" -> "Aumento de volumen sólido, circunscrito y generalmente más profundo que una pápula."
+                        helpSelection=="Masa" -> "Aumento de volumen de dimensiones o profundidad variables."
+                        helpSelection=="Vesícula" -> "Elevación pequeña con contenido líquido."
+                        helpSelection.startsWith("Ampolla") -> "Elevación con contenido líquido de mayor tamaño que una vesícula."
+                        helpSelection=="Pústula" -> "Elevación que contiene material purulento."
+                        helpSelection=="Quiste" -> "Cavidad patológica que puede manifestarse como aumento de volumen."
+                        helpSelection=="Erosión" -> "Pérdida superficial del epitelio."
+                        helpSelection=="Úlcera" -> "Pérdida del epitelio con exposición del tejido conjuntivo subyacente."
+                        helpSelection.startsWith("Fisura") -> "Hendidura lineal de la superficie mucosa."
+                        helpSelection=="Costra" -> "Material seco formado por exudado, sangre o secreción; es más típico del bermellón labial."
+                        helpSelection=="Atrofia" -> "Adelgazamiento o pérdida de componentes normales del epitelio o tejido."
+                        helpSelection=="Queratosis" -> "Engrosamiento queratósico que puede observarse como una zona blanquecina."
+                        helpSelection.startsWith("Lesión papilar") -> "Crecimiento exofítico con superficie papilar, verrugosa o vegetante."
+                        helpSelection.startsWith("Fístula") -> "Trayecto de drenaje hacia la superficie; busca el origen y la secreción."
+                        helpSelection=="Edema" -> "Aumento de volumen por acumulación de líquido en los tejidos."
+                        helpSelection=="Hematoma" -> "Colección localizada de sangre extravasada; registra trauma, tamaño y evolución."
+                        helpSelection=="Pigmentación" -> "Cambio de color por pigmento endógeno o exógeno; describe simetría y cambios recientes."
+                        else -> ""
+                    }
                     Card(Modifier.fillMaxWidth(),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)){
-                        Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
-                            Text(tr(lang,"Lesiones elementales","Elementary lesions"),fontWeight=FontWeight.Black)
-                            Text(tr(lang,"Selecciona la lesión elemental que mejor describa el hallazgo. Toca ? nuevamente para cerrar la lista.","Select the elementary lesion that best describes the finding. Tap ? again to close the list."),style=MaterialTheme.typography.bodySmall)
+                        Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
+                            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){
+                                Text(tr(lang,"Ficha de ayuda · Lesiones elementales","Help card · Elementary lesions"),fontWeight=FontWeight.Black)
+                                TextButton(onClick={showElementaryHelp=false}){Text("✕")}
+                            }
+                            Text(tr(lang,"Selecciona una lesión para revisar su aspecto y definición. Pulsa ? o ✕ para cerrar esta ficha.","Select a lesion to review its appearance and definition. Tap ? or ✕ to close this card."),style=MaterialTheme.typography.bodySmall)
+                            LocalClinicalInlineZoomImageV48(lang,"Comparación de lesiones elementales","Elementary lesion comparison",R.drawable.mucosa_lesiones_elementales,"Lámina visual comparativa de lesiones elementales de la mucosa oral. Es una guía morfológica, no diagnóstica.","Visual comparison sheet of elementary oral mucosal lesions. This is a morphologic guide, not a diagnosis.")
+                            if(helpSelection.isNotBlank()){
+                                Text(helpSelection,fontWeight=FontWeight.Bold)
+                                if(helpDefinition.isNotBlank()) Text(helpDefinition)
+                                helpImage?.let { LocalClinicalInlineZoomImageV48(lang,helpSelection,helpSelection,it,helpDefinition,helpDefinition) }
+                            } else {
+                                Text(tr(lang,"Aún no hay una lesión seleccionada. Elige una opción de la lista; cuando exista una imagen específica, aparecerá aquí.","No lesion is selected yet. Choose an option below; when a specific image is available, it will appear here."))
+                            }
                             AdaptiveGridV17(elementary.size,zoneColumns){i->
                                 val option=elementary[i]
-                                FilterChip(tissueLesion[selected.id]==option,{tissueLesion[selected.id]=option;finding=option;showElementaryHelp=false},{Text(option)},modifier=Modifier.fillMaxWidth())
+                                FilterChip(tissueLesion[selected.id]==option,{tissueLesion[selected.id]=option;finding=option},{Text(option)},modifier=Modifier.fillMaxWidth())
                             }
                         }
                     }
