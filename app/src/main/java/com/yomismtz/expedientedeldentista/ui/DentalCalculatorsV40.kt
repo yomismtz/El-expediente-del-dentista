@@ -69,7 +69,7 @@ private fun drugPresentationsV40(name:String):List<DrugPresentationV40> = when(n
   DrugPresentationV40("Parenteral","Solución inyectable 1.5 g")
  )
  "Paracetamol / acetaminofén" -> listOf(
-  DrugPresentationV40("Suspensiones / líquidos","Solución oral 100 mg/mL"),
+  DrugPresentationV40("Suspensiones / líquidos","Solución oral 100 mg/mL (Febraxito Pediátrico)"),
   DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 120 mg/5 mL"),
   DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 160 mg/5 mL"),
   DrugPresentationV40("Tabletas / cápsulas","Tableta 500 mg"),
@@ -79,7 +79,7 @@ private fun drugPresentationsV40(name:String):List<DrugPresentationV40> = when(n
   DrugPresentationV40("Parenteral","Solución para infusión IV 10 mg/mL")
  )
  "Ibuprofeno" -> listOf(
-  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 2 g/100 mL (100 mg/5 mL)"),
+  DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 2 g/100 mL (Motrin Infantil · 20 mg/mL)"),
   DrugPresentationV40("Suspensiones / líquidos","Suspensión oral 200 mg/5 mL"),
   DrugPresentationV40("Suspensiones / líquidos","Gotas / suspensión 40 mg/mL"),
   DrugPresentationV40("Tabletas / cápsulas","Tableta o cápsula 200 mg"),
@@ -145,10 +145,10 @@ private data class WeightDoseV40(val drug:String,val presentation:String,val mgP
 private val verifiedWeightDosesV40=listOf(
  WeightDoseV40("Amoxicilina","Suspensión oral 500 mg/5 mL",100.0,listOf(90.0,100.0),listOf(8),4500.0,"IMSS GPC 120GER · indicación documentada: neumonía adquirida en la comunidad pediátrica"),
  WeightDoseV40("Amoxicilina / ácido clavulánico","Suspensión 125 mg/31.25 mg por 5 mL",25.0,listOf(20.0,40.0),listOf(8),null,"Listado Institucional IMSS · dosis expresada según componente amoxicilina"),
- WeightDoseV40("Ibuprofeno","Suspensión oral 2 g/100 mL (100 mg/5 mL)",20.0,listOf(5.0,10.0),listOf(6,8),null,"IMSS Cuadro Básico: 5–10 mg/kg por dosis cada 6–8 h; validar edad, indicación y contraindicaciones.",perDose=true,maxMgKgDay=40.0),
+ WeightDoseV40("Ibuprofeno","Suspensión oral 2 g/100 mL (Motrin Infantil · 20 mg/mL)",20.0,listOf(5.0,10.0),listOf(6,8),null,"IMSS Cuadro Básico: 5–10 mg/kg por dosis cada 6–8 h; validar edad, indicación y contraindicaciones.",perDose=true,maxMgKgDay=40.0),
  WeightDoseV40("Ibuprofeno","Suspensión oral 200 mg/5 mL",40.0,listOf(5.0,10.0),listOf(6,8),null,"IMSS Cuadro Básico: 5–10 mg/kg por dosis cada 6–8 h; validar edad, indicación y contraindicaciones.",perDose=true,maxMgKgDay=40.0),
  WeightDoseV40("Ibuprofeno","Gotas / suspensión 40 mg/mL",40.0,listOf(5.0,10.0),listOf(6,8),null,"IMSS Cuadro Básico: 5–10 mg/kg por dosis cada 6–8 h; verificar el producto concreto.",perDose=true,maxMgKgDay=40.0),
- WeightDoseV40("Paracetamol / acetaminofén","Solución oral 100 mg/mL",100.0,listOf(10.0,15.0),listOf(6,8),2000.0,"IMSS GPC 120GER: 10–15 mg/kg por dosis cada 4–6 h; esta calculadora restringe la selección a cada 6–8 h y limita a 60 mg/kg/día o 2 g/día, lo que resulte menor.",perDose=true,maxMgKgDay=60.0),
+ WeightDoseV40("Paracetamol / acetaminofén","Solución oral 100 mg/mL (Febraxito Pediátrico)",100.0,listOf(10.0,15.0),listOf(6,8),2000.0,"IMSS GPC 120GER: 10–15 mg/kg por dosis cada 4–6 h; esta calculadora restringe la selección a cada 6–8 h y limita a 60 mg/kg/día o 2 g/día, lo que resulte menor.",perDose=true,maxMgKgDay=60.0),
  WeightDoseV40("Naproxeno","Suspensión oral 125 mg/5 mL",25.0,listOf(15.0),listOf(8),null,"IMSS Grupo 20: máximo pediátrico documentado 15 mg/kg/día; equivalencia educativa del máximo diario"),
  WeightDoseV40("Azitromicina","Suspensión 200 mg/5 mL",40.0,listOf(10.0),listOf(24),500.0,"IMSS GPC 261: 10 mg/kg/día, máximo 500 mg, para sinusitis bacteriana pediátrica; no extrapolar automáticamente a odontología"),
  WeightDoseV40("Clindamicina","Suspensión 75 mg/5 mL",15.0,listOf(30.0),listOf(8),1800.0,"IMSS GPC 261: 30 mg/kg/día en 3 dosis, máximo 1.8 g, para sinusitis bacteriana pediátrica; no extrapolar automáticamente a odontología"),
@@ -310,7 +310,7 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
       val daily=if(p.perDose&&dosesForInterval!=null&&effectiveDailyLimit!=null) minOf(rawDaily,effectiveDailyLimit) else if(!p.perDose&&p.maxMgDay!=null) minOf(rawDaily,p.maxMgDay) else rawDaily
       val perDoseAmount=if(p.perDose&&dosesForInterval!=null) daily/dosesForInterval else if(!p.perDose&&dosesForInterval!=null) daily/dosesForInterval else null
       item{SectionCard("7 · Cálculo por día"){
-       Text(if(p.perDose) "Peso × pauta = %.1f mg por dosis antes de límites".format(rawAmount) else "Peso × pauta = %.1f mg/día".format(rawDaily),fontWeight=FontWeight.Bold)
+       Text(if(p.perDose && medInterval==null) "Dosis individual teórica: %.1f mg; selecciona un intervalo para calcular y limitar el total diario.".format(rawAmount) else if(p.perDose) "Peso × pauta = %.1f mg por dosis antes de límites".format(rawAmount) else "Peso × pauta = %.1f mg/día".format(rawDaily),fontWeight=FontWeight.Bold)
        if(effectiveDailyLimit!=null&&rawDaily>effectiveDailyLimit) Text("Se aplica el límite diario: %.1f mg/día (menor entre límites precargados).".format(effectiveDailyLimit),fontWeight=FontWeight.Bold)
       }}
       item{SectionCard("8 · Intervalo"){
