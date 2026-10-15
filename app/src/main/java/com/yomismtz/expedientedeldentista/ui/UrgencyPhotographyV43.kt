@@ -56,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -166,7 +167,7 @@ private fun printPhotoPdfV43(context:android.content.Context,uri:Uri){
     },null)
 }
 
-private fun createPhotoPdfV43(context:android.content.Context,photos:Map<String,String>,brightness:Map<String,Float>,contrast:Map<String,Float>,sharpness:Map<String,Float>,rotation:Map<String,Int>,zoom:Map<String,Float>,offsetX:Map<String,Float>,offsetY:Map<String,Float>,patient:String,recordId:String,dateText:String,purpose:String,notes:String,compact:Boolean,anonymous:Boolean):Uri? = runCatching {
+private fun createPhotoPdfV43(context:android.content.Context,photos:Map<String,String>,brightness:Map<String,Float>,contrast:Map<String,Float>,sharpness:Map<String,Float>,rotation:Map<String,Int>,zoom:Map<String,Float>,offsetX:Map<String,Float>,offsetY:Map<String,Float>,patient:String,recordId:String,dateText:String,purpose:String,notes:String,compact:Boolean,anonymous:Boolean,primaryColor:Int,secondaryColor:Int):Uri? = runCatching {
     val pdf=PdfDocument()
     val extraoral=listOf("Frontal extraoral","Perfil derecho","Perfil izquierdo","Sonrisa")
     val intraoral=listOf("Frontal intraoral","Lateral derecha","Lateral izquierda","Oclusal superior","Oclusal inferior","Detalle de lesión / procedimiento")
@@ -176,13 +177,16 @@ private fun createPhotoPdfV43(context:android.content.Context,photos:Map<String,
     val perPage=if(compact)6 else 4;val chunks=entries.chunked(perPage);val generated=SimpleDateFormat("dd/MM/yyyy HH:mm",Locale.getDefault()).format(Date())
     chunks.forEachIndexed{pageIndex,chunk->
         val page=pdf.startPage(PdfDocument.PageInfo.Builder(595,842,pageIndex+1).create());val canvas=page.canvas
-        val title=Paint(Paint.ANTI_ALIAS_FLAG).apply{textSize=17f;isFakeBoldText=true};val body=Paint(Paint.ANTI_ALIAS_FLAG).apply{textSize=9f};val label=Paint(Paint.ANTI_ALIAS_FLAG).apply{textSize=10f;isFakeBoldText=true}
+        val title=Paint(Paint.ANTI_ALIAS_FLAG).apply{textSize=17f;isFakeBoldText=true;color=primaryColor};val body=Paint(Paint.ANTI_ALIAS_FLAG).apply{textSize=9f;color=android.graphics.Color.DKGRAY};val label=Paint(Paint.ANTI_ALIAS_FLAG).apply{textSize=10f;isFakeBoldText=true;color=primaryColor}
+        val accent=Paint(Paint.ANTI_ALIAS_FLAG).apply{color=primaryColor;style=Paint.Style.FILL}
+        val accentSoft=Paint(Paint.ANTI_ALIAS_FLAG).apply{color=secondaryColor;style=Paint.Style.STROKE;strokeWidth=1.4f}
+        canvas.drawRect(24f,36f,571f,40f,accent)
         canvas.drawText("EL EXPEDIENTE DEL DENTISTA · REGISTRO FOTOGRÁFICO",24f,28f,title)
         if(!anonymous){canvas.drawText("Paciente: "+patient.ifBlank{"Sin identificar"},24f,46f,body);canvas.drawText("Expediente: "+recordId.ifBlank{"—"},24f,60f,body)}else canvas.drawText("Registro sin datos identificativos",24f,48f,body)
         canvas.drawText("Fecha clínica: "+dateText,330f,46f,body);canvas.drawText("Finalidad: "+purpose.ifBlank{"No especificada"},24f,76f,body)
         val cols=2;val rows=if(compact)3 else 2;val cellW=267;val cellH=if(compact)205 else 285;val imageH=if(compact)160 else 225
         chunk.forEachIndexed{i,e->
-            val col=i%cols;val row=i/cols;val left=24+col*279;val top=94+row*cellH;canvas.drawText(e.first,left.toFloat(),(top-5).toFloat(),label)
+            val col=i%cols;val row=i/cols;val left=24+col*279;val top=94+row*cellH;canvas.drawText(e.first,left.toFloat(),(top-5).toFloat(),label);canvas.drawRoundRect(left.toFloat(),top.toFloat(),(left+cellW).toFloat(),(top+imageH).toFloat(),5f,5f,accentSoft)
             val source=photoBitmapV43(context,e.second,1800)
             if(source==null){canvas.drawRect(left.toFloat(),top.toFloat(),(left+cellW).toFloat(),(top+imageH).toFloat(),Paint(Paint.ANTI_ALIAS_FLAG).apply{style=Paint.Style.STROKE});canvas.drawText("Toma no disponible",(left+12).toFloat(),(top+imageH/2).toFloat(),body)}else{
                 val bmp=framedPhotoV43(source,brightness[e.first]?:0f,contrast[e.first]?:1f,sharpness[e.first]?:0f,rotation[e.first]?:0,zoom[e.first]?:1f,offsetX[e.first]?:0f,offsetY[e.first]?:0f)
@@ -223,6 +227,14 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
             photoUris[view]=uri.toString()
         }
     }
+    var pendingCameraUri by remember { androidx.compose.runtime.mutableStateOf<Uri?>(null) }
+    var pendingCameraView by remember { androidx.compose.runtime.mutableStateOf("") }
+    val cameraLauncher=rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()){success->
+        val captured=pendingCameraUri
+        if(success && captured!=null) photoUris[pendingCameraView]=captured.toString()
+        pendingCameraUri=null
+        pendingCameraView=""
+    }
     val cropLauncher=rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()){result->
         val uri=result.data?.data
         if(uri!=null){runCatching{context.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)};photoUris[view]=uri.toString()}
@@ -262,8 +274,19 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
                 }
             }
         }
-        ResponsiveSectionV17(tr(lang,"2 · Fotografía del paciente","2 · Patient photograph"),tr(lang,"Las fotografías permanecen vinculadas localmente al expediente activo.","Photos remain locally linked to the active record.")){
-            Button(onClick={launcher.launch(arrayOf("image/*"))},modifier=Modifier.fillMaxWidth()){Text(tr(lang,"Seleccionar / reemplazar fotografía","Select / replace photograph"),fontWeight=FontWeight.Bold)}
+        ResponsiveSectionV17(tr(lang,"2 · Fotografía del paciente","2 · Patient photograph"),tr(lang,"Las fotografías se mantienen en esta práctica; si abriste la ficha desde un expediente, quedan asociadas a él.","Photos stay in this practice; when opened from a record, they are associated with it.")){
+            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(onClick={
+                    runCatching {
+                        val file=File(context.cacheDir,"clinical_photo_${System.currentTimeMillis()}.jpg")
+                        val uri=androidx.core.content.FileProvider.getUriForFile(context,context.packageName+".fileprovider",file)
+                        pendingCameraUri=uri
+                        pendingCameraView=safeView
+                        cameraLauncher.launch(uri)
+                    }.onFailure { Toast.makeText(context,tr(lang,"No se pudo abrir la cámara.","Could not open camera."),Toast.LENGTH_SHORT).show() }
+                },modifier=Modifier.weight(1f)){Text("📷 "+tr(lang,"Tomar foto","Take photo"),fontWeight=FontWeight.SemiBold)}
+                OutlinedButton(onClick={launcher.launch(arrayOf("image/*"))},modifier=Modifier.weight(1f)){Text("🖼️ "+tr(lang,"Elegir imagen","Choose image"),fontWeight=FontWeight.SemiBold)}
+            }
             if(preview!=null){
                 Image(preview.asImageBitmap(),safeView,Modifier.fillMaxWidth().height(260.dp).pointerInput(safeView,zoom,offsetX,offsetY){detectTransformGestures{_,pan,gestureZoom,_->photoZoom[safeView]=(zoom*gestureZoom).coerceIn(1f,3f);photoOffsetX[safeView]=(offsetX+pan.x/300f).coerceIn(-1f,1f);photoOffsetY[safeView]=(offsetY+pan.y/300f).coerceIn(-1f,1f)}}.graphicsLayer{rotationZ=rotation.toFloat();scaleX=zoom;scaleY=zoom;translationX=offsetX*180f;translationY=offsetY*180f},contentScale=ContentScale.Fit)
                 Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
@@ -297,7 +320,7 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(!pdfCompact,{pdfCompact=false},{Text(tr(lang,"Completo","Full"))},Modifier.weight(1f));FilterChip(pdfCompact,{pdfCompact=true},{Text(tr(lang,"Compacto","Compact"))},Modifier.weight(1f))}
             Row(Modifier.fillMaxWidth()){Checkbox(pdfIncludeIdentity,{pdfIncludeIdentity=it});Text(tr(lang,"Incluir identificación y número de expediente","Include identification and record number"),Modifier.padding(top=12.dp))}
             Button(onClick={
-                val uri=createPhotoPdfV43(context,photoUris.toMap(),photoBrightness.toMap(),photoContrast.toMap(),photoSharpness.toMap(),photoRotation.toMap(),photoZoom.toMap(),photoOffsetX.toMap(),photoOffsetY.toMap(),if(pdfIncludeIdentity)patientLabel else "",if(pdfIncludeIdentity)activeRecordId else "",pdfDate,purpose,notes,pdfCompact,!pdfIncludeIdentity)
+                val uri=createPhotoPdfV43(context,photoUris.toMap(),photoBrightness.toMap(),photoContrast.toMap(),photoSharpness.toMap(),photoRotation.toMap(),photoZoom.toMap(),photoOffsetX.toMap(),photoOffsetY.toMap(),if(pdfIncludeIdentity)patientLabel else "",if(pdfIncludeIdentity)activeRecordId else "",pdfDate,purpose,notes,pdfCompact,!pdfIncludeIdentity,MaterialTheme.colorScheme.primary.toArgb(),MaterialTheme.colorScheme.secondary.toArgb())
                 if(uri!=null){
                     lastPdfUri=uri
                     val send=Intent(Intent.ACTION_SEND).apply{type="application/pdf";putExtra(Intent.EXTRA_STREAM,uri);addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)}
