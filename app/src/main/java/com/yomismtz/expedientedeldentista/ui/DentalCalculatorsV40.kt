@@ -204,6 +204,8 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
  var topicalProduct by rememberRecordState("calculators.topicalProduct",0)
  var bmiWeight by rememberRecordState("calculators.bmiWeight","")
  var bmiHeightCm by rememberRecordState("calculators.bmiHeightCm","")
+ var comboProduct by rememberRecordState("calculators.comboProduct",0)
+ var comboVolume by rememberRecordState("calculators.comboVolume","")
  val w=weight.toDoubleOrNull()
  val anesthetic=dentalAnestheticsV40[selected.coerceIn(0,dentalAnestheticsV40.lastIndex)]
  val mgLimit=when{
@@ -228,7 +230,8 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
      "Medicamentos" to (tab==1),
      "Fluoruros / clorhexidina" to (tab==2),
      "IMC" to (tab==3),
-     "Conversión y práctica" to (tab==4)
+     "Conversión y práctica" to (tab==4),
+     "Combinados" to (tab==5)
     ),
     { tab=it },
     columns=3
@@ -376,6 +379,26 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
     Text("Bajo peso: <18.5\nPeso saludable: 18.5–24.9\nSobrepeso: 25.0–29.9\nObesidad clase 1: 30.0–34.9\nObesidad clase 2: 35.0–39.9\nObesidad clase 3 (severa): ≥40.0")
    }}
    item{NoticeCard("Fuente clínica: CDC. El IMC es una medida de detección, no un diagnóstico. Para pacientes de 2 a 19 años debe interpretarse mediante IMC por edad y sexo/percentiles; esta calculadora no aplica esas categorías de adulto.")}
+  }else if(tab==5){
+   item{SectionCard("1 · Calculadora de medicamentos combinados"){
+    Text("Esta herramienta desglosa los principios activos contenidos en un volumen que ya fue indicado por el profesional. No recomienda dosis, intervalo ni volumen para administrar.",fontWeight=FontWeight.Bold)
+    val comboNames=listOf("Naproxeno + paracetamol · referencia 25 mg/mL + 20 mg/mL")
+    ChipChoices(comboNames.mapIndexed{i,name->name to (comboProduct==i)},{comboProduct=it;comboVolume=""},1)
+    Text("Referencia de concentración: 2.5 g de naproxeno + 2 g de paracetamol por 100 mL (25 mg/mL + 20 mg/mL). Verificar que el envase concreto coincida exactamente antes de usar.")
+    OutlinedTextField(comboVolume,{comboVolume=it.filter{x->x.isDigit()||x=='.'}.take(6)},label={Text("Volumen ya prescrito (mL)")},modifier=Modifier.fillMaxWidth())
+    val volume=comboVolume.toDoubleOrNull()
+    if(volume!=null&&volume>0&&volume<=100){
+     val naproxenMg=volume*25.0
+     val paracetamolMg=volume*20.0
+     Text("En ${"%.2f".format(volume)} mL hay:",fontWeight=FontWeight.Black)
+     Text("• Naproxeno: ${"%.1f".format(naproxenMg)} mg")
+     Text("• Paracetamol: ${"%.1f".format(paracetamolMg)} mg")
+     Text("Ambos principios activos se deben verificar por separado frente a peso, edad, intervalo, máximo diario, contraindicaciones y otros medicamentos.")
+    }else{
+     Text("Introduce un volumen mayor que 0 y hasta 100 mL para ver el desglose matemático.")
+    }
+   }}
+   item{NoticeCard("No usar este desglose para elegir una dosis pediátrica. Las combinaciones con naproxeno/paracetamol requieren confirmar la ficha técnica del producto, la edad autorizada y la pauta prescrita. No combinar con otros AINEs ni duplicar paracetamol. La combinación ibuprofeno/paracetamol no se habilita hasta verificar una presentación concreta y su ficha técnica vigente.") }
   }else{
    item{SectionCard("1 · Actividades de cálculo y conversión"){
     Text("Practica conversiones sin que la app prescriba tratamientos.",fontWeight=FontWeight.Bold)
