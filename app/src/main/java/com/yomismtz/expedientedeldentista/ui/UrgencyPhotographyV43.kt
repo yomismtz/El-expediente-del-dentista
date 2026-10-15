@@ -212,6 +212,8 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     val activeProfile=remember(activeRecordId){runCatching{ClinicalRecordStore(context).loadAll().firstOrNull{it.id==activeRecordId}?.session?.profile}.getOrNull()}
     val patientLabel=listOfNotNull(activeProfile?.patientInitials?.takeIf{it.isNotBlank()},activeProfile?.exerciseName?.takeIf{it.isNotBlank()}).joinToString(" · ")
     val pdfDate=remember{SimpleDateFormat("dd/MM/yyyy HH:mm",Locale.getDefault()).format(Date())}
+    val pdfPrimaryColor=MaterialTheme.colorScheme.primary.toArgb()
+    val pdfSecondaryColor=MaterialTheme.colorScheme.secondary.toArgb()
     var lastPdfUri by remember{androidx.compose.runtime.mutableStateOf<Uri?>(null)}
     val photoUris=rememberRecordStateMap<String,String>("photo.uris")
     val photoBrightness=rememberRecordStateMap<String,Float>("photo.brightnessByView")
@@ -320,7 +322,7 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){FilterChip(!pdfCompact,{pdfCompact=false},{Text(tr(lang,"Completo","Full"))},Modifier.weight(1f));FilterChip(pdfCompact,{pdfCompact=true},{Text(tr(lang,"Compacto","Compact"))},Modifier.weight(1f))}
             Row(Modifier.fillMaxWidth()){Checkbox(pdfIncludeIdentity,{pdfIncludeIdentity=it});Text(tr(lang,"Incluir identificación y número de expediente","Include identification and record number"),Modifier.padding(top=12.dp))}
             Button(onClick={
-                val uri=createPhotoPdfV43(context,photoUris.toMap(),photoBrightness.toMap(),photoContrast.toMap(),photoSharpness.toMap(),photoRotation.toMap(),photoZoom.toMap(),photoOffsetX.toMap(),photoOffsetY.toMap(),if(pdfIncludeIdentity)patientLabel else "",if(pdfIncludeIdentity)activeRecordId else "",pdfDate,purpose,notes,pdfCompact,!pdfIncludeIdentity,MaterialTheme.colorScheme.primary.toArgb(),MaterialTheme.colorScheme.secondary.toArgb())
+                val uri=createPhotoPdfV43(context,photoUris.toMap(),photoBrightness.toMap(),photoContrast.toMap(),photoSharpness.toMap(),photoRotation.toMap(),photoZoom.toMap(),photoOffsetX.toMap(),photoOffsetY.toMap(),if(pdfIncludeIdentity)patientLabel else "",if(pdfIncludeIdentity)activeRecordId else "",pdfDate,purpose,notes,pdfCompact,!pdfIncludeIdentity,pdfPrimaryColor,pdfSecondaryColor)
                 if(uri!=null){
                     lastPdfUri=uri
                     val send=Intent(Intent.ACTION_SEND).apply{type="application/pdf";putExtra(Intent.EXTRA_STREAM,uri);addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)}
