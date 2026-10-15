@@ -141,12 +141,14 @@ private fun drugPresentationsV40(name:String):List<DrugPresentationV40> = when(n
  else -> emptyList()
 }
 
-private data class WeightDoseV40(val drug:String,val presentation:String,val mgPerMl:Double,val mgKgDay:List<Double>,val intervals:List<Int>,val maxMgDay:Double?,val source:String)
+private data class WeightDoseV40(val drug:String,val presentation:String,val mgPerMl:Double,val mgKgDay:List<Double>,val intervals:List<Int>,val maxMgDay:Double?,val source:String,val perDose:Boolean=false,val maxMgKgDay:Double?=null)
 private val verifiedWeightDosesV40=listOf(
  WeightDoseV40("Amoxicilina","Suspensión oral 500 mg/5 mL",100.0,listOf(90.0,100.0),listOf(8),4500.0,"IMSS GPC 120GER · indicación documentada: neumonía adquirida en la comunidad pediátrica"),
  WeightDoseV40("Amoxicilina / ácido clavulánico","Suspensión 125 mg/31.25 mg por 5 mL",25.0,listOf(20.0,40.0),listOf(8),null,"Listado Institucional IMSS · dosis expresada según componente amoxicilina"),
- WeightDoseV40("Ibuprofeno","Suspensión oral 2 g/100 mL (100 mg/5 mL)",20.0,listOf(20.0,30.0,40.0),listOf(6,8),null,"Listado Institucional IMSS: equivalencia educativa de pauta documentada"),
- WeightDoseV40("Paracetamol / acetaminofén","Solución oral 100 mg/mL",100.0,listOf(40.0,60.0,120.0),listOf(4,6),null,"IMSS GPC: 10–30 mg/kg por dosis cada 4–6 h; seleccionar sólo la pauta que corresponda a la fuente/indicación"),
+ WeightDoseV40("Ibuprofeno","Suspensión oral 2 g/100 mL (100 mg/5 mL)",20.0,listOf(5.0,10.0),listOf(6,8),null,"IMSS Cuadro Básico: 5–10 mg/kg por dosis cada 6–8 h; validar edad, indicación y contraindicaciones.",perDose=true,maxMgKgDay=40.0),
+ WeightDoseV40("Ibuprofeno","Suspensión oral 200 mg/5 mL",40.0,listOf(5.0,10.0),listOf(6,8),null,"IMSS Cuadro Básico: 5–10 mg/kg por dosis cada 6–8 h; validar edad, indicación y contraindicaciones.",perDose=true,maxMgKgDay=40.0),
+ WeightDoseV40("Ibuprofeno","Gotas / suspensión 40 mg/mL",40.0,listOf(5.0,10.0),listOf(6,8),null,"IMSS Cuadro Básico: 5–10 mg/kg por dosis cada 6–8 h; verificar el producto concreto.",perDose=true,maxMgKgDay=40.0),
+ WeightDoseV40("Paracetamol / acetaminofén","Solución oral 100 mg/mL",100.0,listOf(10.0,15.0),listOf(6,8),2000.0,"IMSS GPC 120GER: 10–15 mg/kg por dosis cada 4–6 h; esta calculadora restringe la selección a cada 6–8 h y limita a 60 mg/kg/día o 2 g/día, lo que resulte menor.",perDose=true,maxMgKgDay=60.0),
  WeightDoseV40("Naproxeno","Suspensión oral 125 mg/5 mL",25.0,listOf(15.0),listOf(8),null,"IMSS Grupo 20: máximo pediátrico documentado 15 mg/kg/día; equivalencia educativa del máximo diario"),
  WeightDoseV40("Azitromicina","Suspensión 200 mg/5 mL",40.0,listOf(10.0),listOf(24),500.0,"IMSS GPC 261: 10 mg/kg/día, máximo 500 mg, para sinusitis bacteriana pediátrica; no extrapolar automáticamente a odontología"),
  WeightDoseV40("Clindamicina","Suspensión 75 mg/5 mL",15.0,listOf(30.0),listOf(8),1800.0,"IMSS GPC 261: 30 mg/kg/día en 3 dosis, máximo 1.8 g, para sinusitis bacteriana pediátrica; no extrapolar automáticamente a odontología"),
@@ -296,31 +298,37 @@ fun DentalCalculatorsV40Screen(lang:String,onBack:()->Unit){
      val p=selectedProtocol
      item{SectionCard("6 · Pauta documentada por peso"){
       Text(p.source)
-      ChipChoices(p.mgKgDay.map{v->"${v.toInt()} mg/kg/día" to (medDoseDay==v)},{i->medDoseDay=p.mgKgDay[i];medInterval=null},2)
+      ChipChoices(p.mgKgDay.map{v->"${v.toInt()} mg/kg/${if(p.perDose) "dosis" else "día"}" to (medDoseDay==v)},{i->medDoseDay=p.mgKgDay[i];medInterval=null},2)
       Text("La pauta sólo debe seleccionarse cuando corresponda a la indicación y población de la fuente.",fontWeight=FontWeight.Bold)
      }}
      if(medDoseDay!=null&&medWeight.toDoubleOrNull()!=null){
-      val rawDaily=medWeight.toDouble()*medDoseDay!!
-      val daily=if(p.maxMgDay!=null) minOf(rawDaily,p.maxMgDay) else rawDaily
+      val dosesForInterval=medInterval?.let{24.0/it}
+      val rawAmount=medWeight.toDouble()*medDoseDay!!
+      val rawDaily=if(p.perDose&&dosesForInterval!=null) rawAmount*dosesForInterval else if(p.perDose) rawAmount else rawAmount
+      val dailyLimitByWeight=p.maxMgKgDay?.let{medWeight.toDouble()*it}
+      val effectiveDailyLimit=listOfNotNull(p.maxMgDay,dailyLimitByWeight).minOrNull()
+      val daily=if(p.perDose&&dosesForInterval!=null&&effectiveDailyLimit!=null) minOf(rawDaily,effectiveDailyLimit) else if(!p.perDose&&p.maxMgDay!=null) minOf(rawDaily,p.maxMgDay) else rawDaily
+      val perDoseAmount=if(p.perDose&&dosesForInterval!=null) daily/dosesForInterval else if(!p.perDose&&dosesForInterval!=null) daily/dosesForInterval else null
       item{SectionCard("7 · Cálculo por día"){
-       Text("Peso × pauta = %.1f mg/día".format(rawDaily),fontWeight=FontWeight.Bold)
-       if(p.maxMgDay!=null&&rawDaily>p.maxMgDay) Text("Se aplica el máximo documentado: %.0f mg/día".format(p.maxMgDay),fontWeight=FontWeight.Bold)
+       Text(if(p.perDose) "Peso × pauta = %.1f mg por dosis antes de límites".format(rawAmount) else "Peso × pauta = %.1f mg/día".format(rawDaily),fontWeight=FontWeight.Bold)
+       if(effectiveDailyLimit!=null&&rawDaily>effectiveDailyLimit) Text("Se aplica el límite diario: %.1f mg/día (menor entre límites precargados).".format(effectiveDailyLimit),fontWeight=FontWeight.Bold)
       }}
       item{SectionCard("8 · Intervalo"){
        ChipChoices(p.intervals.map{h->"Cada $h horas" to (medInterval==h)},{i->medInterval=p.intervals[i]},2)
       }}
       if(medInterval!=null){
        val doses=24.0/medInterval!!
-       val perDose=daily/doses
+       val perDose=if(p.perDose) daily/doses else daily/doses
        val mlDose=perDose/p.mgPerMl
        item{SectionCard("9 · Esquema calculado"){
         Text(currentDrug.name,style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Black)
         Text("Peso: ${medWeight} kg")
-        Text("Pauta seleccionada: ${medDoseDay!!.toInt()} mg/kg/día")
+        Text("Pauta seleccionada: ${medDoseDay!!.toInt()} mg/kg/${if(p.perDose) "dosis" else "día"}")
         Text("Total calculado: %.1f mg/día".format(daily))
         Text("Frecuencia: cada ${medInterval} horas (%.0f administraciones/día)".format(doses))
         Text("Presentación: ${p.presentation}")
         Text("Equivalencia matemática: %.1f mg = %.2f mL por administración".format(perDose,mlDose),fontWeight=FontWeight.Bold)
+        if(p.perDose) Text("Dosis calculada tras aplicar el límite diario: %.1f mg por administración".format(perDose),fontWeight=FontWeight.Bold)
         Text("La duración no se infiere: debe corresponder a la indicación y protocolo seleccionado.")
        }}
       }
