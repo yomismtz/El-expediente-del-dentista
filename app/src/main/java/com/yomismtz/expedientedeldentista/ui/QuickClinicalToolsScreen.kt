@@ -83,6 +83,12 @@ private val quickClinicalCategories = listOf(
         )
     ),
     QuickClinicalCategory(
+        "📷", "Fotografía y documentación", "Photography and documentation",
+        listOf(
+            QuickClinicalTool("📷", "Ficha de fotografía clínica", "Clinical photography sheet", AppScreen.CLINICAL_PHOTO)
+        )
+    ),
+    QuickClinicalCategory(
         "🚨", "Urgencias y protocolos", "Emergencies and protocols",
         listOf(
             QuickClinicalTool("🚨", "Urgencias odontológicas", "Dental emergencies", AppScreen.EMERGENCY),
