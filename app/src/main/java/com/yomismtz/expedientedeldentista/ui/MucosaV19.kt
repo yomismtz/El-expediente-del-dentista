@@ -127,7 +127,10 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                 }
             }
             if(status=="Alteración"){
-                val elementary=listOf("Mácula / mancha","Eritema","Petequia","Púrpura / equimosis","Pápula","Placa blanca","Placa roja","Nódulo","Masa","Vesícula","Ampolla / bula","Pústula","Quiste","Erosión","Úlcera","Fisura / grieta","Costra","Atrofia","Queratosis","Lesión papilar / vegetación","Fístula / trayecto sinusal","Edema","Hematoma","Pigmentación")
+                val elementaryPrimary=listOf("Mácula / mancha","Pápula","Placa blanca","Placa roja","Nódulo","Masa / tumor","Vesícula","Ampolla / bula","Pústula","Quiste","Habón")
+                val elementarySecondary=listOf("Erosión","Úlcera","Excoriación","Fisura / grieta","Costra","Escama","Atrofia","Esclerosis","Liquenificación","Cicatriz","Necrosis")
+                val elementaryOther=listOf("Eritema","Petequia","Púrpura / equimosis","Edema","Hematoma","Queratosis / hiperqueratosis","Lesión papilar / vegetación","Fístula / trayecto sinusal","Pigmentación")
+                val elementary=elementaryPrimary+elementarySecondary+elementaryOther
                 val pathologyByZone=mapOf(
                     "labio_sup" to listOf("Queilitis irritativa/traumática","Queilitis actínica","Herpes labial","Queilitis de contacto","Fibroma traumático","Mucocele","Papiloma escamoso","Verruga vulgar","Lesión vascular a valorar","Úlcera o lesión persistente a valorar"),
                     "labio_inf" to listOf("Mucocele","Queilitis irritativa/traumática","Queilitis actínica","Herpes labial","Queilitis de contacto","Fibroma traumático","Lesión por mordisqueo","Papiloma escamoso","Lago venoso a valorar","Úlcera o lesión persistente a valorar"),
@@ -150,7 +153,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                         helpSelection.startsWith("Mácula") -> R.drawable.edu_lesion_macula
                         helpSelection=="Pápula" -> R.drawable.edu_lesion_papula
                         helpSelection.startsWith("Placa") -> R.drawable.edu_lesion_placa
-                        helpSelection=="Nódulo" || helpSelection=="Masa" -> R.drawable.edu_lesion_nodulo
+                        helpSelection=="Nódulo" || helpSelection=="Masa" || helpSelection=="Masa / tumor" -> R.drawable.edu_lesion_nodulo
                         helpSelection=="Vesícula" -> R.drawable.edu_lesion_vesicula
                         helpSelection.startsWith("Ampolla") -> R.drawable.edu_lesion_ampolla
                         helpSelection=="Pústula" -> R.drawable.edu_lesion_pustula
@@ -168,7 +171,7 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                         helpSelection=="Pápula" -> "Elevación sólida, pequeña y circunscrita."
                         helpSelection.startsWith("Placa") -> "Área relativamente extensa, elevada o engrosada; describe color, superficie y si se desprende."
                         helpSelection=="Nódulo" -> "Aumento de volumen sólido, circunscrito y generalmente más profundo que una pápula."
-                        helpSelection=="Masa" -> "Aumento de volumen de dimensiones o profundidad variables."
+                        helpSelection=="Masa" || helpSelection=="Masa / tumor" -> "Aumento de volumen sólido de dimensiones o profundidad variables; describe tamaño, profundidad, consistencia, movilidad y evolución."
                         helpSelection=="Vesícula" -> "Elevación pequeña con contenido líquido."
                         helpSelection.startsWith("Ampolla") -> "Elevación con contenido líquido de mayor tamaño que una vesícula."
                         helpSelection=="Pústula" -> "Elevación que contiene material purulento."
@@ -178,11 +181,18 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                         helpSelection.startsWith("Fisura") -> "Hendidura lineal de la superficie mucosa."
                         helpSelection=="Costra" -> "Material seco formado por exudado, sangre o secreción; es más típico del bermellón labial."
                         helpSelection=="Atrofia" -> "Adelgazamiento o pérdida de componentes normales del epitelio o tejido."
-                        helpSelection=="Queratosis" -> "Engrosamiento queratósico que puede observarse como una zona blanquecina."
+                        helpSelection.startsWith("Queratosis") -> "Engrosamiento de la capa superficial; en mucosa oral puede observarse como una zona blanca. Describe localización, límites, superficie y persistencia."
                         helpSelection.startsWith("Lesión papilar") -> "Crecimiento exofítico con superficie papilar, verrugosa o vegetante."
                         helpSelection.startsWith("Fístula") -> "Trayecto de drenaje hacia la superficie; busca el origen y la secreción."
                         helpSelection=="Edema" -> "Aumento de volumen por acumulación de líquido en los tejidos."
                         helpSelection=="Hematoma" -> "Colección localizada de sangre extravasada; registra trauma, tamaño y evolución."
+                        helpSelection=="Excoriación" -> "Pérdida superficial del epitelio por fricción o traumatismo."
+                        helpSelection=="Escama" -> "Desprendimiento de fragmentos superficiales de epitelio; es menos frecuente en mucosa húmeda y puede observarse en bermellón labial."
+                        helpSelection=="Esclerosis" -> "Endurecimiento del tejido, generalmente asociado a fibrosis; confirma mediante palpación."
+                        helpSelection=="Liquenificación" -> "Engrosamiento del epitelio con acentuación de su patrón superficial por irritación crónica."
+                        helpSelection=="Cicatriz" -> "Tejido fibroso que sustituye al tejido lesionado durante la reparación; puede alterar textura o movilidad."
+                        helpSelection=="Necrosis" -> "Muerte tisular; describe extensión, color, desprendimiento, dolor y condición general del paciente."
+                        helpSelection=="Habón" -> "Elevación edematosa y transitoria; es poco habitual como hallazgo aislado en mucosa oral."
                         helpSelection=="Pigmentación" -> "Cambio de color por pigmento endógeno o exógeno; describe simetría y cambios recientes."
                         else -> ""
                     }
@@ -201,8 +211,22 @@ fun MucosaInteractiveV19Screen(lang:String,onBack:()->Unit) {
                             } else {
                                 Text(tr(lang,"Aún no hay una lesión seleccionada. Elige una opción de la lista; cuando exista una imagen específica, aparecerá aquí.","No lesion is selected yet. Choose an option below; when a specific image is available, it will appear here."))
                             }
-                            AdaptiveGridV17(elementary.size,zoneColumns){i->
-                                val option=elementary[i]
+                            Text(tr(lang,"Lesiones primarias","Primary lesions"),fontWeight=FontWeight.Bold)
+                            Text(tr(lang,"Lesiones que aparecen inicialmente en el tejido.","Lesions that initially appear in the tissue."),style=MaterialTheme.typography.bodySmall)
+                            AdaptiveGridV17(elementaryPrimary.size,zoneColumns){i->
+                                val option=elementaryPrimary[i]
+                                FilterChip(tissueLesion[selected.id]==option,{tissueLesion[selected.id]=option;finding=option},{Text(option)},modifier=Modifier.fillMaxWidth())
+                            }
+                            Text(tr(lang,"Lesiones secundarias","Secondary lesions"),fontWeight=FontWeight.Bold)
+                            Text(tr(lang,"Cambios derivados de la evolución, ruptura o reparación de una lesión previa.","Changes resulting from the evolution, breakdown or repair of a previous lesion."),style=MaterialTheme.typography.bodySmall)
+                            AdaptiveGridV17(elementarySecondary.size,zoneColumns){i->
+                                val option=elementarySecondary[i]
+                                FilterChip(tissueLesion[selected.id]==option,{tissueLesion[selected.id]=option;finding=option},{Text(option)},modifier=Modifier.fillMaxWidth())
+                            }
+                            Text(tr(lang,"Otros hallazgos y cambios descriptivos","Other findings and descriptive changes"),fontWeight=FontWeight.Bold)
+                            Text(tr(lang,"Se registran por separado porque no todos corresponden a lesiones elementales clásicas.","Recorded separately because not all are classic elementary lesions."),style=MaterialTheme.typography.bodySmall)
+                            AdaptiveGridV17(elementaryOther.size,zoneColumns){i->
+                                val option=elementaryOther[i]
                                 FilterChip(tissueLesion[selected.id]==option,{tissueLesion[selected.id]=option;finding=option},{Text(option)},modifier=Modifier.fillMaxWidth())
                             }
                         }
