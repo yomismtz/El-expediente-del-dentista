@@ -54,6 +54,8 @@ fun paletteDisplayName(style: BirdPaletteStyle, lang: String = "es"): String = w
     BirdPaletteStyle.RANA_VERDE -> if(lang=="en") "Frog" else "Rana"
     BirdPaletteStyle.AJOLOTE -> if(lang=="en") "Axolotl" else "Ajolote"
     BirdPaletteStyle.ABEJA_CONTRASTE -> if(lang=="en") "Bee" else "Abeja"
+    BirdPaletteStyle.FAISAN -> if(lang=="en") "Pheasant" else "Faisán"
+    BirdPaletteStyle.ZANCUDO -> if(lang=="en") "Mosquito" else "Zancudo"
 }
 
 fun birdPalette(style: BirdPaletteStyle): BirdPalette {
@@ -81,6 +83,8 @@ fun birdPalette(style: BirdPaletteStyle): BirdPalette {
         BirdPaletteStyle.PANDA_MONO -> BirdPalette(Color(0xFF303030),Color.White,Color(0xFF666666),Color(0xFF8A8A8A),Color(0xFFF5F5F5),Color.White,Color(0xFF1E1E1E),Color(0xFFE2E2E2),Color(0xFFECECEC),Color(0xFF777777))
         BirdPaletteStyle.ABEJA_CONTRASTE -> BirdPalette(Color(0xFF111111),Color.White,Color(0xFFFFD600),Color(0xFF005BBB),Color.White,Color.White,Color.Black,Color(0xFFFFE766),Color(0xFFDDEBFF),Color.Black)
         BirdPaletteStyle.GALLO -> p(0xFF145DA0,0xFFF8FAFC,0xFFC62828,0xFFF1F6FB,0xFFB9D7EF,0xFFF2C2C2)
+        BirdPaletteStyle.FAISAN -> p(0xFF8C3F2B,0xFF2F6B45,0xFFD9A441,0xFFFFF4E8,0xFFE9C6A5,0xFFD6E8D2)
+        BirdPaletteStyle.ZANCUDO -> p(0xFF455A64,0xFF26A69A,0xFF90A4AE,0xFFEEF5F5,0xFFC9E5E1,0xFFDCE6EA)
     }
 }
 
