@@ -51,7 +51,14 @@ class SettingsStore(context: Context) {
         languageTag = prefs.getString(KEY_LANGUAGE, "es") ?: "es"
     )
 
-    private fun loadBirdPalette(): BirdPaletteStyle {\n        val stored = prefs.getString(KEY_BIRD_PALETTE, null)\n        // Las antiguas variantes de perro se conservan como la nueva paleta unificada.\n        if (stored == "PUG" || stored == "POMERANIA") return BirdPaletteStyle.PERRO\n        return stored?.let { runCatching { BirdPaletteStyle.valueOf(it) }.getOrNull() } ?: BirdPaletteStyle.AGAPORNI\n    }\n\n    fun save(value: AppPreferences) {
+    private fun loadBirdPalette(): BirdPaletteStyle {
+        val stored = prefs.getString(KEY_BIRD_PALETTE, null)
+        // Las antiguas variantes de perro se conservan como la nueva paleta unificada.
+        if (stored == "PUG" || stored == "POMERANIA") return BirdPaletteStyle.PERRO
+        return stored?.let { runCatching { BirdPaletteStyle.valueOf(it) }.getOrNull() } ?: BirdPaletteStyle.AGAPORNI
+    }
+
+    fun save(value: AppPreferences) {
         prefs.edit()
             .putBoolean(KEY_ONBOARDING, value.onboardingComplete)
             .putString(KEY_TITLE, value.clinicianTitle.name)
