@@ -337,7 +337,7 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
                 }
             }
         }else{
-            withContext(Dispatchers.IO){capturedFile?.delete()}
+            photoStorageScope.launch { withContext(Dispatchers.IO){capturedFile?.delete()} }
         }
         pendingCameraUri=null
         pendingCameraFile=null
