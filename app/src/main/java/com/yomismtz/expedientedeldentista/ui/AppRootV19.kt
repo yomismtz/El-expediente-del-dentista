@@ -250,25 +250,41 @@ private fun PaletteCardV19(style:BirdPaletteStyle,lang:String,selected:Boolean,o
 }
 
 
-private fun mascotIconV19(style:BirdPaletteStyle)=when(style){
- BirdPaletteStyle.AZUL_TURQUESA->"🦋"; BirdPaletteStyle.AZUL_MARINO->"🐋";
- BirdPaletteStyle.AGAPORNI->"🐦"; BirdPaletteStyle.AGAPORNI_PASTEL->"🐦"; BirdPaletteStyle.TUCAN->"🦜"; BirdPaletteStyle.NINFA->"🐤"; BirdPaletteStyle.BUHO->"🦉"; BirdPaletteStyle.CUERVO->"🐦‍⬛"
- BirdPaletteStyle.GUACAMAYA->"🦜"; BirdPaletteStyle.PUG->"🐶"; BirdPaletteStyle.POMERANIA->"🐕"; BirdPaletteStyle.GATO->"🐱"; BirdPaletteStyle.CONEJO->"🐰"
- BirdPaletteStyle.ELEFANTE->"🐘"; BirdPaletteStyle.CABALLO_CAFE->"🐴"; BirdPaletteStyle.SERPIENTE->"🐍"; BirdPaletteStyle.IGUANA->"🦎"; BirdPaletteStyle.ARANA->"🕷️"
- BirdPaletteStyle.TORTUGA->"🐢"; BirdPaletteStyle.PEZ_PAYASO->"🐠"; BirdPaletteStyle.DELFIN->"🐬"; BirdPaletteStyle.TIBURON->"🦈"; BirdPaletteStyle.AJOLOTE->"🩷"
- BirdPaletteStyle.PINGUINO->"🐧"; BirdPaletteStyle.PATO_MANDARIN->"🦆"; BirdPaletteStyle.HAMSTER->"🐹"; BirdPaletteStyle.FENIX->"🔥"; BirdPaletteStyle.ZORRO->"🦊"
- BirdPaletteStyle.PAVO_REAL->"🦚"; BirdPaletteStyle.COLIBRI->"🐦"; BirdPaletteStyle.MARTIN_PESCADOR->"🐦"; BirdPaletteStyle.QUETZAL->"🐦"; BirdPaletteStyle.DRAGON->"🐉"
- BirdPaletteStyle.BALLENA_AZUL->"🐟"; BirdPaletteStyle.RANA_VERDE->"🐸"; BirdPaletteStyle.MARIPOSA_MONARCA->"🦋"; BirdPaletteStyle.FLAMENCO_ROSA->"🦩"; BirdPaletteStyle.CABALLITO_TURQUESA->"🐠"
- BirdPaletteStyle.CANGREJO_CORAL->"🦀"; BirdPaletteStyle.MURCIELAGO_NOCHE->"🦇"; BirdPaletteStyle.PANDA_MONO->"🐼"; BirdPaletteStyle.ABEJA_CONTRASTE->"🐝"
- BirdPaletteStyle.CAMALEON->"🦎"; BirdPaletteStyle.PERICO->"🦜"; BirdPaletteStyle.GALLO->"🐓"
+private fun mascotIconV19(style: BirdPaletteStyle): String = when (style) {
+    BirdPaletteStyle.AGAPORNI -> "🐦"
+    BirdPaletteStyle.TUCAN -> "🦜"
+    BirdPaletteStyle.NINFA -> "🐤"
+    BirdPaletteStyle.BUHO -> "🦉"
+    BirdPaletteStyle.CUERVO -> "🐦‍⬛"
+    BirdPaletteStyle.GUACAMAYA -> "🦜"
+    BirdPaletteStyle.PAVO_REAL -> "🦚"
+    BirdPaletteStyle.COLIBRI -> "🐦"
+    BirdPaletteStyle.QUETZAL -> "🐦"
+    BirdPaletteStyle.GALLO -> "🐓"
+    BirdPaletteStyle.PERRO -> "🐶"
+    BirdPaletteStyle.GATO -> "🐱"
+    BirdPaletteStyle.CONEJO -> "🐰"
+    BirdPaletteStyle.ELEFANTE -> "🐘"
+    BirdPaletteStyle.DELFIN -> "🐬"
+    BirdPaletteStyle.MURCIELAGO_NOCHE -> "🦇"
+    BirdPaletteStyle.PANDA_MONO -> "🐼"
+    BirdPaletteStyle.SERPIENTE -> "🐍"
+    BirdPaletteStyle.IGUANA -> "🦎"
+    BirdPaletteStyle.RANA_VERDE -> "🐸"
+    BirdPaletteStyle.AJOLOTE -> "🩷"
+    BirdPaletteStyle.ABEJA_CONTRASTE -> "🐝"
+    BirdPaletteStyle.FAISAN -> "🪶"
+    BirdPaletteStyle.ZANCUDO -> "🦟"
 }
 
-private fun mascotMotionV19(style:BirdPaletteStyle)=when(style){
- BirdPaletteStyle.AZUL_TURQUESA,BirdPaletteStyle.AZUL_MARINO->3
- BirdPaletteStyle.AGAPORNI,BirdPaletteStyle.AGAPORNI_PASTEL,BirdPaletteStyle.NINFA,BirdPaletteStyle.CONEJO,BirdPaletteStyle.RANA_VERDE,BirdPaletteStyle.PINGUINO->0
- BirdPaletteStyle.TUCAN,BirdPaletteStyle.GUACAMAYA,BirdPaletteStyle.PERICO,BirdPaletteStyle.GALLO,BirdPaletteStyle.COLIBRI,BirdPaletteStyle.MARIPOSA_MONARCA,BirdPaletteStyle.MURCIELAGO_NOCHE->1
- BirdPaletteStyle.SERPIENTE,BirdPaletteStyle.IGUANA,BirdPaletteStyle.CAMALEON,BirdPaletteStyle.CANGREJO_CORAL,BirdPaletteStyle.PEZ_PAYASO,BirdPaletteStyle.DELFIN,BirdPaletteStyle.CABALLITO_TURQUESA->2
- else->3
+private fun mascotMotionV19(style: BirdPaletteStyle): Int = when (style) {
+    BirdPaletteStyle.AGAPORNI, BirdPaletteStyle.NINFA, BirdPaletteStyle.PERRO,
+    BirdPaletteStyle.CONEJO, BirdPaletteStyle.RANA_VERDE, BirdPaletteStyle.PANDA_MONO -> 0
+    BirdPaletteStyle.TUCAN, BirdPaletteStyle.GUACAMAYA, BirdPaletteStyle.GALLO,
+    BirdPaletteStyle.COLIBRI, BirdPaletteStyle.QUETZAL, BirdPaletteStyle.FAISAN -> 1
+    BirdPaletteStyle.SERPIENTE, BirdPaletteStyle.IGUANA, BirdPaletteStyle.DELFIN,
+    BirdPaletteStyle.ZANCUDO, BirdPaletteStyle.MURCIELAGO_NOCHE -> 2
+    else -> 3
 }
 
 
