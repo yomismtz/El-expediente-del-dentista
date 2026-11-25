@@ -336,6 +336,7 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
                     val previousUri=photoUris[targetView]
                     photoUris[targetView]=privateUri.toString()
                     withContext(Dispatchers.IO){deleteReplacedPrivatePhotoV43(context,activeRecordId,previousUri,privateUri)}
+                    runCatching{context.contentResolver.releasePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)}
                     photoStorageStatus=tr(lang,"Fotografía copiada al almacenamiento privado de esta práctica; disponible sin conexión.","Photo copied to this practice's private storage; available offline.")
                 }else{
                     // Keep the provider URI so the selected image is not discarded, but disclose its offline limitation.
