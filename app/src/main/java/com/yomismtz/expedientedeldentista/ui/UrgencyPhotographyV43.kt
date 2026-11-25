@@ -260,16 +260,41 @@ private fun persistClinicalPhotoV43(
             temporary.delete()
         }
 
-        // Keep only the latest private image for this view after the replacement is safe.
-        directory.listFiles()
-            ?.filter { it.isFile && it.name.startsWith("$safeSlot-") && it!=destination }
-            ?.forEach { it.delete() }
         Uri.fromFile(destination)
     } catch(error:Exception) {
         temporary.delete()
         throw error
     }
 }.getOrNull()
+
+private fun deleteReplacedPrivatePhotoV43(
+    context:android.content.Context,
+    recordId:String,
+    oldUriText:String?,
+    newUri:Uri
+) {
+    if(oldUriText.isNullOrBlank()) return
+    runCatching {
+        val oldUri=Uri.parse(oldUriText)
+        if(oldUri==newUri || oldUri.scheme!="file") return@runCatching
+        val oldFile=File(oldUri.path.orEmpty()).canonicalFile
+        val roots=listOf(
+            privatePhotoDirectoryV43(context,recordId).canonicalFile,
+            File(File(context.applicationContext.filesDir,"record_attachments"),safePhotoSegmentV43(recordId)).canonicalFile
+        )
+        if(roots.any { oldFile.path.startsWith(it.path+File.separator) } && oldFile.isFile) oldFile.delete()
+    }
+}
+
+private fun deleteUnreferencedPrivatePhotoV43(
+    context:android.content.Context,
+    recordId:String,
+    uri:Uri
+) {
+    runCatching {
+        if(isPrivateClinicalPhotoV43(context,recordId,uri)) File(uri.path.orEmpty()).delete()
+    }
+}
 
 @Composable
 fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
@@ -308,7 +333,9 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
             photoStorageScope.launch {
                 val privateUri=withContext(Dispatchers.IO){persistClinicalPhotoV43(context,activeRecordId,targetView,uri)}
                 if(privateUri!=null){
+                    val previousUri=photoUris[targetView]
                     photoUris[targetView]=privateUri.toString()
+                    withContext(Dispatchers.IO){deleteReplacedPrivatePhotoV43(context,activeRecordId,previousUri,privateUri)}
                     photoStorageStatus=tr(lang,"Fotografía copiada al almacenamiento privado de esta práctica; disponible sin conexión.","Photo copied to this practice's private storage; available offline.")
                 }else{
                     // Keep the provider URI so the selected image is not discarded, but disclose its offline limitation.
@@ -328,8 +355,12 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
             photoStorageScope.launch {
                 val privateUri=withContext(Dispatchers.IO){persistClinicalPhotoV43(context,activeRecordId,targetView,captured)}
                 if(privateUri!=null){
+                    val previousUri=photoUris[targetView]
                     photoUris[targetView]=privateUri.toString()
-                    withContext(Dispatchers.IO){capturedFile?.delete()}
+                    withContext(Dispatchers.IO){
+                        deleteReplacedPrivatePhotoV43(context,activeRecordId,previousUri,privateUri)
+                        capturedFile?.delete()
+                    }
                     photoStorageStatus=tr(lang,"Fotografía copiada al almacenamiento privado de esta práctica; disponible sin conexión.","Photo copied to this practice's private storage; available offline.")
                 }else{
                     photoUris[targetView]=captured.toString()
@@ -351,7 +382,9 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
             photoStorageScope.launch {
                 val privateUri=withContext(Dispatchers.IO){persistClinicalPhotoV43(context,activeRecordId,targetView,uri)}
                 if(privateUri!=null){
+                    val previousUri=photoUris[targetView]
                     photoUris[targetView]=privateUri.toString()
+                    withContext(Dispatchers.IO){deleteReplacedPrivatePhotoV43(context,activeRecordId,previousUri,privateUri)}
                     photoStorageStatus=tr(lang,"Recorte guardado en el almacenamiento privado de esta práctica.","Crop saved in this practice's private storage.")
                 }else{
                     photoUris[targetView]=uri.toString()
@@ -372,7 +405,11 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
                         val privateUri=withContext(Dispatchers.IO){persistClinicalPhotoV43(context,activeRecordId,slot,source)}
                         if(privateUri!=null && photoUris[slot]==rawUri){
                             photoUris[slot]=privateUri.toString()
+                            withContext(Dispatchers.IO){deleteReplacedPrivatePhotoV43(context,activeRecordId,rawUri,privateUri)}
                             photoStorageStatus=tr(lang,"Fotografía anterior migrada al almacenamiento privado.","An older photograph was migrated to private storage.")
+                        }else if(privateUri!=null){
+                            // Another selection replaced this view while migration was running.
+                            withContext(Dispatchers.IO){deleteUnreferencedPrivatePhotoV43(context,activeRecordId,privateUri)}
                         }else if(privateUri==null){
                             photoStorageStatus=tr(lang,"Una fotografía anterior sigue ligada a su ubicación de origen. Vuelve a seleccionarla si deja de estar disponible.","An older photo is still linked to its source location. Re-select it if it becomes unavailable.")
                         }
