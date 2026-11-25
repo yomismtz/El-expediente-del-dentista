@@ -23,6 +23,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 import com.yomismtz.expedientedeldentista.clinical.ClinicalRecordStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -49,9 +50,14 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.graphicsLayer
@@ -199,6 +205,97 @@ private fun createPhotoPdfV43(context:android.content.Context,photos:Map<String,
     val file=File(context.cacheDir,"registro_fotografico_clinico.pdf");file.outputStream().use{pdf.writeTo(it)};pdf.close();androidx.core.content.FileProvider.getUriForFile(context,context.packageName+".fileprovider",file)
 }.getOrNull()
 
+private fun safePhotoSegmentV43(value:String):String =
+    value.replace(Regex("[^A-Za-z0-9_-]"),"_").trim('_').ifBlank{"photo"}
+
+private fun privatePhotoDirectoryV43(context:android.content.Context,recordId:String):File =
+    File(File(context.applicationContext.filesDir,"record_photos"),safePhotoSegmentV43(recordId))
+
+private fun isPrivateClinicalPhotoV43(context:android.content.Context,recordId:String,uri:Uri):Boolean = runCatching {
+    if(uri.scheme!="file") return@runCatching false
+    val root=privatePhotoDirectoryV43(context,recordId).canonicalFile
+    val candidate=File(uri.path.orEmpty()).canonicalFile
+    candidate.path.startsWith(root.path+File.separator) && candidate.isFile
+}.getOrDefault(false)
+
+/**
+ * Copies a provider, camera-cache, or restored attachment URI into this practice's
+ * private files directory. The source is left untouched; the caller switches the
+ * record field only after the copy has completed successfully.
+ */
+private fun persistClinicalPhotoV43(
+    context:android.content.Context,
+    recordId:String,
+    slot:String,
+    sourceUri:Uri
+):Uri? = runCatching {
+    require(recordId.isNotBlank()) { "No hay un expediente activo para guardar la fotografía." }
+    if(isPrivateClinicalPhotoV43(context,recordId,sourceUri)) return@runCatching sourceUri
+
+    val app=context.applicationContext
+    val directory=privatePhotoDirectoryV43(app,recordId)
+    check(directory.exists() || directory.mkdirs()) { "No se pudo crear el almacenamiento privado de fotografías." }
+
+    val mime=app.contentResolver.getType(sourceUri).orEmpty().lowercase(Locale.ROOT)
+    val extension=when {
+        mime.contains("png") -> "png"
+        mime.contains("webp") -> "webp"
+        mime.contains("heic") || mime.contains("heif") -> "heic"
+        else -> "jpg"
+    }
+    val safeSlot=safePhotoSegmentV43(slot)
+    val destination=File(directory,"$safeSlot-${UUID.randomUUID()}.$extension")
+    val temporary=File(directory,".${destination.name}.tmp")
+
+    try {
+        val input=app.contentResolver.openInputStream(sourceUri)
+            ?: throw java.io.IOException("No fue posible leer la fotografía seleccionada.")
+        input.use { source ->
+            temporary.outputStream().use { output -> source.copyTo(output) }
+        }
+        check(temporary.isFile && temporary.length()>0L) { "La fotografía no contiene datos." }
+        if(!temporary.renameTo(destination)) {
+            temporary.copyTo(destination,overwrite=true)
+            check(destination.length()>0L) { "No se pudo completar la copia de la fotografía." }
+            temporary.delete()
+        }
+
+        Uri.fromFile(destination)
+    } catch(error:Exception) {
+        temporary.delete()
+        throw error
+    }
+}.getOrNull()
+
+private fun deleteReplacedPrivatePhotoV43(
+    context:android.content.Context,
+    recordId:String,
+    oldUriText:String?,
+    newUri:Uri
+) {
+    if(oldUriText.isNullOrBlank()) return
+    runCatching {
+        val oldUri=Uri.parse(oldUriText)
+        if(oldUri==newUri || oldUri.scheme!="file") return@runCatching
+        val oldFile=File(oldUri.path.orEmpty()).canonicalFile
+        val roots=listOf(
+            privatePhotoDirectoryV43(context,recordId).canonicalFile,
+            File(File(context.applicationContext.filesDir,"record_attachments"),safePhotoSegmentV43(recordId)).canonicalFile
+        )
+        if(roots.any { oldFile.path.startsWith(it.path+File.separator) } && oldFile.isFile) oldFile.delete()
+    }
+}
+
+private fun deleteUnreferencedPrivatePhotoV43(
+    context:android.content.Context,
+    recordId:String,
+    uri:Uri
+) {
+    runCatching {
+        if(isPrivateClinicalPhotoV43(context,recordId,uri)) File(uri.path.orEmpty()).delete()
+    }
+}
+
 @Composable
 fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     val context=LocalContext.current
@@ -215,6 +312,11 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     val pdfPrimaryColor=MaterialTheme.colorScheme.primary.toArgb()
     val pdfSecondaryColor=MaterialTheme.colorScheme.secondary.toArgb()
     var lastPdfUri by remember{androidx.compose.runtime.mutableStateOf<Uri?>(null)}
+    var photoStorageStatus by remember{androidx.compose.runtime.mutableStateOf("")}
+    val photoStorageScope=rememberCoroutineScope()
+    var pendingPickerView by remember{androidx.compose.runtime.mutableStateOf("")}
+    var pendingCropView by remember{androidx.compose.runtime.mutableStateOf("")}
+    var pendingCameraFile by remember{androidx.compose.runtime.mutableStateOf<File?>(null)}
     val photoUris=rememberRecordStateMap<String,String>("photo.uris")
     val photoBrightness=rememberRecordStateMap<String,Float>("photo.brightnessByView")
     val photoContrast=rememberRecordStateMap<String,Float>("photo.contrastByView")
@@ -224,22 +326,98 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
     val photoOffsetX=rememberRecordStateMap<String,Float>("photo.offsetXByView")
     val photoOffsetY=rememberRecordStateMap<String,Float>("photo.offsetYByView")
     val launcher=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()){uri:Uri?->
+        val targetView=pendingPickerView.ifBlank{view}
+        pendingPickerView=""
         if(uri!=null){
             runCatching{context.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)}
-            photoUris[view]=uri.toString()
+            photoStorageScope.launch {
+                val privateUri=withContext(Dispatchers.IO){persistClinicalPhotoV43(context,activeRecordId,targetView,uri)}
+                if(privateUri!=null){
+                    val previousUri=photoUris[targetView]
+                    photoUris[targetView]=privateUri.toString()
+                    withContext(Dispatchers.IO){deleteReplacedPrivatePhotoV43(context,activeRecordId,previousUri,privateUri)}
+                    runCatching{context.contentResolver.releasePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)}
+                    photoStorageStatus=tr(lang,"Fotografía copiada al almacenamiento privado de esta práctica; disponible sin conexión.","Photo copied to this practice's private storage; available offline.")
+                }else{
+                    // Keep the provider URI so the selected image is not discarded, but disclose its offline limitation.
+                    photoUris[targetView]=uri.toString()
+                    photoStorageStatus=tr(lang,"No se pudo copiar la fotografía al almacenamiento privado. Se conservó la URI original, pero su disponibilidad offline no está garantizada.","The photo could not be copied into private storage. The original URI was kept, but offline availability is not guaranteed.")
+                }
+            }
         }
     }
     var pendingCameraUri by remember { androidx.compose.runtime.mutableStateOf<Uri?>(null) }
     var pendingCameraView by remember { androidx.compose.runtime.mutableStateOf("") }
     val cameraLauncher=rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()){success->
         val captured=pendingCameraUri
-        if(success && captured!=null) photoUris[pendingCameraView]=captured.toString()
+        val capturedFile=pendingCameraFile
+        val targetView=pendingCameraView
+        if(success && captured!=null){
+            photoStorageScope.launch {
+                val privateUri=withContext(Dispatchers.IO){persistClinicalPhotoV43(context,activeRecordId,targetView,captured)}
+                if(privateUri!=null){
+                    val previousUri=photoUris[targetView]
+                    photoUris[targetView]=privateUri.toString()
+                    withContext(Dispatchers.IO){
+                        deleteReplacedPrivatePhotoV43(context,activeRecordId,previousUri,privateUri)
+                        capturedFile?.delete()
+                    }
+                    photoStorageStatus=tr(lang,"Fotografía copiada al almacenamiento privado de esta práctica; disponible sin conexión.","Photo copied to this practice's private storage; available offline.")
+                }else{
+                    photoUris[targetView]=captured.toString()
+                    photoStorageStatus=tr(lang,"No se pudo copiar la fotografía de cámara al almacenamiento privado. La copia temporal podría eliminarse por Android.","The camera photo could not be copied into private storage. Android may delete the temporary copy.")
+                }
+            }
+        }else{
+            photoStorageScope.launch { withContext(Dispatchers.IO){capturedFile?.delete()} }
+        }
         pendingCameraUri=null
+        pendingCameraFile=null
         pendingCameraView=""
     }
     val cropLauncher=rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()){result->
         val uri=result.data?.data
-        if(uri!=null){runCatching{context.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)};photoUris[view]=uri.toString()}
+        val targetView=pendingCropView.ifBlank{view}
+        pendingCropView=""
+        if(uri!=null){
+            photoStorageScope.launch {
+                val privateUri=withContext(Dispatchers.IO){persistClinicalPhotoV43(context,activeRecordId,targetView,uri)}
+                if(privateUri!=null){
+                    val previousUri=photoUris[targetView]
+                    photoUris[targetView]=privateUri.toString()
+                    withContext(Dispatchers.IO){deleteReplacedPrivatePhotoV43(context,activeRecordId,previousUri,privateUri)}
+                    photoStorageStatus=tr(lang,"Recorte guardado en el almacenamiento privado de esta práctica.","Crop saved in this practice's private storage.")
+                }else{
+                    photoUris[targetView]=uri.toString()
+                    photoStorageStatus=tr(lang,"El recorte quedó ligado a su URI externa; no se garantiza su disponibilidad offline.","The crop remains linked to its external URI; offline availability is not guaranteed.")
+                }
+            }
+        }
+    }
+
+    // Migrate photographs already saved as provider URIs, cache files, or restored attachments.
+    // A URI is replaced only after its bytes have been copied successfully.
+    LaunchedEffect(activeRecordId,photoUris.toMap()){
+        if(activeRecordId.isNotBlank()){
+            photoUris.toMap().forEach{(slot,rawUri)->
+                if(rawUri.isNotBlank()){
+                    val source=runCatching{Uri.parse(rawUri)}.getOrNull()
+                    if(source!=null && !isPrivateClinicalPhotoV43(context,activeRecordId,source)){
+                        val privateUri=withContext(Dispatchers.IO){persistClinicalPhotoV43(context,activeRecordId,slot,source)}
+                        if(privateUri!=null && photoUris[slot]==rawUri){
+                            photoUris[slot]=privateUri.toString()
+                            withContext(Dispatchers.IO){deleteReplacedPrivatePhotoV43(context,activeRecordId,rawUri,privateUri)}
+                            photoStorageStatus=tr(lang,"Fotografía anterior migrada al almacenamiento privado.","An older photograph was migrated to private storage.")
+                        }else if(privateUri!=null){
+                            // Another selection replaced this view while migration was running.
+                            withContext(Dispatchers.IO){deleteUnreferencedPrivatePhotoV43(context,activeRecordId,privateUri)}
+                        }else if(privateUri==null){
+                            photoStorageStatus=tr(lang,"Una fotografía anterior sigue ligada a su ubicación de origen. Vuelve a seleccionarla si deja de estar disponible.","An older photo is still linked to its source location. Re-select it if it becomes unavailable.")
+                        }
+                    }
+                }
+            }
+        }
     }
     val extraoral=listOf("Frontal extraoral","Perfil derecho","Perfil izquierdo","Sonrisa")
     val intraoral=listOf("Frontal intraoral","Lateral derecha","Lateral izquierda","Oclusal superior","Oclusal inferior","Detalle de lesión / procedimiento")
@@ -283,11 +461,20 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
                         val file=File(context.cacheDir,"clinical_photo_${System.currentTimeMillis()}.jpg")
                         val uri=androidx.core.content.FileProvider.getUriForFile(context,context.packageName+".fileprovider",file)
                         pendingCameraUri=uri
+                        pendingCameraFile=file
                         pendingCameraView=safeView
                         cameraLauncher.launch(uri)
-                    }.onFailure { Toast.makeText(context,tr(lang,"No se pudo abrir la cámara.","Could not open camera."),Toast.LENGTH_SHORT).show() }
+                    }.onFailure { error ->
+                        pendingCameraUri=null
+                        pendingCameraFile=null
+                        pendingCameraView=""
+                        Toast.makeText(context,tr(lang,"No se pudo abrir la cámara.","Could not open camera.")+" ${error.message.orEmpty()}",Toast.LENGTH_SHORT).show()
+                    }
                 },modifier=Modifier.weight(1f)){Text("📷 "+tr(lang,"Tomar foto","Take photo"),fontWeight=FontWeight.SemiBold)}
-                OutlinedButton(onClick={launcher.launch(arrayOf("image/*"))},modifier=Modifier.weight(1f)){Text("🖼️ "+tr(lang,"Elegir imagen","Choose image"),fontWeight=FontWeight.SemiBold)}
+                OutlinedButton(onClick={pendingPickerView=safeView;launcher.launch(arrayOf("image/*"))},modifier=Modifier.weight(1f)){Text("🖼️ "+tr(lang,"Elegir imagen","Choose image"),fontWeight=FontWeight.SemiBold)}
+            }
+            if(photoStorageStatus.isNotBlank()){
+                Text(photoStorageStatus,style=MaterialTheme.typography.bodySmall,color=if(photoStorageStatus.contains("no se pudo",ignoreCase=true)||photoStorageStatus.contains("no está garantizada",ignoreCase=true)||photoStorageStatus.contains("no se garantiza",ignoreCase=true))MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant)
             }
             if(preview!=null){
                 Image(preview.asImageBitmap(),safeView,Modifier.fillMaxWidth().height(260.dp).pointerInput(safeView,zoom,offsetX,offsetY){detectTransformGestures{_,pan,gestureZoom,_->photoZoom[safeView]=(zoom*gestureZoom).coerceIn(1f,3f);photoOffsetX[safeView]=(offsetX+pan.x/300f).coerceIn(-1f,1f);photoOffsetY[safeView]=(offsetY+pan.y/300f).coerceIn(-1f,1f)}}.graphicsLayer{rotationZ=rotation.toFloat();scaleX=zoom;scaleY=zoom;translationX=offsetX*180f;translationY=offsetY*180f},contentScale=ContentScale.Fit)
@@ -306,7 +493,8 @@ fun ClinicalPhotographySheetV43(lang:String,onBack:()->Unit){
                 OutlinedButton(onClick={
                     val source=Uri.parse(uriText)
                     val intent=Intent("com.android.camera.action.CROP").apply{setDataAndType(source,"image/*");putExtra("crop",true);putExtra("return-data",false);addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)}
-                    runCatching{cropLauncher.launch(intent)}.onFailure{Toast.makeText(context,tr(lang,"El dispositivo no ofrece un editor externo compatible. Puedes usar el recorte no destructivo de esta ficha.","No compatible external editor is available. You can use this sheet's non-destructive crop."),Toast.LENGTH_SHORT).show()}
+                    pendingCropView=safeView
+                    runCatching{cropLauncher.launch(intent)}.onFailure{pendingCropView="";Toast.makeText(context,tr(lang,"El dispositivo no ofrece un editor externo compatible. Puedes usar el recorte no destructivo de esta ficha.","No compatible external editor is available. You can use this sheet's non-destructive crop."),Toast.LENGTH_SHORT).show()}
                 },modifier=Modifier.fillMaxWidth()){Text("✂️ "+tr(lang,"Editor externo opcional","Optional external editor"))}
             }
         }

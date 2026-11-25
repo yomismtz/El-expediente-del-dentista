@@ -192,6 +192,13 @@ class RecordFieldStore(context: Context) {
         }
     }
 
+    /**
+     * Replaces the saved photo URI map after restoring image attachments.
+     * The value is encrypted by the same RecordFieldStore path as every other field.
+     */
+    fun replacePhotoUris(recordId: String, values: Map<String, String>): Boolean =
+        save(recordId, "photo.uris", HashMap(values))
+
     @Synchronized
     fun deleteRecord(recordId: String) {
         val legacyPrefix = "$recordId::"
@@ -202,7 +209,9 @@ class RecordFieldStore(context: Context) {
             .forEach { editor.remove(it) }
         editor.apply()
 
-        // Restored image bytes are private app files. Remove them with the owning record.
+        // Photos selected/captured in the updated photography sheet and older restored
+        // backup attachments are both private app files owned by this practice.
+        File(File(appContext.filesDir, "record_photos"), recordId).deleteRecursively()
         File(File(appContext.filesDir, "record_attachments"), recordId).deleteRecursively()
     }
 
