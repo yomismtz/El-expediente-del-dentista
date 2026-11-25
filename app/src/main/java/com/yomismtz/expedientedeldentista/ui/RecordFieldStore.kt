@@ -192,6 +192,13 @@ class RecordFieldStore(context: Context) {
         }
     }
 
+    /**
+     * Replaces the saved photo URI map after restoring image attachments.
+     * The value is encrypted by the same RecordFieldStore path as every other field.
+     */
+    fun replacePhotoUris(recordId: String, values: Map<String, String>): Boolean =
+        save(recordId, "photo.uris", HashMap(values))
+
     @Synchronized
     fun deleteRecord(recordId: String) {
         val legacyPrefix = "$recordId::"
