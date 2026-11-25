@@ -90,14 +90,17 @@ fun birdPalette(style: BirdPaletteStyle): BirdPalette {
 
 fun paletteSwatches(style: BirdPaletteStyle): List<Color> {
     val p = birdPalette(style)
-    val characteristic = when(style) {
-        BirdPaletteStyle.AGAPORNI -> listOf(p.primary, p.secondary, p.tertiary, Color(0xFF2F7D4A), Color(0xFF2F75B5), Color(0xFFFFF4D6), p.primaryContainer, p.secondaryContainer)
-        BirdPaletteStyle.PERRO -> listOf(p.primary, p.secondary, p.tertiary, Color(0xFFF7E8D4), Color(0xFF6B4A2F), p.primaryContainer, p.secondaryContainer)
-        BirdPaletteStyle.ABEJA_CONTRASTE -> listOf(p.primary, p.secondary, p.tertiary, Color(0xFFF59E0B), Color(0xFFFFF1A8), Color(0xFF3B2F1F), p.primaryContainer, p.secondaryContainer)
-        BirdPaletteStyle.PANDA_MONO -> listOf(p.primary, p.secondary, p.tertiary, Color(0xFFF5F5F5), Color(0xFF1E1E1E), Color(0xFFBDBDBD), p.primaryContainer, p.secondaryContainer)
-        else -> listOf(p.primary, p.secondary, p.tertiary, p.primaryContainer, p.secondaryContainer, p.background, p.onSurface, p.outline)
-    }
-    return characteristic.distinct().take(8)
+    // Ocho colores funcionales, en el mismo orden para las 24 paletas.
+    return listOf(
+        p.primary,
+        p.secondary,
+        p.tertiary,
+        p.background,
+        p.onSurface,
+        p.primaryContainer,
+        p.secondaryContainer,
+        p.outline
+    )
 }
 
 fun fontDisplayName(style: FontStyle, lang: String = "es"): String = when (style) {
