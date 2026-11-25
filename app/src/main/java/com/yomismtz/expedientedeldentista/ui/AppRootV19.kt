@@ -81,6 +81,10 @@ fun AppRootV19(
     var recordMenuOpen by rememberSaveable { mutableStateOf(activeRecordId == null) }
     var quickToolsOpen by rememberSaveable { mutableStateOf(false) }
     var guideOpen by rememberSaveable { mutableStateOf(false) }
+    val recordFieldStore = LocalRecordFieldStore.current
+    val unreadableSecureFields = remember(activeRecordId, savedRecords, recordFieldStore) {
+        activeRecordId?.let { recordFieldStore?.hasUnreadableSecureData(it) } ?: false
+    }
     Box(Modifier.fillMaxSize()) {
         if (!quickToolsOpen && !guideOpen && !recordMenuOpen && activeRecordId != null) AppRootV7(
             preferences = preferences,
@@ -122,6 +126,22 @@ fun AppRootV19(
         if (settingsOpen) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                 SettingsV19Screen(preferences, onPreferencesChanged) { settingsOpen = false }
+            }
+        }
+        if (unreadableSecureFields) {
+            Card(
+                modifier = Modifier.align(Alignment.BottomCenter).padding(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+            ) {
+                Text(
+                    tr(
+                        preferences.languageTag,
+                        "Algunos datos guardados no se pudieron descifrar. No sobrescribas ni elimines esta práctica; conserva el dispositivo y revisa el respaldo.",
+                        "Some saved fields could not be decrypted. Do not overwrite or delete this record; keep this device and check your backup."
+                    ),
+                    modifier = Modifier.padding(14.dp),
+                    color = MaterialTheme.colorScheme.onErrorContainer
+                )
             }
         }
     }
@@ -372,12 +392,17 @@ private fun RecordMenuV19(
             Text("Exportar un expediente",fontWeight=FontWeight.Bold)
             if(records.isEmpty()) Text("No hay expedientes para exportar.") else records.forEach { record ->
                 OutlinedButton(onClick={
-                    val raw=onExport(record.id)
+                    val raw: String? = runCatching { onExport(record.id) }.getOrElse { error ->
+                        status = error.message ?: "No se pudo preparar el respaldo."
+                        null
+                    }
                     if(raw!=null){
                         exportPayload=raw
                         val label=record.session.profile.patientInitials.ifBlank { "respaldo" }
                         exportLauncher.launch("expediente-"+label+".json")
-                    } else status="No se pudo preparar el respaldo."
+                    } else if(status.isBlank()) {
+                        status="No se pudo preparar el respaldo."
+                    }
                 },modifier=Modifier.fillMaxWidth()){Text("💾 "+record.session.profile.patientInitials.ifBlank { record.title })}
             }
             Button(onClick={importLauncher.launch(arrayOf("application/json","text/plain"))},modifier=Modifier.fillMaxWidth()){Text("📂 Restaurar desde archivo")}
