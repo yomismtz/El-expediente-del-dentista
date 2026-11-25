@@ -59,7 +59,7 @@ fun paletteDisplayName(style: BirdPaletteStyle, lang: String = "es"): String = w
 }
 
 fun birdPalette(style: BirdPaletteStyle): BirdPalette {
-    fun p(a:Long,b:Long,c:Long,bg:Long,pc:Long,sc:Long,on:Long=0xFF29232AL)=BirdPalette(Color(a),Color.White,Color(b),Color(c),Color(bg),Color(0xFFFFFCFF),Color(on),Color(pc),Color(sc),Color(0xFF9B919BL))
+    fun p(a:Long,b:Long,c:Long,bg:Long,pc:Long,sc:Long,on:Long=0xFF29232AL)=BirdPalette(Color(a),Color.White,Color(b),Color(c),Color(bg),Color(bg).copy(alpha=0.88f),Color(on),Color(pc),Color(sc),Color(a).copy(alpha=0.55f))
     return when(style){
         BirdPaletteStyle.AGAPORNI -> BirdPalette(Color(0xFF78B77A),Color.White,Color(0xFFF3D77A),Color(0xFFF29A5A),Color(0xFFF4FAEF),Color(0xFFFFFCFF),Color(0xFF173B63),Color(0xFFCFE8C8),Color(0xFF8ECBE3),Color(0xFF008C95))
         BirdPaletteStyle.TUCAN -> p(0xFFF2C230,0xFF202124,0xFFF28C28,0xFFFFFAE8,0xFFFFED9B,0xFFE4E4E4)
