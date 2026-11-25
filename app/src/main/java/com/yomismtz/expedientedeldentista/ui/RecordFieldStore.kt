@@ -71,8 +71,8 @@ class RecordFieldStore(context: Context) {
 
         val migrated = verifiedEncryptedFieldValue(plaintext, encrypt(plaintext), ::decrypt)
         if (migrated != null) {
-            val committed = prefs.edit().putString(secureKey, migrated).commit()
-            if (committed) prefs.edit().remove(legacyKey).apply()
+            // One editor update replaces the old value only after round-trip verification.
+            prefs.edit().putString(secureKey, migrated).remove(legacyKey).apply()
         }
         return value
     }
@@ -104,15 +104,17 @@ class RecordFieldStore(context: Context) {
         }
 
         val encrypted = verifiedEncryptedFieldValue(plaintext, encrypt(plaintext), ::decrypt) ?: return false
-        val committed = prefs.edit().putString(secureKey, encrypted).commit()
-        if (committed) prefs.edit().remove(legacyKey).apply()
-        return committed
+        // apply() updates memory immediately and persists asynchronously without blocking
+        // the Compose thread for every field edit.
+        prefs.edit().putString(secureKey, encrypted).remove(legacyKey).apply()
+        return true
     }
 
     /**
      * True when at least one saved encrypted field exists but cannot be decrypted or decoded.
      * The UI uses this to warn rather than silently treating protected data as empty.
      */
+    @Synchronized
     fun hasUnreadableSecureData(recordId: String?): Boolean {
         if (recordId.isNullOrBlank()) return false
         val prefix = secureRecordPrefix(recordId)
@@ -131,6 +133,7 @@ class RecordFieldStore(context: Context) {
      * Base64-encoded in the user-selected JSON file. They are decrypted only for export.
      * A field that cannot be decrypted aborts the export instead of producing a partial backup.
      */
+    @Synchronized
     fun exportRecord(recordId: String): JSONObject {
         val output = JSONObject()
         val legacyPrefix = "$recordId::"
