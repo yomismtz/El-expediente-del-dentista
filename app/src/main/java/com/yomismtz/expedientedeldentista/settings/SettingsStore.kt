@@ -9,15 +9,10 @@ enum class PaletteStyle { WOOD, CLINICAL_GREEN, DENTAL_BLUE, WINE, SAGE, MONO }
 
 /** Paletas nuevas de la interfaz YSM. */
 enum class BirdPaletteStyle {
-    AZUL_TURQUESA, AZUL_MARINO, AGAPORNI_PASTEL,
-    AGAPORNI, TUCAN, NINFA, BUHO, CUERVO,
-    GUACAMAYA, PUG, POMERANIA, GATO, CONEJO,
-    ELEFANTE, CABALLO_CAFE, SERPIENTE, IGUANA, ARANA,
-    TORTUGA, PEZ_PAYASO, DELFIN, TIBURON, AJOLOTE,
-    PINGUINO, PATO_MANDARIN, HAMSTER, FENIX, ZORRO,
-    PAVO_REAL, COLIBRI, MARTIN_PESCADOR, QUETZAL, DRAGON,
-    BALLENA_AZUL, RANA_VERDE, MARIPOSA_MONARCA, FLAMENCO_ROSA, CABALLITO_TURQUESA,
-    CANGREJO_CORAL, MURCIELAGO_NOCHE, PANDA_MONO, ABEJA_CONTRASTE, CAMALEON, PERICO, GALLO
+    AGAPORNI, TUCAN, NINFA, BUHO, CUERVO, GUACAMAYA,
+    PAVO_REAL, COLIBRI, QUETZAL, GALLO, PERRO, GATO,
+    CONEJO, ELEFANTE, DELFIN, MURCIELAGO_NOCHE, PANDA_MONO,
+    SERPIENTE, IGUANA, RANA_VERDE, AJOLOTE, ABEJA_CONTRASTE
 }
 
 enum class CardShapeStyle { SOFT, ROUNDED, SQUARE }
@@ -49,14 +44,14 @@ class SettingsStore(context: Context) {
         onboardingComplete = prefs.getBoolean(KEY_ONBOARDING, false),
         clinicianTitle = enumValueOrDefault(prefs.getString(KEY_TITLE, null), ClinicianTitle.DOCTORA),
         paletteStyle = enumValueOrDefault(prefs.getString(KEY_PALETTE, null), PaletteStyle.WOOD),
-        birdPaletteStyle = enumValueOrDefault(prefs.getString(KEY_BIRD_PALETTE, null), BirdPaletteStyle.AGAPORNI),
+        birdPaletteStyle = loadBirdPalette(),
         fontStyle = enumValueOrDefault(prefs.getString(KEY_FONT, null), FontStyle.MODERN),
         textSizeStyle = enumValueOrDefault(prefs.getString(KEY_TEXT_SIZE, null), TextSizeStyle.NORMAL),
         cardShapeStyle = enumValueOrDefault(prefs.getString(KEY_CARD_SHAPE, null), CardShapeStyle.ROUNDED),
         languageTag = prefs.getString(KEY_LANGUAGE, "es") ?: "es"
     )
 
-    fun save(value: AppPreferences) {
+    private fun loadBirdPalette(): BirdPaletteStyle {\n        val stored = prefs.getString(KEY_BIRD_PALETTE, null)\n        // Las antiguas variantes de perro se conservan como la nueva paleta unificada.\n        if (stored == "PUG" || stored == "POMERANIA") return BirdPaletteStyle.PERRO\n        return stored?.let { runCatching { BirdPaletteStyle.valueOf(it) }.getOrNull() } ?: BirdPaletteStyle.AGAPORNI\n    }\n\n    fun save(value: AppPreferences) {
         prefs.edit()
             .putBoolean(KEY_ONBOARDING, value.onboardingComplete)
             .putString(KEY_TITLE, value.clinicianTitle.name)
