@@ -132,12 +132,19 @@ class MainActivity : AppCompatActivity() {
                                 },
                                 onImportRecord = { raw ->
                                     runCatching {
-                                        val root=JSONObject(raw)
-                                        val imported=recordStore.importRecordJson(root)
-                                        root.optJSONObject("fields")?.let { fieldStore.importRecord(imported.id,it) }
-                                        restoreAttachments(root.optJSONArray("attachments"),imported.id,fieldStore)
-                                        savedRecords=recordStore.loadAll()
-                                        imported
+                                        val root = JSONObject(raw)
+                                        val imported = recordStore.importRecordJson(root)
+                                        try {
+                                            root.optJSONObject("fields")?.let { fieldStore.importRecord(imported.id, it) }
+                                            restoreAttachments(root.optJSONArray("attachments"), imported.id, fieldStore)
+                                            savedRecords = recordStore.loadAll()
+                                            imported
+                                        } catch (error: Exception) {
+                                            // A failed field/photo import must not leave a misleading partial record.
+                                            recordStore.delete(imported.id)
+                                            fieldStore.deleteRecord(imported.id)
+                                            throw error
+                                        }
                                     }.getOrNull()
                                 }
                             )
